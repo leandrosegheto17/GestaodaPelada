@@ -21,7 +21,7 @@ Argumento recebido (pode estar vazio): $ARGUMENTS
 ## 0. Pré-requisitos bloqueantes
 
 0. **Checagem de contexto (antes de tudo)**: rode `/context`. Se o uso da sessão
-   passar de ~300 mil tokens, **pare aqui** — não crie/entre em worktree, não
+   passar de ~300 mil tokens, **pare aqui** — não crie/entre em worktree (só `--tarefa` cria; `--continuar` usa a `main`), não
    dispare agente — e devolva um alerta de contexto cheio (uso atual, teto de 300
    mil, sugestão de nova sessão). Repita a checagem antes de **cada tarefa nova**
    quando houver encadeamento (`--lote`, `--continuar`); não interrompa uma
@@ -130,7 +130,17 @@ com trava atômica (sem risco de duas sessões gravarem ao mesmo tempo).
    possivelmente abandonada. O `/executar` sem `--tarefa` e o modo contínuo **não** a
    tomam sozinhos; o `/listar` a destaca.
 
-O código da tarefa (diff) continua na worktree da sessão.
+**Onde o código roda** (ver "Isolamento por worktree" no `EXECUTION-FLOW.md`):
+
+- **`--tarefa <ID>`**: **sempre numa worktree separada** (nome `execucao/executar-<ID>`, criada
+  em `.claude/worktrees`). O diff da tarefa vive nela; o encerramento limpo integra à `main`
+  e remove a worktree, e o bloqueio a deixa como está (Seção 6).
+- **`--continuar [N]`**: **direto na `main`**, sem criar worktree. A cada tarefa fechada
+  (`QA ✔ · Sec ✔`), commite na `main` o código e os artefatos dela antes de seguir para a
+  próxima; o `git diff` de QA/DevSecOps é o da tarefa ainda não commitada. Bloqueio: não
+  commite o código parcial e registre o estado no `## Bloqueio`. Se a `main` não estiver
+  limpa ao começar uma tarefa, pare e avise.
+- Vazio e `--lote N`: seguem a regra geral (worktree da sessão).
 
 ### Etapas
 

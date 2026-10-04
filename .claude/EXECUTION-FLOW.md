@@ -33,6 +33,15 @@ sessão, nunca direto na árvore principal — isso evita que duas sessões roda
 comandos de execução ao mesmo tempo pisem uma na outra (edição concorrente de
 `TASK.md`, `BLOCKERS.md`, código).
 
+**Exceção do `/executar` por modo**: `/executar --tarefa <ID>` **sempre** usa
+worktree própria (regra abaixo). `/executar --continuar [N]` **não** usa worktree:
+roda direto na `main` da árvore principal, e a cada tarefa que fecha
+(`QA ✔ · Sec ✔`) faz um commit na `main` com o código e os artefatos dela, antes
+de partir para a próxima; tarefa que bloqueia deixa o código parcial sem commit
+e o registra no `## Bloqueio` (a `main` precisa estar limpa ao começar a próxima
+tarefa — se não estiver, pare e avise). Os demais modos (vazio, `--lote`)
+seguem a regra geral abaixo.
+
 1. Garanta/entre numa worktree dedicada a esta sessão (skill
    `superpowers:using-git-worktrees` ou tool `EnterWorktree`) antes de ler ou
    escrever qualquer artefato — nome sugerido: `execucao/<comando>-<lote-ou-
