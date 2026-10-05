@@ -79,18 +79,22 @@ Antes de qualquer outro passo — antes até do pré-requisito bloqueante e do
 isolamento por worktree da seção anterior —, rode `/context` para medir o uso
 atual da sessão.
 
-- **Contexto > 300 mil tokens**: **não inicie a execução**. Pare aqui, sem
+- **Contexto > 250 mil tokens**: **não inicie a execução**. Pare aqui, sem
   criar/entrar em worktree, sem ler `TASK.md` além do necessário para montar o
   alerta, e sem disparar qualquer agente. Devolva ao usuário um alerta de
-  contexto cheio: uso atual (em mil tokens), o teto de 300 mil, e a sugestão de
+  contexto cheio: uso atual (em mil tokens), o teto de 250 mil, e a sugestão de
   iniciar uma nova sessão/conversa antes de rodar o comando de novo.
-- **Contexto <= 300 mil tokens**: siga normalmente para os pré-requisitos
+- **Contexto <= 250 mil tokens**: siga normalmente para os pré-requisitos
   bloqueantes e o isolamento por worktree.
 - **`/executar --lote` / `--continuar`**: a checagem não vale só para a primeira
   chamada — repita-a antes de iniciar CADA tarefa nova da cadeia. Se o teto for
   cruzado no meio, não interrompa à força uma tarefa em andamento, mas não comece
   outra acima do teto — pare com o mesmo alerta, informando quantas tarefas já
   fecharam nesta chamada.
+- **`/executar --continuar --nocontext`**: a checagem de contexto é **pulada por
+  inteiro** (nem a primeira, nem a repetição entre tarefas) — a fila roda sem o
+  teto de 250 mil. Sem `--nocontext`, `--continuar` respeita o teto normalmente.
+  `--nocontext` não é aceito fora de `--continuar`.
 
 ---
 

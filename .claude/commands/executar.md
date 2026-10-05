@@ -1,6 +1,6 @@
 ---
 description: Executa tarefas de ponta a ponta, uma por vez, a partir de .md/.taskplan/<ID>.md — o Executor implementa, o QA testa (aprova ou reprova) e o DevSecOps dá o OK de segurança, tudo no mesmo fluxo. Achado crítico volta para a execução; achado não crítico vira nova tarefa de refatoração. Cada agente lê e escreve no arquivo da tarefa (.taskplan). Sem argumento pega a próxima tarefa elegível; --tarefa <ID> executa só essa (ou retoma uma bloqueada); --lote N e --continuar [N] encadeiam as tarefas e, em bloqueio, registram e seguem para a próxima elegível. Não dispara /deploy sozinho.
-argument-hint: [vazio = próxima tarefa | --tarefa <ID, inclusive BK-/SPK- do Coordenador> | --lote N | --continuar [N]]
+argument-hint: [vazio = próxima tarefa | --tarefa <ID, inclusive BK-/SPK- do Coordenador> | --lote N | --continuar [N] [--nocontext]]
 ---
 
 # Comando `/executar` — Executor → QA → DevSecOps, por tarefa
@@ -21,9 +21,11 @@ Argumento recebido (pode estar vazio): $ARGUMENTS
 ## 0. Pré-requisitos bloqueantes
 
 0. **Checagem de contexto (antes de tudo)**: rode `/context`. Se o uso da sessão
-   passar de ~300 mil tokens, **pare aqui** — não crie/entre em worktree (só `--tarefa` cria; `--continuar` usa a `main`), não
-   dispare agente — e devolva um alerta de contexto cheio (uso atual, teto de 300
-   mil, sugestão de nova sessão). Repita a checagem antes de **cada tarefa nova**
+   passar de ~250 mil tokens, **pare aqui** — não crie/entre em worktree (só `--tarefa` cria; `--continuar` usa a `main`), não
+   dispare agente — e devolva um alerta de contexto cheio (uso atual, teto de 250
+   mil, sugestão de nova sessão). **Exceção — `--continuar --nocontext`**: pule esta
+   checagem por inteiro (nem na primeira tarefa, nem entre as tarefas): a fila roda
+   sem limite de contexto da sessão; não rode `/context`. Repita a checagem antes de **cada tarefa nova**
    quando houver encadeamento (`--lote`, `--continuar`); não interrompa uma
    tarefa já em andamento, mas não comece outra acima do teto.
 1. **Repositório git**: se `.git` não existir, pare e avise — o QA e o DevSecOps
@@ -60,6 +62,10 @@ Interprete `$ARGUMENTS`:
   após a outra, **sem interromper por bloqueio** (modo contínuo, abaixo).
 - **`--continuar [N]`**: as tarefas elegíveis em sequência, de todo o `TASK.md`
   (até N tarefas, ou sem limite), **sem interromper por bloqueio** (modo contínuo).
+  Respeita o teto de 250 mil tokens de contexto (Seção 0, item 0).
+  - **`--continuar [N] --nocontext`**: igual, mas **sem validar o limite de
+    contexto** (a checagem do item 0 da Seção 0 é pulada). `--nocontext` só vale
+    junto com `--continuar`; sozinho ou com outro modo, mostre as opções e **pare**.
 
 **Modo contínuo (`--lote` e `--continuar`)**: sempre que for possível, o bloqueio
 de uma tarefa é **registrado** (Seção 6) e o comando **segue para a próxima tarefa
