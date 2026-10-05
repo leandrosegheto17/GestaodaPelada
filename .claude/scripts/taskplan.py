@@ -6,8 +6,8 @@ Uso (a partir da raiz do projeto):
   python .claude/scripts/taskplan.py gerar              # reconstrói o TASKPLAN.md a partir do TASK.md e de .md/.taskplan/
   python .claude/scripts/taskplan.py set ID ESTADO      # troca só o estado de uma linha (ID: TP-0001, RTP-0003, SPK-0001, BK-0002, T-001)
   python .claude/scripts/taskplan.py estados            # lista os estados válidos
-  python .claude/scripts/taskplan.py proxima [--lote N] [--pular ID,ID] [--n K]   # próxima(s) tarefa(s) elegível(is) do Executor
-  python .claude/scripts/taskplan.py reservar ID TOKEN [--assumir]   # reserva por sessão (OK | OCUPADA)
+  python .claude/scripts/taskplan.py proxima [--etapa exe|qa|sec] [--lote N] [--pular ID,ID] [--n K]   # próxima(s) tarefa(s) elegível(is) da etapa (padrão exe)
+  python .claude/scripts/taskplan.py reservar ID TOKEN [--assumir] [--etapa "Em execução|Em QA|Em DevSecOps"]   # reserva por sessão (OK | OCUPADA)
   python .claude/scripts/taskplan.py etapa ID TOKEN "Em execução|Em QA|Em DevSecOps"
   python .claude/scripts/taskplan.py liberar ID Livre|Concluída|Bloqueada
   python .claude/scripts/taskplan.py status ID "<texto do Status>"    # grava o Status (TASK.md ou arquivo BK) e o estado no TASKPLAN.md
@@ -82,6 +82,12 @@ ESTADOS = [
     'Bloqueada',
     'Dividida',
 ]
+# estados elegíveis por etapa do /executar (exe), /testar (qa) e /validar (sec); inclui o em-curso (retomada)
+ETAPAS_ELEG = {
+    'exe': ('Não executada', 'Em execução'),
+    'qa': ('Executada (aguarda teste)', 'Em teste'),
+    'sec': ('Testada (aguarda segurança)', 'Em validação de segurança'),
+}
 ID_RE = re.compile(r'\b(?:RTP-\d+[a-z]*|SPK-\d+[a-z]*|TP-\d+[a-z]*|BK-\d+|T-\d+)\b')
 STD_RE = re.compile(r'^(?:RTP|SPK|TP)-\d+[a-z]*$')
 LEGADO_T_RE = re.compile(r'^T-\d+[a-z]*$')
@@ -606,10 +612,14 @@ def lote_casa(lote, n):
 
 # ----------------------------------------------------------------- comandos
 def cmd_proxima(args):
-    lote, pular, k = None, set(), 1
+    lote, pular, k, etapa = None, set(), 1, 'exe'
     i = 0
     while i < len(args):
-        if args[i] == '--lote':
+        if args[i] == '--etapa':
+            etapa = args[i + 1]; i += 2
+            if etapa not in ETAPAS_ELEG:
+                sys.exit('etapa inválida: %r (válidas: exe, qa, sec)' % etapa)
+        elif args[i] == '--lote':
             lote = args[i + 1]; i += 2
         elif args[i] == '--pular':
             pular = {norm(x) for x in args[i + 1].split(',') if x}; i += 2
@@ -621,8 +631,7 @@ def cmd_proxima(args):
     by = {r['key']: r for r in rows}
     out, motivos = [], {'sem plano': 0, 'dependência aberta': 0, 'reservada': 0, 'bloqueada/dividida': 0,
                         'do coordenador (BK/SPK)': 0, 'outros': 0}
-    ELEG = ('Não executada', 'Em execução', 'Executada (aguarda teste)', 'Testada (aguarda segurança)',
-            'Em teste', 'Em validação de segurança')
+    ELEG = ETAPAS_ELEG[etapa]
     for r in rows:
         if r['estado'] in ('Aprovada',):
             continue
@@ -642,7 +651,8 @@ def cmd_proxima(args):
         if not r['plano']:
             motivos['sem plano'] += 1
             continue
-        if any(not (d in by and resolvida(by[d], by)) for d in r['dep'] if d in by):
+        # só a execução espera as dependências; teste e segurança operam sobre código já executado
+        if etapa == 'exe' and any(not (d in by and resolvida(by[d], by)) for d in r['dep'] if d in by):
             motivos['dependência aberta'] += 1
             continue
         ri = reserva_info(r['key'])
@@ -660,6 +670,9 @@ def cmd_proxima(args):
 
 def cmd_reservar(args):
     i, token, assumir = args[0], args[1], '--assumir' in args
+    etapa = args[args.index('--etapa') + 1] if '--etapa' in args else 'Em execução'
+    if etapa not in ('Em execução', 'Em QA', 'Em DevSecOps'):
+        sys.exit('etapa inválida')
     key = norm(i)
     if not os.path.exists(plan_path(key)):
         sys.exit('SEM PLANO: %s' % plan_path(key))
@@ -670,7 +683,7 @@ def cmd_reservar(args):
                 print('OCUPADA\t%s\tsessão %s\tatualizado %s' % (ri[0], ri[1], ri[2]))
                 sys.exit(2)
         t = now()
-        set_reserva(key, 'Em execução — sessão %s — desde %s — atualizado %s' % (token, t, t))
+        set_reserva(key, '%s — sessão %s — desde %s — atualizado %s' % (etapa, token, t, t))
     ri = reserva_info(key)  # confere
     if ri[1] != token:
         print('OCUPADA\toutra sessão assumiu')

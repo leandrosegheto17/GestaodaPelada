@@ -72,7 +72,7 @@ seguem a regra geral abaixo.
 
 ## Checagem de contexto (Comando 1 — antes de tudo)
 
-Escopo: só `/executar` (inclusive em modo `--continuar`)
+Escopo: `/executar`, `/testar` e `/validar` (inclusive em modo `--continuar`)
 — não se aplica a `/deploy` nem `/listar`.
 
 Antes de qualquer outro passo — antes até do pré-requisito bloqueante e do
@@ -91,7 +91,7 @@ atual da sessão.
   cruzado no meio, não interrompa à força uma tarefa em andamento, mas não comece
   outra acima do teto — pare com o mesmo alerta, informando quantas tarefas já
   fecharam nesta chamada.
-- **`/executar --continuar --nocontext`**: a checagem de contexto é **pulada por
+- **`--continuar --nocontext`** (nos três comandos): a checagem de contexto é **pulada por
   inteiro** (nem a primeira, nem a repetição entre tarefas) — a fila roda sem o
   teto de 250 mil. Sem `--nocontext`, `--continuar` respeita o teto normalmente.
   `--nocontext` não é aceito fora de `--continuar`.
@@ -161,8 +161,8 @@ atual da sessão.
 
 ## Unidade de trabalho: a tarefa (e o lote como agrupador)
 
-A unidade de execução e de validação é a **tarefa**, uma por vez, com seus planos
-em `.md/.taskplan/<ID>.md`. O **lote** (coluna `Lote` do `TASK.md`, atribuído pelo
+A unidade de execução, teste e validação é a **tarefa**, com seus planos em
+`.md/.taskplan/<ID>.md`. O **lote** (coluna `Lote` do `TASK.md`, atribuído pelo
 Coordenador em `/definir`) continua como agrupador: serve a `--lote N` e define o
 que o `/deploy` publica — um lote está pronto quando todas as suas tarefas têm
 `QA ✔ · Sec ✔`. O `/deploy` processa um lote específico ou o conjunto de lotes
@@ -170,121 +170,76 @@ prontos ainda não publicados — ver Comando 2.
 
 ---
 
-## Comando 1: `/executar` — Executor → QA → DevSecOps, uma tarefa por vez
+## Comando 1: `/executar`, `/testar` e `/validar` — três etapas independentes
 
-| Dispara quando | Agente(s) | Ação | Pausa obrigatória |
+| Comando | Agente | Pega tarefas em | Deixa a tarefa em |
 |---|---|---|---|
-| Usuário roda `/executar` (vazio = próxima tarefa elegível; `--tarefa <ID>`; `--lote N`; `--continuar [N]` = tarefas em sequência) | `executor` → `validador` chapéu QA → `validador` chapéu DevSecOps, nessa ordem, **por tarefa** | Cada agente lê o `.md/.taskplan/<ID>.md` e escreve nele o seu resultado; o QA executa o plano de teste, o DevSecOps o plano de segurança | **Bloqueio crítico**: interrompe e sinaliza (modos vazio/`--tarefa`); em `--lote`/`--continuar` é registrado e o comando segue para a próxima elegível. Fim da tarefa (modos vazio/`--tarefa`) |
+| `/executar` | `executor` | `Não executada` (ou `Em execução`/devolvida), com **dependências `Aprovada`** | `Executada (aguarda teste)` |
+| `/testar` | `validador`, chapéu QA | `Executada (aguarda teste)` / `Em teste` (dependências não checadas) | `Testada (aguarda segurança)` (`QA ✔`) — ou devolvida ao `/executar` |
+| `/validar` | `validador`, chapéu DevSecOps | `Testada (aguarda segurança)` / `Em validação de segurança` (dependências não checadas) | `Aprovada` (`QA ✔ · Sec ✔`) — ou devolvida ao `/executar` |
 
-Detalhe operacional completo em `.claude/commands/executar.md`; aqui ficam as
-regras do fluxo.
+Detalhe operacional em `.claude/commands/executar.md` (mecânica comum), `testar.md` e
+`validar.md` (só as diferenças); aqui ficam as regras do fluxo.
 
+- **Um comando nunca chama o outro.** Cada um só faz a sua etapa, escreve o resultado em
+  `.md/.taskplan/<ID>.md` e no `TASKPLAN.md` (estado) e termina sugerindo o próximo passo; quem
+  roda o próximo comando é o usuário. A fila de cada um vem de
+  `taskplan.py proxima --etapa exe|qa|sec`.
+- **Mesmo comportamento nos três**: `--tarefa <ID>`, `--lote N`, `--continuar [N]` e
+  `--nocontext` (ver "Checagem de contexto") funcionam igual, assim como a reserva por
+  sessão, o bloqueio, a worktree em `--tarefa` e a `main` em `--continuar`.
+- **Paralelismo** — `PARALELISMO = 1`: cada comando aciona **um agente por vez** (as tarefas
+  elegíveis são feitas em sequência). O alvo é **5 agentes em paralelo por comando**
+  (`proxima --n 5` e 5 dispatches na mesma mensagem), mas só depois de medir o desempenho com 1
+  e de decidir o isolamento (worktree por tarefa + merge serial; vários agentes escrevendo
+  direto na `main` geram conflito de arquivos e diff misturado). Para mudar, altere este valor.
 - **Fonte e canal da tarefa**: `.md/.taskplan/<ID>.md`, com as seções "1. Plano de
   execução", "2. Plano de teste" e "3. Plano de validação de segurança". Sem o
   arquivo (ou com seção `PENDENTE:`) a tarefa não roda — `/organizar` gera os
-  arquivos. O arquivo também é o **canal entre as etapas**: o Executor grava o
-  resultado em "4. Resultado da execução"; o QA lê o arquivo, testa e grava em "5.
-  Resultado do QA"; o DevSecOps lê o arquivo, valida e grava em "6. Resultado do
-  DevSecOps"; reexecuções acrescentam `### Rodada n` (nada é apagado); um bloqueio
-  vai para a seção `## Bloqueio`. O `TASK.md` recebe só o Status.
-- **Uma tarefa por vez**, sem paralelismo: o ciclo Executor → QA → DevSecOps fecha
-  a tarefa antes de pegar a próxima. A marcação de paralelismo (Seção 4 do
-  `TASK.md`) segue servindo só para ordenar dependências.
-- **Status por tarefa**: `Pendente` → `Em andamento` → `Concluída · QA ✔` →
-  `Concluída · QA ✔ · Sec ✔`. A tarefa só conta como pronta (e só libera as
-  dependentes) com os dois marcadores.
+  arquivos. O arquivo é o **canal entre os comandos**: o `/executar` grava em "4.
+  Resultado da execução"; o `/testar` lê o arquivo e grava em "5. Resultado do QA"; o
+  `/validar` lê e grava em "6. Resultado do DevSecOps"; reexecuções acrescentam `### Rodada n`
+  (nada é apagado); um bloqueio vai para `## Bloqueio`; achados de devolução vão para
+  `## Achados`. O `TASK.md` recebe só o Status.
+- **Commit com o ID**: a mensagem de todo commit da tarefa começa pelo ID (`TP-0001: …`); o
+  diff que o `/testar` e o `/validar` analisam é `git log --grep "^<ID>"` + `git show`. O
+  `/executar` commita o código; os outros dois commitam só seus relatórios.
+- **Status por tarefa**: `Pendente` → `Em andamento` → `Concluída · aguarda QA` →
+  `Concluída · QA ✔` → `Concluída · QA ✔ · Sec ✔`. A tarefa só conta como pronta (e só libera
+  as dependentes do `/executar`) com os dois marcadores. Como o `/executar` exige dependência
+  `Aprovada`, uma camada de dependentes só entra depois de `/testar` e `/validar` da camada anterior.
 - **Achado crítico** (QA: compromete o critério de aceite central, exige mudança de
   escopo/arquitetura ou quebra outra tarefa; DevSecOps: severidade alta/crítica ou
   compliance obrigatório não atendido): a tarefa volta para `Em andamento`, os
-  achados ficam na seção do QA/DevSecOps do arquivo e o ciclo reinicia na execução
-  (com novo QA e novo DevSecOps depois). Limite de **2 devoluções** somadas; a 3ª
-  é bloqueio crítico.
+  achados vão para `## Achados` e o próximo `/executar` a refaz (depois passa de novo
+  por `/testar` e `/validar`). Limite de **2 devoluções** somadas entre `/testar` e
+  `/validar`; na 3ª a tarefa fica `Bloqueada` e o usuário decide.
 - **Bloqueio crítico** (lacuna no SDD/UX-SPEC/TASK, 3ª devolução, dúvida de
   produto/escopo, `BLOCKERS.md` `Aberto`…): o agente escreve a seção `## Bloqueio`
   do arquivo da tarefa, o `TASK.md` fica `Bloqueada (<motivo>)`, a entrada vai para
-  `BLOCKERS.md` e o usuário é sinalizado. Em `/executar` vazio/`--tarefa` o comando
+  `BLOCKERS.md` e o usuário é sinalizado. No modo vazio/`--tarefa` o comando
   para; em **`--lote`/`--continuar` o bloqueio é só registrado e o comando segue
-  para a próxima tarefa elegível** (tarefa `Bloqueada` não resolve dependência, então
-  as dependentes são puladas). Ao final, o usuário roda `/listar`, vê as bloqueadas
-  e trata uma a uma; `/executar --tarefa <ID>` retoma cada uma. Só interrompem o
-  modo contínuo as falhas que atingem **todas** as tarefas (contexto acima do teto,
-  git ausente/corrompido, ambiente quebrado).
-- **Reserva por sessão (várias sessões ao mesmo tempo)**: o cabeçalho de cada
-  `.md/.taskplan/<ID>.md` tem uma linha `Reserva:`. Valores: `Livre` (ou ausente) ·
-  `Em execução | Em QA | Em DevSecOps — sessão <token> — desde <data-hora> —
-  atualizado <data-hora>` · `Bloqueada` · `Concluída`. Quem pega a tarefa grava a
-  reserva **antes** de disparar qualquer agente, confirma relendo o arquivo (se o
-  token gravado não for o seu, outra sessão chegou primeiro: desista e pegue a
-  próxima) e atualiza `Etapa`/`atualizado` a cada etapa. Uma segunda sessão do
-  `/executar` **pula** toda tarefa reservada e pega a seguinte elegível. A reserva
-  vive na árvore principal (`.md/.taskplan/`, ver `executar.md`, Seção 3), nunca na
-  cópia de uma worktree, para as outras sessões a enxergarem na hora.
-- **Divisão**: tarefa que precisa ser quebrada durante a execução vira
-  `TP-0000a`, `TP-0000b`… (ou `RTP-0000a`…): mantém prefixo e número e acrescenta
-  uma letra. Dividir de novo uma parte acrescenta outra letra (`TP-0000aa`,
-  `TP-0000ab`). A original fica no `TASK.md` com Status `Dividida (→ TP-0000a,
-  TP-0000b)` e seu arquivo é mantido, com a nota da divisão; conta como resolvida
-  só quando **todas** as partes tiverem `QA ✔ · Sec ✔`. Dependentes dela passam a
-  depender das partes.
-
----
-
-## Unidade de trabalho: a tarefa (e o lote como agrupador)
-
-A unidade de execução e de validação é a **tarefa**, uma por vez, com seus planos
-em `.md/.taskplan/<ID>.md`. O **lote** (coluna `Lote` do `TASK.md`, atribuído pelo
-Coordenador em `/definir`) continua como agrupador: serve a `--lote N` e define o
-que o `/deploy` publica — um lote está pronto quando todas as suas tarefas têm
-`QA ✔ · Sec ✔`. O `/deploy` processa um lote específico ou o conjunto de lotes
-prontos ainda não publicados — ver Comando 2.
-
----
-
-## Comando 1: `/executar` — Executor → QA → DevSecOps, uma tarefa por vez
-
-| Dispara quando | Agente(s) | Ação | Pausa obrigatória |
-|---|---|---|---|
-| Usuário roda `/executar` (vazio = próxima tarefa elegível; `--tarefa <ID>`; `--lote N`; `--continuar [N]` = tarefas em sequência) | `executor` → `validador` chapéu QA → `validador` chapéu DevSecOps, nessa ordem, **por tarefa** | Cada agente lê o `.md/.taskplan/<ID>.md` e escreve nele o seu resultado; o QA executa o plano de teste, o DevSecOps o plano de segurança | **Bloqueio crítico**: interrompe e sinaliza (modos vazio/`--tarefa`); em `--lote`/`--continuar` é registrado e o comando segue para a próxima elegível. Fim da tarefa (modos vazio/`--tarefa`) |
-
-Detalhe operacional completo em `.claude/commands/executar.md`; aqui ficam as
-regras do fluxo.
-
-- **Fonte e canal da tarefa**: `.md/.taskplan/<ID>.md`, com as seções "1. Plano de
-  execução", "2. Plano de teste" e "3. Plano de validação de segurança". Sem o
-  arquivo (ou com seção `PENDENTE:`) a tarefa não roda — `/organizar` gera os
-  arquivos. O arquivo também é o **canal entre as etapas**: o Executor grava o
-  resultado em "4. Resultado da execução"; o QA lê o arquivo, testa e grava em "5.
-  Resultado do QA"; o DevSecOps lê o arquivo, valida e grava em "6. Resultado do
-  DevSecOps"; reexecuções acrescentam `### Rodada n` (nada é apagado); um bloqueio
-  vai para a seção `## Bloqueio`. O `TASK.md` recebe só o Status.
-- **Uma tarefa por vez**, sem paralelismo: o ciclo Executor → QA → DevSecOps fecha
-  a tarefa antes de pegar a próxima. A marcação de paralelismo (Seção 4 do
-  `TASK.md`) segue servindo só para ordenar dependências.
-- **Status por tarefa**: `Pendente` → `Em andamento` → `Concluída · QA ✔` →
-  `Concluída · QA ✔ · Sec ✔`. A tarefa só conta como pronta (e só libera as
-  dependentes) com os dois marcadores.
-- **Achado crítico** (QA: compromete o critério de aceite central, exige mudança de
-  escopo/arquitetura ou quebra outra tarefa; DevSecOps: severidade alta/crítica ou
-  compliance obrigatório não atendido): a tarefa volta para `Em andamento`, os
-  achados vão para a seção `## Achados` do `.md/.taskplan/<ID>.md` e o ciclo reinicia
-  na execução (com novo QA e novo DevSecOps depois). Limite de **2 devoluções**
-  somadas; na 3ª a tarefa fica `Bloqueada` e o usuário decide.
+  para a próxima tarefa elegível**. Ao final, o usuário roda `/listar`, vê as
+  bloqueadas e trata uma a uma; `/executar --tarefa <ID>` retoma cada uma (depois de
+  `desbloquear`, a tarefa volta à fila do `/executar`). Só interrompem o modo contínuo as
+  falhas que atingem **todas** as tarefas (contexto acima do teto, git ausente/corrompido,
+  ambiente quebrado).
+- **Reserva por sessão**: ver "Convenção de IDs"; o `/testar` e o `/validar` reservam com
+  `--etapa "Em QA"`/`"Em DevSecOps"`.
 - **Divisão**: tarefa grande demais (desvio de escopo/estimativa, canário de contexto
-  do Executor) é **quebrada** em `TP-0000a`, `TP-0000b`… — `TASK.md` atualizado e
-  arquivo em `.taskplan` para cada parte —, em vez de bloquear; ver convenção acima.
+  do Executor) é **quebrada** em `TP-0000a`, `TP-0000b`… pelo `/executar` — `TASK.md`
+  atualizado e arquivo em `.taskplan` para cada parte —, em vez de bloquear; ver convenção acima.
 - **Achado não crítico**: a tarefa segue aprovada naquela etapa e o `validador`
   abre uma **nova tarefa em `Refatoração Lote-X`** (ID `RTP-0000`): ajusta o
   `TASK.md` (linha completa + dependências) **e** cria o `.md/.taskplan/RTP-0000.md`
-  com os três planos. Só vale com as duas coisas feitas (o orquestrador confere);
-  a tarefa de origem não é reaberta.
+  com os três planos. Só vale com as duas coisas feitas; a tarefa de origem não é reaberta.
 - **Veredito**: QA em `.md/QA-REPORT.md`, DevSecOps em `.md/SECURITY-REVIEW.md`, uma
   entrada por tarefa.
 - **Lote pronto** = todas as suas tarefas com `QA ✔ · Sec ✔` (nenhuma
-  `Bloqueada`); é o que o `/deploy` publica. Não existe mais checagem estrutural
-  de lote nem status `Validado`: o fechamento é consequência das tarefas.
-- **Encadeamento**: `--lote N` e `--continuar [N]` repetem o ciclo tarefa a tarefa,
-  repetindo a checagem de contexto antes de cada tarefa nova, sem parar em
-  bloqueio (ver acima).
+  `Bloqueada`); é o que o `/deploy` publica.
+- **Encadeamento**: `--lote N` e `--continuar [N]` repetem a etapa tarefa a tarefa,
+  repetindo a checagem de contexto antes de cada tarefa nova (salvo `--nocontext`), sem parar
+  em bloqueio.
 - **Nunca** dispara `/deploy`.
 
 **Infra em paralelo (oportunista)**: se `.md/DEPLOY.md` ainda não existir e o

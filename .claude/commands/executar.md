@@ -1,20 +1,23 @@
 ---
-description: Executa tarefas de ponta a ponta, uma por vez, a partir de .md/.taskplan/<ID>.md — o Executor implementa, o QA testa (aprova ou reprova) e o DevSecOps dá o OK de segurança, tudo no mesmo fluxo. Achado crítico volta para a execução; achado não crítico vira nova tarefa de refatoração. Cada agente lê e escreve no arquivo da tarefa (.taskplan). Sem argumento pega a próxima tarefa elegível; --tarefa <ID> executa só essa (ou retoma uma bloqueada); --lote N e --continuar [N] encadeiam as tarefas e, em bloqueio, registram e seguem para a próxima elegível. Não dispara /deploy sozinho.
+description: Etapa 1 do fluxo — aciona só o agente Executor para implementar as tarefas elegíveis (estado Não executada ou devolvida), em sequência, a partir de .md/.taskplan/<ID>.md, e grava o resultado no próprio arquivo e no TASKPLAN. Não testa nem valida segurança (isso é /testar e /validar) e não chama outro comando. Sem argumento pega a próxima tarefa elegível; --tarefa <ID> executa só essa (ou retoma uma bloqueada; BK-/SPK- vão para o Coordenador); --lote N e --continuar [N] [--nocontext] encadeiam as tarefas e, em bloqueio, registram e seguem para a próxima elegível. Não dispara /deploy sozinho.
 argument-hint: [vazio = próxima tarefa | --tarefa <ID, inclusive BK-/SPK- do Coordenador> | --lote N | --continuar [N] [--nocontext]]
 ---
 
-# Comando `/executar` — Executor → QA → DevSecOps, por tarefa
+# Comando `/executar` — etapa 1: Executor
 
 A lógica deste comando está definida em `.claude/EXECUTION-FLOW.md` (Comando 1) —
 leia esse arquivo agora, antes de fazer qualquer outra coisa, se ainda não o tiver
 em contexto. Ele por sua vez assume o que está declarado em
-`.claude/agents/executor.md`, `.claude/agents/validador.md`,
-`.claude/agents/coordenador.md` e em `PIPELINE-CONVENTIONS.md`.
+`.claude/agents/executor.md`, `.claude/agents/coordenador.md` e em
+`PIPELINE-CONVENTIONS.md`.
 
-**O usuário é o orquestrador.** Para cada tarefa, o comando faz o ciclo completo —
-implementar, testar, auditar segurança — e só então considera a tarefa pronta.
-Não existe mais um `/validar` separado: a validação faz parte deste fluxo. O
-comando nunca dispara `/deploy`.
+**O usuário é o orquestrador.** O fluxo tem três comandos independentes:
+`/executar` (este, agente `executor`), `/testar` (chapéu QA) e `/validar` (chapéu
+DevSecOps). Cada um só trabalha a **sua** etapa, lê e escreve no
+`.md/.taskplan/<ID>.md` e no `TASKPLAN.md`, e **nunca chama o outro**: ao fechar a
+etapa a tarefa fica `Executada (aguarda teste)` e o usuário roda `/testar`. O comando
+nunca dispara `/deploy`. **Paralelismo**: o número de agentes por rodada é o
+`PARALELISMO` do `EXECUTION-FLOW.md` (hoje **1**: um agente por vez).
 
 Argumento recebido (pode estar vazio): $ARGUMENTS
 
@@ -28,8 +31,8 @@ Argumento recebido (pode estar vazio): $ARGUMENTS
    sem limite de contexto da sessão; não rode `/context`. Repita a checagem antes de **cada tarefa nova**
    quando houver encadeamento (`--lote`, `--continuar`); não interrompa uma
    tarefa já em andamento, mas não comece outra acima do teto.
-1. **Repositório git**: se `.git` não existir, pare e avise — o QA e o DevSecOps
-   leem o `git diff` da tarefa. Não inicialize o repo sem confirmação.
+1. **Repositório git**: se `.git` não existir, pare e avise — o `/testar` e o `/validar`
+   leem os commits da tarefa. Não inicialize o repo sem confirmação.
 2. **Planejamento aprovado**: `SDD.md`, `UX-SPEC.md`, `TASK.md`, `GUARDRAILS.md` e
    `TASKPLAN.md` precisam existir (confira só a existência, sem abrir — `/definir` e
    `/organizar`). Se não, pare. **Este comando não lê o `TASK.md` inteiro**: ele
@@ -50,12 +53,13 @@ Interprete `$ARGUMENTS`:
   **interrompe** e sinaliza (Seção 6).
 - **`--tarefa <ID>`** (ex.: `/executar --tarefa TP-0001`, `T-001` (TASK.md antigo), `RTP-0003` ou
   `TP-0001a`): só essa tarefa; bloqueio crítico interrompe e sinaliza. Tem de ter
-  as dependências resolvidas. `Concluída` com `QA ✔ · Sec ✔`, inexistente, com
+  as dependências resolvidas. Já executada (estado Executada/Em teste/Testada/Em validação/
+  Aprovada — o próximo passo é `/testar` ou `/validar`), inexistente, com
   dependência aberta ou **reservada por outra sessão** (informe sessão e desde
   quando; se a reserva tem mais de 2 h sem atualização, pergunte se você quer
   assumi-la): explique e **pare** (não executa as dependências por conta
   própria). **`BK-nnnn` / `SPK-nnnn`**: tarefa do **Coordenador com o usuário** — siga a **Seção 7** (sem
-  Executor, QA nem DevSecOps). **`Bloqueada`**: é a **retomada** de uma tarefa que o usuário já tratou
+  Executor). **`Bloqueada`**: é a **retomada** de uma tarefa que o usuário já tratou
   — leia a seção `## Bloqueio` do arquivo (e a decisão que o usuário registrou ou
   acabou de dar), limpe o bloqueio e continue da etapa em que parou.
 - **`--lote N`** (ex.: `/executar --lote 4`): as tarefas elegíveis do lote `N`, uma
@@ -73,6 +77,9 @@ elegível**, sem parar e sem perguntar. Tarefa que depende de uma bloqueada não
 elegível (dependência não resolvida) e é simplesmente pulada. O usuário trata os
 bloqueios depois, um a um, com `/listar` e `/executar --tarefa <ID>`.
 
+O que vale aqui para `--tarefa`, `--lote`, `--continuar` e `--nocontext` vale
+**igual** no `/testar` e no `/validar`.
+
 Argumento desconhecido, ou `--tarefa`/`--lote` sem valor: mostre as opções com um
 exemplo de cada e **pare**.
 
@@ -84,11 +91,11 @@ cada uma, em `.md/.taskplan/<ID>.md`. Tudo é consultado e gravado pelo script
 `python .claude/scripts/taskplan.py` (as escritas no `TASK.md` mexem só na linha afetada, dentro do script). Se
 o `TASKPLAN.md` não existir, **pare** e sugira `/organizar`.
 
-1. **Próxima tarefa**: rode `python .claude/scripts/taskplan.py proxima [--lote N] [--pular ID,ID]`. O script
+1. **Próxima tarefa**: rode `python .claude/scripts/taskplan.py proxima --etapa exe [--lote N] [--pular ID,ID] [--n PARALELISMO]`. O script
    nunca devolve `BK-`/`SPK-` (tarefas do Coordenador, resolvidas com o usuário). Ele devolve a próxima elegível (uma linha: ID, chave `TP-`, estado, lote, título) ou
    `NENHUMA` com o motivo. **Elegível** = tem plano em `.taskplan`; estado Não
-   executada ou em andamento por devolução (nunca `Aprovada`, `Bloqueada` ou
-   `Dividida`); **dependências resolvidas** (todas `Aprovada`; `Dividida` conta só com
+   executada ou Em execução/devolvida pelo QA ou pela segurança (nunca já executada,
+   `Aprovada`, `Bloqueada` ou `Dividida`); **dependências resolvidas** (todas `Aprovada`; `Dividida` conta só com
    todas as partes `Aprovada`; `Bloqueada` não resolve); e **sem reserva ativa de
    outra sessão**. A ordem é a do `TASKPLAN.md` (a do `TASK.md`, com dependências
    antes). `T-001` e `TP-0001` são a mesma tarefa.
@@ -118,20 +125,20 @@ com trava atômica (sem risco de duas sessões gravarem ao mesmo tempo).
 
 1. **Token da sessão**: gere um uma vez por chamada (ex.: `date +%s` + número
    aleatório) e reaproveite em toda tarefa desta chamada.
-2. **Reserve**: `python .claude/scripts/taskplan.py reservar <ID> <token>`. Resposta `OK` — siga. Resposta
+2. **Reserve**: `python .claude/scripts/taskplan.py reservar <ID> <token>` (`--etapa "Em QA"`/`"Em DevSecOps"` no `/testar`/`/validar`). Resposta `OK` — siga. Resposta
    `OCUPADA` — outra sessão tem a tarefa: não toque nela, volte à Seção 2 com
    `--pular <ID>`. (Em `--tarefa` sobre reserva de outra sessão: informe sessão e
    desde quando; se estiver velha — mais de 2 h sem atualização — pergunte se o
    usuário quer assumir e, se sim, `reservar <ID> <token> --assumir`.)
-3. **A cada etapa**: `python .claude/scripts/taskplan.py etapa <ID> <token> "Em execução"`, depois `"Em QA"` (3b) e
-   `"Em DevSecOps"` (3c). O script atualiza a reserva e o estado no `TASKPLAN.md`
-   (Em execução / Em teste / Em validação de segurança).
+3. **Etapa**: `python .claude/scripts/taskplan.py etapa <ID> <token> "Em execução"`. O script atualiza a
+   reserva e o estado no `TASKPLAN.md` (Em execução). (`/testar` usa `"Em QA"` e `/validar`
+   `"Em DevSecOps"`, com a mesma mecânica.)
 4. **Status no `TASK.md`**: `python .claude/scripts/taskplan.py status <ID> "<texto>"` — `Em andamento` ao iniciar,
-   `Concluída · QA ✔` após o QA, `Concluída · QA ✔ · Sec ✔` ao fechar,
+   `Concluída · aguarda QA` ao terminar a execução (estado `Executada (aguarda teste)`),
    `Bloqueada (<motivo>)` em bloqueio. Grava só a linha da tarefa e atualiza o
-   estado no `TASKPLAN.md` (fechar com os dois marcadores = `Aprovada`).
-5. **Ao terminar**: `python .claude/scripts/taskplan.py liberar <ID> Concluída` (fechou), `Bloqueada` (bloqueio) ou
-   `Livre` (interrompida/devolvida).
+   estado no `TASKPLAN.md`. (`QA ✔` e `Sec ✔` são gravados só pelo `/testar` e pelo `/validar`.)
+5. **Ao terminar**: `python .claude/scripts/taskplan.py liberar <ID> Livre` (executada — a reserva se encerra e a
+   tarefa segue pelo estado), `Bloqueada` (bloqueio) ou `Livre` (interrompida).
 6. **Reserva velha**: sem atualização há mais de **2 horas** é considerada
    possivelmente abandonada. O `/executar` sem `--tarefa` e o modo contínuo **não** a
    tomam sozinhos; o `/listar` a destaca.
@@ -139,24 +146,25 @@ com trava atômica (sem risco de duas sessões gravarem ao mesmo tempo).
 **Onde o código roda** (ver "Isolamento por worktree" no `EXECUTION-FLOW.md`):
 
 - **`--tarefa <ID>`**: **sempre numa worktree separada** (nome `execucao/executar-<ID>`, criada
-  em `.claude/worktrees`). O diff da tarefa vive nela; o encerramento limpo integra à `main`
-  e remove a worktree, e o bloqueio a deixa como está (Seção 6).
-- **`--continuar [N]`**: **direto na `main`**, sem criar worktree. A cada tarefa fechada
-  (`QA ✔ · Sec ✔`), commite na `main` o código e os artefatos dela antes de seguir para a
-  próxima; o `git diff` de QA/DevSecOps é o da tarefa ainda não commitada. Bloqueio: não
-  commite o código parcial e registre o estado no `## Bloqueio`. Se a `main` não estiver
-  limpa ao começar uma tarefa, pare e avise.
+  em `.claude/worktrees`). O encerramento limpo integra à `main` e remove a worktree, e o
+  bloqueio a deixa como está (Seção 6).
+- **`--continuar [N]`**: **direto na `main`**, sem criar worktree. A cada tarefa executada,
+  commite na `main` o código e os artefatos dela antes de seguir para a próxima.
+  Bloqueio: não commite o código parcial e registre o estado no `## Bloqueio`. Se a `main`
+  não estiver limpa ao começar uma tarefa, pare e avise.
 - Vazio e `--lote N`: seguem a regra geral (worktree da sessão).
+- **Commit da tarefa**: a mensagem **começa pelo ID** (`TP-0001: <resumo>`), para o `/testar` e o
+  `/validar` localizarem o diff com `git log --grep "^<ID>"`; o Executor registra os hashes em
+  `## 4. Resultado da execução`.
 
-### Etapas
+### Etapa
 
-Cada tarefa percorre as três etapas abaixo, **em ordem**, uma de cada vez. **O
-arquivo `.md/.taskplan/<ID>.md` é o canal entre as etapas**: cada agente lê o
-arquivo, faz o seu trabalho e **escreve o resultado nele**, numa seção própria
-(`## 4. Resultado da execução`, `## 5. Resultado do QA`, `## 6. Resultado do
-DevSecOps`). Em reexecução, acrescente uma nova rodada (`### Rodada 2`…) dentro
-da seção — nunca apague o histórico. O `TASK.md` só recebe o Status (pelo script,
-Seção 3-0). Marque `Em andamento` ao iniciar.
+O **arquivo `.md/.taskplan/<ID>.md` é o canal entre os comandos**: o Executor lê o
+arquivo, faz o trabalho e **escreve o resultado nele**, em `## 4. Resultado da
+execução` (o `/testar` escreve a seção 5 e o `/validar` a 6). Em reexecução
+(tarefa devolvida), acrescente `### Rodada 2`… dentro da seção — nunca apague o
+histórico. O `TASK.md` só recebe o Status (pelo script, Seção 3-0). Marque `Em
+andamento` ao iniciar.
 
 ### 3a. Execução (Executor)
 
@@ -172,74 +180,27 @@ Ao voltar, confira o canário de contexto. `subagent_tokens` > ~300 mil tokens, 
 desvio grande de escopo/estimativa sinalizado pelo Executor: a tarefa está grande
 demais — **divida-a** (Seção 5b) em vez de bloquear, e siga com a primeira parte.
 Lacuna/inconsistência no `SDD.md`/`UX-SPEC.md`: **bloqueio crítico** (Seção 6).
-Fora isso, siga para o QA.
-
-### 3b. QA (chapéu QA do Validador)
-
-Dispare `validador` (`subagent_type: validador`, `run_in_background: false`) focado
-no chapéu QA, **só nesta tarefa**: skills `acceptance-criteria-validation`,
-`non-functional-validation`, `bug-documentation` e `qa-report-drafting`
-(`cross-platform-integration-testing` quando a tarefa tocar mais de uma
-plataforma). Ele **lê o `.md/.taskplan/<ID>.md`** (plano de teste e resultado da
-execução) e o `git diff` da tarefa, executa o plano de teste, valida o critério de
-aceite sem reinterpretá-lo e **escreve o resultado em `## 5. Resultado do QA`**
-(veredito, o que foi testado, evidências, achados com severidade), além de uma
-entrada resumida em `.md/QA-REPORT.md`. Resultados:
-
-- **Aprovada**: grave `QA ✔` no Status (`Concluída · QA ✔`) e siga para a 3c.
-- **Achado crítico** (compromete o critério de aceite central, exige mudança de
-  escopo/arquitetura, ou quebra algo de que outra tarefa depende): a tarefa
-  **volta para a execução** — Status `Em andamento`, achados na seção 5 — e o
-  ciclo reinicia na 3a.
-- **Achado não crítico** (ajuste pontual de baixo esforço que não compromete o
-  critério de aceite): **não volta** — a tarefa segue aprovada (`QA ✔`) e o
-  `validador` abre uma **nova tarefa de refatoração** `RTP-0000` (Seção 5a: linha
-  no `TASK.md` + arquivo em `.md/.taskplan/`). Siga para a 3c.
-
-### 3c. DevSecOps (chapéu DevSecOps do Validador)
-
-Só depois do `QA ✔`. Dispare `validador` focado no chapéu DevSecOps, só nesta
-tarefa: skills de auditoria de segurança (`static-security-analysis`,
-`security-requirement-validation`, `sensitive-data-exposure-check`,
-`compliance-validation` quando houver dado pessoal, `security-report-drafting`).
-Ele **lê o `.md/.taskplan/<ID>.md`** (plano de segurança, resultado da execução e do
-QA) e o `git diff`, executa o plano de validação de segurança e **escreve o
-resultado em `## 6. Resultado do DevSecOps`** (veredito, o que foi verificado,
-achados com severidade), além de uma entrada resumida em `.md/SECURITY-REVIEW.md`.
-Resultados:
-
-- **OK de segurança** (sem achado alto/crítico, compliance obrigatório atendido):
-  grave `Sec ✔` (`Concluída · QA ✔ · Sec ✔`). A tarefa está pronta.
-- **Achado crítico** (severidade alta/crítica, ou compliance obrigatório não
-  atendido): a tarefa **volta para a execução** — Status `Em andamento`, achados na
-  seção 6 — e o ciclo reinicia na 3a (com novo QA depois).
-- **Achado não crítico** (baixa/média, débito): a tarefa segue com `Sec ✔` e o
-  `validador` abre uma **nova tarefa de refatoração** `RTP-0000` (Seção 5a: linha
-  no `TASK.md` + arquivo em `.md/.taskplan/`).
-
-### 3d. Limite de devoluções
-
-No máximo **2 devoluções** por tarefa (somando QA e DevSecOps) voltando para a
-execução. Na 3ª, é **bloqueio crítico** (Seção 6), com o resumo do que falhou em
-cada volta. Não insista por conta própria.
+Fora isso, a etapa fechou: grave o Status `Concluída · aguarda QA`, commite (regra acima) e libere a reserva.
+**Tarefa devolvida** (veio do `/testar` ou do `/validar` com `Em andamento`): o prompt inclui os
+achados críticos da seção 5 ou 6 da rodada anterior; o limite de **2 devoluções** somadas é
+controlado por quem devolve (ver `/testar`, Seção 3d) — na 3ª, a tarefa chega aqui como bloqueio.
 
 ## 4. Fim da tarefa
 
-Com `QA ✔ · Sec ✔`: resumo curto — tarefa, o que foi feito, veredito de QA e de
-DevSecOps, tarefas de refatoração criadas (se houver). Depois, conforme o modo:
+Resumo curto — tarefa, o que foi feito, arquivos e commit, estado agora (`Executada (aguarda
+teste)`). **Não chame `/testar`**: o usuário decide. Depois, conforme o modo:
 
 - **Vazio / `--tarefa`**: **pare aqui.**
 - **`--lote N` / `--continuar [N]`**: volte à Seção 2 para a próxima tarefa
-  elegível (rodando `/context` de novo, item 0 da Seção 0), até esvaziar a fila,
-  atingir o teto N ou não restar elegível.
+  elegível (rodando `/context` de novo, item 0 da Seção 0 — exceto com `--nocontext`), até
+  esvaziar a fila, atingir o teto N ou não restar elegível.
 
 **Resumo final do modo contínuo**: **os `BK`/`SPK` em aberto que esperam você** (ID + o que fazer, em uma linha
-cada; o modo contínuo nunca os executa), quantas tarefas fecharam com `QA ✔ · Sec ✔`,
+cada; o modo contínuo nunca os executa), quantas tarefas foram executadas (aguardam `/testar`),
 quantas ficaram **bloqueadas** (ID + motivo em uma linha cada), quantas foram
-puladas por depender de bloqueada ou por não ter plano, quantas tarefas de
-refatoração e divisões foram abertas, e se algum lote ficou todo pronto para
-`/deploy`. Termine sugerindo `/listar` para tratar os bloqueios um a um
-(`/executar --tarefa <ID>` retoma cada uma). Nunca dispare `/deploy`.
+puladas por depender de bloqueada ou por não ter plano, e quantas divisões foram abertas.
+Termine sugerindo `/testar` (e `/listar` para tratar os bloqueios um a um;
+`/executar --tarefa <ID>` retoma cada uma). Nunca dispare `/deploy`.
 
 ## 5. Abertura de nova tarefa (refatoração e divisão)
 
@@ -251,7 +212,8 @@ seções (plano de execução, de teste e de validação de segurança).
 
 ### 5a. Refatoração (achado não crítico) — `RTP-0000`
 
-O próprio `validador` que achou o problema:
+Aberta pelo `/testar` ou pelo `/validar` (o próprio `validador` que achou o problema; este
+arquivo só descreve o procedimento, que os dois comandos usam):
 
 1. **Ajusta o `TASK.md` pelo script** (sem ler o arquivo):
    `python .claude/scripts/taskplan.py proximo-id RTP` devolve o próximo `RTP-nnnn`; depois
