@@ -33,14 +33,16 @@ sessão, nunca direto na árvore principal — isso evita que duas sessões roda
 comandos de execução ao mesmo tempo pisem uma na outra (edição concorrente de
 `TASK.md`, `BLOCKERS.md`, código).
 
-**Exceção do `/executar` por modo**: `/executar --tarefa <ID>` **sempre** usa
-worktree própria (regra abaixo). `/executar --continuar [N]` **não** usa worktree:
-roda direto na `main` da árvore principal, e a cada tarefa que fecha
-(`QA ✔ · Sec ✔`) faz um commit na `main` com o código e os artefatos dela, antes
-de partir para a próxima; tarefa que bloqueia deixa o código parcial sem commit
-e o registra no `## Bloqueio` (a `main` precisa estar limpa ao começar a próxima
-tarefa — se não estiver, pare e avise). Os demais modos (vazio, `--lote`)
-seguem a regra geral abaixo.
+**Exceção dos comandos de execução por modo** (`/executar`, `/testar`, `/validar`):
+`--tarefa <ID>` **sempre** usa worktree própria (regra abaixo). `--continuar [N]` **não**
+usa worktree: roda direto na `main` da árvore principal e, por padrão, a cada tarefa
+faz um commit na `main` (só os arquivos dela) antes de partir para a próxima; com
+**`--nocommit`** não commita nada (o usuário commita e dá o push no fim) e o diff de
+cada tarefa é um snapshot da árvore (`taskplan.py diff <ID>`); `--nocommit` só existe
+com `--continuar`. Tarefa que bloqueia deixa o código parcial sem commit e o registra no
+`## Bloqueio`. Os demais modos (vazio, `--lote`) seguem a regra geral abaixo.
+O `taskplan.py` resolve sempre a raiz da **árvore principal** (reservas, Status locais,
+`TASK.md`), mesmo quando roda dentro de uma worktree.
 
 1. Garanta/entre numa worktree dedicada a esta sessão (skill
    `superpowers:using-git-worktrees` ou tool `EnterWorktree`) antes de ler ou
@@ -185,14 +187,24 @@ Detalhe operacional em `.claude/commands/executar.md` (mecânica comum), `testar
   `.md/.taskplan/<ID>.md` e no `TASKPLAN.md` (estado) e termina sugerindo o próximo passo; quem
   roda o próximo comando é o usuário. A fila de cada um vem de
   `taskplan.py proxima --etapa exe|qa|sec`.
-- **Mesmo comportamento nos três**: `--tarefa <ID>`, `--lote N`, `--continuar [N]` e
-  `--nocontext` (ver "Checagem de contexto") funcionam igual, assim como a reserva por
-  sessão, o bloqueio, a worktree em `--tarefa` e a `main` em `--continuar`.
-- **Paralelismo** — `PARALELISMO = 1`: cada comando aciona **um agente por vez** (as tarefas
-  elegíveis são feitas em sequência). O alvo é **5 agentes em paralelo por comando**
-  (`proxima --n 5` e 5 dispatches na mesma mensagem), mas só depois de medir o desempenho com 1
-  e de decidir o isolamento (worktree por tarefa + merge serial; vários agentes escrevendo
-  direto na `main` geram conflito de arquivos e diff misturado). Para mudar, altere este valor.
+- **Mesmo comportamento nos três**: `--tarefa <ID>`, `--lote N`, `--continuar [N]`,
+  `--nocontext` (ver "Checagem de contexto"), `--nocommit`, `--paralelo [N]` e `--lotes-distintos` funcionam igual, assim
+  como a reserva por sessão, o bloqueio, a worktree em `--tarefa` e a `main` em `--continuar`.
+- **Paralelismo opcional — `--paralelo [N]`** (só `--lote`/`--continuar`; N de 2 a 20, sem N = 5; padrão **1**, um
+  agente por vez): a rodada aciona até N agentes ao mesmo tempo, cada um com uma tarefa elegível diferente
+  (`taskplan.py proxima --n N`; no `/executar` as dependências já estão resolvidas). Com **`--lotes-distintos`**
+  a rodada pega no máximo uma tarefa por lote, o que reduz (mas não elimina) o risco de duas tarefas editarem o
+  mesmo arquivo. Esse risco existe em qualquer rodada paralela: o diff de uma tarefa pode incluir edição de
+  outra, e o QA/Sec precisam tratar os arquivos compartilhados (listados em `## 4`) com cuidado; se a suíte do
+  `/testar` mostrar interferência (banco, portas), rode sem `--paralelo`. Para o Executor valem as regras de
+  edição segura do `executor.md` (só `Edit`, ler antes de editar, nunca desfazer alteração alheia, testes só do
+  próprio escopo). O teto é 20 agentes (o que já foi exercitado em testes de execução, QA e validação).
+- **Estado só nos arquivos das tarefas durante a rodada**: `iniciar`/`concluir` gravam a reserva e o
+  `Status-local:` no `.md/.taskplan/<ID>.md`; `proxima`/`tarefa` os leem por cima do `TASKPLAN.md`.
+  **`TASK.md` e `TASKPLAN.md` não são reescritos a cada tarefa**: o `taskplan.py consolidar` roda **ao fim de toda
+  chamada** (e antes de `/listar` e `/deploy`) e grava os Status no `TASK.md` e regera o `TASKPLAN.md` uma vez.
+  Escritas que mudam a estrutura (`nova`, `bloquear`, `desbloquear`, `consolidar`…) são serializadas por uma
+  trava global.
 - **Fonte e canal da tarefa**: `.md/.taskplan/<ID>.md`, com as seções "1. Plano de
   execução", "2. Plano de teste" e "3. Plano de validação de segurança". Sem o
   arquivo (ou com seção `PENDENTE:`) a tarefa não roda — `/organizar` gera os
@@ -201,9 +213,12 @@ Detalhe operacional em `.claude/commands/executar.md` (mecânica comum), `testar
   `/validar` lê e grava em "6. Resultado do DevSecOps"; reexecuções acrescentam `### Rodada n`
   (nada é apagado); um bloqueio vai para `## Bloqueio`; achados de devolução vão para
   `## Achados`. O `TASK.md` recebe só o Status.
-- **Commit com o ID**: a mensagem de todo commit da tarefa começa pelo ID (`TP-0001: …`); o
-  diff que o `/testar` e o `/validar` analisam é `git log --grep "^<ID>"` + `git show`. O
-  `/executar` commita o código; os outros dois commitam só seus relatórios.
+- **Diff da tarefa**: o `/testar` e o `/validar` leem `python .claude/scripts/taskplan.py diff <ID>` — o
+  snapshot `antes..depois` gravado pelo `/executar --nocommit`, ou, sem snapshot, os commits cuja mensagem
+  começa pelo ID (`TP-0001: …`). O `/executar` commita o código (salvo `--nocommit`); os outros dois commitam
+  só seus relatórios.
+- **Desempenho do Executor**: leitura mínima (plano + arquivos citados + trecho do SDD), testes só do escopo da
+  tarefa (a suíte completa é do `/testar`) e retorno de até 4 linhas ao orquestrador — ver `executor.md`.
 - **Status por tarefa**: `Pendente` → `Em andamento` → `Concluída · aguarda QA` →
   `Concluída · QA ✔` → `Concluída · QA ✔ · Sec ✔`. A tarefa só conta como pronta (e só libera
   as dependentes do `/executar`) com os dois marcadores. Como o `/executar` exige dependência
@@ -213,7 +228,8 @@ Detalhe operacional em `.claude/commands/executar.md` (mecânica comum), `testar
   compliance obrigatório não atendido): a tarefa volta para `Em andamento`, os
   achados vão para `## Achados` e o próximo `/executar` a refaz (depois passa de novo
   por `/testar` e `/validar`). Limite de **2 devoluções** somadas entre `/testar` e
-  `/validar`; na 3ª a tarefa fica `Bloqueada` e o usuário decide.
+  `/validar`; o `concluir ... devolvida` conta sozinho e na 3ª responde `LIMITE`: a tarefa fica `Bloqueada` e
+  o usuário decide.
 - **Bloqueio crítico** (lacuna no SDD/UX-SPEC/TASK, 3ª devolução, dúvida de
   produto/escopo, `BLOCKERS.md` `Aberto`…): o agente escreve a seção `## Bloqueio`
   do arquivo da tarefa, o `TASK.md` fica `Bloqueada (<motivo>)`, a entrada vai para

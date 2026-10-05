@@ -1,6 +1,6 @@
 ---
-description: Etapa 1 do fluxo — aciona só o agente Executor para implementar as tarefas elegíveis (estado Não executada ou devolvida), em sequência, a partir de .md/.taskplan/<ID>.md, e grava o resultado no próprio arquivo e no TASKPLAN. Não testa nem valida segurança (isso é /testar e /validar) e não chama outro comando. Sem argumento pega a próxima tarefa elegível; --tarefa <ID> executa só essa (ou retoma uma bloqueada; BK-/SPK- vão para o Coordenador); --lote N e --continuar [N] [--nocontext] encadeiam as tarefas e, em bloqueio, registram e seguem para a próxima elegível. Não dispara /deploy sozinho.
-argument-hint: [vazio = próxima tarefa | --tarefa <ID, inclusive BK-/SPK- do Coordenador> | --lote N | --continuar [N] [--nocontext]]
+description: Etapa 1 do fluxo — aciona só o agente Executor para implementar as tarefas elegíveis (estado Não executada ou devolvida), em sequência, a partir de .md/.taskplan/<ID>.md, e grava o resultado no próprio arquivo e no TASKPLAN. Não testa nem valida segurança (isso é /testar e /validar) e não chama outro comando. Sem argumento pega a próxima tarefa elegível; --tarefa <ID> executa só essa (ou retoma uma bloqueada; BK-/SPK- vão para o Coordenador); --lote N e --continuar [N] [--nocontext] [--nocommit] [--paralelo [N]] encadeiam as tarefas e, em bloqueio, registram e seguem para a próxima elegível. Durante a rodada só o arquivo de cada tarefa é escrito; TASK.md e TASKPLAN.md são consolidados uma vez no fim. Não dispara /deploy sozinho.
+argument-hint: [vazio = próxima tarefa | --tarefa <ID, inclusive BK-/SPK- do Coordenador> | --lote N | --continuar [N] [--nocontext] [--nocommit] [--paralelo [N]] [--lotes-distintos]]
 ---
 
 # Comando `/executar` — etapa 1: Executor
@@ -16,8 +16,8 @@ em contexto. Ele por sua vez assume o que está declarado em
 DevSecOps). Cada um só trabalha a **sua** etapa, lê e escreve no
 `.md/.taskplan/<ID>.md` e no `TASKPLAN.md`, e **nunca chama o outro**: ao fechar a
 etapa a tarefa fica `Executada (aguarda teste)` e o usuário roda `/testar`. O comando
-nunca dispara `/deploy`. **Paralelismo**: o número de agentes por rodada é o
-`PARALELISMO` do `EXECUTION-FLOW.md` (hoje **1**: um agente por vez).
+nunca dispara `/deploy`. **Paralelismo**: um agente por vez, salvo `--paralelo [N]`
+(Seção 1; até 20 agentes ao mesmo tempo).
 
 Argumento recebido (pode estar vazio): $ARGUMENTS
 
@@ -70,6 +70,15 @@ Interprete `$ARGUMENTS`:
   - **`--continuar [N] --nocontext`**: igual, mas **sem validar o limite de
     contexto** (a checagem do item 0 da Seção 0 é pulada). `--nocontext` só vale
     junto com `--continuar`; sozinho ou com outro modo, mostre as opções e **pare**.
+  - **`--nocommit`** (só com `--continuar`): **não commita** a cada tarefa; as alterações vão
+    se acumulando na `main` e **você** faz o commit e o push no fim. O diff de cada tarefa fica
+    registrado por **snapshot** (Seção 3-0). Com `--tarefa` (worktree) ou sem `--continuar`,
+    mostre as opções e **pare**.
+  - **`--paralelo [N]`** (só com `--lote` ou `--continuar`; N de 2 a 20, sem N = 5; ausente = 1):
+    aciona até N Executores ao mesmo tempo, cada um com uma tarefa elegível diferente (Seção 3e).
+    N > 20 é recusado: mostre as opções e **pare**.
+  - **`--lotes-distintos`** (só com `--paralelo`): limita a rodada a **no máximo uma tarefa por lote**, o que
+    reduz a chance de duas tarefas editarem o mesmo arquivo (modo mais conservador; a rodada fica menor).
 
 **Modo contínuo (`--lote` e `--continuar`)**: sempre que for possível, o bloqueio
 de uma tarefa é **registrado** (Seção 6) e o comando **segue para a próxima tarefa
@@ -83,6 +92,10 @@ O que vale aqui para `--tarefa`, `--lote`, `--continuar` e `--nocontext` vale
 Argumento desconhecido, ou `--tarefa`/`--lote` sem valor: mostre as opções com um
 exemplo de cada e **pare**.
 
+**Fim de toda chamada** (inclusive quando ela para por bloqueio, teto ou erro): rode
+`python .claude/scripts/taskplan.py consolidar` — é o que grava os Status no `TASK.md` e regera o
+`TASKPLAN.md` (durante a rodada eles não são tocados).
+
 ## 2. Escolher a tarefa
 
 **Regra de ouro: não leia o `.md/TASK.md` nem o `.md/BLOCKERS.md` inteiros.** A fila,
@@ -91,7 +104,9 @@ cada uma, em `.md/.taskplan/<ID>.md`. Tudo é consultado e gravado pelo script
 `python .claude/scripts/taskplan.py` (as escritas no `TASK.md` mexem só na linha afetada, dentro do script). Se
 o `TASKPLAN.md` não existir, **pare** e sugira `/organizar`.
 
-1. **Próxima tarefa**: rode `python .claude/scripts/taskplan.py proxima --etapa exe [--lote N] [--pular ID,ID] [--n PARALELISMO]`. O script
+1. **Próxima tarefa**: rode `python .claude/scripts/taskplan.py proxima --etapa exe [--lote N] [--pular ID,ID]`
+   (com `--paralelo N`: `--n N`, e `--lotes-distintos` quando a flag foi pedida).
+   O script lê o estado vivo dos arquivos de `.taskplan` por cima do `TASKPLAN.md`. O script
    nunca devolve `BK-`/`SPK-` (tarefas do Coordenador, resolvidas com o usuário). Ele devolve a próxima elegível (uma linha: ID, chave `TP-`, estado, lote, título) ou
    `NENHUMA` com o motivo. **Elegível** = tem plano em `.taskplan`; estado Não
    executada ou Em execução/devolvida pelo QA ou pela segurança (nunca já executada,
@@ -125,21 +140,22 @@ com trava atômica (sem risco de duas sessões gravarem ao mesmo tempo).
 
 1. **Token da sessão**: gere um uma vez por chamada (ex.: `date +%s` + número
    aleatório) e reaproveite em toda tarefa desta chamada.
-2. **Reserve**: `python .claude/scripts/taskplan.py reservar <ID> <token>` (`--etapa "Em QA"`/`"Em DevSecOps"` no `/testar`/`/validar`). Resposta `OK` — siga. Resposta
-   `OCUPADA` — outra sessão tem a tarefa: não toque nela, volte à Seção 2 com
-   `--pular <ID>`. (Em `--tarefa` sobre reserva de outra sessão: informe sessão e
-   desde quando; se estiver velha — mais de 2 h sem atualização — pergunte se o
-   usuário quer assumir e, se sim, `reservar <ID> <token> --assumir`.)
-3. **Etapa**: `python .claude/scripts/taskplan.py etapa <ID> <token> "Em execução"`. O script atualiza a
-   reserva e o estado no `TASKPLAN.md` (Em execução). (`/testar` usa `"Em QA"` e `/validar`
-   `"Em DevSecOps"`, com a mesma mecânica.)
-4. **Status no `TASK.md`**: `python .claude/scripts/taskplan.py status <ID> "<texto>"` — `Em andamento` ao iniciar,
-   `Concluída · aguarda QA` ao terminar a execução (estado `Executada (aguarda teste)`),
-   `Bloqueada (<motivo>)` em bloqueio. Grava só a linha da tarefa e atualiza o
-   estado no `TASKPLAN.md`. (`QA ✔` e `Sec ✔` são gravados só pelo `/testar` e pelo `/validar`.)
-5. **Ao terminar**: `python .claude/scripts/taskplan.py liberar <ID> Livre` (executada — a reserva se encerra e a
-   tarefa segue pelo estado), `Bloqueada` (bloqueio) ou `Livre` (interrompida).
-6. **Reserva velha**: sem atualização há mais de **2 horas** é considerada
+2. **Iniciar**: `python .claude/scripts/taskplan.py iniciar <ID> <token> [--snap]` — reserva (trava atômica),
+   marca a etapa e grava o Status local `Em andamento`, tudo numa chamada. `OK`/`INICIADA` — siga.
+   `OCUPADA` (exit 2) — outra sessão tem a tarefa: não toque nela, volte à Seção 2 com `--pular <ID>`.
+   (Em `--tarefa` sobre reserva de outra sessão: informe sessão e desde quando; se estiver velha — mais de
+   2 h sem atualização — pergunte se o usuário quer assumir e, se sim, acrescente `--assumir`.)
+   `--snap` (só com `--nocommit`) tira o snapshot "antes" da árvore.
+   `/testar` e `/validar` usam `--etapa "Em QA"` / `"Em DevSecOps"`.
+3. **Concluir**: `python .claude/scripts/taskplan.py concluir <ID> <token> executada [--snap]` — grava o Status
+   local `Concluída · aguarda QA`, libera a reserva e (com `--snap`) completa o snapshot `antes..depois`. Em
+   bloqueio use `bloquear` (Seção 6); interrompida: `liberar <ID> Livre`. (`qa-ok`/`sec-ok`/`devolvida` são do
+   `/testar` e do `/validar`.)
+4. **Nada de `TASK.md`/`TASKPLAN.md` durante a rodada**: o Status vive na linha `Status-local:` do
+   arquivo da tarefa, e `proxima`/`tarefa` o leem por cima do `TASKPLAN.md`. O `consolidar` (fim da
+   chamada) grava tudo no `TASK.md` e regera o `TASKPLAN.md`. (`QA ✔` e `Sec ✔` só pelo `/testar` e
+   `/validar`.)
+5. **Reserva velha**: sem atualização há mais de **2 horas** é considerada
    possivelmente abandonada. O `/executar` sem `--tarefa` e o modo contínuo **não** a
    tomam sozinhos; o `/listar` a destaca.
 
@@ -148,14 +164,15 @@ com trava atômica (sem risco de duas sessões gravarem ao mesmo tempo).
 - **`--tarefa <ID>`**: **sempre numa worktree separada** (nome `execucao/executar-<ID>`, criada
   em `.claude/worktrees`). O encerramento limpo integra à `main` e remove a worktree, e o
   bloqueio a deixa como está (Seção 6).
-- **`--continuar [N]`**: **direto na `main`**, sem criar worktree. A cada tarefa executada,
-  commite na `main` o código e os artefatos dela antes de seguir para a próxima.
-  Bloqueio: não commite o código parcial e registre o estado no `## Bloqueio`. Se a `main`
-  não estiver limpa ao começar uma tarefa, pare e avise.
+- **`--continuar [N]`**: **direto na `main`**, sem criar worktree. Por padrão, a cada tarefa executada
+  commite na `main` o código dela (só os arquivos listados em `## 4`) antes de seguir para a próxima.
+  **Com `--nocommit`**: não commite nada — as alterações se acumulam e o usuário commita no fim; a `main`
+  pode (e vai) estar suja, então não há checagem de árvore limpa, e o diff de cada tarefa é o snapshot
+  (`taskplan.py diff <ID>`). Bloqueio: não commite o código parcial e registre o estado no `## Bloqueio`.
 - Vazio e `--lote N`: seguem a regra geral (worktree da sessão).
-- **Commit da tarefa**: a mensagem **começa pelo ID** (`TP-0001: <resumo>`), para o `/testar` e o
-  `/validar` localizarem o diff com `git log --grep "^<ID>"`; o Executor registra os hashes em
-  `## 4. Resultado da execução`.
+- **Commit da tarefa** (sem `--nocommit`): a mensagem **começa pelo ID** (`TP-0001: <resumo>`), para o
+  `/testar` e o `/validar` localizarem o diff — `python .claude/scripts/taskplan.py diff <ID>` usa o
+  snapshot quando existe e, senão, os commits que começam pelo ID. Registre os hashes em `## 4`.
 
 ### Etapa
 
@@ -170,25 +187,46 @@ andamento` ao iniciar.
 
 Dispare `executor` (`subagent_type: executor`, `run_in_background: false`). Prompt:
 o ID da tarefa e o caminho de `.md/.taskplan/<ID>.md` — o Executor segue a seção
-"1. Plano de execução", escreve os testes da seção "2. Plano de teste" (TDD), sem
-sair do escopo da tarefa, e **grava no arquivo, em `## 4. Resultado da execução`**:
+"1. Plano de execução", escreve os testes da seção "2. Plano de teste" (TDD) e roda **só os testes
+dessa tarefa**, sem sair do escopo, e **grava no arquivo, em `## 4. Resultado da execução`**:
 o que foi feito, arquivos alterados, comandos de teste rodados e o resultado, e
-qualquer dúvida/risco. Em reexecução, o prompt inclui os achados críticos a corrigir
+qualquer dúvida/risco. Inclua no prompt a seção "Modo de trabalho no `/executar`" do `executor.md`
+(leitura mínima, testes do escopo, só `Edit` sobre arquivos existentes, não gravar status) e peça o
+**retorno em até 4 linhas** (OK/BLOQUEIO, nº de arquivos, testes, risco) — **não releia a seção 4**
+depois: confie no retorno e no `concluir`. Em reexecução, o prompt inclui os achados críticos a corrigir
 (das seções 5 ou 6 da rodada anterior).
 
 Ao voltar, confira o canário de contexto. `subagent_tokens` > ~300 mil tokens, ou
 desvio grande de escopo/estimativa sinalizado pelo Executor: a tarefa está grande
 demais — **divida-a** (Seção 5b) em vez de bloquear, e siga com a primeira parte.
 Lacuna/inconsistência no `SDD.md`/`UX-SPEC.md`: **bloqueio crítico** (Seção 6).
-Fora isso, a etapa fechou: grave o Status `Concluída · aguarda QA`, commite (regra acima) e libere a reserva.
+Fora isso, a etapa fechou: `concluir <ID> <token> executada [--snap]` (Status local + reserva), e commite
+(regra acima, salvo `--nocommit`).
 **Tarefa devolvida** (veio do `/testar` ou do `/validar` com `Em andamento`): o prompt inclui os
 achados críticos da seção 5 ou 6 da rodada anterior; o limite de **2 devoluções** somadas é
 controlado por quem devolve (ver `/testar`, Seção 3d) — na 3ª, a tarefa chega aqui como bloqueio.
 
+### 3e. Rodada paralela (`--paralelo N`, só `--lote`/`--continuar`)
+
+Em vez de uma tarefa por vez, a rodada pega até N (2 a 20):
+
+1. `proxima --etapa exe --n N [--lotes-distintos] [--lote L]` — até N tarefas elegíveis (dependências já resolvidas);
+   com `--lotes-distintos`, **no máximo uma por lote**.
+2. Para cada uma: `iniciar` (Seção 3-0). `OCUPADA` — descarte e peça a próxima com `--pular`.
+3. Dispare os N `executor` **na mesma mensagem** (rodam ao mesmo tempo) e espere todos.
+4. Para cada retorno: `concluir ... executada` (ou `bloquear`, Seção 6; divisão, Seção 5b). Depois, **em
+   sequência**, o commit de cada tarefa **só com os arquivos listados na sua `## 4`** — sem `--nocommit`.
+5. Repita (com a checagem de contexto, salvo `--nocontext`) até esvaziar a fila ou atingir o teto.
+
+Limites conhecidos: tarefas de lotes diferentes **não garantem** arquivos diferentes (e do mesmo lote, menos ainda). Se duas tarefas tocarem o mesmo
+arquivo, o commit/snapshot de uma pode levar a edição da outra e o `diff` do `/testar` e do `/validar` mistura
+as duas — o Executor registra em `## 4` os arquivos compartilhados, e o QA deve tratá-los como tal. O
+orquestrador não tenta resolver isso: se a suíte do `/testar` mostrar interferência, rode sem `--paralelo`.
+
 ## 4. Fim da tarefa
 
-Resumo curto — tarefa, o que foi feito, arquivos e commit, estado agora (`Executada (aguarda
-teste)`). **Não chame `/testar`**: o usuário decide. Depois, conforme o modo:
+Ao encerrar a chamada (depois da última tarefa), rode `taskplan.py consolidar`. Resumo curto — tarefa, o que foi feito, arquivos e commit (ou "sem commit"), estado agora
+(`Executada (aguarda teste)`). **Não chame `/testar`**: o usuário decide. Depois, conforme o modo:
 
 - **Vazio / `--tarefa`**: **pare aqui.**
 - **`--lote N` / `--continuar [N]`**: volte à Seção 2 para a próxima tarefa

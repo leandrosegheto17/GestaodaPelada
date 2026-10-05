@@ -21,7 +21,9 @@ fila: o `TASKPLAN.md` já vem com as dependências antes dos dependentes.
 arquivos de `.md/.taskplan/`, como no `/executar`.
 
 1. Se `.md/TASKPLAN.md` não existir, informe que não há plano de execução (rode
-   `/organizar`; antes dele, `/planejar` e `/definir`) e pare.
+   `/organizar`; antes dele, `/planejar` e `/definir`) e pare. Se existir, rode antes
+   `python .claude/scripts/taskplan.py consolidar` (grava no `TASK.md`/`TASKPLAN.md` os Status que uma rodada
+   interrompida deixou só nos arquivos das tarefas — é a única escrita deste comando, e só atualiza o que já estava decidido).
 2. Leia o `.md/TASKPLAN.md` inteiro: linha `Resumo:` e a tabela
    `| # | Tarefa | Plano | Título | Lote | Dep | Estado |`. O `#` é a numeração e a
    ordem oficial; `Tarefa` é o ID (`TP-0000`, `RTP-0000`, ou `T-001 (TP-0001)` em
