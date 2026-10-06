@@ -18,6 +18,11 @@ numa rodada paralela, rode de novo sem `--paralelo`. Agente: `validador` no chap
 
 Argumento recebido (pode estar vazio): $ARGUMENTS
 
+**Acionado pelo `/desenvolver`** (orquestrador sem supervisão): não pare para perguntar nada ao usuário — onde o
+comando perguntaria (assumir reserva velha, retomar bloqueada, argumento ambíguo), **pule a tarefa** e registre
+no resumo; ao terminar, devolva só o resumo curto (o que fechou, devolveu e bloqueou) e **não** sugira próximo
+comando: o controle volta ao `/desenvolver`.
+
 ## Diferenças em relação ao `/executar`
 
 - **Pré-requisito**: a tarefa tem de ter o resultado da execução em

@@ -257,6 +257,13 @@ Detalhe operacional em `.claude/commands/executar.md` (mecânica comum), `testar
   repetindo a checagem de contexto antes de cada tarefa nova (salvo `--nocontext`), sem parar
   em bloqueio.
 - **Nunca** dispara `/deploy`.
+- **`/desenvolver` (orquestrador, exceção à regra acima)**: chama `/executar`, `/testar` e `/validar`, nessa ordem, cada
+  um com `--continuar` e os repasses (`--nocontext`, `--nocommit`, `--paralelo`, `--lotes-distintos`), enquanto
+  `taskplan.py fila` mostrar tarefas elegíveis para a etapa; ao esvaziar as três, repete a passada (a execução volta a
+  ter elegíveis porque o `/validar` aprovou dependências ou algo foi devolvido) até as filas acabarem, o `estado` do
+  `fila` parar de mudar (sem progresso), `--rodadas N` ou teto de contexto. Sem `--continuar`, uma passada só. É
+  retomável: todo o estado está em disco. Bloqueios não o interrompem; ao fim ele lista os `BK-`/`SPK-` que esperam o
+  usuário. Nunca dispara `/deploy`.
 
 **Infra em paralelo (oportunista)**: se `.md/DEPLOY.md` ainda não existir e o
 `SDD.md` já estiver aprovado, este é um bom momento para disparar em paralelo o

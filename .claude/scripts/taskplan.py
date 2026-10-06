@@ -12,6 +12,7 @@ Uso (a partir da raiz do projeto):
   python .claude/scripts/taskplan.py iniciar ID TOKEN [--etapa "Em execução|Em QA|Em DevSecOps"] [--snap]   # reservar + etapa + status local (+ snapshot "antes")
   python .claude/scripts/taskplan.py concluir ID TOKEN executada|qa-ok|sec-ok|devolvida [--snap] [--motivo "..."]   # status local + libera a reserva (+ snapshot "depois"; devolução conta)
   python .claude/scripts/taskplan.py diff ID                          # diff da tarefa (snapshot antes..depois; senão commits que começam pelo ID)
+  python .claude/scripts/taskplan.py fila [--bloqueios]               # /desenvolver: tamanho das filas exe/qa/sec, travadas e impressão digital do estado
   python .claude/scripts/taskplan.py consolidar                        # grava os Status locais no TASK.md, anexa os resumos de QA/Sec aos relatórios e regera o TASKPLAN.md (fim da rodada)
   python .claude/scripts/taskplan.py liberar ID Livre|Concluída|Bloqueada
   python .claude/scripts/taskplan.py status ID "<texto do Status>"    # grava o Status (TASK.md ou arquivo BK) e o estado no TASKPLAN.md
@@ -698,24 +699,9 @@ def lote_casa(lote, n):
 
 
 # ----------------------------------------------------------------- comandos
-def cmd_proxima(args):
-    lote, pular, k, etapa, distintos, usados = None, set(), 1, 'exe', False, set()
-    i = 0
-    while i < len(args):
-        if args[i] == '--lotes-distintos':
-            distintos = True; i += 1
-        elif args[i] == '--etapa':
-            etapa = args[i + 1]; i += 2
-            if etapa not in ETAPAS_ELEG:
-                sys.exit('etapa inválida: %r (válidas: exe, qa, sec)' % etapa)
-        elif args[i] == '--lote':
-            lote = args[i + 1]; i += 2
-        elif args[i] == '--pular':
-            pular = {norm(x) for x in args[i + 1].split(',') if x}; i += 2
-        elif args[i] == '--n':
-            k = int(args[i + 1]); i += 2
-        else:
-            i += 1
+def _elegiveis(etapa, lote=None, pular=(), k=1, distintos=False):
+    """Tarefas elegíveis da etapa (exe|qa|sec) na ordem da fila + contagem dos motivos de exclusão."""
+    usados = set()
     rows = taskplan_rows()
     by = {r['key']: r for r in rows}
     out, motivos = [], {'sem plano': 0, 'dependência aberta': 0, 'reservada': 0, 'bloqueada/dividida': 0,
@@ -754,10 +740,56 @@ def cmd_proxima(args):
         usados.add(r['lote'])
         if len(out) >= k:
             break
+    return out, motivos, rows
+
+
+def cmd_proxima(args):
+    lote, pular, k, etapa, distintos = None, set(), 1, 'exe', False
+    i = 0
+    while i < len(args):
+        if args[i] == '--lotes-distintos':
+            distintos = True; i += 1
+        elif args[i] == '--etapa':
+            etapa = args[i + 1]; i += 2
+            if etapa not in ETAPAS_ELEG:
+                sys.exit('etapa inválida: %r (válidas: exe, qa, sec)' % etapa)
+        elif args[i] == '--lote':
+            lote = args[i + 1]; i += 2
+        elif args[i] == '--pular':
+            pular = {norm(x) for x in args[i + 1].split(',') if x}; i += 2
+        elif args[i] == '--n':
+            k = int(args[i + 1]); i += 2
+        else:
+            i += 1
+    out, motivos, _ = _elegiveis(etapa, lote, pular, k, distintos)
     for r in out:
-        print('%s\t%s\t%s\t%s\t%s' % (r['id'], r['key'], r['estado'], r['lote'], r['titulo']))
+        print('%s	%s	%s	%s	%s' % (r['id'], r['key'], r['estado'], r['lote'], r['titulo']))
     if not out:
-        print('NENHUMA\t' + '; '.join('%s: %d' % kv for kv in motivos.items() if kv[1]))
+        print('NENHUMA	' + '; '.join('%s: %d' % kv for kv in motivos.items() if kv[1]))
+
+
+def cmd_fila(args):
+    """Uma linha para o /desenvolver decidir o que rodar e se houve progresso."""
+    import hashlib
+    cont, mot, rows = {}, {}, None
+    for et in ('exe', 'qa', 'sec'):
+        out, motivos, rows = _elegiveis(et, k=10 ** 9)
+        cont[et] = len(out)
+        mot[et] = motivos
+    abertos = [r for r in rows if r['estado'] != 'Aprovada']
+    bloq = [r for r in abertos if r['estado'] == 'Bloqueada']
+    coord = [r for r in abertos if r['key'].startswith(COORD)]
+    reservadas = sum(m['reservada'] for m in mot.values())
+    semplano = mot['exe']['sem plano'] + mot['qa']['sem plano'] + mot['sec']['sem plano']
+    h = hashlib.md5('|'.join('%s:%s' % (r['key'], r['estado']) for r in rows).encode('utf-8')).hexdigest()[:12]
+    print('FILA exe=%d qa=%d sec=%d | bloqueadas=%d bk_spk_abertos=%d reservadas=%d sem_plano=%d | aprovadas=%d total=%d | estado=%s' % (
+        cont['exe'], cont['qa'], cont['sec'], len(bloq), len(coord), reservadas, semplano,
+        len(rows) - len(abertos), len(rows), h))
+    if '--bloqueios' in args:
+        for r in coord:
+            print('BK/SPK	%s	%s' % (r['id'], r['titulo']))
+        for r in bloq:
+            print('BLOQUEADA	%s	%s' % (r['id'], r['titulo']))
 
 
 def cmd_reservar(args):
@@ -1590,6 +1622,8 @@ def despachar(a):
         print('\n'.join(ESTADOS))
     elif cmd == 'proxima':
         cmd_proxima(a[1:])
+    elif cmd == 'fila':
+        cmd_fila(a[1:])
     elif cmd == 'reservar' and len(a) >= 3:
         cmd_reservar(a[1:])
     elif cmd == 'etapa' and len(a) == 4:

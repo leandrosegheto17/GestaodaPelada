@@ -21,6 +21,11 @@ nunca dispara `/deploy`. **Paralelismo**: um agente por vez, salvo `--paralelo [
 
 Argumento recebido (pode estar vazio): $ARGUMENTS
 
+**Acionado pelo `/desenvolver`** (orquestrador sem supervisão): não pare para perguntar nada ao usuário — onde o
+comando perguntaria (assumir reserva velha, retomar bloqueada, argumento ambíguo), **pule a tarefa** e registre
+no resumo; ao terminar, devolva só o resumo curto (o que fechou, devolveu e bloqueou) e **não** sugira próximo
+comando: o controle volta ao `/desenvolver`.
+
 ## 0. Pré-requisitos bloqueantes
 
 0. **Checagem de contexto (antes de tudo)**: rode `/context`. Se o uso da sessão
