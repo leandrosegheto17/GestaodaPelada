@@ -1,0 +1,49 @@
+.conteudo {
+  max-width: var(--largura-conteudo);
+  margin: 0 auto;
+  padding: var(--esp-3) var(--esp-2) 112px;
+}
+.conteudo:focus {
+  outline: none;
+}
+.ferramentas {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-3);
+  padding: 0 var(--esp-1);
+}
+.exportarTopo {
+  display: none;
+}
+.resumo {
+  margin: 2px var(--esp-3) var(--esp-3);
+  font-size: var(--texto-sm);
+  color: var(--cor-texto-sec);
+}
+.resumo strong {
+  color: var(--cor-texto);
+}
+.rodape {
+  margin-top: var(--esp-6);
+  text-align: center;
+  font-size: var(--texto-sm);
+  color: var(--cor-texto-sec);
+}
+.rodape a {
+  font-weight: var(--peso-semi);
+}
+.tabelaEsqueleto {
+  overflow-x: auto;
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-linha);
+  border-radius: var(--raio);
+}
+@media (min-width: 600px) {
+  .conteudo {
+    padding: var(--esp-6) var(--esp-6) var(--esp-12);
+  }
+  .exportarTopo {
+    display: inline-flex;
+  }
+}

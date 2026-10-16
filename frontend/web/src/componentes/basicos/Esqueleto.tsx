@@ -10,10 +10,8 @@ interface Props {
   quantidade?: number;
 }
 
-/** Só aparece depois de 300 ms; decorativo para leitores de tela. */
-export function Esqueleto({ variante = 'bloco', quantidade = 1 }: Props) {
-  const visivel = usarAtraso(300);
-  if (!visivel) return null;
+/** O desenho do esqueleto, já visível: para telas que controlam o atraso por conta própria. */
+export function FormaEsqueleto({ variante = 'bloco', quantidade = 1 }: Props) {
   return (
     <div aria-hidden="true">
       {Array.from({ length: quantidade }, (_, i) => (
@@ -21,4 +19,10 @@ export function Esqueleto({ variante = 'bloco', quantidade = 1 }: Props) {
       ))}
     </div>
   );
+}
+
+/** Só aparece depois de 300 ms; decorativo para leitores de tela. */
+export function Esqueleto(props: Props) {
+  const visivel = usarAtraso(300);
+  return visivel ? <FormaEsqueleto {...props} /> : null;
 }

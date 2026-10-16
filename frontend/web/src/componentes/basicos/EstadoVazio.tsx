@@ -16,7 +16,7 @@ export function EstadoVazio({ icone = 'info', titulo, nivel = 2, texto, acao }: 
   return (
     <div className={estilos.vazio}>
       <div className={estilos.icone}>
-        <Icone nome={icone} tamanho={40} />
+        <Icone nome={icone} tamanho={48} />
       </div>
       <Titulo className={estilos.titulo}>{titulo}</Titulo>
       {texto ? <p className={estilos.texto}>{texto}</p> : null}

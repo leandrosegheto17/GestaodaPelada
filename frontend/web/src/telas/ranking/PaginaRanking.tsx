@@ -5,6 +5,9 @@ import { ErroApi } from '../../dados/erros';
 import { useRankingPublico } from '../../dados/publico';
 import { esquecerGrupo, grupoLembrado } from '../../pwa/armazenamento';
 import { GrupoIndisponivel } from '../grupo-indisponivel/GrupoIndisponivel';
+import { EsqueletoRanking } from './EsqueletoRanking';
+import { SemConexao } from './SemConexao';
+import { TelaRanking } from './TelaRanking';
 
 /** Rota `/g/:slug`: valida a URL, busca o ranking público e escolhe o estado da tela. */
 export function Component() {
@@ -37,6 +40,7 @@ export function Component() {
   }, [indisponivel, slug]);
 
   if (!slugValido || indisponivel) return <GrupoIndisponivel />;
-  // O conteúdo do ranking (T01) entra aqui.
-  return <main id="conteudo" />;
+  if (consulta.isPending) return <EsqueletoRanking />;
+  if (consulta.isError) return <SemConexao aoTentar={() => void consulta.refetch()} />;
+  return <TelaRanking ranking={consulta.data} aoTrocarMes={(mes) => definirParametros({ mes })} />;
 }
