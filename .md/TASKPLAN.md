@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-16 17:32
+Atualizado: 2026-10-16 17:34
 
-Resumo: Não executada 131 · Executada (aguarda teste) 77 · total 208
+Resumo: Não executada 130 · Executada (aguarda teste) 78 · total 208
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -90,7 +90,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 75 | TP-0075 | executor | ✔ | Endpoint GET /api/grupos/:g/pesos | L17 | TP-0024, TP-0032, TP-0033, TP-0048 | Executada (aguarda teste) |
 | 76 | TP-0076 | executor | ✔ | Endpoint POST /api/grupos/:g/pesos | L17 | TP-0013, TP-0024, TP-0030, TP-0032, TP-0033, TP-0048 | Executada (aguarda teste) |
 | 77 | TP-0077 | executor | ✔ | Endpoint GET /api/grupos/:g/partidas?mes= | L17 | TP-0007, TP-0013, TP-0024, TP-0032, TP-0033, TP-0049 | Executada (aguarda teste) |
-| 78 | TP-0078 | executor | ✔ | Endpoint GET /api/grupos/:g/partidas/nova?data= | L17 | TP-0007, TP-0013, TP-0024, TP-0029, TP-0032, TP-0033, TP-0049, TP-0052 | Não executada |
+| 78 | TP-0078 | executor | ✔ | Endpoint GET /api/grupos/:g/partidas/nova?data= | L17 | TP-0007, TP-0013, TP-0024, TP-0029, TP-0032, TP-0033, TP-0049, TP-0052 | Executada (aguarda teste) |
 | 79 | TP-0079 | executor | ✔ | Endpoint GET /api/grupos/:g/partidas/:data | L17 | TP-0024, TP-0032, TP-0033, TP-0049, TP-0052 | Não executada |
 | 80 | TP-0080 | executor | ✔ | Extração aplicacao/partidas/presencas (validação das marcações) | L18 | TP-0009, TP-0052 | Não executada |
 | 81 | TP-0081 | executor | ✔ | Endpoint POST /api/grupos/:g/partidas | L18 | TP-0013, TP-0014, TP-0024, TP-0030, TP-0032, TP-0033, TP-0049, TP-0050, TP-0080 | Não executada |

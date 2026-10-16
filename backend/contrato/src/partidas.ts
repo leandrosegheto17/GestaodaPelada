@@ -25,6 +25,8 @@ export const partidasDoMes = z.strictObject({
   ),
 });
 
+export type PartidasDoMes = z.infer<typeof partidasDoMes>;
+
 export const partidaNova = z.strictObject({
   data,
   dataSugerida: data,
@@ -35,6 +37,8 @@ export const partidaNova = z.strictObject({
   jogadores: z.array(linhaPresenca),
 });
 
+export type PartidaNova = z.infer<typeof partidaNova>;
+
 export const partidaDetalhe = z.strictObject({
   data,
   hoje: data,
@@ -43,6 +47,8 @@ export const partidaDetalhe = z.strictObject({
   alteradaEm: z.iso.datetime(),
   jogadores: z.array(linhaPresenca),
 });
+
+export type PartidaDetalhe = z.infer<typeof partidaDetalhe>;
 
 export const partidasMesQuery = z.strictObject({ mes });
 export const partidaNovaQuery = z.strictObject({ data: data.optional() });
