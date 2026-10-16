@@ -13,7 +13,8 @@
     "typecheck": "tsc --noEmit -p . && tsc --noEmit -p tsconfig.sw.json",
     "lint:css": "stylelint \"src/**/*.css\"",
     "e2e": "playwright test -c e2e/playwright.config.ts --pass-with-no-tests",
-    "visual": "node e2e/visual.mjs"
+    "visual": "node e2e/visual.mjs",
+    "e2e:integracao": "playwright test -c e2e/integracao/playwright.config.ts"
   },
   "dependencies": {
     "@pelada/contrato": "workspace:*",
