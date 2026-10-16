@@ -59,4 +59,8 @@ export const CASOS: Record<string, Caso> = {
   'POST /api/dono/pedidos-reset/:id/resolver': { tipo: 'dono' },
   'POST /api/dono/contas/:id/redefinir-senha': { tipo: 'dono' },
   'GET /api/grupos/:grupoId': { tipo: 'grupo' },
+  'PATCH /api/grupos/:grupoId': {
+    tipo: 'grupo',
+    corpo: { nome: 'Grupo Editado', diaSemana: 'quinta', frequencia: 'semanal', horario: '20:00' },
+  },
 };
