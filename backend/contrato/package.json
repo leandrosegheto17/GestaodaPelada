@@ -7,9 +7,14 @@
   },
   "scripts": {
     "test": "vitest run --passWithNoTests",
-    "typecheck": "tsc --noEmit -p ."
+    "typecheck": "tsc --noEmit -p .",
+    "snapshot": "tsx ferramentas/snapshot.ts",
+    "checar-compatibilidade": "tsx ferramentas/checar-compatibilidade.ts"
   },
   "dependencies": {
     "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "tsx": "^4.23.15"
   }
 }
