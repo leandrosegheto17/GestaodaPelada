@@ -1,0 +1,60 @@
+{
+  "direcao": "resposta",
+  "esquema": {
+    "additionalProperties": false,
+    "properties": {
+      "choveu": {
+        "type": "boolean"
+      },
+      "data": {
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+        "type": "string"
+      },
+      "dataSugerida": {
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+        "type": "string"
+      },
+      "hoje": {
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+        "type": "string"
+      },
+      "jaExiste": {
+        "type": "boolean"
+      },
+      "jogadores": {
+        "items": {
+          "additionalProperties": false,
+          "properties": {
+            "apelido": {
+              "type": "string"
+            },
+            "id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "situacao": {
+              "enum": ["ausente", "presente", "lesionado", "expulso"],
+              "type": "string"
+            }
+          },
+          "required": ["id", "apelido", "situacao"],
+          "type": "object"
+        },
+        "type": "array"
+      },
+      "preMarcadaPelaEscalacao": {
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "data",
+      "dataSugerida",
+      "hoje",
+      "jaExiste",
+      "preMarcadaPelaEscalacao",
+      "choveu",
+      "jogadores"
+    ],
+    "type": "object"
+  }
+}

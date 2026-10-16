@@ -1,0 +1,14 @@
+{
+  "direcao": "entrada",
+  "esquema": {
+    "additionalProperties": false,
+    "properties": {
+      "mes": {
+        "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+        "type": "string"
+      }
+    },
+    "required": ["mes"],
+    "type": "object"
+  }
+}

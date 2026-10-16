@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-16 16:46
+Atualizado: 2026-10-16 16:47
 
-Resumo: Não executada 185 · Executada (aguarda teste) 23 · total 208
+Resumo: Não executada 184 · Executada (aguarda teste) 24 · total 208
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -36,7 +36,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 21 | TP-0021 | executor | ✔ | contrato/grupo e contrato/admins | L04 | TP-0005, TP-0018 | Executada (aguarda teste) |
 | 22 | TP-0022 | executor | ✔ | contrato/dono | L04 | TP-0005, TP-0018, TP-0021 | Executada (aguarda teste) |
 | 23 | TP-0023 | executor | ✔ | contrato/elenco (jogadores) | L05 | TP-0005, TP-0018 | Executada (aguarda teste) |
-| 24 | TP-0024 | executor | ✔ | contrato/partidas, contrato/pesos e contrato/uso | L05 | TP-0005, TP-0018 | Não executada |
+| 24 | TP-0024 | executor | ✔ | contrato/partidas, contrato/pesos e contrato/uso | L05 | TP-0005, TP-0018 | Executada (aguarda teste) |
 | 25 | TP-0025 | executor | ✔ | Migração do contexto Acesso (contas, sessões, tentativas, pedidos de reset, auditoria) | L06 | TP-0015, TP-0016 | Não executada |
 | 26 | TP-0026 | executor | ✔ | Migração do contexto Grupos (grupos, vínculos de admin) | L06 | TP-0015, TP-0016, TP-0025 | Não executada |
 | 27 | TP-0027 | executor | ✔ | Repositório de contas (hash no Postgres) e infraestrutura/seguranca | L06 | TP-0014, TP-0016, TP-0017, TP-0025 | Não executada |

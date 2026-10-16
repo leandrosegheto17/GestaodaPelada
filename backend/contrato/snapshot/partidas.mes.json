@@ -1,0 +1,86 @@
+{
+  "direcao": "resposta",
+  "esquema": {
+    "additionalProperties": false,
+    "properties": {
+      "hoje": {
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+        "type": "string"
+      },
+      "mes": {
+        "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+        "type": "string"
+      },
+      "navegacao": {
+        "additionalProperties": false,
+        "properties": {
+          "mesAnterior": {
+            "anyOf": [
+              {
+                "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "mesSeguinte": {
+            "anyOf": [
+              {
+                "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": ["mesAnterior", "mesSeguinte"],
+        "type": "object"
+      },
+      "partidas": {
+        "items": {
+          "additionalProperties": false,
+          "properties": {
+            "choveu": {
+              "type": "boolean"
+            },
+            "contagem": {
+              "additionalProperties": false,
+              "properties": {
+                "expulsos": {
+                  "maximum": 9007199254740991,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "lesionados": {
+                  "maximum": 9007199254740991,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "presentes": {
+                  "maximum": 9007199254740991,
+                  "minimum": 0,
+                  "type": "integer"
+                }
+              },
+              "required": ["presentes", "lesionados", "expulsos"],
+              "type": "object"
+            },
+            "data": {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "type": "string"
+            }
+          },
+          "required": ["data", "choveu", "contagem"],
+          "type": "object"
+        },
+        "type": "array"
+      }
+    },
+    "required": ["mes", "hoje", "navegacao", "partidas"],
+    "type": "object"
+  }
+}

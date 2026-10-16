@@ -1,0 +1,35 @@
+{
+  "direcao": "entrada",
+  "esquema": {
+    "additionalProperties": false,
+    "properties": {
+      "choveu": {
+        "type": "boolean"
+      },
+      "data": {
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+        "type": "string"
+      },
+      "marcacoes": {
+        "items": {
+          "additionalProperties": false,
+          "properties": {
+            "jogadorId": {
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+              "type": "string"
+            },
+            "situacao": {
+              "enum": ["ausente", "presente", "lesionado", "expulso"],
+              "type": "string"
+            }
+          },
+          "required": ["jogadorId", "situacao"],
+          "type": "object"
+        },
+        "type": "array"
+      }
+    },
+    "required": ["data", "choveu", "marcacoes"],
+    "type": "object"
+  }
+}

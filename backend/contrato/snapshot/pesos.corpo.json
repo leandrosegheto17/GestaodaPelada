@@ -1,0 +1,41 @@
+{
+  "direcao": "entrada",
+  "esquema": {
+    "additionalProperties": false,
+    "properties": {
+      "expulso": {
+        "maximum": 10,
+        "minimum": -10,
+        "type": "integer"
+      },
+      "lesionadoComChuva": {
+        "maximum": 10,
+        "minimum": -10,
+        "type": "integer"
+      },
+      "lesionadoSemChuva": {
+        "maximum": 10,
+        "minimum": -10,
+        "type": "integer"
+      },
+      "presencaComChuva": {
+        "maximum": 10,
+        "minimum": -10,
+        "type": "integer"
+      },
+      "presencaSemChuva": {
+        "maximum": 10,
+        "minimum": -10,
+        "type": "integer"
+      }
+    },
+    "required": [
+      "presencaSemChuva",
+      "presencaComChuva",
+      "lesionadoSemChuva",
+      "lesionadoComChuva",
+      "expulso"
+    ],
+    "type": "object"
+  }
+}

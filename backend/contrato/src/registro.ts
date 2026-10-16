@@ -4,8 +4,11 @@ import { esquemasAdmins } from './admins.js';
 import { esquemasDono } from './dono.js';
 import { esquemasElenco } from './elenco.js';
 import { esquemasGrupo } from './grupo.js';
+import { esquemasPartidas } from './partidas.js';
+import { esquemasPesos } from './pesos.js';
 import { esquemasPublico } from './publico.js';
 import { esquemasSessao } from './sessao.js';
+import { esquemasUso } from './uso.js';
 
 export type { EsquemaRegistrado, Esquemas } from './registro-tipos.js';
 
@@ -19,6 +22,9 @@ export const REGISTRO: Esquemas = {
   ...esquemasDono,
   ...esquemasElenco,
   ...esquemasGrupo,
+  ...esquemasPartidas,
+  ...esquemasPesos,
   ...esquemasPublico,
   ...esquemasSessao,
+  ...esquemasUso,
 };

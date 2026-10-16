@@ -1,0 +1,61 @@
+{
+  "direcao": "resposta",
+  "esquema": {
+    "additionalProperties": false,
+    "properties": {
+      "semanas": {
+        "items": {
+          "additionalProperties": false,
+          "properties": {
+            "aparelhosRanking": {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer"
+            },
+            "escalacoesConfirmadas": {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer"
+            },
+            "fim": {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "type": "string"
+            },
+            "inicio": {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "type": "string"
+            },
+            "partidasEm48h": {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer"
+            },
+            "partidasLancadas": {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer"
+            },
+            "pdfsExportados": {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "inicio",
+            "fim",
+            "aparelhosRanking",
+            "pdfsExportados",
+            "partidasLancadas",
+            "partidasEm48h",
+            "escalacoesConfirmadas"
+          ],
+          "type": "object"
+        },
+        "type": "array"
+      }
+    },
+    "required": ["semanas"],
+    "type": "object"
+  }
+}

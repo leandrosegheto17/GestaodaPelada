@@ -1,0 +1,116 @@
+{
+  "direcao": "resposta",
+  "esquema": {
+    "additionalProperties": false,
+    "properties": {
+      "historico": {
+        "items": {
+          "additionalProperties": false,
+          "properties": {
+            "expulso": {
+              "maximum": 10,
+              "minimum": -10,
+              "type": "integer"
+            },
+            "lesionadoComChuva": {
+              "maximum": 10,
+              "minimum": -10,
+              "type": "integer"
+            },
+            "lesionadoSemChuva": {
+              "maximum": 10,
+              "minimum": -10,
+              "type": "integer"
+            },
+            "presencaComChuva": {
+              "maximum": 10,
+              "minimum": -10,
+              "type": "integer"
+            },
+            "presencaSemChuva": {
+              "maximum": 10,
+              "minimum": -10,
+              "type": "integer"
+            },
+            "registradoPor": {
+              "type": "string"
+            },
+            "vigenteAte": {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "type": "string"
+            },
+            "vigenteDesde": {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "presencaSemChuva",
+            "presencaComChuva",
+            "lesionadoSemChuva",
+            "lesionadoComChuva",
+            "expulso",
+            "vigenteDesde",
+            "registradoPor",
+            "vigenteAte"
+          ],
+          "type": "object"
+        },
+        "type": "array"
+      },
+      "hoje": {
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+        "type": "string"
+      },
+      "vigente": {
+        "additionalProperties": false,
+        "properties": {
+          "expulso": {
+            "maximum": 10,
+            "minimum": -10,
+            "type": "integer"
+          },
+          "lesionadoComChuva": {
+            "maximum": 10,
+            "minimum": -10,
+            "type": "integer"
+          },
+          "lesionadoSemChuva": {
+            "maximum": 10,
+            "minimum": -10,
+            "type": "integer"
+          },
+          "presencaComChuva": {
+            "maximum": 10,
+            "minimum": -10,
+            "type": "integer"
+          },
+          "presencaSemChuva": {
+            "maximum": 10,
+            "minimum": -10,
+            "type": "integer"
+          },
+          "registradoPor": {
+            "type": "string"
+          },
+          "vigenteDesde": {
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "presencaSemChuva",
+          "presencaComChuva",
+          "lesionadoSemChuva",
+          "lesionadoComChuva",
+          "expulso",
+          "vigenteDesde",
+          "registradoPor"
+        ],
+        "type": "object"
+      }
+    },
+    "required": ["hoje", "vigente", "historico"],
+    "type": "object"
+  }
+}
