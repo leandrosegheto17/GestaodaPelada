@@ -1,3 +1,4 @@
+import { randomBytes } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 import * as grupos from '../../src/infraestrutura/db/repositorios/grupos.js';
 import { SlugEmUso } from '../../src/infraestrutura/db/repositorios/grupos.js';
@@ -42,7 +43,7 @@ describe('repositório de grupos', () => {
 
   it('slugsComBase traz a base e os sufixos, mas não nomes parecidos', async () => {
     const db = await abrir();
-    const base = `base-${Date.now().toString(36)}`;
+    const base = `base-${randomBytes(4).toString('hex')}`;
     await criarGrupo(db, fabrica, { slug: base });
     await criarGrupo(db, fabrica, { slug: `${base}-2` });
     await criarGrupo(db, fabrica, { slug: `${base}ao` });
