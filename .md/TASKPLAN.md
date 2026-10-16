@@ -7,7 +7,7 @@ dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuá
 
 Atualizado: 2026-10-16 17:15
 
-Resumo: Não executada 160 · Executada (aguarda teste) 48 · total 208
+Resumo: Não executada 159 · Executada (aguarda teste) 49 · total 208
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -61,7 +61,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 46 | TP-0046 | executor | ✔ | Repositório de jogadores e períodos | L10 | TP-0014, TP-0016, TP-0017, TP-0042 | Executada (aguarda teste) |
 | 47 | TP-0047 | executor | ✔ | Repositório de habilidades e notas | L10 | TP-0014, TP-0016, TP-0017, TP-0043 | Executada (aguarda teste) |
 | 48 | TP-0048 | executor | ✔ | Repositório de pesos | L10 | TP-0014, TP-0016, TP-0017, TP-0044 | Executada (aguarda teste) |
-| 49 | TP-0049 | executor | ✔ | Repositório de partidas e presenças | L10 | TP-0014, TP-0016, TP-0017, TP-0044 | Não executada |
+| 49 | TP-0049 | executor | ✔ | Repositório de partidas e presenças | L10 | TP-0014, TP-0016, TP-0017, TP-0044 | Executada (aguarda teste) |
 | 50 | TP-0050 | executor | ✔ | Repositório de eventos de uso | L10 | TP-0014, TP-0016, TP-0017, TP-0045 | Não executada |
 | 51 | TP-0051 | executor | ✔ | Script seed-local.ts com os dados do mockup | L10 | TP-0027, TP-0029, TP-0046, TP-0047, TP-0048, TP-0049 | Não executada |
 | 52 | TP-0052 | executor | ✔ | Extração aplicacao/elenco/ativos (ativos numa data e no mês) | L11 | TP-0009, TP-0046 | Não executada |
