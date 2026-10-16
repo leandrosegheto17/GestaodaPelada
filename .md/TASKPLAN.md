@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-16 18:35
+Atualizado: 2026-10-16 18:38
 
-Resumo: Não executada 91 · Executada (aguarda teste) 117 · total 208
+Resumo: Não executada 90 · Executada (aguarda teste) 118 · total 208
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -130,7 +130,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 115 | TP-0115 | executor | ✔ | Tela T05: Esqueci a senha | L25 | TP-0019, TP-0089, TP-0091, TP-0095, TP-0096 | Executada (aguarda teste) |
 | 116 | TP-0116 | executor | ✔ | Tela T06: Nova senha obrigatória | L25 | TP-0019, TP-0089, TP-0091, TP-0095, TP-0096, TP-0105 | Executada (aguarda teste) |
 | 117 | TP-0117 | executor | ✔ | Tela T25: Minha senha | L25 | TP-0019, TP-0089, TP-0091, TP-0095, TP-0096, TP-0105 | Executada (aguarda teste) |
-| 118 | TP-0118 | executor | ✔ | Tela T08: Escolher grupo | L25 | TP-0089, TP-0095, TP-0101, TP-0105 | Não executada |
+| 118 | TP-0118 | executor | ✔ | Tela T08: Escolher grupo | L25 | TP-0089, TP-0095, TP-0101, TP-0105 | Executada (aguarda teste) |
 | 119 | TP-0119 | executor | ✔ | Tela T09: Início do admin | L26 | TP-0021, TP-0089, TP-0092, TP-0095, TP-0101, TP-0106 | Não executada |
 | 120 | TP-0120 | executor | ✔ | Tela T10: Partidas | L26 | TP-0024, TP-0089, TP-0092, TP-0095, TP-0101, TP-0106 | Não executada |
 | 121 | TP-0121 | executor | ✔ | Tela T11: Lançar partida | L26 | TP-0024, TP-0089, TP-0095, TP-0096, TP-0097, TP-0098, TP-0103, TP-0106 | Não executada |

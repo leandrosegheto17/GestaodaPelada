@@ -11,6 +11,8 @@ interface Props {
   para?: string;
   /** Quebra a linha quando os controles não cabem (ex.: nome + interruptor + ações). */
   quebra?: boolean;
+  /** Selo logo abaixo da descrição (ex.: "Sem acesso ao financeiro"). */
+  selo?: ReactNode;
   /** Valor à direita (pontos, saldo...). */
   lado?: ReactNode;
   /** Controles à direita (interruptor, botões de texto). Não combinam com `para`. */
@@ -18,11 +20,12 @@ interface Props {
 }
 
 /** Linha da `Lista`. Link inteiro (`para`) ou linha comum com `lado` e `acoes`. */
-export function Item({ titulo, meta, para, quebra, lado, acoes }: Props) {
+export function Item({ titulo, meta, selo, para, quebra, lado, acoes }: Props) {
   const principal = (
     <span className={estilos.principal}>
       <span className={estilos.titulo}>{titulo}</span>
       {meta ? <span className={estilos.meta}>{meta}</span> : null}
+      {selo}
     </span>
   );
   const ladoEl = lado ? <span className={estilos.lado}>{lado}</span> : null;
