@@ -14,6 +14,11 @@ import { rotaDonoResolverPedido } from './rotas/dono/pedidos-reset.js';
 import { rotaDonoRedefinirSenha } from './rotas/dono/redefinir-senha.js';
 import { rotaGrupoLer } from './rotas/grupos/ler.js';
 import { rotaGrupoEditar } from './rotas/grupos/editar.js';
+import { rotaAdminsListar } from './rotas/grupos/admins/listar.js';
+import { rotaAdminsAdicionar } from './rotas/grupos/admins/adicionar.js';
+import { rotaAdminsRemover } from './rotas/grupos/admins/remover.js';
+import { rotaAdminsRedefinirSenha } from './rotas/grupos/admins/redefinir-senha.js';
+import { rotaAdminsFinanceiro } from './rotas/grupos/admins/financeiro.js';
 
 /** Todas as rotas de negócio. Cada rota nova entra aqui, depois dos middlewares do app (ADR-005). */
 export const ROTAS: readonly Hono<AppEnv>[] = [
@@ -32,4 +37,9 @@ export const ROTAS: readonly Hono<AppEnv>[] = [
   rotaDonoRedefinirSenha,
   rotaGrupoLer,
   rotaGrupoEditar,
+  rotaAdminsListar,
+  rotaAdminsAdicionar,
+  rotaAdminsRemover,
+  rotaAdminsRedefinirSenha,
+  rotaAdminsFinanceiro,
 ];

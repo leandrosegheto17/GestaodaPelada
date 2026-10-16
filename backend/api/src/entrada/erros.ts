@@ -30,3 +30,8 @@ export function responderValidacao(c: Context, erro: ZodError): Response {
   }
   return c.json(corpoErro(CODIGOS_ERRO.validacao, 'Corrija os campos indicados.', campos), 422);
 }
+
+/** 409: o pedido conflita com o estado atual (ex.: remover o último admin). */
+export function conflito(c: Context, codigo: string, mensagem: string): Response {
+  return c.json(corpoErro(codigo, mensagem), 409);
+}

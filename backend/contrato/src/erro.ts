@@ -8,6 +8,10 @@ export const CODIGOS_ERRO = {
   requisicaoRecusada: 'requisicao_recusada',
   trocaDeSenhaObrigatoria: 'troca_de_senha_obrigatoria',
   semPermissaoFinanceiro: 'sem_permissao_financeiro',
+  adminJaVinculado: 'admin_ja_vinculado',
+  ultimoAdmin: 'ultimo_admin',
+  removerASiMesmo: 'remover_a_si_mesmo',
+  acaoNaPropriaConta: 'acao_na_propria_conta',
   corpoGrande: 'corpo_grande',
 } as const;
 

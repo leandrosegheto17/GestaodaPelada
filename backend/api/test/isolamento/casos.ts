@@ -63,4 +63,12 @@ export const CASOS: Record<string, Caso> = {
     tipo: 'grupo',
     corpo: { nome: 'Grupo Editado', diaSemana: 'quinta', frequencia: 'semanal', horario: '20:00' },
   },
+  'GET /api/grupos/:grupoId/admins': { tipo: 'grupo' },
+  'POST /api/grupos/:grupoId/admins': {
+    tipo: 'grupo',
+    corpo: { nome: 'Novo Admin', email: 'novo-admin@teste.invalid' },
+  },
+  'DELETE /api/grupos/:grupoId/admins/:contaId': { tipo: 'grupo' },
+  'POST /api/grupos/:grupoId/admins/:contaId/redefinir-senha': { tipo: 'grupo' },
+  'PATCH /api/grupos/:grupoId/admins/:contaId/financeiro': { tipo: 'financeiro', corpo: { acessaFinanceiro: true } },
 };
