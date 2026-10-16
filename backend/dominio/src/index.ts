@@ -23,3 +23,6 @@ export * from './simulador/distribuicao-dois.js';
 export * from './simulador/distribuicao-varios.js';
 export * from './simulador/avisos.js';
 export * from './simulador/sugerir.js';
+export * from './ranking/rodadas.js';
+export * from './pdf/colunas.js';
+export * from './pdf/projecao.js';
