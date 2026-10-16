@@ -35,7 +35,20 @@ export async function criarGrupo(
   });
   fabrica.registrar(async () => {
     const banco = kyselyDe(db);
-    await banco.deleteFrom('auditoria').where('grupo_id', '=', id).execute();
+    // Tudo que pertence ao grupo, dos dependentes para os pais.
+    for (const tabela of [
+      'eventos_uso',
+      'presencas',
+      'partidas',
+      'config_pesos',
+      'notas',
+      'habilidades',
+      'periodos_ativos',
+      'jogadores',
+      'auditoria',
+    ] as const) {
+      await banco.deleteFrom(tabela).where('grupo_id', '=', id).execute();
+    }
     await banco.deleteFrom('vinculos_admin').where('grupo_id', '=', id).execute();
     await banco.deleteFrom('grupos').where('id', '=', id).execute();
   });
