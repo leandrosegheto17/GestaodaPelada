@@ -1,0 +1,39 @@
+.estreito {
+  max-width: var(--largura-formulario);
+  margin: 0 auto;
+}
+.formulario {
+  display: grid;
+  gap: var(--esp-4);
+}
+.duasColunas {
+  display: grid;
+  gap: var(--esp-4);
+}
+.subtitulo {
+  font-size: var(--texto-xl);
+  text-transform: uppercase;
+  letter-spacing: var(--espacamento-caixa-alta);
+  margin: var(--esp-6) 0 var(--esp-3);
+}
+.secao {
+  margin-top: var(--esp-6);
+  padding-top: var(--esp-4);
+  border-top: 1px solid var(--cor-linha);
+}
+.paragrafo {
+  margin: 0 0 var(--esp-3);
+}
+.grupoBotoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--esp-2);
+}
+.faixaSalvo {
+  margin-bottom: var(--esp-3);
+}
+@media (min-width: 600px) {
+  .duasColunas {
+    grid-template-columns: 1fr 1fr;
+  }
+}

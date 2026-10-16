@@ -29,6 +29,8 @@ export const roteador = createBrowserRouter([
         Component: LayoutAdmin,
         children: [
           { index: true, lazy: () => import('../telas/inicio/PaginaInicio') },
+          { path: 'jogadores/novo', lazy: () => import('../telas/jogador/PaginaJogador') },
+          { path: 'jogadores/:jogadorId', lazy: () => import('../telas/jogador/PaginaJogador') },
           { path: 'jogadores', lazy: () => import('../telas/jogadores/PaginaJogadores') },
           { path: 'partidas/nova', lazy: () => import('../telas/partida/PaginaNovaPartida') },
           { path: 'partidas/:data', lazy: () => import('../telas/partida/PaginaEditarPartida') },

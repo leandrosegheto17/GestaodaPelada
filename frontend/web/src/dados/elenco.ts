@@ -1,6 +1,6 @@
-import { listaJogadores } from '@pelada/contrato';
-import { useQuery } from '@tanstack/react-query';
-import { ler } from './cliente';
+import { jogadorDetalhe, listaJogadores } from '@pelada/contrato';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { escrever, ler, semCorpo } from './cliente';
 import { chaveGrupo } from './grupo';
 
 /** Chaves do elenco. Começam pela do grupo: invalidar o grupo invalida tudo daqui. */
@@ -14,5 +14,74 @@ export function useJogadores(grupoId: string) {
   return useQuery({
     queryKey: chavesElenco.lista(grupoId),
     queryFn: ({ signal }) => ler(`/grupos/${encodeURIComponent(grupoId)}/jogadores`, listaJogadores, { signal }),
+  });
+}
+
+const caminhoJogador = (grupoId: string, jogadorId: string) =>
+  `/grupos/${encodeURIComponent(grupoId)}/jogadores/${encodeURIComponent(jogadorId)}`;
+
+/** Ficha do jogador (dados, situação, nível e notas). Sempre busca de novo ao abrir. */
+export function useJogador(grupoId: string, jogadorId: string, habilitado = true) {
+  return useQuery({
+    queryKey: chavesElenco.detalhe(grupoId, jogadorId),
+    queryFn: ({ signal }) => ler(caminhoJogador(grupoId, jogadorId), jogadorDetalhe, { signal }),
+    enabled: habilitado,
+    staleTime: 0,
+  });
+}
+
+export interface CorpoJogador {
+  apelido: string;
+  anoNascimento: number;
+  posicao: string;
+  telefone: string | null;
+  dataEntrada?: string | undefined;
+}
+
+/** Mudanças no elenco invalidam o grupo inteiro (lista, início com `jogadoresAtivos`, ranking de notas). */
+function useInvalidarGrupo(grupoId: string) {
+  const cliente = useQueryClient();
+  return () => cliente.invalidateQueries({ queryKey: chaveGrupo(grupoId) });
+}
+
+export function useCriarJogador(grupoId: string) {
+  const invalidar = useInvalidarGrupo(grupoId);
+  return useMutation({
+    mutationFn: (corpo: CorpoJogador) =>
+      escrever('POST', `/grupos/${encodeURIComponent(grupoId)}/jogadores`, corpo, jogadorDetalhe),
+    onSuccess: invalidar,
+  });
+}
+
+export function useEditarJogador(grupoId: string, jogadorId: string) {
+  const invalidar = useInvalidarGrupo(grupoId);
+  return useMutation({
+    mutationFn: (corpo: CorpoJogador) => escrever('PATCH', caminhoJogador(grupoId, jogadorId), corpo, jogadorDetalhe),
+    onSuccess: invalidar,
+  });
+}
+
+export function useInativarJogador(grupoId: string, jogadorId: string) {
+  const invalidar = useInvalidarGrupo(grupoId);
+  return useMutation({
+    mutationFn: (corpo: { dataSaida?: string }) =>
+      escrever('POST', `${caminhoJogador(grupoId, jogadorId)}/inativar`, corpo, semCorpo),
+    onSuccess: invalidar,
+  });
+}
+
+export function useReativarJogador(grupoId: string, jogadorId: string) {
+  const invalidar = useInvalidarGrupo(grupoId);
+  return useMutation({
+    mutationFn: () => escrever('POST', `${caminhoJogador(grupoId, jogadorId)}/reativar`, {}, semCorpo),
+    onSuccess: invalidar,
+  });
+}
+
+export function useExcluirJogador(grupoId: string, jogadorId: string) {
+  const invalidar = useInvalidarGrupo(grupoId);
+  return useMutation({
+    mutationFn: () => escrever('DELETE', caminhoJogador(grupoId, jogadorId), undefined, semCorpo),
+    onSuccess: invalidar,
   });
 }

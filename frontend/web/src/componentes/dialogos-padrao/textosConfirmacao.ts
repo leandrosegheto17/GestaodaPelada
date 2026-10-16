@@ -64,3 +64,11 @@ export function arquivarGrupo(nome: string): TextoConfirmacao {
     verbo: 'Arquivar grupo',
   };
 }
+
+export function excluirJogador(apelido: string): TextoConfirmacao {
+  return {
+    titulo: `Excluir ${apelido}?`,
+    texto: 'O cadastro é apagado. Só é possível excluir quem não tem partidas nem notas.',
+    verbo: 'Excluir jogador',
+  };
+}
