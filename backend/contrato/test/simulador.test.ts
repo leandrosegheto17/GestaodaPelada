@@ -29,7 +29,8 @@ describe('respostas do mockup', () => {
   it('a resposta de avaliar não tem ordem de prioridade', () => {
     const [dois2] = respostas(/^simulador-sugestao-dois\.json$/);
     expect(avaliacaoSimulador.safeParse(dois2?.json).success).toBe(false);
-    const { ordemPrioridade: _ordem, ...semOrdem } = dois2?.json as Record<string, unknown>;
+    const semOrdem: Record<string, unknown> = { ...(dois2?.json as Record<string, unknown>) };
+    delete semOrdem.ordemPrioridade;
     expect(avaliacaoSimulador.safeParse(semOrdem).success).toBe(true);
   });
 });
@@ -79,7 +80,8 @@ describe('entrada do simulador', () => {
   });
 
   it('a prévia dispensa a data', () => {
-    const { data: _data, ...semData } = dois;
+    const semData: Record<string, unknown> = { ...dois };
+    delete semData.data;
     expect(entradaPrevia.safeParse(semData).success).toBe(true);
   });
 });
