@@ -13,6 +13,7 @@ export default defineConfig(({ mode }) => {
     server: configuracaoServidor(process.env),
     test: {
       environment: 'jsdom',
+      css: { include: /\.module\.css$/ },
       setupFiles: ['./test/apoio/setup.ts'],
       include: ['src/**/*.test.{ts,tsx}', 'test/**/*.test.{ts,mjs}', 'e2e/**/*.test.mjs'],
     },

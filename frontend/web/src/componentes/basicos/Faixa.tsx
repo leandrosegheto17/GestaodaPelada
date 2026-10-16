@@ -1,0 +1,42 @@
+import type { ReactNode } from 'react';
+import { Icone, type NomeIcone } from './Icone';
+import { juntar } from './juntar';
+import estilos from './Faixa.module.css';
+
+export type TipoFaixa = 'info' | 'sucesso' | 'atencao' | 'erro';
+export type PapelFaixa = 'status' | 'alert' | 'note';
+
+const ICONE: Record<TipoFaixa, NomeIcone> = { info: 'info', sucesso: 'sucesso', atencao: 'atencao', erro: 'erro' };
+
+interface Props {
+  tipo: TipoFaixa;
+  topo?: boolean;
+  /** Padrão: `alert` para erro, `status` para os demais. */
+  papel?: PapelFaixa;
+  children: ReactNode;
+  /** Ação opcional (link ou botão de texto) ao lado da mensagem. */
+  acao?: ReactNode;
+  aoFechar?: () => void;
+  /** Obrigatório com `aoFechar` (ex.: "Fechar aviso de instalação"). */
+  rotuloFechar?: string;
+}
+
+export function Faixa({ tipo, topo, papel, children, acao, aoFechar, rotuloFechar }: Props) {
+  const papelFinal = papel ?? (tipo === 'erro' ? 'alert' : 'status');
+  return (
+    <div
+      className={juntar(estilos.faixa, estilos[tipo], topo && estilos.topo)}
+      role={papelFinal}
+      aria-live={papelFinal === 'status' ? 'polite' : undefined}
+    >
+      <Icone nome={ICONE[tipo]} />
+      <p className={estilos.texto}>{children}</p>
+      {acao}
+      {aoFechar ? (
+        <button type="button" className={estilos.fechar} aria-label={rotuloFechar} onClick={aoFechar}>
+          <Icone nome="fechar" />
+        </button>
+      ) : null}
+    </div>
+  );
+}
