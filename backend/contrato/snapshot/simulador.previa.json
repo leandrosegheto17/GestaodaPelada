@@ -1,7 +1,7 @@
 {
   "direcao": "resposta",
   "esquema": {
-    "anyOf": [
+    "oneOf": [
       {
         "additionalProperties": false,
         "properties": {
@@ -14,7 +14,20 @@
             "type": "string"
           },
           "maiorNPossivel": {
-            "type": "null"
+            "anyOf": [
+              {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "motivo": {
+            "const": "aptos_insuficientes",
+            "type": "string"
           },
           "reservas": {
             "maximum": 9007199254740991,
@@ -26,73 +39,10 @@
             "type": "number"
           },
           "valida": {
-            "const": true,
             "type": "boolean"
           }
         },
-        "required": ["formato", "valida", "descricao", "times", "reservas", "maiorNPossivel"],
-        "type": "object"
-      },
-      {
-        "additionalProperties": false,
-        "properties": {
-          "descricao": {
-            "minLength": 1,
-            "type": "string"
-          },
-          "formato": {
-            "const": "dois_times",
-            "type": "string"
-          },
-          "maiorNPossivel": {
-            "maximum": 9007199254740991,
-            "minimum": 0,
-            "type": "integer"
-          },
-          "motivo": {
-            "const": "aptos_insuficientes",
-            "type": "string"
-          },
-          "valida": {
-            "const": false,
-            "type": "boolean"
-          }
-        },
-        "required": ["formato", "valida", "motivo", "descricao", "maiorNPossivel"],
-        "type": "object"
-      },
-      {
-        "additionalProperties": false,
-        "properties": {
-          "descricao": {
-            "minLength": 1,
-            "type": "string"
-          },
-          "formato": {
-            "const": "varios_times",
-            "type": "string"
-          },
-          "tamanhoIncompleto": {
-            "maximum": 9007199254740991,
-            "minimum": 0,
-            "type": "integer"
-          },
-          "times": {
-            "maximum": 9007199254740991,
-            "minimum": 0,
-            "type": "integer"
-          },
-          "timesCompletos": {
-            "maximum": 9007199254740991,
-            "minimum": 0,
-            "type": "integer"
-          },
-          "valida": {
-            "const": true,
-            "type": "boolean"
-          }
-        },
-        "required": ["formato", "valida", "descricao", "times", "timesCompletos", "tamanhoIncompleto"],
+        "required": ["formato", "valida", "descricao", "maiorNPossivel"],
         "type": "object"
       },
       {
@@ -122,12 +72,26 @@
               }
             ]
           },
+          "tamanhoIncompleto": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "times": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "timesCompletos": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
           "valida": {
-            "const": false,
             "type": "boolean"
           }
         },
-        "required": ["formato", "valida", "motivo", "descricao", "nSugerido"],
+        "required": ["formato", "valida", "descricao"],
         "type": "object"
       }
     ]
