@@ -6,3 +6,4 @@ dist
 coverage
 frontend/web/src/estilos/tokens.css
 frontend/web/public/fontes
+frontend/web/public/icones

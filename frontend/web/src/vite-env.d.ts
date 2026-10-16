@@ -1,4 +1,5 @@
 /// <reference types="vite/client" />
+/// <reference types="vite-plugin-pwa/react" />
 
 interface ImportMetaEnv {
   /** Recursos desligados no build, separados por vírgula (simulador, pdf, financeiro, privacidade). */
