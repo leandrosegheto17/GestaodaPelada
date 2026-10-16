@@ -10,6 +10,7 @@ const formatoMes = new Intl.DateTimeFormat('pt-BR', { month: 'long', year: 'nume
 const formatoInstante = new Intl.DateTimeFormat('pt-BR', {
   timeZone: FUSO,
   hourCycle: 'h23',
+  year: 'numeric',
   day: '2-digit',
   month: '2-digit',
   hour: '2-digit',
@@ -95,4 +96,15 @@ export function hora(iso: string): string {
 export function diaMesHora(iso: string): string {
   const p = partesDoInstante(iso);
   return `${p.day}/${p.month} ${p.hour}:${p.minute}`;
+}
+
+/** Instante ISO → `dd/mm/aaaa hh:mm` em America/Sao_Paulo. */
+export function dataHoraCompleta(iso: string): string {
+  const p = partesDoInstante(iso);
+  return `${p.day}/${p.month}/${p.year} ${p.hour}:${p.minute}`;
+}
+
+/** `2026-10` → `out` (três letras do mês, sem ponto). */
+export function siglaMes(mes: string): string {
+  return nomeMes(mes).slice(0, 3);
 }
