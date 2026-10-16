@@ -1,0 +1,13 @@
+{
+  "direcao": "entrada",
+  "esquema": {
+    "additionalProperties": false,
+    "properties": {
+      "acessaFinanceiro": {
+        "type": "boolean"
+      }
+    },
+    "required": ["acessaFinanceiro"],
+    "type": "object"
+  }
+}

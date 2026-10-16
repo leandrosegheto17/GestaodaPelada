@@ -1,0 +1,50 @@
+{
+  "direcao": "resposta",
+  "esquema": {
+    "oneOf": [
+      {
+        "additionalProperties": false,
+        "properties": {
+          "contaId": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "contaNova": {
+            "const": true,
+            "type": "boolean"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "senhaTemporaria": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": ["contaId", "nome", "contaNova", "senhaTemporaria"],
+        "type": "object"
+      },
+      {
+        "additionalProperties": false,
+        "properties": {
+          "contaId": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "contaNova": {
+            "const": false,
+            "type": "boolean"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "senhaTemporaria": {
+            "type": "null"
+          }
+        },
+        "required": ["contaId", "nome", "contaNova", "senhaTemporaria"],
+        "type": "object"
+      }
+    ]
+  }
+}

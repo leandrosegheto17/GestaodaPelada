@@ -1,0 +1,21 @@
+{
+  "direcao": "resposta",
+  "esquema": {
+    "additionalProperties": false,
+    "properties": {
+      "contaId": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "nome": {
+        "type": "string"
+      },
+      "senhaTemporaria": {
+        "minLength": 1,
+        "type": "string"
+      }
+    },
+    "required": ["contaId", "nome", "senhaTemporaria"],
+    "type": "object"
+  }
+}

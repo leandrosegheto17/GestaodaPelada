@@ -1,0 +1,141 @@
+{
+  "direcao": "resposta",
+  "esquema": {
+    "additionalProperties": false,
+    "properties": {
+      "grupo": {
+        "additionalProperties": false,
+        "properties": {
+          "diaSemana": {
+            "enum": ["domingo", "segunda", "terca", "quarta", "quinta", "sexta", "sabado"],
+            "type": "string"
+          },
+          "frequencia": {
+            "enum": ["semanal", "quinzenal", "mensal"],
+            "type": "string"
+          },
+          "horario": {
+            "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$",
+            "type": "string"
+          },
+          "id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "slug": {
+            "pattern": "^[a-z0-9-]{1,64}$",
+            "type": "string"
+          },
+          "urlPublica": {
+            "format": "uri",
+            "type": "string"
+          }
+        },
+        "required": ["id", "nome", "slug", "urlPublica", "diaSemana", "frequencia", "horario"],
+        "type": "object"
+      },
+      "hoje": {
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+        "type": "string"
+      },
+      "inicio": {
+        "additionalProperties": false,
+        "properties": {
+          "admins": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "aparelhosNaSemana": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "dataSugeridaPartida": {
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "type": "string"
+          },
+          "escalacaoConfirmadaPara": {
+            "anyOf": [
+              {
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "habilidades": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "jogadoresAtivos": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "partidaNaDataSugerida": {
+            "type": "boolean"
+          },
+          "partidasNoMes": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "pesosPadrao": {
+            "type": "boolean"
+          },
+          "pesosVigentesDesde": {
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "type": "string"
+          },
+          "proximoDiaDeJogo": {
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "type": "string"
+          },
+          "saldoAtualCentavos": {
+            "anyOf": [
+              {
+                "maximum": 9007199254740991,
+                "minimum": -9007199254740991,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "dataSugeridaPartida",
+          "partidaNaDataSugerida",
+          "proximoDiaDeJogo",
+          "partidasNoMes",
+          "jogadoresAtivos",
+          "habilidades",
+          "pesosVigentesDesde",
+          "admins",
+          "aparelhosNaSemana"
+        ],
+        "type": "object"
+      },
+      "permissoes": {
+        "additionalProperties": false,
+        "properties": {
+          "acessaFinanceiro": {
+            "type": "boolean"
+          }
+        },
+        "required": ["acessaFinanceiro"],
+        "type": "object"
+      }
+    },
+    "required": ["grupo", "permissoes", "hoje", "inicio"],
+    "type": "object"
+  }
+}

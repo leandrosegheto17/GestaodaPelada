@@ -6,3 +6,5 @@ export type { ZodError } from 'zod';
 export * from './registro.js';
 export * from './sessao.js';
 export * from './publico.js';
+export * from './grupo.js';
+export * from './admins.js';

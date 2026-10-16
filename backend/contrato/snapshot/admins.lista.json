@@ -1,0 +1,39 @@
+{
+  "direcao": "resposta",
+  "esquema": {
+    "additionalProperties": false,
+    "properties": {
+      "admins": {
+        "items": {
+          "additionalProperties": false,
+          "properties": {
+            "acessaFinanceiro": {
+              "type": "boolean"
+            },
+            "contaId": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            },
+            "nome": {
+              "type": "string"
+            },
+            "voce": {
+              "type": "boolean"
+            }
+          },
+          "required": ["contaId", "nome", "email", "acessaFinanceiro", "voce"],
+          "type": "object"
+        },
+        "type": "array"
+      },
+      "podeGerirFinanceiro": {
+        "type": "boolean"
+      }
+    },
+    "required": ["admins", "podeGerirFinanceiro"],
+    "type": "object"
+  }
+}
