@@ -7,7 +7,7 @@ dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuá
 
 Atualizado: 2026-10-16 18:08
 
-Resumo: Não executada 105 · Executada (aguarda teste) 103 · total 208
+Resumo: Não executada 104 · Executada (aguarda teste) 104 · total 208
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -116,7 +116,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 101 | TP-0101 | executor | ✔ | Lista e item, navegador de mês e tabela de semanas | L22 | TP-0088, TP-0092, TP-0095 | Executada (aguarda teste) |
 | 102 | TP-0102 | executor | ✔ | Tabela de ranking, marca de rodada e legenda | L22 | TP-0020, TP-0088, TP-0092, TP-0093 | Executada (aguarda teste) |
 | 103 | TP-0103 | executor | ✔ | Seletor de situação e contagem fixa | L22 | TP-0024, TP-0088, TP-0093 | Executada (aguarda teste) |
-| 104 | TP-0104 | executor | ✔ | Aviso "O app mudou de endereço" | L22 | TP-0095 | Não executada |
+| 104 | TP-0104 | executor | ✔ | Aviso "O app mudou de endereço" | L22 | TP-0095 | Executada (aguarda teste) |
 | 105 | TP-0105 | executor | ✔ | Sessão no web e guarda de rotas | L23 | TP-0019, TP-0091 | Não executada |
 | 106 | TP-0106 | executor | ✔ | Layout do admin (barra, grupo ativo, menu da conta) | L23 | TP-0021, TP-0088, TP-0091, TP-0098, TP-0099, TP-0104, TP-0105 | Não executada |
 | 107 | TP-0107 | executor | ✔ | Armazenamento local (grupo lembrado, id anônimo, último ranking) | L23 | TP-0088 | Não executada |

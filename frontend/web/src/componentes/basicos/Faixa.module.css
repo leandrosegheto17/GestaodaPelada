@@ -30,6 +30,9 @@
   flex: 1;
   margin: 0;
 }
+.texto strong {
+  display: block;
+}
 .fechar {
   margin: -10px -10px -10px 0;
   width: var(--alvo-toque);
