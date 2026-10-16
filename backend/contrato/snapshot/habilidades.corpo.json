@@ -1,0 +1,15 @@
+{
+  "direcao": "entrada",
+  "esquema": {
+    "additionalProperties": false,
+    "properties": {
+      "nome": {
+        "maxLength": 30,
+        "minLength": 2,
+        "type": "string"
+      }
+    },
+    "required": ["nome"],
+    "type": "object"
+  }
+}

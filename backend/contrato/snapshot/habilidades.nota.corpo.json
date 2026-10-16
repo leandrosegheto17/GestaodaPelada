@@ -1,0 +1,22 @@
+{
+  "direcao": "entrada",
+  "esquema": {
+    "additionalProperties": false,
+    "properties": {
+      "nota": {
+        "anyOf": [
+          {
+            "maximum": 10,
+            "minimum": 1,
+            "type": "integer"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      }
+    },
+    "required": ["nota"],
+    "type": "object"
+  }
+}

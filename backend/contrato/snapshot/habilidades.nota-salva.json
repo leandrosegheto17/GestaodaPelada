@@ -1,0 +1,34 @@
+{
+  "direcao": "resposta",
+  "esquema": {
+    "additionalProperties": false,
+    "properties": {
+      "habilidadeId": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "nivel": {
+        "maximum": 10,
+        "minimum": 1,
+        "type": "number"
+      },
+      "nota": {
+        "anyOf": [
+          {
+            "maximum": 10,
+            "minimum": 1,
+            "type": "integer"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "semNota": {
+        "type": "boolean"
+      }
+    },
+    "required": ["habilidadeId", "nota", "nivel", "semNota"],
+    "type": "object"
+  }
+}
