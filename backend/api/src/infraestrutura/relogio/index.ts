@@ -23,8 +23,3 @@ export function criarRelogio(agora: () => Date = () => new Date()): Relogio {
     agoraIso: () => agora().toISOString(),
   };
 }
-
-/** Relógio que sempre devolve o mesmo instante (testes). */
-export function relogioFixo(instanteIso: string): Relogio {
-  return criarRelogio(() => new Date(instanteIso));
-}

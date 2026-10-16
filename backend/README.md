@@ -25,3 +25,6 @@ O Worker acessa o Postgres pelo binding `HYPERDRIVE`. Localmente, o `wrangler de
 
 - Scripts (`pnpm migrar`) leem `DATABASE_URL`; host que não seja local exige `--alvo producao|teste`.
 - Testes da API que usam banco leem `DATABASE_URL_TESTE` (Postgres local descartável); sem ela, esses testes são pulados.
+
+Para subir só o banco local: `docker compose up db`. Os testes da API criam o banco `pelada_teste`
+nesse servidor e aplicam as migrações antes da suíte (`DATABASE_URL_TESTE` muda o endereço).

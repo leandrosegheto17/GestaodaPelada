@@ -2,12 +2,12 @@ import { erroPadrao, LIMITES, data } from '@pelada/contrato';
 import { describe, expect, it, vi } from 'vitest';
 import { criarApp } from '../src/entrada/app.js';
 import { responderValidacao } from '../src/entrada/erros.js';
-import { relogioFixo } from '../src/infraestrutura/relogio/index.js';
+import { relogioFixo } from './apoio/relogio.js';
 
 const env = { URL_PUBLICA: 'https://pelada.exemplo.dev', DONO_EMAIL: 'dono@exemplo.com' };
 
 function app() {
-  const a = criarApp({ relogio: relogioFixo('2026-10-22T12:00:00Z') });
+  const a = criarApp({ relogio: relogioFixo('2026-10-22') });
   a.post('/api/teste/escrita', (c) => c.json({ ok: true }));
   a.get('/api/teste/erro', () => {
     throw new Error('segredo-interno');
