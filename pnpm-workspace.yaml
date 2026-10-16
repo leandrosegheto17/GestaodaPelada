@@ -3,3 +3,5 @@ packages:
   - backend/dominio
   - backend/api
   - frontend/web
+allowBuilds:
+  unrs-resolver: false

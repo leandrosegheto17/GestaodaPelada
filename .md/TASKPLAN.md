@@ -5,16 +5,16 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-16 16:22
+Atualizado: 2026-10-16 16:24
 
-Resumo: Não executada 207 · Executada (aguarda teste) 1 · total 208
+Resumo: Não executada 206 · Executada (aguarda teste) 2 · total 208
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
 | # | Tarefa | Agente | Plano | Título | Lote | Dep | Estado |
 |---|---|---|---|---|---|---|---|
 | 1 | TP-0001 | executor | ✔ | Monorepo pnpm com os 4 pacotes, TypeScript estrito, ESLint, Prettier, Vitest, READMEs e... | L01 | — | Executada (aguarda teste) |
-| 2 | TP-0002 | executor | ✔ | Lint de fronteiras e checagens de código (IDs de tarefa, URLs absolutas) | L01 | TP-0001 | Não executada |
+| 2 | TP-0002 | executor | ✔ | Lint de fronteiras e checagens de código (IDs de tarefa, URLs absolutas) | L01 | TP-0001 | Executada (aguarda teste) |
 | 3 | TP-0003 | executor | ✔ | CI base (ci.yml) | L01 | TP-0001, TP-0002 | Não executada |
 | 4 | TP-0004 | executor | ✔ | Auto-hospedar as fontes do mockup (pendência da UX-SPEC §0) | L01 | — | Não executada |
 | 5 | TP-0005 | executor | ✔ | Contrato base: erro padrão, enums, limites e tipos primitivos | L01 | TP-0001 | Não executada |
