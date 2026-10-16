@@ -1,0 +1,9 @@
+.voltar {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--esp-1);
+  min-height: var(--alvo-toque);
+  font-weight: var(--peso-semi);
+  text-decoration: none;
+  color: var(--cor-texto);
+}

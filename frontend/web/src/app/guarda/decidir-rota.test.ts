@@ -49,8 +49,10 @@ describe('decidirRota', () => {
 });
 
 describe('destinoAposEntrar', () => {
-  it('troca de senha obrigatória vai para a nova senha, mesmo com destino', () => {
-    expect(destinoAposEntrar(trocaDeSenha, '/admin/g-quinta')).toBe('/entrar/nova-senha');
+  it('troca de senha obrigatória vai para a nova senha, levando o destino válido junto', () => {
+    expect(destinoAposEntrar(trocaDeSenha, '/admin/g-quinta')).toBe('/entrar/nova-senha?destino=%2Fadmin%2Fg-quinta');
+    expect(destinoAposEntrar(trocaDeSenha, null)).toBe('/entrar/nova-senha');
+    expect(destinoAposEntrar(trocaDeSenha, '//evil.com')).toBe('/entrar/nova-senha');
   });
 
   it('dono sem destino vai para /dono; admin sem destino para /admin', () => {

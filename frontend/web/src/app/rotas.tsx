@@ -14,6 +14,7 @@ export const roteador = createBrowserRouter([
     HydrateFallback: SemFallback,
     lazy: () => import('../telas/sem-grupo/SemGrupo'),
   },
+  { path: '/entrar', lazy: () => import('../telas/entrar/Entrar') },
   { path: '/g/:slug', lazy: () => import('../telas/ranking/PaginaRanking') },
   // Áreas com login (/admin, /conta, /dono, /entrar/nova-senha): as telas entram aqui como filhas.
   {

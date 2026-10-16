@@ -27,8 +27,11 @@ export function decidirRota(
 
 /** Para onde ir logo depois de entrar ou trocar a senha. */
 export function destinoAposEntrar(sessao: SessaoEu, destino: string | null | undefined): string {
-  if (sessao.escopo === 'troca_de_senha') return ROTA_NOVA_SENHA;
   const valido = lerDestino(destino);
+  // Na troca de senha obrigatória, o destino segue junto para a tela de nova senha continuar o fluxo.
+  if (sessao.escopo === 'troca_de_senha') {
+    return valido ? `${ROTA_NOVA_SENHA}?destino=${encodeURIComponent(valido)}` : ROTA_NOVA_SENHA;
+  }
   if (valido) return valido;
   return sessao.conta.eDono ? '/dono' : '/admin';
 }

@@ -6,7 +6,7 @@ import { ErroApi } from './erros';
 export const chaveSessao = ['sessao', 'eu'] as const;
 
 /** `null` = sem sessão (estado normal numa página pública, não um erro). */
-async function lerSessao(): Promise<SessaoEu | null> {
+export async function lerSessao(): Promise<SessaoEu | null> {
   try {
     return await ler('/sessao/eu', sessaoEu);
   } catch (erro) {
