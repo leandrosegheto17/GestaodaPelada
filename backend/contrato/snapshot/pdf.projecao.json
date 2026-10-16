@@ -1,0 +1,114 @@
+{
+  "direcao": "resposta",
+  "esquema": {
+    "additionalProperties": false,
+    "properties": {
+      "colunas": {
+        "items": {
+          "additionalProperties": false,
+          "properties": {
+            "choveu": {
+              "type": "boolean"
+            },
+            "data": {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "type": "string"
+            },
+            "doMesExibido": {
+              "type": "boolean"
+            }
+          },
+          "required": ["data", "choveu", "doMesExibido"],
+          "type": "object"
+        },
+        "maxItems": 12,
+        "type": "array"
+      },
+      "geradoEm": {
+        "format": "date-time",
+        "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
+        "type": "string"
+      },
+      "grupo": {
+        "additionalProperties": false,
+        "properties": {
+          "nome": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          }
+        },
+        "required": ["nome", "slug"],
+        "type": "object"
+      },
+      "linhas": {
+        "items": {
+          "additionalProperties": false,
+          "properties": {
+            "apelido": {
+              "type": "string"
+            },
+            "posicao": {
+              "maximum": 9007199254740991,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "ptsFinal": {
+              "maximum": 9007199254740991,
+              "minimum": -9007199254740991,
+              "type": "integer"
+            },
+            "ptsInicial": {
+              "maximum": 9007199254740991,
+              "minimum": -9007199254740991,
+              "type": "integer"
+            },
+            "rodadas": {
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "pontos": {
+                    "anyOf": [
+                      {
+                        "maximum": 9007199254740991,
+                        "minimum": -9007199254740991,
+                        "type": "integer"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "situacao": {
+                    "enum": ["presente", "lesionado", "expulso", "falta", "fora"],
+                    "type": "string"
+                  }
+                },
+                "required": ["situacao", "pontos"],
+                "type": "object"
+              },
+              "type": "array"
+            }
+          },
+          "required": ["posicao", "apelido", "ptsInicial", "rodadas", "ptsFinal"],
+          "type": "object"
+        },
+        "type": "array"
+      },
+      "mes": {
+        "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+        "type": "string"
+      },
+      "semPartidasNoMes": {
+        "type": "boolean"
+      },
+      "urlPublica": {
+        "format": "uri",
+        "type": "string"
+      }
+    },
+    "required": ["grupo", "mes", "geradoEm", "urlPublica", "semPartidasNoMes", "colunas", "linhas"],
+    "type": "object"
+  }
+}

@@ -6,6 +6,7 @@ import { esquemasElenco } from './elenco.js';
 import { esquemasGrupo } from './grupo.js';
 import { esquemasHabilidades } from './habilidades.js';
 import { esquemasPartidas } from './partidas.js';
+import { esquemasPdf } from './pdf.js';
 import { esquemasPesos } from './pesos.js';
 import { esquemasPublico } from './publico.js';
 import { esquemasSessao } from './sessao.js';
@@ -26,6 +27,7 @@ export const REGISTRO: Esquemas = {
   ...esquemasGrupo,
   ...esquemasHabilidades,
   ...esquemasPartidas,
+  ...esquemasPdf,
   ...esquemasPesos,
   ...esquemasPublico,
   ...esquemasSessao,
