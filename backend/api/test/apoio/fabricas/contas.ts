@@ -34,6 +34,7 @@ export async function criarConta(
       .deleteFrom('pedidos_reset')
       .where((eb) => eb.or([eb('conta_id', '=', id), eb('resolvido_por', '=', id)]))
       .execute();
+    await banco.deleteFrom('partidas').where('alterada_por', '=', id).execute();
     await banco.deleteFrom('auditoria').where('autor_conta_id', '=', id).execute();
     await banco
       .deleteFrom('vinculos_admin')
