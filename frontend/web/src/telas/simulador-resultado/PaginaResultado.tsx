@@ -6,6 +6,7 @@ import { useSugerir } from '../../dados/simulador';
 import { entradaDoEstado } from '../simulador/navegacao';
 import { EsqueletoResultado } from './EsqueletoResultado';
 import { ResultadoDois } from './ResultadoDois';
+import { ResultadoVarios } from './ResultadoVarios';
 
 const ERRO_PADRAO = 'Não foi possível sugerir os times. Tente de novo.';
 
@@ -30,6 +31,11 @@ export function Component() {
   if (sugestao.data.formato === 'dois_times' && entrada.formato === 'dois_times') {
     return (
       <ResultadoDois key={rodada} grupoId={grupoId} entrada={entrada} sugestao={sugestao.data} aoRefazer={refazer} />
+    );
+  }
+  if (sugestao.data.formato === 'varios_times' && entrada.formato === 'varios_times') {
+    return (
+      <ResultadoVarios key={rodada} grupoId={grupoId} entrada={entrada} sugestao={sugestao.data} aoRefazer={refazer} />
     );
   }
   return null;
