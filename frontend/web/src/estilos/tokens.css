@@ -1,0 +1,127 @@
+/*
+ * tokens.css — Gestão da Pelada, direção A "Gramado" (aprovada na etapa B2).
+ * ÚNICA definição de cores, tipografia, espaçamentos, raios, sombras e breakpoints.
+ * A implementação copia este arquivo SEM ALTERAR (frontend/web/src/estilos/tokens.css).
+ * Contrastes calculados (WCAG 2.1) ao lado de cada cor de texto; a tabela completa está na galeria.
+ * Fontes: ver fontes/fontes.css (Barlow e Barlow Condensed, SIL OFL 1.1).
+ */
+:root {
+  /* ---------- Cores: base ---------- */
+  --cor-fundo: #f9fbf8;
+  --cor-superficie: #fefffd;
+  --cor-zebra: #f2f6f3;
+  --cor-texto: #14201a; /* 16,1:1 sobre fundo; 16,8:1 sobre superfície */
+  --cor-texto-sec: #4a5a50; /* 7,0:1 sobre fundo; 6,8:1 sobre zebra */
+  --cor-linha: #dce5df; /* decorativa (divisórias) */
+  --cor-contorno: #6b7a70; /* contorno de campo/controle: 4,5:1 sobre superfície (>= 3:1) */
+  --cor-desabilitado-fundo: #ecefed;
+  --cor-desabilitado-texto: #6b7a70; /* controle desabilitado (isento de contraste; ainda 3,9:1) */
+  --cor-esqueleto: #e4eae6;
+
+  /* ---------- Cores: marca ---------- */
+  --cor-verde: #0b6b34; /* barra; texto claro 6,6:1 */
+  --cor-verde-faixa: #0e7a3c; /* faixa clara do gramado; texto claro 5,4:1 */
+  --cor-sobre-verde: #fefffd;
+  --cor-sobre-verde-sec: #eaf7ee; /* 4,9:1 no pior caso (faixa clara) */
+  --cor-amarelo: #ffd23f; /* ação principal */
+  --cor-amarelo-sombra: #c9a21e; /* decorativa */
+  --cor-sobre-amarelo: #14201a; /* 11,6:1 */
+
+  /* ---------- Cores: marcações de presença ---------- */
+  --cor-p-fundo: #d7f0df;
+  --cor-p-texto: #0a4d26; /* 8,3:1 */
+  --cor-l-fundo: #fff0c2;
+  --cor-l-texto: #6b4a00; /* 7,1:1 */
+  --cor-e-fundo: #fbd9d9;
+  --cor-e-texto: #8a1414; /* 7,3:1 */
+  --cor-f-fundo: #ecefed;
+  --cor-f-texto: #4a5a50; /* 6,3:1 */
+  --cor-chuva: #1e5aa8; /* ícone de chuva; 6,8:1 */
+  --cor-sol: #8a5a00; /* ícone de sol (partida sem chuva); 5,9:1 */
+
+  /* ---------- Cores: mensagens ---------- */
+  --cor-info-fundo: #dce8f7;
+  --cor-info-texto: #163e73; /* 8,6:1 */
+  --cor-sucesso-fundo: #d7f0df;
+  --cor-sucesso-texto: #0a4d26; /* 8,3:1 */
+  --cor-atencao-fundo: #fff0c2;
+  --cor-atencao-texto: #6b4a00; /* 7,1:1 */
+  --cor-erro-fundo: #fbd9d9;
+  --cor-erro-texto: #8a1414; /* 7,3:1; como texto sobre superfície 9,6:1 */
+  --cor-destrutivo: #8a1414;
+  --cor-sobre-destrutivo: #fefffd; /* 9,6:1 */
+
+  /* ---------- Foco ---------- */
+  --cor-foco: #14201a; /* 16,8:1 */
+  --cor-foco-sobre-verde: #ffd23f; /* 3,8:1 no pior caso (>= 3:1) */
+  --foco-largura: 3px;
+  --foco-afastamento: 2px;
+
+  /* ---------- Tipografia ---------- */
+  --fonte-titulo: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --fonte-texto: 'Barlow', 'Segoe UI', sans-serif;
+  --peso-normal: 400;
+  --peso-medio: 500;
+  --peso-semi: 600;
+  --peso-forte: 700;
+  --peso-extra: 800;
+  --texto-xs: 12px; /* rótulos sob as letras do seletor de situação */
+  --texto-sm: 14px;
+  --texto-md: 16px; /* corpo */
+  --texto-lg: 18px;
+  --texto-xl: 20px;
+  --texto-2xl: 24px;
+  --texto-3xl: 28px;
+  --texto-4xl: 40px;
+  --texto-tabela-cabecalho: 13px; /* cabeçalho da tabela do ranking (caixa alta) */
+  --texto-marca: 15px; /* letra dentro da marca P/L/E/F */
+  --texto-marca-legenda: 13px;
+  --texto-pontos: 22px; /* colunas Pts inicial / Pts final do ranking */
+  --texto-canto: 10px; /* letra de canto L/E na marca (pista não-cromática, complementa o texto oculto) */
+  /* PDF (P01): tamanhos em pt, mínimo de 7 pt (RF-51) */
+  --pdf-titulo: 20pt;
+  --pdf-sub: 12pt;
+  --pdf-pontos: 10pt;
+  --pdf-texto: 8.5pt;
+  --pdf-pequeno: 7.5pt;
+  --pdf-rodape: 7pt;
+  --pdf-mes: 7pt;
+  --altura-linha: 1.4;
+  --altura-linha-titulo: 1.05;
+  --espacamento-caixa-alta: 0.02em;
+
+  /* ---------- Espaçamento ---------- */
+  --esp-1: 4px;
+  --esp-2: 8px;
+  --esp-3: 12px;
+  --esp-4: 16px;
+  --esp-5: 20px;
+  --esp-6: 24px;
+  --esp-8: 32px;
+  --esp-12: 48px;
+
+  /* ---------- Tamanhos ---------- */
+  --alvo-toque: 44px; /* mínimo de toque (RNF-04) */
+  --altura-botao: 48px;
+  --largura-conteudo: 960px;
+  --largura-formulario: 560px;
+  --largura-faixa-gramado: 56px;
+  --tamanho-marca: 30px;
+  --tamanho-marca-legenda: 26px;
+
+  /* ---------- Raios ---------- */
+  --raio: 10px;
+  --raio-sm: 8px;
+  --raio-pilula: 999px;
+
+  /* ---------- Sombras ---------- */
+  --sombra-botao: 0 2px 0 var(--cor-amarelo-sombra);
+  --sombra-coluna-fixa: 6px 0 6px -6px rgba(20, 32, 26, 0.25);
+  --sombra-flutuante: 0 -8px 24px rgba(20, 32, 26, 0.18);
+  --sombra-dialogo: 0 12px 40px rgba(20, 32, 26, 0.3);
+  --cor-veu: rgba(20, 32, 26, 0.55);
+
+  /* ---------- Breakpoints (referência; media queries não aceitam var()) ---------- */
+  --bp-tablet: 600px; /* @media (min-width:600px) */
+  --bp-desktop: 1024px; /* @media (min-width:1024px) */
+}
