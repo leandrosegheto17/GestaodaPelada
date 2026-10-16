@@ -36,4 +36,8 @@ export const CASOS: Record<string, Caso> = {
     tipo: 'nao_se_aplica',
     justificativa: 'Rota de sessão sem dado de grupo: só registra o pedido da própria conta.',
   },
+  'POST /api/sessao/trocar-senha': {
+    tipo: 'nao_se_aplica',
+    justificativa: 'Rota de sessão: troca só a senha da própria conta, sem dado de grupo.',
+  },
 };
