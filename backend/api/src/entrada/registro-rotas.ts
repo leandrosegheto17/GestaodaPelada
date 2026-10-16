@@ -1,5 +1,6 @@
 import type { Hono } from 'hono';
 import type { AppEnv } from './app.js';
+import { rotaDonoGrupo } from './rotas/dono/grupo.js';
 import { rotaDonoPainel } from './rotas/dono/painel.js';
 import { rotaSessaoEntrar } from './rotas/sessao-entrar.js';
 import { rotaSessaoEsqueciSenha } from './rotas/sessao-esqueci-senha.js';
@@ -15,4 +16,5 @@ export const ROTAS: readonly Hono<AppEnv>[] = [
   rotaSessaoSair,
   rotaSessaoTrocarSenha,
   rotaDonoPainel,
+  rotaDonoGrupo,
 ];
