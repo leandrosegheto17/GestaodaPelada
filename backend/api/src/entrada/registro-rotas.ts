@@ -29,6 +29,7 @@ import { rotaPesosLer, rotaPesosSalvar } from './rotas/grupos/pesos/pesos.js';
 import { rotaPartidasListar } from './rotas/grupos/partidas/listar.js';
 import { rotaPartidaNova } from './rotas/grupos/partidas/nova.js';
 import { rotaPartidaLer } from './rotas/grupos/partidas/ler.js';
+import { rotaPartidaEditar, rotaPartidaExcluir, rotaPartidaSalvar } from './rotas/grupos/partidas/escrever.js';
 
 /** Todas as rotas de negócio. Cada rota nova entra aqui, depois dos middlewares do app (ADR-005). */
 export const ROTAS: readonly Hono<AppEnv>[] = [
@@ -64,4 +65,7 @@ export const ROTAS: readonly Hono<AppEnv>[] = [
   rotaPartidasListar,
   rotaPartidaNova,
   rotaPartidaLer,
+  rotaPartidaSalvar,
+  rotaPartidaEditar,
+  rotaPartidaExcluir,
 ];

@@ -92,4 +92,11 @@ export const CASOS: Record<string, Caso> = {
   'GET /api/grupos/:grupoId/partidas': { tipo: 'grupo' },
   'GET /api/grupos/:grupoId/partidas/nova': { tipo: 'grupo' },
   'GET /api/grupos/:grupoId/partidas/:data{[0-9-]+}': { tipo: 'grupo', parametros: () => ({ data: '2026-10-15' }) },
+  'POST /api/grupos/:grupoId/partidas': { tipo: 'grupo', corpo: { data: '2026-10-15', choveu: false, marcacoes: [] } },
+  'PUT /api/grupos/:grupoId/partidas/:data{[0-9-]+}': {
+    tipo: 'grupo',
+    parametros: () => ({ data: '2026-10-15' }),
+    corpo: { data: '2026-10-15', choveu: false, marcacoes: [] },
+  },
+  'DELETE /api/grupos/:grupoId/partidas/:data{[0-9-]+}': { tipo: 'grupo', parametros: () => ({ data: '2026-10-15' }) },
 };
