@@ -1,0 +1,98 @@
+{
+  "direcao": "resposta",
+  "esquema": {
+    "additionalProperties": false,
+    "properties": {
+      "anoNascimento": {
+        "maximum": 9007199254740991,
+        "minimum": -9007199254740991,
+        "type": "integer"
+      },
+      "apelido": {
+        "type": "string"
+      },
+      "id": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "nivel": {
+        "maximum": 10,
+        "minimum": 1,
+        "type": "number"
+      },
+      "notas": {
+        "items": {
+          "additionalProperties": false,
+          "properties": {
+            "habilidade": {
+              "type": "string"
+            },
+            "habilidadeId": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "nota": {
+              "anyOf": [
+                {
+                  "maximum": 10,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": ["habilidadeId", "habilidade", "nota"],
+          "type": "object"
+        },
+        "type": "array"
+      },
+      "posicao": {
+        "enum": ["goleiro", "defensor", "meio_campo", "atacante"],
+        "type": "string"
+      },
+      "semNota": {
+        "type": "boolean"
+      },
+      "situacao": {
+        "additionalProperties": false,
+        "properties": {
+          "ativo": {
+            "type": "boolean"
+          },
+          "desde": {
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "type": "string"
+          }
+        },
+        "required": ["ativo", "desde"],
+        "type": "object"
+      },
+      "telefone": {
+        "anyOf": [
+          {
+            "pattern": "^\\d{11}$",
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      }
+    },
+    "required": [
+      "id",
+      "apelido",
+      "anoNascimento",
+      "posicao",
+      "telefone",
+      "situacao",
+      "nivel",
+      "semNota",
+      "notas"
+    ],
+    "type": "object"
+  }
+}

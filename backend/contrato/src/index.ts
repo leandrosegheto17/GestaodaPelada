@@ -9,3 +9,4 @@ export * from './publico.js';
 export * from './grupo.js';
 export * from './admins.js';
 export * from './dono.js';
+export * from './elenco.js';

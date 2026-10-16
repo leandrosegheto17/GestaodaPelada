@@ -1,0 +1,31 @@
+{
+  "direcao": "entrada",
+  "esquema": {
+    "additionalProperties": false,
+    "properties": {
+      "anoNascimento": {
+        "maximum": 9007199254740991,
+        "minimum": 1940,
+        "type": "integer"
+      },
+      "apelido": {
+        "maxLength": 30,
+        "minLength": 2,
+        "type": "string"
+      },
+      "dataEntrada": {
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+        "type": "string"
+      },
+      "posicao": {
+        "enum": ["goleiro", "defensor", "meio_campo", "atacante"],
+        "type": "string"
+      },
+      "telefone": {
+        "type": ["string", "null"]
+      }
+    },
+    "required": ["apelido", "anoNascimento", "posicao"],
+    "type": "object"
+  }
+}

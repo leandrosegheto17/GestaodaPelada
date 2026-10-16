@@ -1,0 +1,72 @@
+{
+  "direcao": "resposta",
+  "esquema": {
+    "additionalProperties": false,
+    "properties": {
+      "ativos": {
+        "items": {
+          "additionalProperties": false,
+          "properties": {
+            "apelido": {
+              "type": "string"
+            },
+            "id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "nivel": {
+              "maximum": 10,
+              "minimum": 1,
+              "type": "number"
+            },
+            "posicao": {
+              "enum": ["goleiro", "defensor", "meio_campo", "atacante"],
+              "type": "string"
+            },
+            "semNota": {
+              "type": "boolean"
+            }
+          },
+          "required": ["id", "apelido", "posicao", "nivel", "semNota"],
+          "type": "object"
+        },
+        "type": "array"
+      },
+      "inativos": {
+        "items": {
+          "additionalProperties": false,
+          "properties": {
+            "apelido": {
+              "type": "string"
+            },
+            "id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "inativoDesde": {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "type": "string"
+            },
+            "nivel": {
+              "maximum": 10,
+              "minimum": 1,
+              "type": "number"
+            },
+            "posicao": {
+              "enum": ["goleiro", "defensor", "meio_campo", "atacante"],
+              "type": "string"
+            },
+            "semNota": {
+              "type": "boolean"
+            }
+          },
+          "required": ["id", "apelido", "posicao", "nivel", "semNota", "inativoDesde"],
+          "type": "object"
+        },
+        "type": "array"
+      }
+    },
+    "required": ["ativos", "inativos"],
+    "type": "object"
+  }
+}

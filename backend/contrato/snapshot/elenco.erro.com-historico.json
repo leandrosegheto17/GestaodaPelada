@@ -1,0 +1,38 @@
+{
+  "direcao": "resposta",
+  "esquema": {
+    "additionalProperties": false,
+    "properties": {
+      "erro": {
+        "additionalProperties": false,
+        "properties": {
+          "campos": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "propertyNames": {
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "codigo": {
+            "const": "jogador_com_historico",
+            "type": "string"
+          },
+          "mensagem": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "sugestao": {
+            "const": "inativar",
+            "type": "string"
+          }
+        },
+        "required": ["codigo", "mensagem", "sugestao"],
+        "type": "object"
+      }
+    },
+    "required": ["erro"],
+    "type": "object"
+  }
+}
