@@ -13,10 +13,11 @@ import estilos from './ranking.module.css';
 interface Props {
   ranking: RankingPublico;
   aoTrocarMes: (mes: string) => void;
+  atualizando?: boolean;
 }
 
 /** Miolo da T01: mês, resumo, tabela, legenda e rodapé. Só exibe o que a API devolveu. */
-export function ConteudoRanking({ ranking, aoTrocarMes }: Props) {
+export function ConteudoRanking({ ranking, aoTrocarMes, atualizando = false }: Props) {
   const temJogadores = ranking.linhas.length > 0;
   return (
     <>
@@ -38,7 +39,11 @@ export function ConteudoRanking({ ranking, aoTrocarMes }: Props) {
       </div>
       {temJogadores ? (
         <>
-          <ResumoMes partidas={ranking.resumoMes.partidas} comChuva={ranking.resumoMes.comChuva} />
+          <ResumoMes
+            partidas={ranking.resumoMes.partidas}
+            comChuva={ranking.resumoMes.comChuva}
+            atualizando={atualizando}
+          />
           <TabelaRanking ranking={ranking} />
           <Legenda />
         </>

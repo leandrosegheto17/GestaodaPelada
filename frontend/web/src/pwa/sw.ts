@@ -5,7 +5,7 @@ import { CacheableResponsePlugin } from 'workbox-cacheable-response';
 import { cleanupOutdatedCaches, createHandlerBoundToURL, precacheAndRoute } from 'workbox-precaching';
 import { NavigationRoute, registerRoute } from 'workbox-routing';
 import { NetworkFirst } from 'workbox-strategies';
-import { ehRankingPublico, enderecoNovoDe, servirShell } from './regras-sw';
+import { CABECALHO_DO_CACHE, ehRankingPublico, enderecoNovoDe, servirShell } from './regras-sw';
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -52,6 +52,19 @@ registerRoute(
     plugins: [
       new CacheableResponsePlugin({ statuses: [200] }),
       new ExpirationPlugin({ maxEntries: 50 }),
+      {
+        // Resposta servida do cache (sem rede): marca para a tela mostrar "Sem conexão".
+        cachedResponseWillBeUsed: async ({ cachedResponse }) => {
+          if (!cachedResponse) return cachedResponse;
+          const cabecalhos = new Headers(cachedResponse.headers);
+          cabecalhos.set(CABECALHO_DO_CACHE, '1');
+          return new Response(cachedResponse.body, {
+            status: cachedResponse.status,
+            statusText: cachedResponse.statusText,
+            headers: cabecalhos,
+          });
+        },
+      },
       {
         fetchDidSucceed: async ({ response }) => {
           await atualizarSinal(response.clone());

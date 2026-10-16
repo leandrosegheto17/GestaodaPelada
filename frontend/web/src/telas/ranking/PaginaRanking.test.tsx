@@ -11,7 +11,17 @@ import { criarClienteConsultas } from '../../dados/consultas';
 import * as armazenamento from '../../pwa/armazenamento';
 import { Component as PaginaRanking } from './PaginaRanking';
 
-vi.mock('../../pwa/armazenamento', () => ({ grupoLembrado: vi.fn(), esquecerGrupo: vi.fn() }));
+vi.mock('../../pwa/armazenamento', () => ({
+  grupoLembrado: vi.fn(),
+  esquecerGrupo: vi.fn(),
+  rankingAtual: vi.fn(async () => null),
+  ultimoRanking: vi.fn(async () => null),
+  guardarRankingAtual: vi.fn(async () => undefined),
+  guardarUltimoRanking: vi.fn(async () => undefined),
+  lembrarGrupo: vi.fn(async () => undefined),
+  idAnonimo: vi.fn(async () => '00000000-0000-4000-8000-000000000000'),
+}));
+vi.mock('../../dados/eventos', () => ({ registrarAbertura: vi.fn() }));
 
 const RESPOSTAS = join(import.meta.dirname, '../../../../../.md/mockup/respostas');
 const fixture = (nome: string): JsonBodyType => JSON.parse(readFileSync(join(RESPOSTAS, nome), 'utf8')) as JsonBodyType;

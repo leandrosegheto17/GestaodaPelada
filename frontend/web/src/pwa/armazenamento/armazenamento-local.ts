@@ -63,7 +63,23 @@ export async function guardarUltimoRanking(slug: string, mes: string, ranking: U
 
 export async function ultimoRanking(slug: string, mes: string): Promise<UltimoRanking | null> {
   if (!slugValido(slug) || !mesValido(mes)) return null;
-  const valor = await ler(chaveRanking(slug, mes));
+  return comoUltimoRanking(await ler(chaveRanking(slug, mes)));
+}
+
+const chaveRankingAtual = (slug: string) => `ranking:${slug}:atual`;
+
+/** Último ranking aberto sem `?mes=` (o mês corrente é decidido pela API, nunca pelo aparelho). */
+export async function guardarRankingAtual(slug: string, ranking: UltimoRanking): Promise<void> {
+  if (!slugValido(slug)) return;
+  await gravar(chaveRankingAtual(slug), { geradoEm: ranking.geradoEm, dados: ranking.dados });
+}
+
+export async function rankingAtual(slug: string): Promise<UltimoRanking | null> {
+  if (!slugValido(slug)) return null;
+  return comoUltimoRanking(await ler(chaveRankingAtual(slug)));
+}
+
+function comoUltimoRanking(valor: unknown): UltimoRanking | null {
   if (typeof valor !== 'object' || valor === null || !('geradoEm' in valor) || !('dados' in valor)) return null;
   return typeof valor.geradoEm === 'string' ? { geradoEm: valor.geradoEm, dados: valor.dados } : null;
 }

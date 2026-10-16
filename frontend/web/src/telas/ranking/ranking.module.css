@@ -24,6 +24,13 @@
 .resumo strong {
   color: var(--cor-texto);
 }
+.atualizando {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--esp-1);
+  font-size: var(--texto-sm);
+  color: var(--cor-texto-sec);
+}
 .rodape {
   margin-top: var(--esp-6);
   text-align: center;

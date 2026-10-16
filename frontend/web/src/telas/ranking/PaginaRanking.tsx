@@ -1,8 +1,7 @@
 import { mes as esquemaMes, slug as esquemaSlug } from '@pelada/contrato';
 import { useEffect } from 'react';
 import { useParams, useSearchParams } from 'react-router';
-import { ErroApi } from '../../dados/erros';
-import { useRankingPublico } from '../../dados/publico';
+import { useRankingComCache } from '../../dados/publico';
 import { esquecerGrupo, grupoLembrado } from '../../pwa/armazenamento';
 import { GrupoIndisponivel } from '../grupo-indisponivel/GrupoIndisponivel';
 import { EsqueletoRanking } from './EsqueletoRanking';
@@ -17,8 +16,8 @@ export function Component() {
 
   const slugValido = esquemaSlug.safeParse(slug).success;
   const mesValido = mesDaUrl === null || esquemaMes.safeParse(mesDaUrl).success;
-  const consulta = useRankingPublico(slug, mesValido ? (mesDaUrl ?? undefined) : undefined, slugValido);
-  const indisponivel = consulta.error instanceof ErroApi && consulta.error.status === 404;
+  const estado = useRankingComCache(slug, mesValido ? (mesDaUrl ?? undefined) : undefined, slugValido);
+  const indisponivel = estado.tipo === 'indisponivel';
 
   // Mês malformado na URL: tira o parâmetro e segue com o mês corrente.
   useEffect(() => {
@@ -39,8 +38,15 @@ export function Component() {
     void grupoLembrado().then((lembrado) => (lembrado === slug ? esquecerGrupo() : undefined));
   }, [indisponivel, slug]);
 
-  if (!slugValido || indisponivel) return <GrupoIndisponivel />;
-  if (consulta.isPending) return <EsqueletoRanking />;
-  if (consulta.isError) return <SemConexao aoTentar={() => void consulta.refetch()} />;
-  return <TelaRanking ranking={consulta.data} aoTrocarMes={(mes) => definirParametros({ mes })} />;
+  if (!slugValido || estado.tipo === 'indisponivel') return <GrupoIndisponivel />;
+  if (estado.tipo === 'carregando') return <EsqueletoRanking />;
+  if (estado.tipo === 'erro') return <SemConexao aoTentar={estado.tentarDeNovo} />;
+  return (
+    <TelaRanking
+      ranking={estado.ranking}
+      atualizando={estado.atualizando}
+      semConexaoDesde={estado.semConexaoDesde}
+      aoTrocarMes={(mes) => definirParametros({ mes })}
+    />
+  );
 }

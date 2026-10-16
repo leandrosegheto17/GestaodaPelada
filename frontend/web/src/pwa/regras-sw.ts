@@ -1,3 +1,6 @@
+/** Cabeçalho que o service worker põe numa resposta servida do cache (sem rede). */
+export const CABECALHO_DO_CACHE = 'X-Pelada-Cache';
+
 const RANKING_PUBLICO = /^\/api\/publico\/[a-z0-9-]{1,64}\/ranking$/;
 
 /** Único endpoint cacheado (network-first): o ranking público, na mesma origem. A query é livre. */

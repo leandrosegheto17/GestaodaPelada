@@ -13,7 +13,17 @@ import { criarClienteConsultas } from '../../dados/consultas';
 import { Component as PaginaRanking } from './PaginaRanking';
 
 vi.mock('../../config/recursos', () => ({ recursos: { ligado: vi.fn(() => true) } }));
-vi.mock('../../pwa/armazenamento', () => ({ grupoLembrado: vi.fn(async () => null), esquecerGrupo: vi.fn() }));
+vi.mock('../../pwa/armazenamento', () => ({
+  grupoLembrado: vi.fn(async () => null),
+  esquecerGrupo: vi.fn(),
+  rankingAtual: vi.fn(async () => null),
+  ultimoRanking: vi.fn(async () => null),
+  guardarRankingAtual: vi.fn(async () => undefined),
+  guardarUltimoRanking: vi.fn(async () => undefined),
+  lembrarGrupo: vi.fn(async () => undefined),
+  idAnonimo: vi.fn(async () => '00000000-0000-4000-8000-000000000000'),
+}));
+vi.mock('../../dados/eventos', () => ({ registrarAbertura: vi.fn() }));
 
 const RESPOSTAS = join(import.meta.dirname, '../../../../../.md/mockup/respostas');
 const fixture = (nome: string): JsonBodyType => JSON.parse(readFileSync(join(RESPOSTAS, nome), 'utf8')) as JsonBodyType;
@@ -135,6 +145,19 @@ describe('T01: outros estados', () => {
     expect(container).toBeEmptyDOMElement();
     act(() => vi.advanceTimersByTime(1));
     expect(screen.getByRole('status')).toHaveTextContent('Carregando o ranking…');
+  });
+});
+
+describe('T01: acesso do admin sem conexão', () => {
+  it('sem rede, o toque na engrenagem mostra a faixa e não navega', async () => {
+    responder(ok('publico-ranking-2026-10.json'));
+    const { roteador } = montar();
+    await screen.findByRole('heading', { level: 1, name: 'Pelada de Quinta' });
+    vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(false);
+    await userEvent.click(screen.getByRole('link', { name: 'Área do admin' }));
+    expect(await screen.findByRole('alert')).toHaveTextContent('É preciso conexão para entrar.');
+    expect(roteador.state.location.pathname).toBe('/g/pelada-de-quinta');
+    vi.restoreAllMocks();
   });
 });
 
