@@ -1,0 +1,34 @@
+.estreito {
+  max-width: var(--largura-formulario);
+  margin: 0 auto;
+}
+.faixa {
+  margin-bottom: var(--esp-3);
+}
+.secao {
+  margin-top: var(--esp-6);
+  padding-top: var(--esp-4);
+  border-top: 1px solid var(--cor-linha);
+}
+.entrada {
+  width: 100%;
+  min-height: var(--alvo-toque);
+  padding: 0 var(--esp-3);
+  border: 2px solid var(--cor-contorno);
+  border-radius: var(--raio-sm);
+  background: var(--cor-superficie);
+  color: var(--cor-texto);
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+.comErro {
+  border-color: var(--cor-erro-texto);
+}
+.erro {
+  display: block;
+  margin-top: var(--esp-1);
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-semi);
+  color: var(--cor-erro-texto);
+}

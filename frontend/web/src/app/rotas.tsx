@@ -1,6 +1,7 @@
 import { createBrowserRouter } from 'react-router';
 import { LayoutAdmin } from '../componentes/layout-admin';
 import { LayoutDono } from '../componentes/layout-dono/LayoutDono';
+import { recursos } from '../config/recursos';
 import { carregarEntrada } from '../telas/entrada/carregarEntrada';
 import { RotaProtegida } from './guarda/RotaProtegida';
 
@@ -49,6 +50,9 @@ export const roteador = createBrowserRouter([
           { path: 'partidas/nova', lazy: () => import('../telas/partida/PaginaNovaPartida') },
           { path: 'partidas/:data', lazy: () => import('../telas/partida/PaginaEditarPartida') },
           { path: 'partidas', lazy: () => import('../telas/partidas/PaginaPartidas') },
+          ...(recursos.ligado('simulador')
+            ? [{ path: 'habilidades', lazy: () => import('../telas/habilidades/PaginaHabilidades') }]
+            : []),
         ],
       },
     ],
