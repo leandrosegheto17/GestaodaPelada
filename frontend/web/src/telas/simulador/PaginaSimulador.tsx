@@ -1,4 +1,3 @@
-import { entradaSimulador } from '@pelada/contrato';
 import { useMemo, useReducer } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { BarraAcao } from '../../componentes/barras/BarraAcao';
@@ -11,20 +10,15 @@ import { Voltar } from '../../componentes/basicos/Voltar';
 import { TituloPagina } from '../../componentes/pagina/TituloPagina';
 import { useContextoSimulador, usePrevia } from '../../dados/simulador';
 import { usarValorAtrasado } from '../../dados/usarValorAtrasado';
+import { Faixa } from '../../componentes/basicos/Faixa';
 import { CartaoPrevia, ID_RAZAO, razaoDoBloqueio, type SituacaoPrevia } from './CartaoPrevia';
 import { ESTADO_INICIAL, estadoDeEntrada, idsMarcados, paraEntrada, paraPrevia, reduzir } from './estadoEntradas';
 import { FormEntradas } from './FormEntradas';
 import { ListaAptos } from './ListaAptos';
+import { entradaDoEstado, erroDoEstado } from './navegacao';
 import estilos from './simulador.module.css';
 
 const ATRASO_DA_PREVIA_MS = 300;
-
-/** Entradas que a tela de resultado devolve ao pedir "Editar entradas". */
-function entradaDoEstado(state: unknown) {
-  const bruto = typeof state === 'object' && state !== null && 'entrada' in state ? state.entrada : undefined;
-  const analise = entradaSimulador.safeParse(bruto);
-  return analise.success ? analise.data : null;
-}
 
 /** T12: entradas do simulador e prévia de quantos times saem. */
 export function Component() {
@@ -32,6 +26,7 @@ export function Component() {
   const base = `/admin/${encodeURIComponent(grupoId)}`;
   const navegar = useNavigate();
   const { state } = useLocation();
+  const erroAnterior = erroDoEstado(state);
   const [estado, despachar] = useReducer(reduzir, undefined, () => {
     const anterior = entradaDoEstado(state);
     return anterior ? estadoDeEntrada(anterior) : ESTADO_INICIAL;
@@ -102,6 +97,7 @@ export function Component() {
       <title>Simulador</title>
       <Voltar para={base} rotulo="Início" />
       <TituloPagina>Simulador</TituloPagina>
+      {erroAnterior ? <Faixa tipo="erro">{erroAnterior}</Faixa> : null}
       <form
         noValidate
         className={estilos.ladoALado}

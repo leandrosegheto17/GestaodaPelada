@@ -1,8 +1,10 @@
 import {
   avaliarCorpo,
+  escalacaoCorpo,
   type AvaliacaoSimulador,
   type AvaliarCorpo,
   type EntradaSimulador,
+  type EscalacaoCorpo,
   type SugestaoSimulador,
 } from '@pelada/contrato';
 
@@ -217,4 +219,29 @@ export function paraExibicao(
     times: [montar(0, a), montar(1, b)],
     naoEntra: comp.naoEntra.map((id) => ({ id, ...quem(id) })),
   };
+}
+
+/** Corpo de "confirmar escalação" com a composição atual; `null` se não passa no schema do contrato. */
+export function paraCorpoEscalacao(entrada: EntradaSimulador, comp: ComposicaoLocal): EscalacaoCorpo | null {
+  const { data, n } = entrada;
+  const corpo =
+    comp.formato === 'dois_times' && entrada.formato === 'dois_times'
+      ? {
+          formato: 'dois_times',
+          data,
+          n,
+          k: entrada.k,
+          composicao: {
+            times: comp.times.map((t) => ({
+              titulares: t.titulares.map((id) => ({ id, so1oTempo: comp.so1oTempo.has(id) })),
+              entramNo2oTempo: t.entram.map((id) => ({ id, so1oTempo: comp.so1oTempo.has(id) })),
+            })),
+            naoEntra: comp.naoEntra,
+          },
+        }
+      : comp.formato === 'varios_times' && entrada.formato === 'varios_times'
+        ? { formato: 'varios_times', data, n, composicao: { times: comp.times.map((jogadores) => ({ jogadores })) } }
+        : null;
+  const analise = escalacaoCorpo.safeParse(corpo);
+  return analise.success ? analise.data : null;
 }

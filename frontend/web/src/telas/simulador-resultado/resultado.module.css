@@ -1,0 +1,74 @@
+.times {
+  display: grid;
+  gap: var(--esp-3);
+}
+.contexto {
+  margin: 0 0 var(--esp-3);
+  color: var(--cor-texto-sec);
+}
+.secao {
+  margin-top: var(--esp-6);
+  padding-top: var(--esp-4);
+  border-top: 1px solid var(--cor-linha);
+}
+.subtitulo {
+  font-size: var(--texto-xl);
+  text-transform: uppercase;
+  letter-spacing: var(--espacamento-caixa-alta);
+  margin: var(--esp-6) 0 var(--esp-3);
+}
+.lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-linha);
+  border-radius: var(--raio);
+}
+.ajuda {
+  font-size: var(--texto-sm);
+  color: var(--cor-texto-sec);
+  margin: var(--esp-2) 0 0;
+}
+.recolhivel {
+  margin-top: var(--esp-4);
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-linha);
+  border-radius: var(--raio);
+  padding: 0 var(--esp-4);
+}
+.recolhivel summary {
+  min-height: var(--alvo-toque);
+  display: flex;
+  align-items: center;
+  font-weight: var(--peso-semi);
+  cursor: pointer;
+}
+.recolhivel ol {
+  margin: 0 0 var(--esp-3);
+  padding-left: var(--esp-6);
+}
+.faixa {
+  margin-bottom: var(--esp-3);
+}
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--esp-2);
+}
+@media (min-width: 600px) {
+  .timesDois,
+  .timesVarios {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (min-width: 1024px) {
+  .timesVarios {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (max-width: 599px) {
+  .acoes > * {
+    flex: 1;
+  }
+}

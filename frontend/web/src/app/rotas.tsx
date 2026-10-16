@@ -54,6 +54,7 @@ export const roteador = createBrowserRouter([
             ? [
                 { path: 'habilidades', lazy: () => import('../telas/habilidades/PaginaHabilidades') },
                 { path: 'simulador', lazy: () => import('../telas/simulador/PaginaSimulador') },
+                { path: 'simulador/resultado', lazy: () => import('../telas/simulador-resultado/PaginaResultado') },
               ]
             : []),
         ],

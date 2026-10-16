@@ -1,11 +1,15 @@
 import {
   avaliacaoSimulador,
   contextoSimulador,
+  escalacaoConfirmada,
   previaSimulador,
+  sugestaoSimulador,
   type AvaliarCorpo,
   type EntradaPrevia,
+  type EntradaSimulador,
+  type EscalacaoCorpo,
 } from '@pelada/contrato';
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { escrever, ler } from './cliente';
 import { chaveGrupo } from './grupo';
 
@@ -39,4 +43,29 @@ export function usePrevia(grupoId: string, entrada: EntradaPrevia | null) {
 /** Reavalia uma composição ajustada à mão (sem refazer a sugestão). A requisição pode ser abortada. */
 export function avaliarComposicao(grupoId: string, corpo: AvaliarCorpo, signal?: AbortSignal) {
   return escrever('POST', `${base(grupoId)}/avaliar`, corpo, avaliacaoSimulador, signal ? { signal } : {});
+}
+
+/**
+ * Sugestão de times para a entrada. A mesma entrada dá sempre a mesma resposta, então não se refaz sozinha;
+ * `rodada` muda quando a pessoa pede "Refazer sugestão".
+ */
+export function useSugerir(grupoId: string, entrada: EntradaSimulador | null, rodada: number) {
+  return useQuery({
+    queryKey: [...chaveSimulador(grupoId), 'sugestao', rodada, entrada],
+    queryFn: ({ signal }) => escrever('POST', `${base(grupoId)}/sugerir`, entrada, sugestaoSimulador, { signal }),
+    enabled: entrada !== null,
+    staleTime: Infinity,
+    gcTime: 0,
+    retry: false,
+  });
+}
+
+/** Confirma a escalação da data (substitui a anterior). Invalida o grupo: o início mostra a data confirmada. */
+export function useConfirmarEscalacao(grupoId: string) {
+  const cliente = useQueryClient();
+  return useMutation({
+    mutationFn: (corpo: EscalacaoCorpo) =>
+      escrever('POST', `/grupos/${encodeURIComponent(grupoId)}/escalacoes`, corpo, escalacaoConfirmada),
+    onSuccess: () => cliente.invalidateQueries({ queryKey: chaveGrupo(grupoId) }),
+  });
 }
