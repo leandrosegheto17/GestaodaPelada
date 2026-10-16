@@ -1,0 +1,14 @@
+{
+  "direcao": "entrada",
+  "esquema": {
+    "additionalProperties": false,
+    "properties": {
+      "email": {
+        "maxLength": 254,
+        "type": "string"
+      }
+    },
+    "required": ["email"],
+    "type": "object"
+  }
+}

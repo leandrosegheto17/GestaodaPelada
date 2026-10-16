@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-16 16:42
+Atualizado: 2026-10-16 16:43
 
-Resumo: Não executada 190 · Executada (aguarda teste) 18 · total 208
+Resumo: Não executada 189 · Executada (aguarda teste) 19 · total 208
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -31,7 +31,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 16 | TP-0016 | executor | ✔ | Guardas do banco no CI: migração aditiva e grupoId nos repositórios | L03 | TP-0003, TP-0015 | Executada (aguarda teste) |
 | 17 | TP-0017 | executor | ✔ | Suporte de testes da API (pool de Workers + Postgres) e job api no CI | L03 | TP-0003, TP-0013, TP-0014, TP-0015 | Executada (aguarda teste) |
 | 18 | TP-0018 | executor | ✔ | Snapshot e checagem de compatibilidade do contrato | L04 | TP-0003, TP-0005 | Executada (aguarda teste) |
-| 19 | TP-0019 | executor | ✔ | contrato/sessao | L04 | TP-0005, TP-0018 | Não executada |
+| 19 | TP-0019 | executor | ✔ | contrato/sessao | L04 | TP-0005, TP-0018 | Executada (aguarda teste) |
 | 20 | TP-0020 | executor | ✔ | contrato/publico (ranking e eventos), estrito | L04 | TP-0005, TP-0018 | Não executada |
 | 21 | TP-0021 | executor | ✔ | contrato/grupo e contrato/admins | L04 | TP-0005, TP-0018 | Não executada |
 | 22 | TP-0022 | executor | ✔ | contrato/dono | L04 | TP-0005, TP-0018, TP-0021 | Não executada |

@@ -1,0 +1,21 @@
+{
+  "direcao": "entrada",
+  "esquema": {
+    "additionalProperties": false,
+    "properties": {
+      "confirmacao": {
+        "type": "string"
+      },
+      "novaSenha": {
+        "type": "string"
+      },
+      "senhaAtual": {
+        "maxLength": 288,
+        "minLength": 1,
+        "type": "string"
+      }
+    },
+    "required": ["novaSenha", "confirmacao"],
+    "type": "object"
+  }
+}

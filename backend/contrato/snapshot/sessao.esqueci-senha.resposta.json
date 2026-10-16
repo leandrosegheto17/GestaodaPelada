@@ -1,0 +1,13 @@
+{
+  "direcao": "resposta",
+  "esquema": {
+    "additionalProperties": false,
+    "properties": {
+      "mensagem": {
+        "type": "string"
+      }
+    },
+    "required": ["mensagem"],
+    "type": "object"
+  }
+}

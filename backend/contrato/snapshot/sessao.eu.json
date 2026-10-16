@@ -1,0 +1,92 @@
+{
+  "direcao": "resposta",
+  "esquema": {
+    "additionalProperties": false,
+    "properties": {
+      "avisoPrivacidadeVisto": {
+        "type": "boolean"
+      },
+      "conta": {
+        "additionalProperties": false,
+        "properties": {
+          "eDono": {
+            "type": "boolean"
+          },
+          "email": {
+            "type": "string"
+          },
+          "id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "nome": {
+            "type": "string"
+          }
+        },
+        "required": ["id", "nome", "email", "eDono"],
+        "type": "object"
+      },
+      "enderecoNovo": {
+        "anyOf": [
+          {
+            "format": "uri",
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "escopo": {
+        "enum": ["completo", "troca_de_senha"],
+        "type": "string"
+      },
+      "grupos": {
+        "items": {
+          "additionalProperties": false,
+          "properties": {
+            "acessaFinanceiro": {
+              "type": "boolean"
+            },
+            "diaSemana": {
+              "enum": ["domingo", "segunda", "terca", "quarta", "quinta", "sexta", "sabado"],
+              "type": "string"
+            },
+            "frequencia": {
+              "enum": ["semanal", "quinzenal", "mensal"],
+              "type": "string"
+            },
+            "horario": {
+              "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$",
+              "type": "string"
+            },
+            "id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "nome": {
+              "type": "string"
+            },
+            "slug": {
+              "pattern": "^[a-z0-9-]{1,64}$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "nome",
+            "slug",
+            "diaSemana",
+            "frequencia",
+            "horario",
+            "acessaFinanceiro"
+          ],
+          "type": "object"
+        },
+        "type": "array"
+      }
+    },
+    "required": ["conta", "escopo", "avisoPrivacidadeVisto", "grupos"],
+    "type": "object"
+  }
+}

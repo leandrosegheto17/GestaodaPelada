@@ -1,0 +1,18 @@
+{
+  "direcao": "entrada",
+  "esquema": {
+    "additionalProperties": false,
+    "properties": {
+      "email": {
+        "maxLength": 254,
+        "type": "string"
+      },
+      "senha": {
+        "minLength": 1,
+        "type": "string"
+      }
+    },
+    "required": ["email", "senha"],
+    "type": "object"
+  }
+}
