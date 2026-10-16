@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-16 19:18
+Atualizado: 2026-10-16 19:21
 
-Resumo: Não executada 71 · Executada (aguarda teste) 137 · total 208
+Resumo: Não executada 70 · Executada (aguarda teste) 138 · total 208
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -160,7 +160,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 145 | TP-0144 | executor | ✔ | [U] Publicação da TWA em produção | L31 | TP-0143 | Não executada |
 | 146 | TP-0145 | executor | ✔ | contrato/habilidades (catálogo e notas) | L32 | TP-0005, TP-0018 | Executada (aguarda teste) |
 | 147 | TP-0146 | executor | ✔ | contrato/simulador | L32 | TP-0005, TP-0018 | Executada (aguarda teste) |
-| 148 | TP-0147 | executor | ✔ | dominio/simulador/previa: número de times, composição e insuficiência | L32 | TP-0001 | Não executada |
+| 148 | TP-0147 | executor | ✔ | dominio/simulador/previa: número de times, composição e insuficiência | L32 | TP-0001 | Executada (aguarda teste) |
 | 149 | TP-0148 | executor | ✔ | dominio/simulador/prioridade (RN-08) | L32 | TP-0007, TP-0010 | Não executada |
 | 150 | TP-0149 | executor | ✔ | dominio/simulador/classificacao (RN-09A) | L32 | TP-0001 | Não executada |
 | 151 | TP-0150 | executor | ✔ | dominio/simulador/indicadores (indicadores e pares) | L33 | TP-0011, TP-0149 | Não executada |
