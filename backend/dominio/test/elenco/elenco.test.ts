@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { HABILIDADES_INICIAIS, NIVEL_SEM_NOTA, calcularIdade, calcularNivel } from '../../src/index.js';
+import {
+  HABILIDADES_INICIAIS,
+  NIVEL_SEM_NOTA,
+  calcularIdade,
+  calcularNivel,
+  compararApelido,
+} from '../../src/index.js';
 
 describe('calcularNivel', () => {
   it.each([
@@ -33,5 +39,24 @@ describe('calcularIdade', () => {
 describe('HABILIDADES_INICIAIS', () => {
   it('são as 6 da RN-18, na ordem', () => {
     expect(HABILIDADES_INICIAIS).toEqual(['Visão de Jogo', 'Passe', 'Preparo Físico', 'Drible', 'Chute', 'Desarme']);
+  });
+});
+
+describe('compararApelido', () => {
+  it('ignora acento e caixa e desempata por id', () => {
+    const lista = [
+      { id: '3', apelido: 'Caio' },
+      { id: '2', apelido: 'beto' },
+      { id: '1', apelido: 'Álvaro' },
+      { id: '5', apelido: 'ze' },
+      { id: '4', apelido: 'Zé' },
+    ];
+    expect([...lista].sort(compararApelido).map((j) => j.id)).toEqual(['1', '2', '3', '4', '5']);
+    expect(
+      [...lista]
+        .reverse()
+        .sort(compararApelido)
+        .map((j) => j.id),
+    ).toEqual(['1', '2', '3', '4', '5']);
   });
 });

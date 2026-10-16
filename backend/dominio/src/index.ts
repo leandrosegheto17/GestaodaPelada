@@ -13,3 +13,4 @@ export * from './elenco/nivel.js';
 export * from './elenco/idade.js';
 export * from './grupos/slug.js';
 export * from './elenco/habilidades-iniciais.js';
+export * from './elenco/apelido.js';
