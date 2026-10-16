@@ -87,9 +87,8 @@ for (const caminho of arquivos) {
       if (!funcao) continue;
       const donoRel = relative(PASTA, declaracao.getSourceFile().fileName).replaceAll('\\', '/');
       if (donoRel !== rel) continue; // reexportada: avaliada no arquivo de origem
-      if (excecaoDe(rel, exportado.name)) continue;
       const problema = problemaDosParametros(funcao);
-      if (problema) {
+      if (problema && !excecaoDe(rel, exportado.name)) {
         const { line } = fonte.getLineAndCharacterOfPosition(declaracao.getStart());
         achados.push(`${rel}:${line + 1}: ${exportado.name}: ${problema}`);
       }
