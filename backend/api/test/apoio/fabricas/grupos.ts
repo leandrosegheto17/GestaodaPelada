@@ -38,6 +38,7 @@ export async function criarGrupo(
     // Tudo que pertence ao grupo, dos dependentes para os pais.
     for (const tabela of [
       'eventos_uso',
+      'escalacoes',
       'presencas',
       'partidas',
       'config_pesos',
