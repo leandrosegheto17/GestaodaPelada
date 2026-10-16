@@ -1,0 +1,44 @@
+{
+  // Worker único: arquivos estáticos do app e a API em /api/* no mesmo host.
+  "name": "pelada",
+  "main": "backend/api/src/entrada/worker.ts",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "frontend/web/dist",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
+  },
+  "hyperdrive": [
+    {
+      "binding": "HYPERDRIVE",
+      "id": "00000000000000000000000000000000",
+      "localConnectionString": "postgres://pelada:pelada@localhost:5432/pelada"
+    }
+  ],
+  "vars": {
+    "URL_PUBLICA": "http://localhost:8787",
+    "DONO_EMAIL": "dono@exemplo.invalid"
+  },
+  "env": {
+    "teste": {
+      "name": "pelada-teste",
+      "assets": {
+        "directory": "frontend/web/dist",
+        "not_found_handling": "single-page-application",
+        "run_worker_first": ["/api/*"]
+      },
+      "hyperdrive": [
+        {
+          "binding": "HYPERDRIVE",
+          "id": "00000000000000000000000000000000",
+          "localConnectionString": "postgres://pelada:pelada@localhost:5432/pelada"
+        }
+      ],
+      "vars": {
+        "URL_PUBLICA": "http://localhost:8787",
+        "DONO_EMAIL": "dono@exemplo.invalid"
+      }
+    }
+  }
+}

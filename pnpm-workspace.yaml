@@ -5,3 +5,5 @@ packages:
   - frontend/web
 allowBuilds:
   unrs-resolver: false
+  esbuild: true
+  workerd: true

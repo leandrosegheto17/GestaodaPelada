@@ -5,6 +5,8 @@ export const CODIGOS_ERRO = {
   naoEncontrado: 'nao_encontrado',
   naoAutenticado: 'nao_autenticado',
   erroInterno: 'erro_interno',
+  requisicaoRecusada: 'requisicao_recusada',
+  corpoGrande: 'corpo_grande',
 } as const;
 
 const corpoBase = {

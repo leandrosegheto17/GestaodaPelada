@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { centavos, data, horario, mes, slug, uuid } from '../src/index.js';
+import { centavos, data, email, horario, mes, slug, uuid } from '../src/index.js';
 
 const aceita = (schema: { safeParse: (v: unknown) => { success: boolean } }, v: unknown) =>
   schema.safeParse(v).success;
@@ -73,4 +73,16 @@ describe('centavos', () => {
     expect(aceita(saldo, -99_999_999)).toBe(true);
     expect(aceita(saldo, -100_000_000)).toBe(false);
   });
+});
+
+describe('email', () => {
+  it('normaliza e aceita até 254 caracteres', () => {
+    expect(email.parse('  Ana@Exemplo.com ')).toBe('ana@exemplo.com');
+    const longo = `${'a'.repeat(64)}@${'b'.repeat(63)}.${'c'.repeat(63)}.${'d'.repeat(60)}`;
+    expect(longo.length).toBeLessThanOrEqual(254);
+    expect(aceita(email, longo)).toBe(true);
+  });
+  it.each(['', 'sem-arroba', 'a@', '@b.com', `${'a'.repeat(250)}@b.com`])('recusa %j', (v) =>
+    expect(aceita(email, v)).toBe(false),
+  );
 });

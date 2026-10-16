@@ -43,3 +43,11 @@ export const centavos = (min: number, max: number) =>
     .min(min)
     .max(max)
     .refine(Number.isSafeInteger, 'Valor fora do limite.');
+
+/** E-mail normalizado em minúsculas, até 254 caracteres. */
+export const email = z
+  .string()
+  .trim()
+  .toLowerCase()
+  .max(LIMITES.emailMax, 'E-mail muito longo.')
+  .pipe(z.email('Informe um e-mail válido.'));
