@@ -5,6 +5,7 @@ import {
   POSICOES,
   SITUACOES_COMERCIAIS,
   SITUACOES_PRESENCA,
+  SITUACOES_RODADA,
   TIPOS_LANCAMENTO,
   type DiaSemana,
   type FormatoSimulador,
@@ -24,6 +25,18 @@ export const ROTULO_SITUACAO_PRESENCA = {
   expulso: { letra: 'E', texto: 'Expulso' },
 } as const satisfies Record<SituacaoPresenca, { letra: string; texto: string }>;
 export const ORDEM_SITUACAO_PRESENCA: readonly SituacaoPresenca[] = SITUACOES_PRESENCA;
+
+export type SituacaoRodada = (typeof SITUACOES_RODADA)[number];
+
+/** Situação do jogador numa rodada do ranking (as da presença, mais `falta` e `fora`). */
+export const ROTULO_SITUACAO_RODADA = {
+  presente: { texto: ROTULO_SITUACAO_PRESENCA.presente.texto },
+  lesionado: { texto: ROTULO_SITUACAO_PRESENCA.lesionado.texto, legenda: 'Lesionado (foi e não jogou)' },
+  expulso: { texto: ROTULO_SITUACAO_PRESENCA.expulso.texto },
+  falta: { texto: 'Falta' },
+  fora: { texto: 'Ainda não fazia parte do grupo' },
+} as const satisfies Record<SituacaoRodada, { texto: string; legenda?: string }>;
+export const ORDEM_SITUACAO_RODADA: readonly SituacaoRodada[] = SITUACOES_RODADA;
 
 export const ROTULO_POSICAO = {
   goleiro: 'Goleiro',

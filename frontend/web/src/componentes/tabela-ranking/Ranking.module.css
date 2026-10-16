@@ -1,0 +1,117 @@
+.rolagem {
+  overflow-x: auto;
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-linha);
+  border-radius: var(--raio);
+}
+.ranking {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+.ranking th,
+.ranking td {
+  padding: 0 var(--esp-1);
+  height: 46px;
+  text-align: center;
+  border-bottom: 1px solid var(--cor-linha);
+  background: var(--cor-superficie);
+}
+.ranking tbody tr:nth-child(even) > * {
+  background: var(--cor-zebra);
+}
+.ranking tbody tr:last-child > * {
+  border-bottom: 0;
+}
+.ranking thead th {
+  height: 44px;
+  font-size: var(--texto-tabela-cabecalho);
+  font-weight: var(--peso-forte);
+  color: var(--cor-texto-sec);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+.ranking abbr {
+  text-decoration: none;
+}
+.pos {
+  width: 34px;
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  font-family: var(--fonte-titulo);
+  font-size: var(--texto-xl);
+  font-weight: var(--peso-forte);
+}
+.ranking tbody tr:nth-child(-n + 3) .pos {
+  color: var(--cor-verde);
+}
+.ranking .nome {
+  position: sticky;
+  left: 34px;
+  z-index: 1;
+  min-width: 104px;
+  max-width: 132px;
+  text-align: left;
+  font-weight: var(--peso-semi);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow: var(--sombra-coluna-fixa);
+}
+.ranking thead .nome {
+  box-shadow: none;
+}
+.pts {
+  width: 44px;
+  font-family: var(--fonte-titulo);
+  font-size: var(--texto-pontos);
+  font-weight: var(--peso-extra);
+  color: var(--cor-texto);
+}
+.ranking thead th.pts {
+  white-space: normal;
+  line-height: 1.1;
+  width: 52px;
+}
+.inicial {
+  color: var(--cor-texto-sec);
+  font-weight: var(--peso-forte);
+}
+.partida {
+  width: 46px;
+}
+.partida .iconeTempo {
+  display: block;
+  margin: 2px auto 0;
+}
+.iconeTempo {
+  flex-shrink: 0;
+}
+.chuva {
+  color: var(--cor-chuva);
+}
+.sol {
+  color: var(--cor-sol);
+}
+.ranking .semPartidas {
+  font-size: var(--texto-sm);
+  color: var(--cor-texto-sec);
+  text-align: left;
+  padding: 0 var(--esp-3);
+  white-space: normal;
+}
+@media (min-width: 600px) {
+  .nome {
+    min-width: 200px;
+    max-width: none;
+  }
+  .partida {
+    width: 72px;
+  }
+  .pts,
+  .ranking thead th.pts {
+    width: 88px;
+  }
+}

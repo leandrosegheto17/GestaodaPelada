@@ -5,6 +5,7 @@ import {
   POSICOES,
   SITUACOES_COMERCIAIS,
   SITUACOES_PRESENCA,
+  SITUACOES_RODADA,
   TIPOS_LANCAMENTO,
 } from '@pelada/contrato';
 import { describe, expect, it } from 'vitest';
@@ -12,6 +13,7 @@ import * as r from './index';
 
 const TABELA = [
   ['situação da presença', SITUACOES_PRESENCA, r.ROTULO_SITUACAO_PRESENCA, r.ORDEM_SITUACAO_PRESENCA],
+  ['situação da rodada', SITUACOES_RODADA, r.ROTULO_SITUACAO_RODADA, r.ORDEM_SITUACAO_RODADA],
   ['posição', POSICOES, r.ROTULO_POSICAO, r.ORDEM_POSICAO],
   ['frequência', FREQUENCIAS, r.ROTULO_FREQUENCIA, r.ORDEM_FREQUENCIA],
   ['dia da semana', DIAS_DA_SEMANA, r.ROTULO_DIA_SEMANA, r.ORDEM_DIA_SEMANA],

@@ -1,0 +1,53 @@
+.marca {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--tamanho-marca);
+  height: var(--tamanho-marca);
+  border-radius: var(--raio-sm);
+  font-weight: var(--peso-forte);
+  font-size: var(--texto-marca);
+  font-variant-numeric: tabular-nums;
+}
+.legenda {
+  width: var(--tamanho-marca-legenda);
+  height: var(--tamanho-marca-legenda);
+  font-size: var(--texto-marca-legenda);
+  flex-shrink: 0;
+}
+.l::after,
+.e::after {
+  position: absolute;
+  top: 1px;
+  right: 2px;
+  font-size: var(--texto-canto);
+  line-height: 1;
+  font-weight: var(--peso-extra);
+}
+.l::after {
+  content: 'L';
+}
+.e::after {
+  content: 'E';
+}
+.p {
+  background: var(--cor-p-fundo);
+  color: var(--cor-p-texto);
+}
+.l {
+  background: var(--cor-l-fundo);
+  color: var(--cor-l-texto);
+}
+.e {
+  background: var(--cor-e-fundo);
+  color: var(--cor-e-texto);
+}
+.f {
+  background: var(--cor-f-fundo);
+  color: var(--cor-f-texto);
+  border: 1px dashed var(--cor-f-texto);
+}
+.x {
+  color: var(--cor-texto-sec);
+}
