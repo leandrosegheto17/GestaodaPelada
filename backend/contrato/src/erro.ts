@@ -12,6 +12,9 @@ export const CODIGOS_ERRO = {
   ultimoAdmin: 'ultimo_admin',
   removerASiMesmo: 'remover_a_si_mesmo',
   acaoNaPropriaConta: 'acao_na_propria_conta',
+  jogadorJaInativo: 'jogador_ja_inativo',
+  jogadorJaAtivo: 'jogador_ja_ativo',
+  jogadorComHistorico: 'jogador_com_historico',
   corpoGrande: 'corpo_grande',
 } as const;
 

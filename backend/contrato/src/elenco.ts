@@ -18,6 +18,8 @@ export const jogadorItem = z.strictObject({
   semNota: z.boolean(),
 });
 
+export type ListaJogadoresItem = z.infer<typeof jogadorItem>;
+
 export const jogadorInativoItem = jogadorItem.extend({ inativoDesde: data });
 
 /** Ativos e inativos juntos; a tela escolhe o que mostrar. */
@@ -25,6 +27,8 @@ export const listaJogadores = z.strictObject({
   ativos: z.array(jogadorItem),
   inativos: z.array(jogadorInativoItem),
 });
+
+export type ListaJogadores = z.infer<typeof listaJogadores>;
 
 export const jogadorDetalhe = z.strictObject({
   id: idResposta,

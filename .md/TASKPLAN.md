@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-16 17:29
+Atualizado: 2026-10-16 17:31
 
-Resumo: Não executada 137 · Executada (aguarda teste) 71 · total 208
+Resumo: Não executada 136 · Executada (aguarda teste) 72 · total 208
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -84,7 +84,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 69 | TP-0069 | executor | ✔ | Endpoint GET /api/grupos/:g/jogadores/:id | L15 | TP-0011, TP-0023, TP-0032, TP-0033, TP-0046, TP-0047 | Executada (aguarda teste) |
 | 70 | TP-0070 | executor | ✔ | Endpoint POST /api/grupos/:g/jogadores | L15 | TP-0013, TP-0023, TP-0032, TP-0033, TP-0046 | Executada (aguarda teste) |
 | 71 | TP-0071 | executor | ✔ | Endpoint PATCH /api/grupos/:g/jogadores/:id | L15 | TP-0009, TP-0023, TP-0032, TP-0033, TP-0046 | Executada (aguarda teste) |
-| 72 | TP-0072 | executor | ✔ | Endpoint POST /api/grupos/:g/jogadores/:id/inativar | L16 | TP-0009, TP-0013, TP-0023, TP-0032, TP-0033, TP-0046 | Não executada |
+| 72 | TP-0072 | executor | ✔ | Endpoint POST /api/grupos/:g/jogadores/:id/inativar | L16 | TP-0009, TP-0013, TP-0023, TP-0032, TP-0033, TP-0046 | Executada (aguarda teste) |
 | 73 | TP-0073 | executor | ✔ | Endpoint POST /api/grupos/:g/jogadores/:id/reativar | L16 | TP-0009, TP-0013, TP-0023, TP-0032, TP-0033, TP-0046 | Não executada |
 | 74 | TP-0074 | executor | ✔ | Endpoint DELETE /api/grupos/:g/jogadores/:id | L16 | TP-0023, TP-0030, TP-0032, TP-0033, TP-0046 | Não executada |
 | 75 | TP-0075 | executor | ✔ | Endpoint GET /api/grupos/:g/pesos | L17 | TP-0024, TP-0032, TP-0033, TP-0048 | Não executada |
