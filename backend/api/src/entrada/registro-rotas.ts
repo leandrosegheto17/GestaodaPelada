@@ -23,6 +23,8 @@ import { rotaJogadoresListar } from './rotas/grupos/jogadores/listar.js';
 import { rotaJogadorLer } from './rotas/grupos/jogadores/ler.js';
 import { rotaJogadorCriar } from './rotas/grupos/jogadores/criar.js';
 import { rotaJogadorEditar } from './rotas/grupos/jogadores/editar.js';
+import { rotaJogadorInativar, rotaJogadorReativar } from './rotas/grupos/jogadores/situacao.js';
+import { rotaJogadorExcluir } from './rotas/grupos/jogadores/excluir.js';
 
 /** Todas as rotas de negócio. Cada rota nova entra aqui, depois dos middlewares do app (ADR-005). */
 export const ROTAS: readonly Hono<AppEnv>[] = [
@@ -50,4 +52,7 @@ export const ROTAS: readonly Hono<AppEnv>[] = [
   rotaJogadorLer,
   rotaJogadorCriar,
   rotaJogadorEditar,
+  rotaJogadorInativar,
+  rotaJogadorReativar,
+  rotaJogadorExcluir,
 ];

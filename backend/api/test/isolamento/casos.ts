@@ -81,4 +81,7 @@ export const CASOS: Record<string, Caso> = {
     tipo: 'grupo',
     corpo: { apelido: 'Isolamento', anoNascimento: 1990, posicao: 'atacante' },
   },
+  'POST /api/grupos/:grupoId/jogadores/:id/inativar': { tipo: 'grupo', corpo: {} },
+  'POST /api/grupos/:grupoId/jogadores/:id/reativar': { tipo: 'grupo' },
+  'DELETE /api/grupos/:grupoId/jogadores/:id': { tipo: 'grupo' },
 };
