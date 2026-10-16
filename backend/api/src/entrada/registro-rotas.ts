@@ -32,6 +32,7 @@ import { rotaPartidaLer } from './rotas/grupos/partidas/ler.js';
 import { rotaPartidaEditar, rotaPartidaExcluir, rotaPartidaSalvar } from './rotas/grupos/partidas/escrever.js';
 import { rotaPublicoRanking } from './rotas/publico/ranking.js';
 import { rotaPublicoEventos } from './rotas/publico/eventos.js';
+import { rotaPublicoPdf } from './rotas/publico/pdf.js';
 import { rotaGrupoUso } from './rotas/grupos/uso.js';
 import { rotaHabilidadesListar } from './rotas/grupos/habilidades/listar.js';
 import { rotaHabilidadeCriar } from './rotas/grupos/habilidades/criar.js';
@@ -83,6 +84,7 @@ export const ROTAS: readonly Hono<AppEnv>[] = [
   rotaPartidaExcluir,
   rotaPublicoRanking,
   rotaPublicoEventos,
+  rotaPublicoPdf,
   rotaGrupoUso,
   rotaHabilidadesListar,
   rotaHabilidadeCriar,

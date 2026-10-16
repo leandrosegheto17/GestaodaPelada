@@ -103,6 +103,10 @@ export const CASOS: Record<string, Caso> = {
     tipo: 'nao_se_aplica',
     justificativa: 'Pública por slug: só a projeção estrita do ranking (RF-33).',
   },
+  'GET /api/publico/:slug/pdf': {
+    tipo: 'nao_se_aplica',
+    justificativa: 'Pública por slug: só a projeção estrita do PDF (RF-33).',
+  },
   'POST /api/publico/:slug/eventos': {
     tipo: 'nao_se_aplica',
     justificativa: 'Pública por slug: grava só evento anônimo do próprio grupo do slug.',

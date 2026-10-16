@@ -1,5 +1,5 @@
 import { rankingPublico, type RankingPublico } from '@pelada/contrato';
-import { calcularRanking, mesDentroDosLimites, mesDe } from '@pelada/dominio';
+import { calcularRanking, mesDentroDosLimites, mesDe, type LimitesDeMes } from '@pelada/dominio';
 import type { ExecutorDb } from '../../infraestrutura/db/index.js';
 import type { Grupo } from '../../infraestrutura/db/repositorios/grupos.js';
 import { carregarHistoricoGrupo } from '../pontuacao/historico.js';
@@ -31,6 +31,14 @@ export function linhasPublicas(linhas: Resultado['linhas']) {
 }
 
 /**
+ * O mês está no histórico do grupo? Vai da primeira partida ao mês de hoje; sem partidas, só o mês de hoje.
+ * Vale para o ranking público e para o PDF.
+ */
+export function mesNoHistorico(limites: LimitesDeMes, mes: string, hoje: string): boolean {
+  return limites.primeiro === null ? mes === mesDe(hoje) : mesDentroDosLimites(limites, mes);
+}
+
+/**
  * Ranking do mês na projeção pública estrita. Mês fora dos limites (da primeira partida ao mês de
  * hoje; sem partidas, só o mês de hoje) não monta nada.
  */
@@ -41,9 +49,7 @@ export async function montarRankingPublico(
 ): Promise<ResultadoRankingPublico> {
   const historico = await carregarHistoricoGrupo(ex, grupo.id, contexto.hoje);
   const r = calcularRanking({ hoje: contexto.hoje, mes: contexto.mes, ...historico });
-  const dentro =
-    r.limites.primeiro === null ? contexto.mes === mesDe(contexto.hoje) : mesDentroDosLimites(r.limites, contexto.mes);
-  if (!dentro) return { tipo: 'fora_dos_limites' };
+  if (!mesNoHistorico(r.limites, contexto.mes, contexto.hoje)) return { tipo: 'fora_dos_limites' };
   return {
     tipo: 'ok',
     ranking: rankingPublico.parse({
