@@ -47,6 +47,7 @@ describe('grupo lembrado', () => {
   it('valor corrompido vira null', async () => {
     await gravar('grupo-lembrado', '../etc/passwd');
     expect(await grupoLembrado()).toBeNull();
+    expect(await ler('grupo-lembrado')).toBeUndefined();
   });
 });
 

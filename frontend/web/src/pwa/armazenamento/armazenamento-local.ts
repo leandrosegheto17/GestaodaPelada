@@ -15,7 +15,10 @@ const mesValido = (valor: unknown): valor is string => esquemaMes.safeParse(valo
 
 export async function grupoLembrado(): Promise<string | null> {
   const valor = await ler(CHAVE_GRUPO);
-  return slugValido(valor) ? valor : null;
+  if (slugValido(valor)) return valor;
+  // O armazenamento é entrada de fora: valor malformado é esquecido.
+  if (valor !== undefined) await apagar(CHAVE_GRUPO);
+  return null;
 }
 
 export async function lembrarGrupo(slug: string): Promise<void> {
