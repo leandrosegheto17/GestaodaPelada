@@ -9,6 +9,7 @@ import { Faixa } from '../../componentes/basicos/Faixa';
 import { Icone } from '../../componentes/basicos/Icone';
 import { recursos } from '../../config/recursos';
 import { descreverAgenda } from '../../formatacao/agenda';
+import { AvisoInstalacao } from './AvisoInstalacao';
 import { ConteudoRanking } from './ConteudoRanking';
 import { FaixaSemConexao } from './FaixaSemConexao';
 import estilos from './ranking.module.css';
@@ -46,6 +47,7 @@ export function TelaRanking({ ranking, aoTrocarMes, atualizando = false, semCone
         destinoFinanceiro={`/admin?grupo=${encodeURIComponent(grupo.slug)}&area=financeiro`}
         aoNavegar={aoToqueNoAdmin}
       />
+      <AvisoInstalacao />
       {semConexaoDesde !== null ? <FaixaSemConexao geradoEm={semConexaoDesde} /> : null}
       <AvisoEnderecoNovo enderecoNovo={ranking.enderecoNovo} />
       <main id="conteudo" tabIndex={-1} className={estilos.conteudo}>
