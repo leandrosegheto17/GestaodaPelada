@@ -25,7 +25,10 @@ export const roteador = createBrowserRouter([
       {
         path: '/dono',
         Component: LayoutDono,
-        children: [{ index: true, lazy: () => import('../telas/dono/AreaDono') }],
+        children: [
+          { index: true, lazy: () => import('../telas/dono/AreaDono') },
+          { path: 'grupos/novo', lazy: () => import('../telas/dono/NovoGrupo') },
+        ],
       },
       { path: '/admin', lazy: () => import('../telas/grupos/EscolherGrupo') },
       { path: '/conta/senha', lazy: () => import('../telas/minha-senha/MinhaSenha') },
