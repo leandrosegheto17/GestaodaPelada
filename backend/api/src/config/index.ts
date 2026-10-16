@@ -3,6 +3,10 @@ import { email } from '@pelada/contrato';
 /** Variáveis e bindings que o Worker recebe. */
 export interface Env {
   HYPERDRIVE: Hyperdrive;
+  /** Limite de tentativas de login por IP (Rate Limiting do Workers). */
+  LIMITE_ENTRAR?: RateLimit;
+  /** Limite das rotas públicas por IP. */
+  LIMITE_PUBLICO?: RateLimit;
   URL_PUBLICA: string;
   ENDERECO_NOVO?: string;
   DONO_EMAIL: string;

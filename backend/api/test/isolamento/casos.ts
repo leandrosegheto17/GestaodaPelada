@@ -99,4 +99,13 @@ export const CASOS: Record<string, Caso> = {
     corpo: { data: '2026-10-15', choveu: false, marcacoes: [] },
   },
   'DELETE /api/grupos/:grupoId/partidas/:data{[0-9-]+}': { tipo: 'grupo', parametros: () => ({ data: '2026-10-15' }) },
+  'GET /api/publico/:slug/ranking': {
+    tipo: 'nao_se_aplica',
+    justificativa: 'Pública por slug: só a projeção estrita do ranking (RF-33).',
+  },
+  'POST /api/publico/:slug/eventos': {
+    tipo: 'nao_se_aplica',
+    justificativa: 'Pública por slug: grava só evento anônimo do próprio grupo do slug.',
+  },
+  'GET /api/grupos/:grupoId/uso': { tipo: 'grupo' },
 };

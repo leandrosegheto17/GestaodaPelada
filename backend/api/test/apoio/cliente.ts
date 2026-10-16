@@ -1,5 +1,6 @@
 import { createExecutionContext, env, waitOnExecutionContext } from 'cloudflare:test';
 import { criarApp } from '../../src/entrada/app.js';
+import type { Limitador } from '../../src/entrada/middlewares/limite-taxa.js';
 import type { Relogio } from '../../src/infraestrutura/relogio/index.js';
 
 export interface OpcoesCliente {
@@ -7,6 +8,8 @@ export interface OpcoesCliente {
   /** Não envia `X-Pelada: 1` (para testar o 403). */
   semCsrf?: boolean;
   cookie?: string;
+  /** Limitadores de taxa; por padrão nenhum limita (os testes fazem muitas chamadas seguidas). */
+  limitadores?: { entrar?: Limitador; publico?: Limitador };
 }
 
 export interface RespostaTeste {
@@ -26,7 +29,11 @@ function lerJson(texto: string): unknown {
 
 /** Cliente que usa o app completo (middlewares inclusos) dentro do workerd. */
 export function clienteTeste(opcoes: OpcoesCliente = {}) {
-  const app = criarApp(opcoes.relogio ? { relogio: opcoes.relogio } : {});
+  const semLimite: Limitador = { limit: async () => ({ success: true }) };
+  const app = criarApp({
+    ...(opcoes.relogio ? { relogio: opcoes.relogio } : {}),
+    limitadores: { entrar: opcoes.limitadores?.entrar ?? semLimite, publico: opcoes.limitadores?.publico ?? semLimite },
+  });
 
   async function enviar(metodo: string, caminho: string, corpo?: unknown): Promise<RespostaTeste> {
     const cabecalhos = new Headers();

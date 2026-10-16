@@ -53,6 +53,8 @@ export const rankingPublico = z.strictObject({
 });
 export type RankingPublico = z.infer<typeof rankingPublico>;
 
+export type LinhaRankingPublica = z.infer<typeof linhaRanking>;
+
 export const rankingPublicoConsulta = z.strictObject({ mes: mes.optional() });
 
 export const eventoPublicoCorpo = z.discriminatedUnion('tipo', [

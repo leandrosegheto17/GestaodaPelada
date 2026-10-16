@@ -9,6 +9,7 @@ import { criarRelogio, type Relogio } from '../infraestrutura/relogio/index.js';
 import { corpoGrande, erroInterno, naoEncontrado } from './erros.js';
 import { semCache } from './middlewares/cache.js';
 import { exigirCabecalhoPelada } from './middlewares/csrf.js';
+import { criarLimiteTaxa, type Limitador } from './middlewares/limite-taxa.js';
 import { exigirDono } from './middlewares/dono.js';
 import { exigirFinanceiro, exigirVinculo } from './middlewares/grupo.js';
 import { carregarSessao } from './middlewares/sessao.js';
@@ -29,6 +30,8 @@ export type AppEnv = { Bindings: Env; Variables: Variaveis };
 export interface OpcoesApp {
   /** Substitui o relógio (testes). */
   relogio?: Relogio;
+  /** Substitui os limitadores de taxa do ambiente (testes). */
+  limitadores?: { entrar?: Limitador; publico?: Limitador };
 }
 
 /** Monta o app Hono. É uma fábrica: nada é guardado entre requisições. */
@@ -37,6 +40,14 @@ export function criarApp(opcoes: OpcoesApp = {}): Hono<AppEnv> {
   const relogio = opcoes.relogio ?? criarRelogio();
 
   app.use('/api/*', semCache);
+  app.use(
+    '/api/sessao/entrar',
+    criarLimiteTaxa((c) => opcoes.limitadores?.entrar ?? c.env?.LIMITE_ENTRAR),
+  );
+  app.use(
+    '/api/publico/*',
+    criarLimiteTaxa((c) => opcoes.limitadores?.publico ?? c.env?.LIMITE_PUBLICO),
+  );
   app.use('/api/*', exigirCabecalhoPelada);
   app.use('/api/*', bodyLimit({ maxSize: LIMITES.corpoBytes, onError: (c) => corpoGrande(c) }));
   app.use('/api/*', async (c, proximo) => {
