@@ -1,10 +1,13 @@
 import { spawnSync } from 'node:child_process';
 import { join } from 'node:path';
 import pg from 'pg';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { aplicarMigracoes } from '../../src/infraestrutura/db/migracoes/aplicar.js';
 import { lerMigracoes } from '../../src/infraestrutura/db/migracoes/ler.js';
 import { criarBancoTemporario, temBanco, type BancoTemporario } from '../apoio/banco.js';
+
+// Cada teste sobe `pnpm exec tsx` num processo novo, lento no Windows.
+vi.setConfig({ testTimeout: 60_000 });
 
 const RAIZ = join(import.meta.dirname, '../../../..');
 const MIGRACOES = join(import.meta.dirname, '../../src/infraestrutura/db/migracoes');
