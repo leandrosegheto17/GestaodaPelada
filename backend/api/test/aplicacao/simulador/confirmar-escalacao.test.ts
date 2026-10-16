@@ -107,9 +107,6 @@ describe('confirmarEscalacao', () => {
   it('idsDaComposicao junta titulares, reservas e quem não entra', () => {
     const ids = idsDaComposicao({
       formato: 'dois_times',
-      data: '2026-10-22',
-      n: 2,
-      k: 1,
       composicao: {
         times: [
           { titulares: [{ id: 'a', so1oTempo: false }], entramNo2oTempo: [{ id: 'b', so1oTempo: false }] },

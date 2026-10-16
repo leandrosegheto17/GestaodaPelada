@@ -1,10 +1,12 @@
-import { diaSemana, data as esquemaData, partidaNova, type PartidaNova } from '@pelada/contrato';
+import { diaSemana, data as esquemaData, partidaNova, type PartidaNova, type SituacaoPresenca } from '@pelada/contrato';
 import { compararDatas, dataSugeridaPartida } from '@pelada/dominio';
 import type { ExecutorDb } from '../../infraestrutura/db/index.js';
+import * as escalacoes from '../../infraestrutura/db/repositorios/escalacoes.js';
 import * as grupos from '../../infraestrutura/db/repositorios/grupos.js';
 import * as partidas from '../../infraestrutura/db/repositorios/partidas.js';
 import { ativosNaData } from '../elenco/ativos.js';
 import { indiceDiaSemana } from '../grupos/dia-semana.js';
+import { idsDaComposicao, lerComposicao } from '../simulador/composicao.js';
 import { montarLinhas } from './linhas.js';
 
 export class DataInvalida extends Error {
@@ -40,14 +42,23 @@ export async function prepararPartidaNova(
   if (compararDatas(data, entrada.hoje) > 0) throw new DataFutura();
   if (await partidas.porData(ex, grupoId, data)) throw new PartidaJaExiste(data);
 
-  const ativos = await ativosNaData(ex, grupoId, data);
+  const [ativos, escalacao] = await Promise.all([
+    ativosNaData(ex, grupoId, data),
+    escalacoes.porData(ex, grupoId, data),
+  ]);
+  // Quem está na escalação (titulares, reservas e "não entra") compareceu: vem como presente (RN-19).
+  const composicao = escalacao ? lerComposicao(escalacao.formato, escalacao.composicao) : null;
+  const naEscalacao = new Set(composicao ? idsDaComposicao(composicao) : []);
+  const presencas = new Map<string, SituacaoPresenca>(
+    ativos.filter((j) => naEscalacao.has(j.id)).map((j) => [j.id, 'presente']),
+  );
   return partidaNova.parse({
     data,
     dataSugerida: sugerida,
     hoje: entrada.hoje,
     jaExiste: false,
-    preMarcadaPelaEscalacao: false,
+    preMarcadaPelaEscalacao: composicao !== null,
     choveu: false,
-    jogadores: montarLinhas(ativos, new Map()),
+    jogadores: montarLinhas(ativos, presencas),
   });
 }

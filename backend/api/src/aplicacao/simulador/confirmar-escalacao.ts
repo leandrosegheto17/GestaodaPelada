@@ -3,18 +3,14 @@ import { emTransacao, type Db } from '../../infraestrutura/db/index.js';
 import * as escalacoes from '../../infraestrutura/db/repositorios/escalacoes.js';
 import * as eventos from '../../infraestrutura/db/repositorios/eventos.js';
 import { ativosNaData } from '../elenco/ativos.js';
+import { idsDaComposicao } from './composicao.js';
 
 export type ResultadoConfirmar =
   { ok: true; confirmada: EscalacaoConfirmada } | { ok: false; campos: Record<string, string> };
 
 export const MSG_COMPOSICAO_FORA_DO_GRUPO = 'Há jogadores que não estão ativos no grupo nesta data.';
 
-/** Ids que aparecem na composição, na ordem em que aparecem. */
-export function idsDaComposicao(corpo: EscalacaoCorpo): string[] {
-  if (corpo.formato === 'varios_times') return corpo.composicao.times.flatMap((t) => t.jogadores);
-  const { times, naoEntra } = corpo.composicao;
-  return [...times.flatMap((t) => [...t.titulares, ...t.entramNo2oTempo].map((j) => j.id)), ...naoEntra];
-}
+export { idsDaComposicao } from './composicao.js';
 
 export interface DependenciasConfirmar {
   /** Troca o registro do evento (testes de atomicidade). */

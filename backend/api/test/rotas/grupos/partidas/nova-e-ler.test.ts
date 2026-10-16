@@ -1,6 +1,7 @@
 import { erroPadrao, partidaDetalhe, partidaNova } from '@pelada/contrato';
 import { describe, expect, it } from 'vitest';
 import { emTransacao } from '../../../../src/infraestrutura/db/index.js';
+import * as escalacoes from '../../../../src/infraestrutura/db/repositorios/escalacoes.js';
 import * as jogadores from '../../../../src/infraestrutura/db/repositorios/jogadores.js';
 import * as partidas from '../../../../src/infraestrutura/db/repositorios/partidas.js';
 import { montarCenario } from '../../../apoio/cenario-acesso.js';
@@ -45,6 +46,84 @@ describe('GET /api/grupos/:g/partidas/nova (workerd)', () => {
     ]);
     const sexta = await cliente(cen.adminA.cookie, '2026-10-23').get(`/api/grupos/${g}/partidas/nova`);
     expect((sexta.corpo as { dataSugerida: string }).dataSugerida).toBe('2026-10-22');
+  });
+
+  it('com escalação na data, titulares, reservas e "não entra" vêm presentes; os demais ausentes (RN-19)', async () => {
+    const db = await abrir();
+    const cen = await montarCenario(db, fabrica);
+    const g = cen.grupoA.id;
+    const [t1, t2, reserva, fora, fumaca] = await Promise.all(
+      ['Ana', 'Bia', 'Cris', 'Duda', 'Fumaça'].map((apelido) => criarJogador(db, g, cen.adminA.id, { apelido })),
+    );
+    await escalacoes.confirmar(db, g, {
+      data: '2026-10-22',
+      formato: 'dois_times',
+      n: 1,
+      k: 1,
+      composicao: {
+        times: [
+          { titulares: [{ id: t1, so1oTempo: false }], entramNo2oTempo: [{ id: reserva, so1oTempo: false }] },
+          { titulares: [{ id: t2, so1oTempo: false }], entramNo2oTempo: [] },
+        ],
+        naoEntra: [fora],
+      },
+      confirmadaPor: cen.adminA.id,
+      confirmadaEm: AGORA,
+    });
+    const r = await cliente(cen.adminA.cookie).get(`/api/grupos/${g}/partidas/nova`);
+    const nova = partidaNova.parse(r.corpo);
+    expect(nova.preMarcadaPelaEscalacao).toBe(true);
+    expect(nova.jogadores.map((j) => [j.apelido, j.situacao])).toEqual([
+      ['Ana', 'presente'],
+      ['Bia', 'presente'],
+      ['Cris', 'presente'],
+      ['Duda', 'presente'],
+      ['Fumaça', 'ausente'],
+    ]);
+    expect(fumaca).toBeDefined();
+  });
+
+  it('escalação em vários times pré-marca todos; em outra data ou de outro grupo não pré-marca; jsonb inválido é ignorado', async () => {
+    const db = await abrir();
+    const cen = await montarCenario(db, fabrica);
+    const g = cen.grupoA.id;
+    const a = await criarJogador(db, g, cen.adminA.id, { apelido: 'Ana' });
+    const base = { n: 2, k: null, confirmadaPor: cen.adminA.id, confirmadaEm: AGORA };
+    const nova = async () =>
+      partidaNova.parse((await cliente(cen.adminA.cookie).get(`/api/grupos/${g}/partidas/nova`)).corpo);
+
+    await escalacoes.confirmar(db, cen.grupoB.id, {
+      ...base,
+      confirmadaPor: cen.adminB.id,
+      data: '2026-10-22',
+      formato: 'varios_times',
+      composicao: { times: [{ jogadores: [a] }] },
+    });
+    await escalacoes.confirmar(db, g, {
+      ...base,
+      data: '2026-10-15',
+      formato: 'varios_times',
+      composicao: { times: [{ jogadores: [a] }] },
+    });
+    expect(await nova()).toMatchObject({ preMarcadaPelaEscalacao: false });
+
+    await escalacoes.confirmar(db, g, {
+      ...base,
+      data: '2026-10-22',
+      formato: 'varios_times',
+      composicao: { lixo: 1 },
+    });
+    const invalida = await nova();
+    expect(invalida.preMarcadaPelaEscalacao).toBe(false);
+    expect(invalida.jogadores.map((j) => j.situacao)).toEqual(['ausente']);
+
+    await escalacoes.confirmar(db, g, {
+      ...base,
+      data: '2026-10-22',
+      formato: 'varios_times',
+      composicao: { times: [{ jogadores: [a] }] },
+    });
+    expect((await nova()).jogadores.map((j) => j.situacao)).toEqual(['presente']);
   });
 
   it('data futura e inválida: 422 em data; já lançada: 409 com a data existente', async () => {
