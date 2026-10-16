@@ -8,11 +8,13 @@
   "scripts": {
     "lint": "eslint .",
     "format:check": "prettier --check .",
-    "typecheck": "pnpm -r typecheck",
+    "typecheck": "pnpm -r typecheck && tsc --noEmit -p backend/scripts",
     "test": "pnpm -r test",
-    "test:checagens": "vitest run backend/scripts"
+    "test:checagens": "vitest run backend/scripts",
+    "migrar": "tsx backend/scripts/migrar.ts"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261015.1",
     "@eslint/js": "^10.0.1",
     "@types/node": "^22.20.5",
     "eslint": "^10.12.0",
@@ -21,6 +23,7 @@
     "eslint-plugin-import-x": "^4.17.1",
     "globals": "^17.13.0",
     "prettier": "^3.9.10",
+    "tsx": "^4.23.15",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.71.2",
     "vitest": "^5.0.5"

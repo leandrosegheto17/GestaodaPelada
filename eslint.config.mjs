@@ -195,6 +195,14 @@ export default tseslint.config(
     },
   },
   {
+    // Apoio de teste da API conecta no Postgres de teste (nunca em produção).
+    files: ['backend/api/test/**'],
+    rules: {
+      'no-restricted-imports': ['error', restritos(PROIBIDAS_GLOBAL)],
+      'no-restricted-syntax': sintaxe(dinamicos(PROIBIDAS_GLOBAL), semRelogio, semAsUnknownAs),
+    },
+  },
+  {
     files: ['backend/api/src/infraestrutura/db/**'],
     rules: {
       'no-restricted-imports': ['error', restritos(PROIBIDAS_GLOBAL)],
