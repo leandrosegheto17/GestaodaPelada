@@ -1,0 +1,124 @@
+{
+  "direcao": "resposta",
+  "esquema": {
+    "additionalProperties": false,
+    "properties": {
+      "dono": {
+        "additionalProperties": false,
+        "properties": {
+          "tambemAdmin": {
+            "type": "boolean"
+          }
+        },
+        "required": ["tambemAdmin"],
+        "type": "object"
+      },
+      "grupos": {
+        "items": {
+          "additionalProperties": false,
+          "properties": {
+            "admins": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "arquivadoEm": {
+              "anyOf": [
+                {
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "criadoEm": {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "type": "string"
+            },
+            "diaSemana": {
+              "enum": ["domingo", "segunda", "terca", "quarta", "quinta", "sexta", "sabado"],
+              "type": "string"
+            },
+            "frequencia": {
+              "enum": ["semanal", "quinzenal", "mensal"],
+              "type": "string"
+            },
+            "horario": {
+              "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$",
+              "type": "string"
+            },
+            "id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "inicioTrial": {
+              "anyOf": [
+                {
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "nome": {
+              "type": "string"
+            },
+            "situacaoComercial": {
+              "enum": ["uso_proprio", "trial", "ativo", "inadimplente", "cancelado"],
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "nome",
+            "diaSemana",
+            "frequencia",
+            "horario",
+            "situacaoComercial",
+            "inicioTrial",
+            "admins",
+            "criadoEm",
+            "arquivadoEm"
+          ],
+          "type": "object"
+        },
+        "type": "array"
+      },
+      "pedidosReset": {
+        "items": {
+          "additionalProperties": false,
+          "properties": {
+            "contaId": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            },
+            "grupos": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "ultimoPedidoEm": {
+              "format": "date-time",
+              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
+              "type": "string"
+            }
+          },
+          "required": ["contaId", "email", "grupos", "ultimoPedidoEm"],
+          "type": "object"
+        },
+        "type": "array"
+      }
+    },
+    "required": ["pedidosReset", "grupos", "dono"],
+    "type": "object"
+  }
+}

@@ -1,0 +1,100 @@
+{
+  "direcao": "resposta",
+  "esquema": {
+    "additionalProperties": false,
+    "properties": {
+      "admins": {
+        "items": {
+          "additionalProperties": false,
+          "properties": {
+            "contaId": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            },
+            "nome": {
+              "type": "string"
+            }
+          },
+          "required": ["contaId", "nome", "email"],
+          "type": "object"
+        },
+        "type": "array"
+      },
+      "arquivadoEm": {
+        "anyOf": [
+          {
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "criadoEm": {
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+        "type": "string"
+      },
+      "diaSemana": {
+        "enum": ["domingo", "segunda", "terca", "quarta", "quinta", "sexta", "sabado"],
+        "type": "string"
+      },
+      "frequencia": {
+        "enum": ["semanal", "quinzenal", "mensal"],
+        "type": "string"
+      },
+      "horario": {
+        "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$",
+        "type": "string"
+      },
+      "id": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "inicioTrial": {
+        "anyOf": [
+          {
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "nome": {
+        "type": "string"
+      },
+      "situacaoComercial": {
+        "enum": ["uso_proprio", "trial", "ativo", "inadimplente", "cancelado"],
+        "type": "string"
+      },
+      "slug": {
+        "pattern": "^[a-z0-9-]{1,64}$",
+        "type": "string"
+      },
+      "urlPublica": {
+        "format": "uri",
+        "type": "string"
+      }
+    },
+    "required": [
+      "id",
+      "nome",
+      "slug",
+      "urlPublica",
+      "diaSemana",
+      "frequencia",
+      "horario",
+      "situacaoComercial",
+      "inicioTrial",
+      "criadoEm",
+      "arquivadoEm",
+      "admins"
+    ],
+    "type": "object"
+  }
+}

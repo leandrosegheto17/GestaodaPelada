@@ -1,0 +1,15 @@
+{
+  "direcao": "entrada",
+  "esquema": {
+    "additionalProperties": false,
+    "properties": {
+      "nomeConfirmacao": {
+        "maxLength": 60,
+        "minLength": 1,
+        "type": "string"
+      }
+    },
+    "required": ["nomeConfirmacao"],
+    "type": "object"
+  }
+}

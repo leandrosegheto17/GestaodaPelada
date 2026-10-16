@@ -1,0 +1,79 @@
+{
+  "direcao": "resposta",
+  "esquema": {
+    "additionalProperties": false,
+    "properties": {
+      "grupo": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "slug": {
+            "pattern": "^[a-z0-9-]{1,64}$",
+            "type": "string"
+          },
+          "urlPublica": {
+            "format": "uri",
+            "type": "string"
+          }
+        },
+        "required": ["id", "nome", "slug", "urlPublica"],
+        "type": "object"
+      },
+      "primeiroAdmin": {
+        "oneOf": [
+          {
+            "additionalProperties": false,
+            "properties": {
+              "contaId": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "contaNova": {
+                "const": true,
+                "type": "boolean"
+              },
+              "nome": {
+                "type": "string"
+              },
+              "senhaTemporaria": {
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": ["contaId", "nome", "contaNova", "senhaTemporaria"],
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "contaId": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "contaNova": {
+                "const": false,
+                "type": "boolean"
+              },
+              "nome": {
+                "type": "string"
+              },
+              "senhaTemporaria": {
+                "type": "null"
+              }
+            },
+            "required": ["contaId", "nome", "contaNova", "senhaTemporaria"],
+            "type": "object"
+          }
+        ]
+      }
+    },
+    "required": ["grupo", "primeiroAdmin"],
+    "type": "object"
+  }
+}

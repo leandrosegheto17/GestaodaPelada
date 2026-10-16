@@ -1,0 +1,36 @@
+{
+  "direcao": "entrada",
+  "esquema": {
+    "additionalProperties": false,
+    "properties": {
+      "adminEmail": {
+        "maxLength": 254,
+        "type": "string"
+      },
+      "adminNome": {
+        "maxLength": 60,
+        "minLength": 2,
+        "type": "string"
+      },
+      "diaSemana": {
+        "enum": ["domingo", "segunda", "terca", "quarta", "quinta", "sexta", "sabado"],
+        "type": "string"
+      },
+      "frequencia": {
+        "enum": ["semanal", "quinzenal", "mensal"],
+        "type": "string"
+      },
+      "horario": {
+        "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$",
+        "type": "string"
+      },
+      "nome": {
+        "maxLength": 60,
+        "minLength": 3,
+        "type": "string"
+      }
+    },
+    "required": ["nome", "diaSemana", "frequencia", "horario", "adminNome", "adminEmail"],
+    "type": "object"
+  }
+}

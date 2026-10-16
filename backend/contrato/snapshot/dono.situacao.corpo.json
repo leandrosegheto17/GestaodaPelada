@@ -1,0 +1,25 @@
+{
+  "direcao": "entrada",
+  "esquema": {
+    "additionalProperties": false,
+    "properties": {
+      "inicioTrial": {
+        "anyOf": [
+          {
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "situacaoComercial": {
+        "enum": ["uso_proprio", "trial", "ativo", "inadimplente", "cancelado"],
+        "type": "string"
+      }
+    },
+    "required": ["situacaoComercial", "inicioTrial"],
+    "type": "object"
+  }
+}
