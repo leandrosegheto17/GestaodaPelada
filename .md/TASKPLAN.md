@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-16 17:08
+Atualizado: 2026-10-16 17:10
 
-Resumo: Não executada 167 · Executada (aguarda teste) 41 · total 208
+Resumo: Não executada 166 · Executada (aguarda teste) 42 · total 208
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -54,7 +54,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 39 | TP-0039 | executor | ✔ | Endpoint POST /api/sessao/esqueci-senha | L08 | TP-0019, TP-0027, TP-0030, TP-0033 | Executada (aguarda teste) |
 | 40 | TP-0040 | executor | ✔ | Endpoint POST /api/sessao/trocar-senha | L08 | TP-0019, TP-0027, TP-0028, TP-0030, TP-0031, TP-0033 | Executada (aguarda teste) |
 | 41 | TP-0041 | executor | ✔ | Script backend/scripts/dono.ts (criar e redefinir-senha) | L08 | TP-0027, TP-0030, TP-0037 | Executada (aguarda teste) |
-| 42 | TP-0042 | executor | ✔ | Migração do Elenco (jogadores, períodos de atividade) | L09 | TP-0015, TP-0016, TP-0026 | Não executada |
+| 42 | TP-0042 | executor | ✔ | Migração do Elenco (jogadores, períodos de atividade) | L09 | TP-0015, TP-0016, TP-0026 | Executada (aguarda teste) |
 | 43 | TP-0043 | executor | ✔ | Migração de habilidades e notas | L09 | TP-0015, TP-0016, TP-0042 | Não executada |
 | 44 | TP-0044 | executor | ✔ | Migração de pesos, partidas e presenças | L09 | TP-0015, TP-0016, TP-0042 | Não executada |
 | 45 | TP-0045 | executor | ✔ | Migração de eventos de uso | L09 | TP-0015, TP-0016, TP-0026 | Não executada |
