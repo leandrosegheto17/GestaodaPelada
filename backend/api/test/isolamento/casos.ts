@@ -28,4 +28,8 @@ export const CASOS: Record<string, Caso> = {
     tipo: 'nao_se_aplica',
     justificativa: 'Lê só a conta da própria sessão; os grupos vêm dos vínculos dela.',
   },
+  'POST /api/sessao/sair': {
+    tipo: 'nao_se_aplica',
+    justificativa: 'Encerra só a sessão do próprio cookie, sem dado de grupo.',
+  },
 };
