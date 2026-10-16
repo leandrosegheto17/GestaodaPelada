@@ -17,3 +17,5 @@ export * from './elenco/apelido.js';
 export * from './simulador/previa.js';
 export * from './simulador/prioridade.js';
 export * from './simulador/classificacao.js';
+export * from './simulador/tipos.js';
+export * from './simulador/indicadores.js';
