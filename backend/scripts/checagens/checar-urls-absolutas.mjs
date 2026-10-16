@@ -12,6 +12,7 @@ const EXCECOES = [
   'postgres://postgres:postgres@localhost',
   'postgres://postgres:postgres@db:5432',
   'http://backend:8787',
+  'https://console.neon.tech/api/v2',
   'http://www.w3.org/2000/svg',
   'http://www.w3.org/1999/xlink',
   'http://json-schema.org/',

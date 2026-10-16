@@ -1,0 +1,111 @@
+name: deploy
+
+# Único lugar com `wrangler deploy` (conferido por backend/scripts/checagens/checar-wrangler-deploy.mjs).
+# Ordem: branch de restauração no Neon -> dump cifrado -> migração -> cache do Hyperdrive -> deploy.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      ambiente:
+        description: Ambiente (a produção só publica pela main)
+        type: choice
+        options: [teste]
+        default: teste
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    env:
+      AMBIENTE: ${{ github.event_name == 'push' && 'producao' || 'teste' }}
+    environment: ${{ github.event_name == 'push' && 'producao' || 'teste' }}
+    concurrency:
+      group: deploy-${{ github.event_name == 'push' && 'producao' || 'teste' }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/preparar-node
+
+      - name: Branch de restauração no Neon
+        id: restauracao
+        env:
+          NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+          NEON_PROJECT_ID: ${{ secrets.NEON_PROJECT_ID }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          pai="main"
+          if [ "$AMBIENTE" = "teste" ]; then pai="teste"; fi
+          api="https://console.neon.tech/api/v2/projects/${NEON_PROJECT_ID}/branches"
+          cabecalho="Authorization: Bearer ${NEON_API_KEY}"
+          id_pai="$(curl -fsS -H "$cabecalho" "$api" | node -e 'const n=process.argv[1];let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const b=JSON.parse(s).branches.find(x=>x.name===n);if(!b){process.exit(1)}console.log(b.id)})' "$pai")"
+          nome="restauracao-${AMBIENTE}-${RUN_ID}"
+          curl -fsS -X POST -H "$cabecalho" -H 'Content-Type: application/json' \
+            -d "{\"branch\":{\"name\":\"${nome}\",\"parent_id\":\"${id_pai}\"}}" "$api" >/dev/null
+          echo "nome=${nome}" >> "$GITHUB_OUTPUT"
+          # Mantém só os 2 branches de restauração mais novos (limite do plano gratuito).
+          curl -fsS -H "$cabecalho" "$api" | node -e 'const p="restauracao-"+process.argv[1]+"-";let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const l=JSON.parse(s).branches.filter(x=>x.name.startsWith(p)).sort((a,b)=>a.created_at<b.created_at?1:-1).slice(2);for(const b of l)console.log(b.id)})' "$AMBIENTE" |
+            while read -r antigo; do curl -fsS -X DELETE -H "$cabecalho" "${api}/${antigo}" >/dev/null; done
+
+      - name: Dump cifrado antes da migração
+        uses: ./.github/actions/dump-cifrado
+        with:
+          url: ${{ github.event_name == 'push' && secrets.NEON_URL_MIGRACAO_PROD || secrets.NEON_URL_MIGRACAO_TESTE }}
+          chave: ${{ secrets.BACKUP_CHAVE }}
+          nome-artefato: dump-predeploy-${{ env.AMBIENTE }}-${{ github.run_id }}
+
+      - name: Migrar o banco
+        id: migrar
+        env:
+          CI: 'true'
+          DATABASE_URL: ${{ github.event_name == 'push' && secrets.NEON_URL_MIGRACAO_PROD || secrets.NEON_URL_MIGRACAO_TESTE }}
+        run: pnpm exec tsx backend/scripts/migrar.ts --alvo "$AMBIENTE"
+
+      - name: Conferir o cache do Hyperdrive desligado
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          id="$(node -e 'const t=require("node:fs").readFileSync("wrangler.jsonc","utf8").replace(/\/\*[\s\S]*?\*\/|^\s*\/\/.*$/gm,"");const c=JSON.parse(t);const e=process.argv[1]==="teste"?c.env.teste:c;console.log(e.hyperdrive[0].id)' "$AMBIENTE")"
+          pnpm exec wrangler hyperdrive get "$id" --json | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const h=JSON.parse(s);if(!(h.caching&&h.caching.disabled===true)){console.error("Cache do Hyperdrive ligado (G-17).");process.exit(1)}})'
+
+      - name: Build do web
+        env:
+          VITE_RECURSOS_DESLIGADOS: ${{ vars.VITE_RECURSOS_DESLIGADOS }}
+        run: pnpm --filter @pelada/web build
+
+      - name: Deploy
+        id: publicar
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          URL_PUBLICA: ${{ vars.URL_PUBLICA }}
+        run: |
+          set -euo pipefail
+          if [ "$AMBIENTE" = "teste" ]; then ambiente="--env teste"; else ambiente=""; fi
+          # shellcheck disable=SC2086
+          pnpm exec wrangler deploy $ambiente --var "URL_PUBLICA:${URL_PUBLICA}"
+
+      - name: Conferir a saúde do app
+        env:
+          URL_PUBLICA: ${{ vars.URL_PUBLICA }}
+        run: curl -fsS --retry 3 "${URL_PUBLICA}/api/saude"
+
+      - name: Desfazer o deploy e instruir a restauração
+        if: failure() && steps.migrar.outcome == 'success'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          RESTAURACAO: ${{ steps.restauracao.outputs.nome }}
+        run: |
+          if [ "${{ steps.publicar.outcome }}" = "success" ]; then
+            if [ "$AMBIENTE" = "teste" ]; then ambiente="--env teste"; else ambiente=""; fi
+            # shellcheck disable=SC2086
+            pnpm exec wrangler rollback $ambiente --message "Falha depois do deploy (run ${{ github.run_id }})" || true
+          fi
+          echo "A migração já foi aplicada. Para restaurar o banco, use o branch '${RESTAURACAO}' do Neon ou o artefato dump-predeploy-${AMBIENTE}-${{ github.run_id }}. Passo a passo: backend/DEPLOY.md."

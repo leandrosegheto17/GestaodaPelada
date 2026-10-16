@@ -1,0 +1,15 @@
+name: Preparar Node e pnpm
+description: Configura pnpm e Node (versão do .nvmrc) com cache e instala as dependências do lockfile.
+
+runs:
+  using: composite
+  steps:
+    - uses: pnpm/action-setup@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version-file: .nvmrc
+        cache: pnpm
+        cache-dependency-path: pnpm-lock.yaml
+    - name: Instalar dependências
+      shell: bash
+      run: pnpm install --frozen-lockfile

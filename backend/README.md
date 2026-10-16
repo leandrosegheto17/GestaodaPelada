@@ -63,3 +63,12 @@ cifrado como artefato por 30 dias.
 - A falha do workflow agendado avisa por e-mail pelo GitHub: confira que as notificações de Actions estão ligadas.
 - Para decifrar e restaurar, veja o `DEPLOY.md`.
 - O dump contém dados pessoais (telefone, notas): nunca fica em claro e a chave fica no gerenciador de senhas.
+
+## Deploy
+
+O deploy só roda pelo workflow `deploy.yml` (push na `main` publica `producao`; o disparo manual publica `teste`).
+A ordem é fixa: branch de restauração no Neon, dump cifrado, migração (`migrar.ts --alvo`), conferência do cache
+desligado do Hyperdrive e `wrangler deploy`. Se algo falhar depois da migração, o workflow desfaz o deploy
+(`wrangler rollback`) e imprime como restaurar o banco. O runbook completo está em `DEPLOY.md`.
+
+Nenhum outro arquivo pode chamar `wrangler deploy`: `node backend/scripts/checagens/checar-wrangler-deploy.mjs`.

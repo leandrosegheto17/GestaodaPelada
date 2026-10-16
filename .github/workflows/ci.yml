@@ -19,13 +19,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-          cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
-      - run: pnpm install --frozen-lockfile
+      - uses: ./.github/actions/preparar-node
       - run: pnpm lint
       - run: node backend/scripts/checagens/checar-migracao-aditiva.mjs
       - run: node backend/scripts/checagens/checar-grupo-id.mjs
@@ -37,6 +31,7 @@ jobs:
       - run: pnpm test:checagens
       - run: node backend/scripts/checagens/checar-ids-tarefa.mjs
       - run: node backend/scripts/checagens/checar-urls-absolutas.mjs
+      - run: node backend/scripts/checagens/checar-wrangler-deploy.mjs
       - run: pnpm -r build
       - uses: gitleaks/gitleaks-action@v2
         env:
@@ -62,13 +57,7 @@ jobs:
           --health-retries 10
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-          cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
-      - run: pnpm install --frozen-lockfile
+      - uses: ./.github/actions/preparar-node
       - run: pnpm --filter @pelada/api test
 
   e2e:
@@ -77,13 +66,7 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-          cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
-      - run: pnpm install --frozen-lockfile
+      - uses: ./.github/actions/preparar-node
       - run: pnpm --filter @pelada/web exec playwright install --with-deps chromium
       - run: pnpm --filter @pelada/web build
       - run: pnpm --filter @pelada/web e2e
