@@ -7,7 +7,7 @@ dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuá
 
 Atualizado: 2026-10-16 16:49
 
-Resumo: Não executada 183 · Executada (aguarda teste) 25 · total 208
+Resumo: Não executada 182 · Executada (aguarda teste) 26 · total 208
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -38,7 +38,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 23 | TP-0023 | executor | ✔ | contrato/elenco (jogadores) | L05 | TP-0005, TP-0018 | Executada (aguarda teste) |
 | 24 | TP-0024 | executor | ✔ | contrato/partidas, contrato/pesos e contrato/uso | L05 | TP-0005, TP-0018 | Executada (aguarda teste) |
 | 25 | TP-0025 | executor | ✔ | Migração do contexto Acesso (contas, sessões, tentativas, pedidos de reset, auditoria) | L06 | TP-0015, TP-0016 | Executada (aguarda teste) |
-| 26 | TP-0026 | executor | ✔ | Migração do contexto Grupos (grupos, vínculos de admin) | L06 | TP-0015, TP-0016, TP-0025 | Não executada |
+| 26 | TP-0026 | executor | ✔ | Migração do contexto Grupos (grupos, vínculos de admin) | L06 | TP-0015, TP-0016, TP-0025 | Executada (aguarda teste) |
 | 27 | TP-0027 | executor | ✔ | Repositório de contas (hash no Postgres) e infraestrutura/seguranca | L06 | TP-0014, TP-0016, TP-0017, TP-0025 | Não executada |
 | 28 | TP-0028 | executor | ✔ | Repositórios de sessões e de tentativas de login | L06 | TP-0014, TP-0016, TP-0017, TP-0025 | Não executada |
 | 29 | TP-0029 | executor | ✔ | Repositórios de grupos e de vínculos | L06 | TP-0014, TP-0016, TP-0017, TP-0026 | Não executada |
