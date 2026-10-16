@@ -58,6 +58,8 @@ export const grupoCriado = z.strictObject({
   primeiroAdmin: adminAdicionado,
 });
 
+export type GrupoCriado = z.infer<typeof grupoCriado>;
+
 /** Criar grupo: os dados do grupo mais o primeiro admin (conta nova ou vínculo por e-mail). */
 export const criarGrupoCorpo = dadosGrupo.extend({ adminNome: nomeAdmin, adminEmail: email });
 
