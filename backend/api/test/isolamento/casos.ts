@@ -113,6 +113,15 @@ export const CASOS: Record<string, Caso> = {
   'PATCH /api/grupos/:grupoId/habilidades/:id': { tipo: 'grupo', corpo: { nome: 'Cabeceio' } },
   'DELETE /api/grupos/:grupoId/habilidades/:id': { tipo: 'grupo' },
   'GET /api/grupos/:grupoId/simulador/contexto': { tipo: 'grupo' },
+  'POST /api/grupos/:grupoId/simulador/previa': {
+    tipo: 'grupo',
+    corpo: {
+      formato: 'dois_times',
+      n: 7,
+      k: 2,
+      aptos: [{ id: '00000000-0000-4000-8000-000000000001', so1oTempo: false }],
+    },
+  },
   'PUT /api/grupos/:grupoId/jogadores/:id/notas/:habilidadeId': {
     tipo: 'grupo',
     parametros: () => ({ habilidadeId: '00000000-0000-4000-8000-0000000000aa' }),
