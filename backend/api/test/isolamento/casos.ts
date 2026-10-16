@@ -90,4 +90,6 @@ export const CASOS: Record<string, Caso> = {
     corpo: { presencaSemChuva: 1, presencaComChuva: 1, lesionadoSemChuva: 1, lesionadoComChuva: 1, expulso: -1 },
   },
   'GET /api/grupos/:grupoId/partidas': { tipo: 'grupo' },
+  'GET /api/grupos/:grupoId/partidas/nova': { tipo: 'grupo' },
+  'GET /api/grupos/:grupoId/partidas/:data{[0-9-]+}': { tipo: 'grupo', parametros: () => ({ data: '2026-10-15' }) },
 };
