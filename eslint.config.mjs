@@ -191,7 +191,12 @@ export default tseslint.config(
   {
     files: ['backend/api/**'],
     rules: {
-      'no-restricted-syntax': sintaxe(dinamicos([...PROIBIDAS_GLOBAL, ...BANCO]), semRelogio, semAsUnknownAs, donoSoEmScripts),
+      'no-restricted-syntax': sintaxe(
+        dinamicos([...PROIBIDAS_GLOBAL, ...BANCO]),
+        semRelogio,
+        semAsUnknownAs,
+        donoSoEmScripts,
+      ),
     },
   },
   {
