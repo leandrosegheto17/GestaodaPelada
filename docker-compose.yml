@@ -1,3 +1,17 @@
+# Ambiente local descartável: banco, API (wrangler dev) e web (Vite com proxy de /api).
+# Senhas abaixo são fictícias e valem só para esta máquina.
+x-node: &node
+  image: node:22
+  working_dir: /app
+  volumes:
+    - .:/app
+    - node_modules_raiz:/app/node_modules
+    - node_modules_contrato:/app/backend/contrato/node_modules
+    - node_modules_dominio:/app/backend/dominio/node_modules
+    - node_modules_api:/app/backend/api/node_modules
+    - node_modules_web:/app/frontend/web/node_modules
+    - pnpm_store:/root/.local/share/pnpm
+
 services:
   db:
     image: postgres:16
@@ -7,8 +21,50 @@ services:
       POSTGRES_DB: pelada
     ports:
       - '5432:5432'
+    volumes:
+      - dados_db:/var/lib/postgresql/data
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 5s
       timeout: 3s
       retries: 10
+
+  backend:
+    <<: *node
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432/pelada
+      CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_HYPERDRIVE: postgres://postgres:postgres@db:5432/pelada
+    ports:
+      - '8787:8787'
+    command: >
+      sh -c "corepack enable &&
+      pnpm install --frozen-lockfile &&
+      pnpm migrar &&
+      pnpm seed &&
+      pnpm exec wrangler dev --ip 0.0.0.0 --port 8787 --var URL_PUBLICA:http://localhost:5173"
+
+  frontend:
+    <<: *node
+    depends_on:
+      - backend
+    environment:
+      ALVO_API_DEV: http://backend:8787
+      CHOKIDAR_USEPOLLING: 'true'
+    ports:
+      - '5173:5173'
+    command: >
+      sh -c "corepack enable &&
+      pnpm install --frozen-lockfile &&
+      pnpm --filter @pelada/web dev --host 0.0.0.0 --port 5173 --strictPort"
+
+volumes:
+  dados_db:
+  node_modules_raiz:
+  node_modules_contrato:
+  node_modules_dominio:
+  node_modules_api:
+  node_modules_web:
+  pnpm_store:

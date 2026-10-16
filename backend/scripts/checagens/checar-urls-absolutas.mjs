@@ -10,6 +10,8 @@ const EXCECOES = [
   'http://localhost',
   'postgres://pelada:pelada@localhost',
   'postgres://postgres:postgres@localhost',
+  'postgres://postgres:postgres@db:5432',
+  'http://backend:8787',
   'http://www.w3.org/2000/svg',
   'http://www.w3.org/1999/xlink',
   'http://json-schema.org/',

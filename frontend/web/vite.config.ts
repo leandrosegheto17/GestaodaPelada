@@ -1,6 +1,7 @@
 import react from '@vitejs/plugin-react';
 import { loadEnv } from 'vite';
 import { defineConfig } from 'vitest/config';
+import { configuracaoServidor } from './configuracao-servidor';
 import { lerRecursosDesligados } from './src/config/recursos';
 
 export default defineConfig(({ mode }) => {
@@ -9,6 +10,7 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react()],
     build: { outDir: 'dist' },
+    server: configuracaoServidor(process.env),
     test: {
       environment: 'jsdom',
       setupFiles: ['./test/apoio/setup.ts'],

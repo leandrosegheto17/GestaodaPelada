@@ -39,3 +39,13 @@ pnpm --filter @pelada/web e2e
 ```
 
 O relatório fica em `frontend/web/e2e/resultado/` (resumo.md e PNGs).
+
+## Ambiente local com Docker
+
+```
+docker compose up        # db (5432), backend (8787, migra e semeia) e frontend (5173)
+docker compose down -v   # apaga o banco e os volumes
+```
+
+Abra `http://localhost:5173`; o Vite repassa `/api` ao backend (mesma origem, como em produção).
+O Postgres é descartável e a senha do compose é fictícia.
