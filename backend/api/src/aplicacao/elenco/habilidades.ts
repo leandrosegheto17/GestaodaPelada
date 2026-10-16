@@ -1,5 +1,6 @@
 import type { Habilidade } from '@pelada/contrato';
-import type { Db } from '../../infraestrutura/db/index.js';
+import { emTransacao, type Db } from '../../infraestrutura/db/index.js';
+import * as auditoria from '../../infraestrutura/db/repositorios/auditoria.js';
 import * as habilidades from '../../infraestrutura/db/repositorios/habilidades.js';
 import { NomeHabilidadeEmUso } from '../../infraestrutura/db/repositorios/habilidades.js';
 import { MSG_HABILIDADE_EM_USO } from './mensagens.js';
@@ -27,6 +28,32 @@ export async function renomearHabilidade(
   return comNomeUnico(async () => {
     const achou = await habilidades.renomear(db, grupoId, habilidadeId, nome);
     return achou ? { ok: true as const, habilidade: { id: habilidadeId, nome } } : null;
+  });
+}
+
+/**
+ * Apaga a habilidade e, por cascata do banco, as notas dela; a auditoria entra na mesma transação.
+ * `null` = a habilidade não é deste grupo (nada é escrito).
+ */
+export async function excluirHabilidade(
+  db: Db,
+  grupoId: string,
+  habilidadeId: string,
+  contexto: { autorContaId: string; agora: Date },
+): Promise<{ nome: string } | null> {
+  return emTransacao(db, async (tx) => {
+    const nome = (await habilidades.listar(tx, grupoId)).find((h) => h.id === habilidadeId)?.nome;
+    if (nome === undefined) return null;
+    if (!(await habilidades.excluir(tx, grupoId, habilidadeId))) return null;
+    await auditoria.registrar(tx, grupoId, {
+      autor: { tipo: 'conta', contaId: contexto.autorContaId },
+      acao: 'habilidade_excluida',
+      entidade: 'habilidade',
+      entidadeId: habilidadeId,
+      resumo: { nome },
+      agora: contexto.agora,
+    });
+    return { nome };
   });
 }
 

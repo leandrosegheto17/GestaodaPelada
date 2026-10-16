@@ -36,6 +36,7 @@ import { rotaGrupoUso } from './rotas/grupos/uso.js';
 import { rotaHabilidadesListar } from './rotas/grupos/habilidades/listar.js';
 import { rotaHabilidadeCriar } from './rotas/grupos/habilidades/criar.js';
 import { rotaHabilidadeRenomear } from './rotas/grupos/habilidades/renomear.js';
+import { rotaHabilidadeExcluir } from './rotas/grupos/habilidades/excluir.js';
 
 /** Todas as rotas de negócio. Cada rota nova entra aqui, depois dos middlewares do app (ADR-005). */
 export const ROTAS: readonly Hono<AppEnv>[] = [
@@ -80,4 +81,5 @@ export const ROTAS: readonly Hono<AppEnv>[] = [
   rotaHabilidadesListar,
   rotaHabilidadeCriar,
   rotaHabilidadeRenomear,
+  rotaHabilidadeExcluir,
 ];
