@@ -1,0 +1,13 @@
+.conteudo {
+  max-width: var(--largura-conteudo);
+  margin: 0 auto;
+  padding: var(--esp-3) var(--esp-4) 112px;
+}
+.conteudo:focus {
+  outline: none;
+}
+@media (min-width: 600px) {
+  .conteudo {
+    padding: var(--esp-6) var(--esp-6) var(--esp-12);
+  }
+}
