@@ -33,11 +33,14 @@ export function LayoutAdmin() {
 
   const dadosSessao = sessao.data ?? null;
   const dadosGrupo = grupo.data?.grupo;
+  // Até o GET do grupo responder, a barra usa o nome que a sessão já trouxe.
+  const nomeProvisorio = dadosSessao?.grupos.find((g) => g.id === grupoId)?.nome;
   return (
     <>
       <PularConteudo />
       <BarraAdmin
         {...(dadosGrupo ? { nomeGrupo: dadosGrupo.nome, destinoRanking: `/g/${dadosGrupo.slug}` } : {})}
+        {...(!dadosGrupo && nomeProvisorio ? { nomeGrupo: nomeProvisorio } : {})}
         {...(dadosSessao && dadosSessao.grupos.length > 1 ? { destinoTrocarGrupo: '/admin' } : {})}
         menuAberto={menuAberto}
         aoAbrirMenu={() => setMenuAberto(true)}
