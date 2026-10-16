@@ -24,7 +24,11 @@ export const roteador = createBrowserRouter([
       { path: '/admin', lazy: () => import('../telas/grupos/EscolherGrupo') },
       { path: '/conta/senha', lazy: () => import('../telas/minha-senha/MinhaSenha') },
       { path: '/entrar/nova-senha', lazy: () => import('../telas/nova-senha/NovaSenha') },
-      { path: '/admin/:grupoId', Component: LayoutAdmin, children: [] },
+      {
+        path: '/admin/:grupoId',
+        Component: LayoutAdmin,
+        children: [{ index: true, lazy: () => import('../telas/inicio/PaginaInicio') }],
+      },
     ],
   },
 ]);

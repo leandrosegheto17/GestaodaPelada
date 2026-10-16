@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { dataCompleta, diaMes, diaMesHora, diaSemanaCurto, hora, mesNumerico, mesPorExtenso } from './datas';
+import { dataCompleta, diaMes, diaMesHora, diaSemanaCurto, hora, mesNumerico, mesPorExtenso, nomeMes } from './datas';
 
 describe('datas de negócio', () => {
   it.each([
@@ -24,6 +24,14 @@ describe('datas de negócio', () => {
 
   it.each(['2026-13', '2026-00', '202610', ''])('mês malformado %j lança', (mes) => {
     expect(() => mesPorExtenso(mes)).toThrow(RangeError);
+  });
+});
+
+describe('nomeMes', () => {
+  it('só o nome do mês', () => {
+    expect(nomeMes('2026-10')).toBe('outubro');
+    expect(nomeMes('2026-03')).toBe('março');
+    expect(() => nomeMes('2026-13')).toThrow(RangeError);
   });
 });
 

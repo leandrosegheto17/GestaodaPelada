@@ -1,0 +1,27 @@
+.diaDeJogo {
+  background: var(--cor-superficie);
+  border: 2px solid var(--cor-verde);
+  border-radius: var(--raio);
+  padding: var(--esp-4);
+  display: grid;
+  gap: var(--esp-3);
+}
+.titulo {
+  font-size: var(--texto-xl);
+  text-transform: uppercase;
+  color: var(--cor-verde);
+}
+.status {
+  display: flex;
+  gap: var(--esp-2);
+  align-items: center;
+  font-size: var(--texto-sm);
+  color: var(--cor-texto-sec);
+  margin: 0;
+}
+.subtitulo {
+  font-size: var(--texto-xl);
+  text-transform: uppercase;
+  letter-spacing: var(--espacamento-caixa-alta);
+  margin: var(--esp-6) 0 var(--esp-3);
+}

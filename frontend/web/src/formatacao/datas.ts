@@ -51,6 +51,11 @@ export function mesPorExtenso(mes: string): string {
   return formatoMes.format(new Date(Date.UTC(Number(achado[1]), numero - 1, 1)));
 }
 
+/** `2026-10` → `outubro` (só o nome do mês). */
+export function nomeMes(mes: string): string {
+  return mesPorExtenso(mes).replace(/ de \d+$/, '');
+}
+
 /** `2026-10` → `10/2026`. */
 export function mesNumerico(mes: string): string {
   const achado = MES.exec(mes);
