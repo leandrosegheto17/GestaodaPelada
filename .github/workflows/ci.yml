@@ -29,6 +29,7 @@ jobs:
       - run: pnpm lint
       - run: node backend/scripts/checagens/checar-migracao-aditiva.mjs
       - run: node backend/scripts/checagens/checar-grupo-id.mjs
+      - run: node backend/scripts/checagens/checar-escrita-e-dono.mjs
       - run: pnpm --filter @pelada/contrato checar-compatibilidade
       - run: pnpm format:check
       - run: pnpm typecheck

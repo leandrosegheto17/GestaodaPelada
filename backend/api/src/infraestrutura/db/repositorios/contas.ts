@@ -120,3 +120,27 @@ export async function marcarAvisoVisto(ex: ExecutorDb, contaId: string, agora: D
     .where('id', '=', contaId)
     .execute();
 }
+
+/**
+ * Cria a conta do dono (papel `e_dono`). Única escrita desse papel no código da API: só
+ * `backend/scripts/dono.ts` a usa (regra de lint e checagem de CI). O banco ainda exige que
+ * exista no máximo um dono e que o e-mail seja o do RF-01.
+ */
+export async function criarContaDono(
+  ex: ExecutorDb,
+  nova: { email: string; nome: string; senha: string; agora: Date },
+): Promise<string> {
+  const linha = await kyselyDe(ex)
+    .insertInto('contas')
+    .values({
+      email: nova.email,
+      nome: nova.nome,
+      senha_hash: sql<string>`crypt(${nova.senha}, gen_salt('bf', 12))`,
+      senha_temporaria: true,
+      e_dono: true,
+      criada_em: nova.agora,
+    })
+    .returning('id')
+    .executeTakeFirstOrThrow();
+  return linha.id;
+}

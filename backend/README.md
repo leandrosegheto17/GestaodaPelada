@@ -33,3 +33,9 @@ nesse servidor e aplicam as migrações antes da suíte (`DATABASE_URL_TESTE` mu
 
 Toda rota nova do Hono entra em `backend/api/test/isolamento/casos.ts` na mesma tarefa que a cria:
 a suíte lista as rotas do app e falha se alguma não tiver caso (ou se um caso apontar para rota que não existe).
+
+## Conta do dono
+
+`pnpm exec tsx backend/scripts/dono.ts criar` cria a conta do dono (e-mail de `DONO_EMAIL`) com senha temporária
+exibida uma única vez; `redefinir-senha` recupera o acesso. Os dois pedem para digitar o e-mail do dono e usam a
+trava de host (`--alvo producao` para o banco remoto). Nenhuma rota escreve o papel de dono.

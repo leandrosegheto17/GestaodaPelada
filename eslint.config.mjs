@@ -124,6 +124,12 @@ const semDocumentCookie = [
   },
 ];
 
+const MSG_DONO = 'criarContaDono só pode ser usada por backend/scripts/dono.ts (G-11).';
+const donoSoEmScripts = [
+  { selector: "ImportSpecifier[imported.name='criarContaDono']", message: MSG_DONO },
+  { selector: "MemberExpression[property.name='criarContaDono']", message: MSG_DONO },
+];
+
 const sintaxe = (...grupos) => ['error', ...grupos.flat()];
 
 const ZONAS = [
@@ -148,8 +154,9 @@ const ZONAS = [
     except: [
       './infraestrutura/db/repositorios',
       './infraestrutura/db/migracoes',
+      './infraestrutura/db/index.ts',
       './infraestrutura/seguranca',
-      './aplicacao/acesso/senhas',
+      './aplicacao/acesso/senhas.ts',
     ],
     message: 'Scripts só importam repositórios, migrações, seguranca e acesso/senhas (G-01).',
   },
@@ -178,7 +185,7 @@ export default tseslint.config(
   {
     files: ['backend/api/**'],
     rules: {
-      'no-restricted-syntax': sintaxe(dinamicos([...PROIBIDAS_GLOBAL, ...BANCO]), semRelogio, semAsUnknownAs),
+      'no-restricted-syntax': sintaxe(dinamicos([...PROIBIDAS_GLOBAL, ...BANCO]), semRelogio, semAsUnknownAs, donoSoEmScripts),
     },
   },
   {
@@ -193,7 +200,7 @@ export default tseslint.config(
     files: ['backend/api/src/infraestrutura/db/**'],
     rules: {
       'no-restricted-imports': ['error', restritos(PROIBIDAS_GLOBAL)],
-      'no-restricted-syntax': sintaxe(dinamicos(PROIBIDAS_GLOBAL), semRelogio, semAsUnknownAs),
+      'no-restricted-syntax': sintaxe(dinamicos(PROIBIDAS_GLOBAL), semRelogio, semAsUnknownAs, donoSoEmScripts),
     },
   },
   {
@@ -221,6 +228,7 @@ export default tseslint.config(
         dinamicos([...PROIBIDAS_GLOBAL, ...BANCO, ...WEB_PROIBIDAS]),
         semDocumentCookie,
         semAsUnknownAs,
+        donoSoEmScripts,
       ),
     },
   },
