@@ -7,6 +7,8 @@ const BANCO_TESTE =
 // Dois projetos: `rotas` e `isolamento` rodam o Worker em workerd; o restante roda em Node.
 export default defineConfig({
   test: {
+    // Todos os arquivos compartilham o mesmo Postgres de teste: um por vez.
+    fileParallelism: false,
     globalSetup: ['./test/apoio/setup-global.ts'],
     projects: [
       {

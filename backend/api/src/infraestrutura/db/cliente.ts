@@ -2,6 +2,16 @@ import { Kysely, PostgresDialect, type PostgresPool, type PostgresPoolClient } f
 import pg from 'pg';
 import type { TabelasBanco } from './tipos.js';
 
+const OID_DATE = 1082;
+
+/** `date` volta como texto `AAAA-MM-DD` (nunca como Date com fuso); o resto segue o padrão do pg. */
+const tiposDoBanco = {
+  getTypeParser: ((oid: number, formato?: 'text' | 'binary') =>
+    oid === OID_DATE
+      ? (valor: string) => valor
+      : pg.types.getTypeParser(oid, formato as 'text')) as typeof pg.types.getTypeParser,
+};
+
 declare const marca: unique symbol;
 
 /** Conexão do módulo de dados. Opaca: só os repositórios sabem abri-la. */
@@ -50,7 +60,7 @@ export interface ContextoDeExecucao {
  * Nunca guardar o resultado em variável de módulo.
  */
 export function criarDb(fonte: FonteDeConexao, contexto: ContextoDeExecucao): Db {
-  const cliente = new pg.Client({ connectionString: fonte.connectionString });
+  const cliente = new pg.Client({ connectionString: fonte.connectionString, types: tiposDoBanco });
   let conexao: Promise<void> | null = null;
   const abrir = (): Promise<void> => (conexao ??= cliente.connect().then(() => undefined));
 
