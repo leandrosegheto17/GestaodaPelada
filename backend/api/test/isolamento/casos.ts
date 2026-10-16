@@ -40,4 +40,5 @@ export const CASOS: Record<string, Caso> = {
     tipo: 'nao_se_aplica',
     justificativa: 'Rota de sessão: troca só a senha da própria conta, sem dado de grupo.',
   },
+  'GET /api/dono/painel': { tipo: 'dono' },
 };
