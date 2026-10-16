@@ -1,4 +1,10 @@
-import { contextoSimulador, previaSimulador, type EntradaPrevia } from '@pelada/contrato';
+import {
+  avaliacaoSimulador,
+  contextoSimulador,
+  previaSimulador,
+  type AvaliarCorpo,
+  type EntradaPrevia,
+} from '@pelada/contrato';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { escrever, ler } from './cliente';
 import { chaveGrupo } from './grupo';
@@ -28,4 +34,9 @@ export function usePrevia(grupoId: string, entrada: EntradaPrevia | null) {
     enabled: entrada !== null,
     staleTime: 60_000,
   });
+}
+
+/** Reavalia uma composição ajustada à mão (sem refazer a sugestão). A requisição pode ser abortada. */
+export function avaliarComposicao(grupoId: string, corpo: AvaliarCorpo, signal?: AbortSignal) {
+  return escrever('POST', `${base(grupoId)}/avaliar`, corpo, avaliacaoSimulador, signal ? { signal } : {});
 }
