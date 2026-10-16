@@ -84,4 +84,10 @@ export const CASOS: Record<string, Caso> = {
   'POST /api/grupos/:grupoId/jogadores/:id/inativar': { tipo: 'grupo', corpo: {} },
   'POST /api/grupos/:grupoId/jogadores/:id/reativar': { tipo: 'grupo' },
   'DELETE /api/grupos/:grupoId/jogadores/:id': { tipo: 'grupo' },
+  'GET /api/grupos/:grupoId/pesos': { tipo: 'grupo' },
+  'POST /api/grupos/:grupoId/pesos': {
+    tipo: 'grupo',
+    corpo: { presencaSemChuva: 1, presencaComChuva: 1, lesionadoSemChuva: 1, lesionadoComChuva: 1, expulso: -1 },
+  },
+  'GET /api/grupos/:grupoId/partidas': { tipo: 'grupo' },
 };
