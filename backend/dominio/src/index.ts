@@ -16,3 +16,4 @@ export * from './elenco/habilidades-iniciais.js';
 export * from './elenco/apelido.js';
 export * from './simulador/previa.js';
 export * from './simulador/prioridade.js';
+export * from './simulador/classificacao.js';
