@@ -19,6 +19,10 @@ import { rotaAdminsAdicionar } from './rotas/grupos/admins/adicionar.js';
 import { rotaAdminsRemover } from './rotas/grupos/admins/remover.js';
 import { rotaAdminsRedefinirSenha } from './rotas/grupos/admins/redefinir-senha.js';
 import { rotaAdminsFinanceiro } from './rotas/grupos/admins/financeiro.js';
+import { rotaJogadoresListar } from './rotas/grupos/jogadores/listar.js';
+import { rotaJogadorLer } from './rotas/grupos/jogadores/ler.js';
+import { rotaJogadorCriar } from './rotas/grupos/jogadores/criar.js';
+import { rotaJogadorEditar } from './rotas/grupos/jogadores/editar.js';
 
 /** Todas as rotas de negócio. Cada rota nova entra aqui, depois dos middlewares do app (ADR-005). */
 export const ROTAS: readonly Hono<AppEnv>[] = [
@@ -42,4 +46,8 @@ export const ROTAS: readonly Hono<AppEnv>[] = [
   rotaAdminsRemover,
   rotaAdminsRedefinirSenha,
   rotaAdminsFinanceiro,
+  rotaJogadoresListar,
+  rotaJogadorLer,
+  rotaJogadorCriar,
+  rotaJogadorEditar,
 ];
