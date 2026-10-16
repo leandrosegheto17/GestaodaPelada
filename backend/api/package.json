@@ -1,0 +1,22 @@
+{
+  "name": "@pelada/api",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "vitest run --passWithNoTests",
+    "typecheck": "tsc --noEmit -p ."
+  },
+  "dependencies": {
+    "@pelada/contrato": "workspace:*",
+    "@pelada/dominio": "workspace:*",
+    "hono": "^4.13.13",
+    "kysely": "^0.29.6",
+    "pg": "^8.23.1"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.23.1"
+  }
+}

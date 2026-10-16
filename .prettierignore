@@ -1,0 +1,6 @@
+.md/
+.claude/
+pnpm-lock.yaml
+dist
+.wrangler
+coverage

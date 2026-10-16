@@ -1,0 +1,5 @@
+packages:
+  - backend/contrato
+  - backend/dominio
+  - backend/api
+  - frontend/web
