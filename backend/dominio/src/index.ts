@@ -19,3 +19,4 @@ export * from './simulador/prioridade.js';
 export * from './simulador/classificacao.js';
 export * from './simulador/tipos.js';
 export * from './simulador/indicadores.js';
+export * from './simulador/distribuicao-dois.js';

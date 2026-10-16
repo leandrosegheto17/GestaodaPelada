@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-16 19:28
+Atualizado: 2026-10-16 19:30
 
-Resumo: Não executada 67 · Executada (aguarda teste) 141 · total 208
+Resumo: Não executada 66 · Executada (aguarda teste) 142 · total 208
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -164,7 +164,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 149 | TP-0148 | executor | ✔ | dominio/simulador/prioridade (RN-08) | L32 | TP-0007, TP-0010 | Executada (aguarda teste) |
 | 150 | TP-0149 | executor | ✔ | dominio/simulador/classificacao (RN-09A) | L32 | TP-0001 | Executada (aguarda teste) |
 | 151 | TP-0150 | executor | ✔ | dominio/simulador/indicadores (indicadores e pares) | L33 | TP-0011, TP-0149 | Executada (aguarda teste) |
-| 152 | TP-0151 | executor | ✔ | dominio/simulador/distribuicao-dois (RN-10A) | L33 | TP-0149, TP-0150 | Não executada |
+| 152 | TP-0151 | executor | ✔ | dominio/simulador/distribuicao-dois (RN-10A) | L33 | TP-0149, TP-0150 | Executada (aguarda teste) |
 | 153 | TP-0152 | executor | ✔ | dominio/simulador/distribuicao-varios (RN-10B) | L33 | TP-0147, TP-0150 | Não executada |
 | 154 | TP-0153 | executor | ✔ | dominio/simulador/avisos (RF-47) | L33 | TP-0147, TP-0150 | Não executada |
 | 155 | TP-0154 | executor | ✔ | dominio/simulador/sugerir e teste de orçamento de CPU no CI | L33 | TP-0003, TP-0148, TP-0149, TP-0150, TP-0151, TP-0152, TP-0153 | Não executada |
