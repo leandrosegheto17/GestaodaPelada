@@ -1,4 +1,5 @@
 import { useId } from 'react';
+import { Indicadores } from './Indicadores';
 import { TabelaSimples } from './TabelaSimples';
 import estilos from './Tabelas.module.css';
 
@@ -39,14 +40,7 @@ export function TabelaSemanas({ legenda, colunas, semanas }: Props) {
             <h2 id={`${base}-${i}`} className={estilos.cartaoTitulo}>
               {s.rotulo}
             </h2>
-            <dl className={estilos.indicadores}>
-              {colunas.map((c, j) => (
-                <div key={c.tituloCurto} className={estilos.par}>
-                  <dt>{c.tituloCurto}</dt>
-                  <dd>{s.valores[j]}</dd>
-                </div>
-              ))}
-            </dl>
+            <Indicadores itens={colunas.map((c, j) => ({ rotulo: c.tituloCurto, valor: s.valores[j] ?? '' }))} />
           </section>
         ))}
       </div>

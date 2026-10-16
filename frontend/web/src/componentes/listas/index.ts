@@ -1,3 +1,4 @@
+export { Indicadores, type ItemIndicador } from './Indicadores';
 export { Item } from './Item';
 export { Lista } from './Lista';
 export { NavegadorMes } from './NavegadorMes';

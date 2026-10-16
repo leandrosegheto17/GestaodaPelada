@@ -1,0 +1,29 @@
+.comparativo {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-linha);
+  border-radius: var(--raio);
+  font-variant-numeric: tabular-nums;
+  margin-bottom: var(--esp-4);
+}
+.comparativo th,
+.comparativo td {
+  padding: var(--esp-2) var(--esp-3);
+  border-bottom: 1px solid var(--cor-linha);
+  text-align: right;
+}
+.comparativo th[scope='row'] {
+  text-align: left;
+  font-weight: var(--peso-medio);
+  color: var(--cor-texto-sec);
+}
+.comparativo thead th {
+  font-family: var(--fonte-titulo);
+  font-size: var(--texto-lg);
+  text-transform: uppercase;
+}
+.recalculando {
+  color: var(--cor-texto-sec);
+  font-style: italic;
+}
