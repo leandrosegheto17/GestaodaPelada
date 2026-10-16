@@ -6,3 +6,6 @@ export * from './pontuacao/pontos.js';
 export * from './atividade/atividade.js';
 export * from './atividade/situacao-rodada.js';
 export * from './atividade/validar-periodos.js';
+export * from './ranking/ordem.js';
+export * from './ranking/navegacao.js';
+export * from './ranking/ranking.js';

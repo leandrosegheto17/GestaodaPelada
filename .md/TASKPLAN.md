@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-16 16:28
+Atualizado: 2026-10-16 16:30
 
-Resumo: Não executada 199 · Executada (aguarda teste) 9 · total 208
+Resumo: Não executada 198 · Executada (aguarda teste) 10 · total 208
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -22,7 +22,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 7 | TP-0007 | executor | ✔ | dominio/datas: mês, navegação de mês e dias de jogo sugeridos | L02 | TP-0001 | Executada (aguarda teste) |
 | 8 | TP-0008 | executor | ✔ | dominio/pontuacao: pontos de uma presença e acumulado | L02 | TP-0007 | Executada (aguarda teste) |
 | 9 | TP-0009 | executor | ✔ | dominio/atividade: ativo numa data, falta e "–" | L02 | TP-0007 | Executada (aguarda teste) |
-| 10 | TP-0010 | executor | ✔ | dominio/ranking: ordem, PTS INICIAL, rodadas, PTS FINAL e limites de mês | L02 | TP-0007, TP-0008, TP-0009 | Não executada |
+| 10 | TP-0010 | executor | ✔ | dominio/ranking: ordem, PTS INICIAL, rodadas, PTS FINAL e limites de mês | L02 | TP-0007, TP-0008, TP-0009 | Executada (aguarda teste) |
 | 11 | TP-0011 | executor | ✔ | dominio/nivel: nível (RN-11) e idade (RN-12) | L02 | TP-0001 | Não executada |
 | 12 | TP-0012 | executor | ✔ | dominio/slug: link legível do grupo | L02 | TP-0001 | Não executada |
 | 13 | TP-0013 | executor | ✔ | Esqueleto da API Hono, configuração, relógio de São Paulo e wrangler.jsonc | L03 | TP-0001, TP-0005 | Não executada |
