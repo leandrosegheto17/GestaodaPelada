@@ -8,6 +8,10 @@ import { rotaSessaoEsqueciSenha } from './rotas/sessao-esqueci-senha.js';
 import { rotaSessaoEu } from './rotas/sessao-eu.js';
 import { rotaSessaoTrocarSenha } from './rotas/sessao-trocar-senha.js';
 import { rotaSessaoSair } from './rotas/sessao-sair.js';
+import { rotaDonoSituacao } from './rotas/dono/situacao.js';
+import { rotaDonoArquivar, rotaDonoReativar } from './rotas/dono/arquivamento.js';
+import { rotaDonoResolverPedido } from './rotas/dono/pedidos-reset.js';
+import { rotaDonoRedefinirSenha } from './rotas/dono/redefinir-senha.js';
 
 /** Todas as rotas de negócio. Cada rota nova entra aqui, depois dos middlewares do app (ADR-005). */
 export const ROTAS: readonly Hono<AppEnv>[] = [
@@ -19,4 +23,9 @@ export const ROTAS: readonly Hono<AppEnv>[] = [
   rotaDonoPainel,
   rotaDonoGrupo,
   rotaDonoCriarGrupo,
+  rotaDonoSituacao,
+  rotaDonoArquivar,
+  rotaDonoReativar,
+  rotaDonoResolverPedido,
+  rotaDonoRedefinirSenha,
 ];

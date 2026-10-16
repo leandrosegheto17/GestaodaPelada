@@ -53,4 +53,9 @@ export const CASOS: Record<string, Caso> = {
       adminEmail: 'admin-isolamento@teste.invalid',
     },
   },
+  'PATCH /api/dono/grupos/:id/situacao': { tipo: 'dono', corpo: { situacaoComercial: 'ativo', inicioTrial: null } },
+  'POST /api/dono/grupos/:id/arquivar': { tipo: 'dono', corpo: { nomeConfirmacao: 'x' } },
+  'POST /api/dono/grupos/:id/reativar': { tipo: 'dono' },
+  'POST /api/dono/pedidos-reset/:id/resolver': { tipo: 'dono' },
+  'POST /api/dono/contas/:id/redefinir-senha': { tipo: 'dono' },
 };
