@@ -43,6 +43,8 @@ const ICONES = {
       </>
     ),
   },
+  anterior: { traco: 2.5, desenho: <polyline points="15 18 9 12 15 6" /> },
+  seguinte: { traco: 2.5, desenho: <polyline points="9 18 15 12 9 6" /> },
   atualizar: { traco: 2.2, desenho: <path d="M21 12a9 9 0 1 1-3-6.7L21 8M21 3v5h-5" /> },
 } satisfies Record<string, { traco: number; desenho: ReactNode }>;
 
