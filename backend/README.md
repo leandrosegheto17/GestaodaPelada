@@ -17,3 +17,11 @@ pnpm -r test
 ```
 
 Variáveis: copie `backend/.env.example` para `backend/.env` e preencha.
+
+## Banco local
+
+O Worker acessa o Postgres pelo binding `HYPERDRIVE`. Localmente, o `wrangler dev` usa o
+`localConnectionString` do `wrangler.jsonc` (Postgres do Docker, host `localhost`).
+
+- Scripts (`pnpm migrar`) leem `DATABASE_URL`; host que não seja local exige `--alvo producao|teste`.
+- Testes da API que usam banco leem `DATABASE_URL_TESTE` (Postgres local descartável); sem ela, esses testes são pulados.
