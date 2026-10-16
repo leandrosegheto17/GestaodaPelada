@@ -1,5 +1,6 @@
 import { erroPadrao } from './erro.js';
 import type { Esquemas } from './registro-tipos.js';
+import { esquemasPublico } from './publico.js';
 import { esquemasSessao } from './sessao.js';
 
 export type { EsquemaRegistrado, Esquemas } from './registro-tipos.js';
@@ -10,5 +11,6 @@ export type { EsquemaRegistrado, Esquemas } from './registro-tipos.js';
  */
 export const REGISTRO: Esquemas = {
   erro: { direcao: 'resposta', schema: erroPadrao },
+  ...esquemasPublico,
   ...esquemasSessao,
 };

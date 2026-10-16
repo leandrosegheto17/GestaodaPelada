@@ -1,0 +1,37 @@
+{
+  "direcao": "entrada",
+  "esquema": {
+    "oneOf": [
+      {
+        "additionalProperties": false,
+        "properties": {
+          "dispositivoId": {
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+            "type": "string"
+          },
+          "tipo": {
+            "const": "ranking_aberto",
+            "type": "string"
+          }
+        },
+        "required": ["tipo", "dispositivoId"],
+        "type": "object"
+      },
+      {
+        "additionalProperties": false,
+        "properties": {
+          "mes": {
+            "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+            "type": "string"
+          },
+          "tipo": {
+            "const": "pdf_exportado",
+            "type": "string"
+          }
+        },
+        "required": ["tipo", "mes"],
+        "type": "object"
+      }
+    ]
+  }
+}

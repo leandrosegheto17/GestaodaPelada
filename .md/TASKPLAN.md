@@ -7,7 +7,7 @@ dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuá
 
 Atualizado: 2026-10-16 16:43
 
-Resumo: Não executada 189 · Executada (aguarda teste) 19 · total 208
+Resumo: Não executada 188 · Executada (aguarda teste) 20 · total 208
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -32,7 +32,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 17 | TP-0017 | executor | ✔ | Suporte de testes da API (pool de Workers + Postgres) e job api no CI | L03 | TP-0003, TP-0013, TP-0014, TP-0015 | Executada (aguarda teste) |
 | 18 | TP-0018 | executor | ✔ | Snapshot e checagem de compatibilidade do contrato | L04 | TP-0003, TP-0005 | Executada (aguarda teste) |
 | 19 | TP-0019 | executor | ✔ | contrato/sessao | L04 | TP-0005, TP-0018 | Executada (aguarda teste) |
-| 20 | TP-0020 | executor | ✔ | contrato/publico (ranking e eventos), estrito | L04 | TP-0005, TP-0018 | Não executada |
+| 20 | TP-0020 | executor | ✔ | contrato/publico (ranking e eventos), estrito | L04 | TP-0005, TP-0018 | Executada (aguarda teste) |
 | 21 | TP-0021 | executor | ✔ | contrato/grupo e contrato/admins | L04 | TP-0005, TP-0018 | Não executada |
 | 22 | TP-0022 | executor | ✔ | contrato/dono | L04 | TP-0005, TP-0018, TP-0021 | Não executada |
 | 23 | TP-0023 | executor | ✔ | contrato/elenco (jogadores) | L05 | TP-0005, TP-0018 | Não executada |

@@ -1,0 +1,185 @@
+{
+  "direcao": "resposta",
+  "esquema": {
+    "additionalProperties": false,
+    "properties": {
+      "enderecoNovo": {
+        "anyOf": [
+          {
+            "format": "uri",
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "geradoEm": {
+        "format": "date-time",
+        "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
+        "type": "string"
+      },
+      "grupo": {
+        "additionalProperties": false,
+        "properties": {
+          "diaSemana": {
+            "enum": ["domingo", "segunda", "terca", "quarta", "quinta", "sexta", "sabado"],
+            "type": "string"
+          },
+          "frequencia": {
+            "enum": ["semanal", "quinzenal", "mensal"],
+            "type": "string"
+          },
+          "horario": {
+            "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$",
+            "type": "string"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          }
+        },
+        "required": ["nome", "slug", "diaSemana", "frequencia", "horario"],
+        "type": "object"
+      },
+      "hoje": {
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+        "type": "string"
+      },
+      "linhas": {
+        "items": {
+          "additionalProperties": false,
+          "properties": {
+            "apelido": {
+              "type": "string"
+            },
+            "posicao": {
+              "maximum": 9007199254740991,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "ptsFinal": {
+              "maximum": 9007199254740991,
+              "minimum": -9007199254740991,
+              "type": "integer"
+            },
+            "ptsInicial": {
+              "maximum": 9007199254740991,
+              "minimum": -9007199254740991,
+              "type": "integer"
+            },
+            "rodadas": {
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "pontos": {
+                    "anyOf": [
+                      {
+                        "maximum": 9007199254740991,
+                        "minimum": -9007199254740991,
+                        "type": "integer"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "situacao": {
+                    "enum": ["presente", "lesionado", "expulso", "falta", "fora"],
+                    "type": "string"
+                  }
+                },
+                "required": ["situacao", "pontos"],
+                "type": "object"
+              },
+              "type": "array"
+            }
+          },
+          "required": ["posicao", "apelido", "ptsInicial", "rodadas", "ptsFinal"],
+          "type": "object"
+        },
+        "type": "array"
+      },
+      "mes": {
+        "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+        "type": "string"
+      },
+      "navegacao": {
+        "additionalProperties": false,
+        "properties": {
+          "mesAnterior": {
+            "anyOf": [
+              {
+                "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "mesSeguinte": {
+            "anyOf": [
+              {
+                "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": ["mesAnterior", "mesSeguinte"],
+        "type": "object"
+      },
+      "partidas": {
+        "items": {
+          "additionalProperties": false,
+          "properties": {
+            "choveu": {
+              "type": "boolean"
+            },
+            "data": {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "type": "string"
+            }
+          },
+          "required": ["data", "choveu"],
+          "type": "object"
+        },
+        "type": "array"
+      },
+      "resumoMes": {
+        "additionalProperties": false,
+        "properties": {
+          "comChuva": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "partidas": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        "required": ["partidas", "comChuva"],
+        "type": "object"
+      }
+    },
+    "required": [
+      "grupo",
+      "mes",
+      "hoje",
+      "geradoEm",
+      "navegacao",
+      "resumoMes",
+      "partidas",
+      "linhas"
+    ],
+    "type": "object"
+  }
+}

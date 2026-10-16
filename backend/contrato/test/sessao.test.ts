@@ -39,7 +39,9 @@ describe('respostas do mockup', () => {
   );
   it('enderecoNovo aceita ausente, null e URL; recusa texto solto', () => {
     const base = respostas(/^sessao-eu-admin\.json$/)[0]?.json as Record<string, unknown>;
-    const { enderecoNovo: _removido, ...semEndereco } = base;
+    const semEndereco = Object.fromEntries(
+      Object.entries(base).filter(([chave]) => chave !== 'enderecoNovo'),
+    );
     expect(sessaoEu.safeParse(semEndereco).success).toBe(true);
     expect(sessaoEu.safeParse({ ...base, enderecoNovo: null }).success).toBe(true);
     expect(sessaoEu.safeParse({ ...base, enderecoNovo: 'https://exemplo.com' }).success).toBe(true);
