@@ -30,7 +30,7 @@ export function Faixa({ tipo, topo, papel, children, acao, aoFechar, rotuloFecha
       aria-live={papelFinal === 'status' ? 'polite' : undefined}
     >
       <Icone nome={ICONE[tipo]} />
-      <p className={estilos.texto}>{children}</p>
+      <div className={estilos.texto}>{children}</div>
       {acao}
       {aoFechar ? (
         <button type="button" className={estilos.fechar} aria-label={rotuloFechar} onClick={aoFechar}>

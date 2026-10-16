@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-16 17:52
+Atualizado: 2026-10-16 17:55
 
-Resumo: Não executada 113 · Executada (aguarda teste) 95 · total 208
+Resumo: Não executada 112 · Executada (aguarda teste) 96 · total 208
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -108,7 +108,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 93 | TP-0093 | executor | ✔ | Rótulos dos enums (src/rotulos) | L20 | TP-0005, TP-0088 | Executada (aguarda teste) |
 | 94 | TP-0094 | executor | ✔ | docker-compose.yml (db, backend, frontend) | L21 | TP-0013, TP-0015, TP-0051, TP-0088 | Executada (aguarda teste) |
 | 95 | TP-0095 | executor | ✔ | Componentes básicos: Botão, Selo, Faixa, Esqueleto, Estado vazio, Tela de mensagem, Err... | L21 | TP-0088 | Executada (aguarda teste) |
-| 96 | TP-0096 | executor | ✔ | Campos de formulário e resumo de erros | L21 | TP-0088, TP-0092 | Não executada |
+| 96 | TP-0096 | executor | ✔ | Campos de formulário e resumo de erros | L21 | TP-0088, TP-0092 | Executada (aguarda teste) |
 | 97 | TP-0097 | executor | ✔ | Controle segmentado, Interruptor e Caixa de seleção | L21 | TP-0088 | Não executada |
 | 98 | TP-0098 | executor | ✔ | Barra superior, barra de ação e "Pular para o conteúdo" | L21 | TP-0088, TP-0095 | Não executada |
 | 99 | TP-0099 | executor | ✔ | Diálogo base e folha inferior/menu | L21 | TP-0088, TP-0095 | Não executada |
