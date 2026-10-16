@@ -1,4 +1,4 @@
-import { ativosEm, ativosNoMes, compararApelido, type ComPeriodos } from '@pelada/dominio';
+import { ativosEm, ativosNoMes as ativosNoMesDoDominio, compararApelido, type ComPeriodos } from '@pelada/dominio';
 import type { ExecutorDb } from '../../infraestrutura/db/index.js';
 import * as jogadores from '../../infraestrutura/db/repositorios/jogadores.js';
 
@@ -11,7 +11,7 @@ export function ordenarAtivosNaData<T extends Linha>(lista: readonly T[], data: 
 
 /** Jogadores ativos em algum dia do mês (`AAAA-MM`), por apelido. */
 export function ordenarAtivosNoMes<T extends Linha>(lista: readonly T[], mes: string): T[] {
-  return ativosNoMes(lista, mes).sort(compararApelido);
+  return ativosNoMesDoDominio(lista, mes).sort(compararApelido);
 }
 
 export async function ativosNaData(ex: ExecutorDb, grupoId: string, data: string) {
