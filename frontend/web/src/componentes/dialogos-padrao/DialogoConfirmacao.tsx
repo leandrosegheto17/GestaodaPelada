@@ -15,6 +15,8 @@ interface Props {
   rotuloCancelar?: string;
   /** O botão só habilita depois de digitar o nome exato (espaços nas pontas são ignorados). */
   confirmarDigitando?: { nome: string };
+  /** Erro da última tentativa, mostrado dentro do diálogo. */
+  erro?: string | undefined;
 }
 
 /** D2: confirmação destrutiva. Foco em "Cancelar"; Esc equivale a "Cancelar". */
@@ -27,6 +29,7 @@ export function DialogoConfirmacao({
   carregando = false,
   rotuloCancelar = 'Cancelar',
   confirmarDigitando,
+  erro,
 }: Props) {
   const cancelar = useRef<HTMLButtonElement>(null);
   const [digitado, setDigitado] = useState('');
@@ -58,6 +61,7 @@ export function DialogoConfirmacao({
           autoComplete="off"
         />
       ) : null}
+      {erro ? <p role="alert">{erro}</p> : null}
     </Dialogo>
   );
 }

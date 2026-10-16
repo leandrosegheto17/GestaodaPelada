@@ -28,6 +28,7 @@ export const roteador = createBrowserRouter([
         children: [
           { index: true, lazy: () => import('../telas/dono/AreaDono') },
           { path: 'grupos/novo', lazy: () => import('../telas/dono/NovoGrupo') },
+          { path: 'grupos/:grupoId', lazy: () => import('../telas/dono/GrupoDono') },
         ],
       },
       { path: '/admin', lazy: () => import('../telas/grupos/EscolherGrupo') },
