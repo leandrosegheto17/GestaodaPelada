@@ -22,3 +22,4 @@ export * from './simulador/indicadores.js';
 export * from './simulador/distribuicao-dois.js';
 export * from './simulador/distribuicao-varios.js';
 export * from './simulador/avisos.js';
+export * from './simulador/sugerir.js';
