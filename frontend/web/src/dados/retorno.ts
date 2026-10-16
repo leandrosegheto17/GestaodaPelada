@@ -1,6 +1,6 @@
 import { data as esquemaData } from '@pelada/contrato';
 
-export type TipoRetorno = 'partida-salva' | 'escalacao-confirmada';
+export type TipoRetorno = 'partida-salva' | 'partida-excluida' | 'escalacao-confirmada';
 
 /** Recado que uma tela deixa para a tela de início depois de salvar ou confirmar algo. */
 export interface Retorno {
@@ -8,7 +8,7 @@ export interface Retorno {
   data: string;
 }
 
-const TIPOS: readonly string[] = ['partida-salva', 'escalacao-confirmada'];
+const TIPOS: readonly string[] = ['partida-salva', 'partida-excluida', 'escalacao-confirmada'];
 
 /** Valor para `navigate(destino, { state })`. Vai no estado da navegação, não na URL: recarregar não repete a faixa. */
 export function estadoRetorno(retorno: Retorno): { retorno: Retorno } {

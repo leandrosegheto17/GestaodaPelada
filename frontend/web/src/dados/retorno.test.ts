@@ -8,6 +8,7 @@ describe('retorno', () => {
     expect(lerRetorno(estadoRetorno({ tipo: 'escalacao-confirmada', data: '2026-10-29' }))?.tipo).toBe(
       'escalacao-confirmada',
     );
+    expect(lerRetorno(estadoRetorno({ tipo: 'partida-excluida', data: '2026-10-15' }))?.tipo).toBe('partida-excluida');
   });
 
   it.each([

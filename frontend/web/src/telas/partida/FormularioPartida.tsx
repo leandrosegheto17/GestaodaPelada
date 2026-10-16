@@ -13,6 +13,9 @@ import { FerramentasLista } from './FerramentasLista';
 import { filtrarJogadores, iniciarMarcacoes, listaParaEnvio, marcarTodos, type Marcacoes } from './marcacoes';
 import estilos from './partida.module.css';
 
+/** O que o formulário precisa da resposta: serve à lançar (`PartidaNova`) e à editar (`PartidaDetalhe`). */
+export type RespostaPartida = Pick<PartidaNova, 'data' | 'choveu' | 'jogadores'>;
+
 export interface EnvioPartida {
   data: string;
   choveu: boolean;
@@ -26,13 +29,19 @@ interface Props {
   max: string | undefined;
   aoMudarData: (data: string) => void;
   /** Resposta da API para a data; `undefined` enquanto carrega. */
-  resposta: PartidaNova | undefined;
+  resposta: RespostaPartida | undefined;
   carregando: boolean;
   erroData?: string | undefined;
   dataExistente?: string | undefined;
   rotaEditar: (data: string) => string;
   /** Faixa antes da lista (ex.: pré-marcação pela escalação). */
   aviso?: ReactNode;
+  /** Texto de ajuda logo abaixo do cabeçalho (ex.: "Última alteração: ..."). */
+  ajuda?: ReactNode;
+  /** Botões ao lado de Salvar (ex.: "Excluir partida"). */
+  acoesExtras?: ReactNode;
+  /** Na edição a data é fixa. */
+  dataSomenteLeitura?: boolean;
   enviando: boolean;
   /** O último envio falhou (rede ou servidor): mostra a faixa com "Tentar de novo". */
   falhouAoSalvar: boolean;
@@ -50,6 +59,9 @@ export function FormularioPartida({
   dataExistente,
   rotaEditar,
   aviso,
+  ajuda,
+  acoesExtras,
+  dataSomenteLeitura,
   enviando,
   falhouAoSalvar,
   aoSalvar,
@@ -111,7 +123,9 @@ export function FormularioPartida({
           erroData={erroData}
           dataExistente={dataExistente}
           rotaEditar={rotaEditar}
+          dataSomenteLeitura={dataSomenteLeitura}
         />
+        {ajuda ? <p className={estilos.ajuda}>{ajuda}</p> : null}
         {carregando ? <EsqueletoPartida data={data || undefined} /> : null}
         {comLista ? (
           <>
@@ -148,9 +162,18 @@ export function FormularioPartida({
           </div>
         ) : null}
         <BarraAcao>
-          <Botao type="submit" disabled={!comLista} carregando={enviando}>
-            {rotuloSalvar}
-          </Botao>
+          {acoesExtras ? (
+            <div className={estilos.grupoBotoes}>
+              <Botao type="submit" disabled={!comLista} carregando={enviando}>
+                {rotuloSalvar}
+              </Botao>
+              {acoesExtras}
+            </div>
+          ) : (
+            <Botao type="submit" disabled={!comLista} carregando={enviando}>
+              {rotuloSalvar}
+            </Botao>
+          )}
         </BarraAcao>
       </form>
     </>

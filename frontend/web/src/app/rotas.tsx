@@ -30,6 +30,7 @@ export const roteador = createBrowserRouter([
         children: [
           { index: true, lazy: () => import('../telas/inicio/PaginaInicio') },
           { path: 'partidas/nova', lazy: () => import('../telas/partida/PaginaNovaPartida') },
+          { path: 'partidas/:data', lazy: () => import('../telas/partida/PaginaEditarPartida') },
           { path: 'partidas', lazy: () => import('../telas/partidas/PaginaPartidas') },
         ],
       },

@@ -13,6 +13,7 @@ import { SecoesGrupo } from './SecoesGrupo';
 
 const TEXTO_RETORNO: Record<Retorno['tipo'], (data: string) => string> = {
   'partida-salva': (data) => `Partida de ${diaMes(data)} salva.`,
+  'partida-excluida': (data) => `Partida de ${diaMes(data)} excluída.`,
   'escalacao-confirmada': (data) => `Escalação de ${diaMes(data)} confirmada.`,
 };
 

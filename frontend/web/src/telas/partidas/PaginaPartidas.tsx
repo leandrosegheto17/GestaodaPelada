@@ -1,15 +1,18 @@
 import { mes as esquemaMes } from '@pelada/contrato';
 import { useEffect } from 'react';
-import { useParams, useSearchParams } from 'react-router';
+import { useLocation, useParams, useSearchParams } from 'react-router';
 import { BarraAcao } from '../../componentes/barras/BarraAcao';
 import { BotaoLink } from '../../componentes/basicos/BotaoLink';
 import { ErroRede } from '../../componentes/basicos/ErroRede';
 import { EstadoVazio } from '../../componentes/basicos/EstadoVazio';
+import { Faixa } from '../../componentes/basicos/Faixa';
 import { Voltar } from '../../componentes/basicos/Voltar';
 import { Lista } from '../../componentes/listas/Lista';
 import { NavegadorMes } from '../../componentes/listas/NavegadorMes';
 import { useGrupo } from '../../dados/grupo';
 import { usePartidasDoMes } from '../../dados/partidas-mes';
+import { lerRetorno } from '../../dados/retorno';
+import { diaMes } from '../../formatacao';
 import { EsqueletoPartidas } from './EsqueletoPartidas';
 import { ItemPartida } from './ItemPartida';
 import estilos from './partidas.module.css';
@@ -19,6 +22,7 @@ export function Component() {
   const { grupoId = '' } = useParams();
   const [parametros, definirParametros] = useSearchParams();
   const grupo = useGrupo(grupoId);
+  const retorno = lerRetorno(useLocation().state);
 
   const mesDaUrl = parametros.get('mes');
   const mesValido = mesDaUrl === null || esquemaMes.safeParse(mesDaUrl).success;
@@ -59,6 +63,9 @@ export function Component() {
       <title>{`Partidas: ${grupo.data.grupo.nome}`}</title>
       <Voltar para={base} rotulo="Início" />
       <h1 className={estilos.titulo}>Partidas</h1>
+      {retorno?.tipo === 'partida-excluida' ? (
+        <Faixa tipo="sucesso">Partida de {diaMes(retorno.data)} excluída.</Faixa>
+      ) : null}
       <div className={estilos.ferramentas}>
         <NavegadorMes
           mes={data.mes}

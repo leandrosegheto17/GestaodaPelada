@@ -16,6 +16,8 @@ interface Props {
   dataExistente?: string | undefined;
   /** Rota de edição de uma data existente. */
   rotaEditar: (data: string) => string;
+  /** Na edição a data não muda (mudar a data é excluir e lançar de novo). */
+  dataSomenteLeitura?: boolean;
 }
 
 /** Data e "Choveu?": ficam na tela em todos os estados (carregando, lista, erro da data). */
@@ -28,6 +30,7 @@ export function CabecalhoDaPartida({
   erroData,
   dataExistente,
   rotaEditar,
+  dataSomenteLeitura,
 }: Props) {
   return (
     <div className={estilos.duasColunas}>
@@ -38,6 +41,7 @@ export function CabecalhoDaPartida({
           valor={data}
           aoMudar={aoMudarData}
           max={max}
+          somenteLeitura={dataSomenteLeitura}
           erro={erroData}
           erroComoAlerta
         />
