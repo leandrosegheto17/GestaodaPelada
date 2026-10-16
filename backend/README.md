@@ -28,3 +28,8 @@ O Worker acessa o Postgres pelo binding `HYPERDRIVE`. Localmente, o `wrangler de
 
 Para subir só o banco local: `docker compose up db`. Os testes da API criam o banco `pelada_teste`
 nesse servidor e aplicam as migrações antes da suíte (`DATABASE_URL_TESTE` muda o endereço).
+
+## Isolamento entre grupos
+
+Toda rota nova do Hono entra em `backend/api/test/isolamento/casos.ts` na mesma tarefa que a cria:
+a suíte lista as rotas do app e falha se alguma não tiver caso (ou se um caso apontar para rota que não existe).
