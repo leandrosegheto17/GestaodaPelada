@@ -6,6 +6,8 @@ export const CODIGOS_ERRO = {
   naoAutenticado: 'nao_autenticado',
   erroInterno: 'erro_interno',
   requisicaoRecusada: 'requisicao_recusada',
+  trocaDeSenhaObrigatoria: 'troca_de_senha_obrigatoria',
+  semPermissao: 'sem_permissao',
   corpoGrande: 'corpo_grande',
 } as const;
 

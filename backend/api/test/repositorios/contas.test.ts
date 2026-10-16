@@ -7,7 +7,7 @@ import { executarSql } from '../apoio/sql.js';
 import { relogioFixo } from '../apoio/relogio.js';
 
 const fabrica = usarFabrica();
-const abrir = usarDb();
+const abrir = usarDb(fabrica);
 const relogio = relogioFixo('2026-10-16');
 const agora = () => new Date(relogio.agoraIso());
 

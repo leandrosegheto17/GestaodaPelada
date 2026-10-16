@@ -3,7 +3,7 @@ import type { ExecutorDb } from '../../../src/infraestrutura/db/index.js';
 import * as grupos from '../../../src/infraestrutura/db/repositorios/grupos.js';
 import * as vinculos from '../../../src/infraestrutura/db/repositorios/vinculos.js';
 import type { Fabrica } from '../fabrica.js';
-import { executarSql } from '../sql.js';
+import { kyselyDe } from '../../../src/infraestrutura/db/cliente.js';
 import { criarConta } from './contas.js';
 
 const AGORA = new Date('2026-10-16T12:00:00Z');
@@ -34,9 +34,10 @@ export async function criarGrupo(
     agora: opcoes.agora ?? AGORA,
   });
   fabrica.registrar(async () => {
-    await executarSql('DELETE FROM auditoria WHERE grupo_id = $1', [id]);
-    await executarSql('DELETE FROM vinculos_admin WHERE grupo_id = $1', [id]);
-    await executarSql('DELETE FROM grupos WHERE id = $1', [id]);
+    const banco = kyselyDe(db);
+    await banco.deleteFrom('auditoria').where('grupo_id', '=', id).execute();
+    await banco.deleteFrom('vinculos_admin').where('grupo_id', '=', id).execute();
+    await banco.deleteFrom('grupos').where('id', '=', id).execute();
   });
   return { id, slug, nome, criadoPor };
 }

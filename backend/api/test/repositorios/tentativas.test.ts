@@ -6,7 +6,7 @@ import { relogioFixo } from '../apoio/relogio.js';
 import { executarSql } from '../apoio/sql.js';
 
 const fabrica = usarFabrica();
-const abrir = usarDb();
+const abrir = usarDb(fabrica);
 const MINUTO = 60 * 1000;
 const base = new Date(relogioFixo('2026-10-16').agoraIso());
 const antes = (ms: number) => new Date(base.getTime() - ms);

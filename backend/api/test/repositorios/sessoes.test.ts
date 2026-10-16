@@ -9,7 +9,7 @@ import { relogioFixo } from '../apoio/relogio.js';
 import { codigoDoErro } from '../apoio/sql.js';
 
 const fabrica = usarFabrica();
-const abrir = usarDb();
+const abrir = usarDb(fabrica);
 const HORA = 60 * 60 * 1000;
 const base = new Date(relogioFixo('2026-10-16').agoraIso());
 const depois = (ms: number) => new Date(base.getTime() + ms);

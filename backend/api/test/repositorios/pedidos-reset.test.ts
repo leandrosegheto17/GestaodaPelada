@@ -11,7 +11,7 @@ import { relogioFixo } from '../apoio/relogio.js';
 import { executarSql } from '../apoio/sql.js';
 
 const fabrica = usarFabrica();
-const abrir = usarDb();
+const abrir = usarDb(fabrica);
 const t0 = new Date(relogioFixo('2026-10-16', '10:00').agoraIso());
 const t1 = new Date(t0.getTime() + 60 * 60 * 1000);
 

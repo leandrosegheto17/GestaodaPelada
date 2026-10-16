@@ -11,7 +11,7 @@ import { usarFabrica } from '../apoio/fabrica.js';
 import { relogioFixo } from '../apoio/relogio.js';
 
 const fabrica = usarFabrica();
-const abrir = usarDb();
+const abrir = usarDb(fabrica);
 const agora = new Date(relogioFixo('2026-10-16').agoraIso());
 
 describe('repositório de grupos', () => {

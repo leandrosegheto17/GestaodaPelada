@@ -1,6 +1,6 @@
-import { afterEach } from 'vitest';
 import { criarDb, fecharDb, type Db } from '../../src/infraestrutura/db/index.js';
 import { exigirHostPermitido } from '../../src/infraestrutura/seguranca/trava-host.js';
+import type { Fabrica } from './fabrica.js';
 import { URL_BANCO_TESTE } from './url-teste.js';
 
 export interface DbDeTeste {
@@ -25,15 +25,14 @@ export async function abrirDbDeTeste(): Promise<DbDeTeste> {
   };
 }
 
-/** Conexão do teste, fechada ao fim de cada caso mesmo se ele falhar. */
-export function usarDb() {
-  const abertas: DbDeTeste[] = [];
-  afterEach(async () => {
-    while (abertas.length > 0) await abertas.pop()?.fechar();
-  });
+/**
+ * Conexão do teste. O fechamento é a primeira coisa registrada na fábrica, então roda por último
+ * (a fábrica desfaz na ordem inversa) e as limpezas ainda encontram a conexão aberta.
+ */
+export function usarDb(fabrica: Fabrica) {
   return async (): Promise<Db> => {
     const aberta = await abrirDbDeTeste();
-    abertas.push(aberta);
+    fabrica.registrar(() => aberta.fechar());
     return aberta.db;
   };
 }

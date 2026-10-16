@@ -2,7 +2,7 @@ import { randomBytes } from 'node:crypto';
 import type { ExecutorDb } from '../../../src/infraestrutura/db/index.js';
 import * as contas from '../../../src/infraestrutura/db/repositorios/contas.js';
 import type { Fabrica } from '../fabrica.js';
-import { executarSql } from '../sql.js';
+import { kyselyDe } from '../../../src/infraestrutura/db/cliente.js';
 
 export const SENHA_PADRAO = 'senha-de-teste-123';
 
@@ -28,12 +28,19 @@ export async function criarConta(
     agora: opcoes.agora ?? new Date('2026-10-16T12:00:00Z'),
   });
   fabrica.registrar(async () => {
-    await executarSql('DELETE FROM sessoes WHERE conta_id = $1', [id]);
-    await executarSql('DELETE FROM pedidos_reset WHERE conta_id = $1 OR resolvido_por = $1', [id]);
-    await executarSql('DELETE FROM auditoria WHERE autor_conta_id = $1', [id]);
-    await executarSql('DELETE FROM vinculos_admin WHERE conta_id = $1 OR criado_por = $1', [id]);
-    await executarSql('DELETE FROM tentativas_login WHERE email = $1', [email]);
-    await executarSql('DELETE FROM contas WHERE id = $1', [id]);
+    const banco = kyselyDe(db);
+    await banco.deleteFrom('sessoes').where('conta_id', '=', id).execute();
+    await banco
+      .deleteFrom('pedidos_reset')
+      .where((eb) => eb.or([eb('conta_id', '=', id), eb('resolvido_por', '=', id)]))
+      .execute();
+    await banco.deleteFrom('auditoria').where('autor_conta_id', '=', id).execute();
+    await banco
+      .deleteFrom('vinculos_admin')
+      .where((eb) => eb.or([eb('conta_id', '=', id), eb('criado_por', '=', id)]))
+      .execute();
+    await banco.deleteFrom('tentativas_login').where('email', '=', email).execute();
+    await banco.deleteFrom('contas').where('id', '=', id).execute();
   });
   return { id, email, senha };
 }
