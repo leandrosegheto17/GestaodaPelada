@@ -38,7 +38,8 @@ describe('app', () => {
   it.each([
     [{}, 403],
     [{ 'X-Pelada': '0' }, 403],
-    [{ 'X-Pelada': '1 ' }, 403],
+    [{ 'X-Pelada': 'true' }, 403],
+    [{ 'X-Pelada': '11' }, 403],
     [{ 'X-Pelada': '1' }, 200],
     [{ 'x-pelada': '1' }, 200],
   ])('POST com cabeçalhos %j → %i', async (cabecalhos, esperado) => {
