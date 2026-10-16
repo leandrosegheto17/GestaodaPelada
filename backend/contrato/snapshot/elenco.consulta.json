@@ -1,0 +1,13 @@
+{
+  "direcao": "entrada",
+  "esquema": {
+    "additionalProperties": false,
+    "properties": {
+      "filtro": {
+        "enum": ["ativos", "inativos"],
+        "type": "string"
+      }
+    },
+    "type": "object"
+  }
+}

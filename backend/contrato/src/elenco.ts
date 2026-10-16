@@ -115,7 +115,10 @@ export function inativarCorpo(hoje: string) {
   });
 }
 
+export const jogadoresConsulta = z.strictObject({ filtro: z.enum(['ativos', 'inativos']).optional() });
+
 export const esquemasElenco: Esquemas = {
+  'elenco.consulta': { direcao: 'entrada', schema: jogadoresConsulta },
   'elenco.lista': { direcao: 'resposta', schema: listaJogadores },
   'elenco.detalhe': { direcao: 'resposta', schema: jogadorDetalhe },
   'elenco.corpo': { direcao: 'entrada', schema: jogadorCorpoBase },
