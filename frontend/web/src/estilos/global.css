@@ -67,3 +67,6 @@ p {
     transition: none !important;
   }
 }
+.rolagem-bloqueada {
+  overflow: hidden;
+}
