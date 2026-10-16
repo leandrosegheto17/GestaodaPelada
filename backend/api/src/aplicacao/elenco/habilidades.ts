@@ -17,6 +17,19 @@ export async function comNomeUnico<T>(escrita: () => Promise<T>): Promise<T | Fa
   }
 }
 
+/** Só o nome muda; as notas continuam. `null` = a habilidade não é deste grupo. */
+export async function renomearHabilidade(
+  db: Db,
+  grupoId: string,
+  habilidadeId: string,
+  nome: string,
+): Promise<ResultadoHabilidade | null> {
+  return comNomeUnico(async () => {
+    const achou = await habilidades.renomear(db, grupoId, habilidadeId, nome);
+    return achou ? { ok: true as const, habilidade: { id: habilidadeId, nome } } : null;
+  });
+}
+
 /** Uma só escrita: a unicidade do nome é decidida pelo índice do banco, sem consulta prévia. */
 export async function criarHabilidade(db: Db, grupoId: string, nome: string): Promise<ResultadoHabilidade> {
   return comNomeUnico(async () => {
