@@ -1,8 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  exigirHostPermitido,
-  HostRecusado,
-} from '../../src/infraestrutura/seguranca/trava-host.js';
+import { exigirHostPermitido, HostRecusado } from '../../src/infraestrutura/seguranca/trava-host.js';
 
 const recusa = (opcoes: Parameters<typeof exigirHostPermitido>[0]) =>
   expect(exigirHostPermitido(opcoes)).rejects.toBeInstanceOf(HostRecusado);
@@ -78,9 +75,7 @@ describe('trava de host: tudo o mais exige alvo e confirmação', () => {
       url: 'postgres://u:senha-secreta@ep-x.aws.neon.tech/x',
     }).catch((e: Error) => e);
     expect((erro as Error).message).not.toContain('senha-secreta');
-    const invalida = await exigirHostPermitido({ url: 'postgres://u:senha-secreta@/x' }).catch(
-      (e: Error) => e,
-    );
+    const invalida = await exigirHostPermitido({ url: 'postgres://u:senha-secreta@/x' }).catch((e: Error) => e);
     expect((invalida as Error).message).not.toContain('senha-secreta');
   });
 });

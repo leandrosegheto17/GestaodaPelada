@@ -28,9 +28,7 @@ export default async function preparar(): Promise<void> {
   try {
     await admin.connect();
   } catch {
-    throw new Error(
-      'Não foi possível conectar ao Postgres de teste: suba o banco (docker compose up db).',
-    );
+    throw new Error('Não foi possível conectar ao Postgres de teste: suba o banco (docker compose up db).');
   }
   try {
     const existe = await admin.query('SELECT 1 FROM pg_database WHERE datname = $1', [nome]);

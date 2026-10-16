@@ -22,8 +22,7 @@ const naOrdemDeVigencia = (a: ConfigPesos, b: ConfigPesos): number =>
  * Uma data anterior à primeira configuração usa a mais antiga.
  */
 export function criarResolvedorDePesos(configs: readonly ConfigPesos[]): ResolvedorDePesos {
-  if (configs.length === 0)
-    throw new Error('O grupo precisa de ao menos uma configuração de pesos.');
+  if (configs.length === 0) throw new Error('O grupo precisa de ao menos uma configuração de pesos.');
   const ordenadas = [...configs].sort(naOrdemDeVigencia);
   return (data) => {
     let baixo = 0;

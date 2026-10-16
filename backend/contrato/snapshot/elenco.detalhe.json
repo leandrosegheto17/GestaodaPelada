@@ -82,17 +82,7 @@
         ]
       }
     },
-    "required": [
-      "id",
-      "apelido",
-      "anoNascimento",
-      "posicao",
-      "telefone",
-      "situacao",
-      "nivel",
-      "semNota",
-      "notas"
-    ],
+    "required": ["id", "apelido", "anoNascimento", "posicao", "telefone", "situacao", "nivel", "semNota", "notas"],
     "type": "object"
   }
 }

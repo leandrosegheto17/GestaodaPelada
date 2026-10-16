@@ -1,12 +1,4 @@
-import {
-  compararDatas,
-  compararMeses,
-  mesAnterior,
-  mesDe,
-  mesSeguinte,
-  type Data,
-  type Mes,
-} from '../datas/datas.js';
+import { compararDatas, compararMeses, mesAnterior, mesDe, mesSeguinte, type Data, type Mes } from '../datas/datas.js';
 
 export interface PartidaDoMes {
   data: Data;
@@ -27,16 +19,13 @@ export interface Navegacao {
 
 export function limitesDeMes(partidas: readonly { data: Data }[], hoje: Data): LimitesDeMes {
   let primeira: Data | null = null;
-  for (const p of partidas)
-    if (primeira === null || compararDatas(p.data, primeira) < 0) primeira = p.data;
+  for (const p of partidas) if (primeira === null || compararDatas(p.data, primeira) < 0) primeira = p.data;
   return { primeiro: primeira === null ? null : mesDe(primeira), ultimo: mesDe(hoje) };
 }
 
 export function mesDentroDosLimites(limites: LimitesDeMes, mes: Mes): boolean {
   return (
-    limites.primeiro !== null &&
-    compararMeses(mes, limites.primeiro) >= 0 &&
-    compararMeses(mes, limites.ultimo) <= 0
+    limites.primeiro !== null && compararMeses(mes, limites.primeiro) >= 0 && compararMeses(mes, limites.ultimo) <= 0
   );
 }
 
@@ -54,9 +43,7 @@ export function partidasDoMes<P extends PartidaDoMes>(
   partidas: readonly P[],
   mes: Mes,
 ): { partidas: P[]; resumo: { partidas: number; comChuva: number } } {
-  const doMes = partidas
-    .filter((p) => mesDe(p.data) === mes)
-    .sort((a, b) => compararDatas(a.data, b.data));
+  const doMes = partidas.filter((p) => mesDe(p.data) === mes).sort((a, b) => compararDatas(a.data, b.data));
   return {
     partidas: doMes,
     resumo: { partidas: doMes.length, comChuva: doMes.filter((p) => p.choveu).length },

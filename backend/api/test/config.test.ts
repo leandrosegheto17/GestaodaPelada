@@ -12,23 +12,15 @@ describe('lerConfig', () => {
     });
   });
   it('aceita http só em localhost', () => {
-    expect(lerConfig({ ...valida, URL_PUBLICA: 'http://localhost:8787' }).urlPublica).toBe(
-      'http://localhost:8787',
-    );
-    expect(() => lerConfig({ ...valida, URL_PUBLICA: 'http://exemplo.dev' })).toThrow(
-      ConfigInvalida,
-    );
+    expect(lerConfig({ ...valida, URL_PUBLICA: 'http://localhost:8787' }).urlPublica).toBe('http://localhost:8787');
+    expect(() => lerConfig({ ...valida, URL_PUBLICA: 'http://exemplo.dev' })).toThrow(ConfigInvalida);
   });
-  it.each([
-    undefined,
-    '',
-    'sem-esquema',
-    'https://x.dev/',
-    'https://x.dev/caminho',
-    'https://u:s@x.dev',
-  ])('recusa URL_PUBLICA %j', (valor) => {
-    expect(() => lerConfig({ ...valida, URL_PUBLICA: valor })).toThrow(ConfigInvalida);
-  });
+  it.each([undefined, '', 'sem-esquema', 'https://x.dev/', 'https://x.dev/caminho', 'https://u:s@x.dev'])(
+    'recusa URL_PUBLICA %j',
+    (valor) => {
+      expect(() => lerConfig({ ...valida, URL_PUBLICA: valor })).toThrow(ConfigInvalida);
+    },
+  );
   it('ENDERECO_NOVO é opcional, mas se vier precisa ser válido', () => {
     expect(lerConfig({ ...valida, ENDERECO_NOVO: 'https://novo.exemplo.dev' }).enderecoNovo).toBe(
       'https://novo.exemplo.dev',
@@ -37,9 +29,7 @@ describe('lerConfig', () => {
   });
   it('recusa DONO_EMAIL inválido ou acima de 254', () => {
     expect(() => lerConfig({ ...valida, DONO_EMAIL: 'x' })).toThrow(ConfigInvalida);
-    expect(() => lerConfig({ ...valida, DONO_EMAIL: `${'a'.repeat(250)}@b.com` })).toThrow(
-      ConfigInvalida,
-    );
+    expect(() => lerConfig({ ...valida, DONO_EMAIL: `${'a'.repeat(250)}@b.com` })).toThrow(ConfigInvalida);
   });
   it('a mensagem do erro não traz o valor', () => {
     try {

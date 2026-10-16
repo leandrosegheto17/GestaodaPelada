@@ -18,8 +18,7 @@ const PERMITIDAS = new Set([
 /** Devolve as chaves proibidas de um wrangler.jsonc (raiz e `env.*`); lança se o arquivo não for JSONC. */
 export function chavesForaDaLista(texto: string): string[] {
   const { config, error } = ts.parseConfigFileTextToJson('wrangler.jsonc', texto);
-  if (error || typeof config !== 'object' || config === null)
-    throw new Error('wrangler.jsonc inválido');
+  if (error || typeof config !== 'object' || config === null) throw new Error('wrangler.jsonc inválido');
   const fora: string[] = [];
   const conferir = (objeto: Record<string, unknown>, prefixo: string): void => {
     for (const chave of Object.keys(objeto)) {
@@ -38,21 +37,15 @@ describe('wrangler.jsonc (G-13)', () => {
     expect(chavesForaDaLista(texto)).toEqual([]);
   });
 
-  it.each([
-    'kv_namespaces',
-    'd1_databases',
-    'r2_buckets',
-    'durable_objects',
-    'queues',
-    'ai',
-    'limits',
-    'placement',
-  ])('barra %s na raiz e dentro de env', (chave) => {
-    expect(chavesForaDaLista(`{ "name": "x", "${chave}": [] }`)).toEqual([chave]);
-    expect(chavesForaDaLista(`{ "name": "x", "env": { "teste": { "${chave}": [] } } }`)).toEqual([
-      `env.teste.${chave}`,
-    ]);
-  });
+  it.each(['kv_namespaces', 'd1_databases', 'r2_buckets', 'durable_objects', 'queues', 'ai', 'limits', 'placement'])(
+    'barra %s na raiz e dentro de env',
+    (chave) => {
+      expect(chavesForaDaLista(`{ "name": "x", "${chave}": [] }`)).toEqual([chave]);
+      expect(chavesForaDaLista(`{ "name": "x", "env": { "teste": { "${chave}": [] } } }`)).toEqual([
+        `env.teste.${chave}`,
+      ]);
+    },
+  );
 
   it('chave só em comentário não falha', () => {
     expect(chavesForaDaLista('{ // "kv_namespaces": []\n "name": "x" }')).toEqual([]);

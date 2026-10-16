@@ -80,11 +80,7 @@ export const telefone = z
     return limpo;
   });
 
-const apelido = z
-  .string()
-  .trim()
-  .min(LIMITES.apelido.min, MENSAGEM_APELIDO)
-  .max(LIMITES.apelido.max, MENSAGEM_APELIDO);
+const apelido = z.string().trim().min(LIMITES.apelido.min, MENSAGEM_APELIDO).max(LIMITES.apelido.max, MENSAGEM_APELIDO);
 
 /** Corpo estático de criar/editar jogador (sem as regras que dependem de `hoje`). */
 export const jogadorCorpoBase = z.strictObject({
@@ -103,10 +99,7 @@ export function jogadorCorpo(hoje: string) {
     anoNascimento: z
       .number()
       .int()
-      .min(
-        LIMITES.anoNascimentoMin,
-        `O ano precisa estar entre ${LIMITES.anoNascimentoMin} e ${anoMaximo}.`,
-      )
+      .min(LIMITES.anoNascimentoMin, `O ano precisa estar entre ${LIMITES.anoNascimentoMin} e ${anoMaximo}.`)
       .max(anoMaximo, `O ano precisa estar entre ${LIMITES.anoNascimentoMin} e ${anoMaximo}.`),
     posicao,
     telefone,

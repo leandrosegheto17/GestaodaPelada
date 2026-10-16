@@ -72,15 +72,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "id",
-            "nome",
-            "slug",
-            "diaSemana",
-            "frequencia",
-            "horario",
-            "acessaFinanceiro"
-          ],
+          "required": ["id", "nome", "slug", "diaSemana", "frequencia", "horario", "acessaFinanceiro"],
           "type": "object"
         },
         "type": "array"

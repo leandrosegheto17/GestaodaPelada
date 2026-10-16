@@ -46,15 +46,7 @@
         "type": "boolean"
       }
     },
-    "required": [
-      "data",
-      "dataSugerida",
-      "hoje",
-      "jaExiste",
-      "preMarcadaPelaEscalacao",
-      "choveu",
-      "jogadores"
-    ],
+    "required": ["data", "dataSugerida", "hoje", "jaExiste", "preMarcadaPelaEscalacao", "choveu", "jogadores"],
     "type": "object"
   }
 }

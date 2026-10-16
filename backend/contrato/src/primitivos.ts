@@ -23,10 +23,7 @@ export const horario = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'Horário i
 
 export const uuid = z
   .string()
-  .regex(
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
-    'Identificador inválido.',
-  );
+  .regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/, 'Identificador inválido.');
 
 /** Id que a API devolve: texto não vazio (a forma é decisão da API). */
 export const idResposta = z.string().min(1);

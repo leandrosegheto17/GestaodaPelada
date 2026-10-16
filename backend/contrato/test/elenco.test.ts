@@ -17,17 +17,13 @@ describe('respostas do mockup', () => {
   it.each(respostas(/^jogadores.*\.json$/))('$nome passa em listaJogadores', ({ json }) => {
     expect(listaJogadores.safeParse(json).success).toBe(true);
   });
-  it.each(respostas(/^jogador-(toninho|sem-habilidades)\.json$/))(
-    '$nome passa em jogadorDetalhe',
-    ({ json }) => {
-      expect(jogadorDetalhe.safeParse(json).success).toBe(true);
-    },
-  );
+  it.each(respostas(/^jogador-(toninho|sem-habilidades)\.json$/))('$nome passa em jogadorDetalhe', ({ json }) => {
+    expect(jogadorDetalhe.safeParse(json).success).toBe(true);
+  });
   it('erro 409 com histórico e erro de validação', () => {
-    expect(
-      erroJogadorComHistorico.safeParse(respostas(/^erro-jogador-com-historico\.json$/)[0]?.json)
-        .success,
-    ).toBe(true);
+    expect(erroJogadorComHistorico.safeParse(respostas(/^erro-jogador-com-historico\.json$/)[0]?.json).success).toBe(
+      true,
+    );
     expect(erroPadrao.safeParse(respostas(/^erro-validacao\.json$/)[0]?.json).success).toBe(true);
   });
 });
@@ -73,16 +69,12 @@ describe('jogadorCorpo', () => {
     const r = schema.parse({ ...ok, telefone: entrada });
     expect(r.telefone).toBe(esperado);
   });
-  it.each([
-    '(11) 88765-4321',
-    '(01) 98765-4321',
-    '1198765432',
-    '119876543211',
-    '(11)98765-4321',
-    'abc',
-  ])('telefone inválido %j', (entrada) => {
-    expect(schema.safeParse({ ...ok, telefone: entrada }).success).toBe(false);
-  });
+  it.each(['(11) 88765-4321', '(01) 98765-4321', '1198765432', '119876543211', '(11)98765-4321', 'abc'])(
+    'telefone inválido %j',
+    (entrada) => {
+      expect(schema.safeParse({ ...ok, telefone: entrada }).success).toBe(false);
+    },
+  );
   it('o corpo estático do registro aceita os mesmos campos', () => {
     expect(jogadorCorpoBase.safeParse(ok).success).toBe(true);
   });

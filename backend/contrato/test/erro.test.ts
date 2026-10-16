@@ -4,12 +4,9 @@ import { z } from 'zod';
 import { respostas } from './apoio/respostas.js';
 
 describe('erro padrão', () => {
-  it.each(respostas(/^(erro-.*|sessao-entrar-(erro|bloqueado))\.json$/))(
-    '$nome passa no schema',
-    ({ json }) => {
-      expect(erroPadrao.safeParse(json).success).toBe(true);
-    },
-  );
+  it.each(respostas(/^(erro-.*|sessao-entrar-(erro|bloqueado))\.json$/))('$nome passa no schema', ({ json }) => {
+    expect(erroPadrao.safeParse(json).success).toBe(true);
+  });
 
   it('recusa sem codigo ou sem mensagem', () => {
     expect(erroPadrao.safeParse({ erro: { mensagem: 'x' } }).success).toBe(false);

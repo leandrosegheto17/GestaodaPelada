@@ -11,9 +11,7 @@ const MENSAGEM_SENHA = `A senha precisa ter de ${LIMITES.senha.min} a ${LIMITES.
 export const senhaNova = z.string().refine((valor) => {
   const caracteres = [...valor].length;
   return (
-    caracteres >= LIMITES.senha.min &&
-    caracteres <= LIMITES.senha.max &&
-    bytesUtf8(valor) <= LIMITES.senha.bytesMax
+    caracteres >= LIMITES.senha.min && caracteres <= LIMITES.senha.max && bytesUtf8(valor) <= LIMITES.senha.bytesMax
   );
 }, MENSAGEM_SENHA);
 

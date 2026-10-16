@@ -12,25 +12,11 @@ export const FREQUENCIAS = ['semanal', 'quinzenal', 'mensal'] as const;
 export const frequencia = z.enum(FREQUENCIAS);
 export type Frequencia = z.infer<typeof frequencia>;
 
-export const DIAS_DA_SEMANA = [
-  'domingo',
-  'segunda',
-  'terca',
-  'quarta',
-  'quinta',
-  'sexta',
-  'sabado',
-] as const;
+export const DIAS_DA_SEMANA = ['domingo', 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado'] as const;
 export const diaSemana = z.enum(DIAS_DA_SEMANA);
 export type DiaSemana = z.infer<typeof diaSemana>;
 
-export const SITUACOES_COMERCIAIS = [
-  'uso_proprio',
-  'trial',
-  'ativo',
-  'inadimplente',
-  'cancelado',
-] as const;
+export const SITUACOES_COMERCIAIS = ['uso_proprio', 'trial', 'ativo', 'inadimplente', 'cancelado'] as const;
 export const situacaoComercial = z.enum(SITUACOES_COMERCIAIS);
 export type SituacaoComercial = z.infer<typeof situacaoComercial>;
 

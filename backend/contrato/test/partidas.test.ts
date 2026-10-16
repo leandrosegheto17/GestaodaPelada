@@ -90,16 +90,12 @@ describe('salvarPartidaCorpo', () => {
   it('jogador repetido, situação falta e choveu texto são recusados', () => {
     const repetido = [...ok.marcacoes, { jogadorId: JOGADOR, situacao: 'lesionado' }];
     expect(schema.safeParse({ ...ok, marcacoes: repetido }).success).toBe(false);
-    expect(
-      schema.safeParse({ ...ok, marcacoes: [{ jogadorId: OUTRO, situacao: 'falta' }] }).success,
-    ).toBe(false);
+    expect(schema.safeParse({ ...ok, marcacoes: [{ jogadorId: OUTRO, situacao: 'falta' }] }).success).toBe(false);
     expect(schema.safeParse({ ...ok, choveu: 'sim' }).success).toBe(false);
     expect(schema.safeParse({ ...ok, eDono: true }).success).toBe(false);
   });
   it('jogadorId precisa ser uuid', () => {
-    expect(
-      schema.safeParse({ ...ok, marcacoes: [{ jogadorId: 'j-1', situacao: 'presente' }] }).success,
-    ).toBe(false);
+    expect(schema.safeParse({ ...ok, marcacoes: [{ jogadorId: 'j-1', situacao: 'presente' }] }).success).toBe(false);
   });
 });
 

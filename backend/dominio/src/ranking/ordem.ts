@@ -30,10 +30,7 @@ export function ordenarPorRanking<T extends Rankeavel>(
     a.jogador.anoNascimento - b.jogador.anoNascimento ||
     collator.compare(a.jogador.apelido, b.jogador.apelido);
 
-  itens.sort(
-    (a, b) =>
-      comparar(a, b) || (a.jogador.id < b.jogador.id ? -1 : a.jogador.id > b.jogador.id ? 1 : 0),
-  );
+  itens.sort((a, b) => comparar(a, b) || (a.jogador.id < b.jogador.id ? -1 : a.jogador.id > b.jogador.id ? 1 : 0));
 
   const colocados: Colocado<T>[] = [];
   itens.forEach((item, indice) => {

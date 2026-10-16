@@ -15,12 +15,9 @@ describe('respostas do mockup', () => {
   it.each(respostas(/^dono-painel.*\.json$/))('$nome passa em painelDono', ({ json }) => {
     expect(painelDono.safeParse(json).success).toBe(true);
   });
-  it.each(respostas(/^dono-grupo-(quinta|firma-arquivado)\.json$/))(
-    '$nome passa em grupoDono',
-    ({ json }) => {
-      expect(grupoDono.safeParse(json).success).toBe(true);
-    },
-  );
+  it.each(respostas(/^dono-grupo-(quinta|firma-arquivado)\.json$/))('$nome passa em grupoDono', ({ json }) => {
+    expect(grupoDono.safeParse(json).success).toBe(true);
+  });
   it.each(respostas(/^dono-grupo-criado-.*\.json$/))('$nome passa em grupoCriado', ({ json }) => {
     expect(grupoCriado.safeParse(json).success).toBe(true);
   });
@@ -69,8 +66,7 @@ describe('RF-07: o dono só vê metadados', () => {
         unrepresentable: 'any',
       });
       const nomes = nomesDePropriedades(json);
-      for (const proibido of PROIBIDOS)
-        expect(nomes, `${nome}: ${proibido}`).not.toContain(proibido);
+      for (const proibido of PROIBIDOS) expect(nomes, `${nome}: ${proibido}`).not.toContain(proibido);
       expect(
         nomes.filter((n) => n.startsWith('saldo')),
         nome,
@@ -128,8 +124,6 @@ describe('situacaoComercialCorpo e arquivar', () => {
   });
   it('nomeConfirmacao não pode ser vazio', () => {
     expect(arquivarGrupoCorpo.safeParse({ nomeConfirmacao: '' }).success).toBe(false);
-    expect(arquivarGrupoCorpo.safeParse({ nomeConfirmacao: 'Futebol da Firma' }).success).toBe(
-      true,
-    );
+    expect(arquivarGrupoCorpo.safeParse({ nomeConfirmacao: 'Futebol da Firma' }).success).toBe(true);
   });
 });

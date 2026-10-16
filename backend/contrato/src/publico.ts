@@ -17,11 +17,7 @@ export const grupoPublico = z.strictObject({
 });
 
 /** Situação do jogador numa rodada: a da presença, `falta` (ativo e ausente) ou `fora` ("–"). */
-export const SITUACOES_RODADA = [
-  ...situacaoPresenca.options.filter((s) => s !== 'ausente'),
-  'falta',
-  'fora',
-] as const;
+export const SITUACOES_RODADA = [...situacaoPresenca.options.filter((s) => s !== 'ausente'), 'falta', 'fora'] as const;
 export const situacaoRodada = z.enum(SITUACOES_RODADA);
 
 export const rodadaPublica = z.strictObject({

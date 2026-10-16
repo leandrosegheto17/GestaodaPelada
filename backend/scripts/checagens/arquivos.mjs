@@ -25,9 +25,7 @@ export function arquivosVersionados(raiz, filtro) {
   } catch (erro) {
     falharFechado(`não foi possível listar os arquivos com git (${erro.message})`);
   }
-  const caminhos = saida
-    .split('\0')
-    .filter((c) => c && EXTENSOES.test(c) && filtro(c.replaceAll('\\', '/')));
+  const caminhos = saida.split('\0').filter((c) => c && EXTENSOES.test(c) && filtro(c.replaceAll('\\', '/')));
   if (caminhos.length === 0) falharFechado('nenhum arquivo para checar (lista vazia)');
   return caminhos.map((caminho) => {
     try {

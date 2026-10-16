@@ -38,10 +38,7 @@ describe('slugBase', () => {
   it('a saída sempre casa com o formato público', () => {
     const pedacos = ['Pelada', 'ção', '⚽', ' ', '--', 'Zé', '_', 'A1', '日本', 'ñ'];
     for (let i = 0; i < 200; i++) {
-      const nome = Array.from(
-        { length: 1 + (i % 8) },
-        (_, k) => pedacos[(i * 7 + k * 3) % pedacos.length],
-      ).join('');
+      const nome = Array.from({ length: 1 + (i % 8) }, (_, k) => pedacos[(i * 7 + k * 3) % pedacos.length]).join('');
       const slug = slugBase(nome);
       expect(slug).toMatch(/^[a-z0-9-]{1,64}$/);
       expect(slug).not.toContain('--');

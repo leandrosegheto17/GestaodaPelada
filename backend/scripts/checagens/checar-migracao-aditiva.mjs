@@ -3,18 +3,14 @@ import { join } from 'node:path';
 import { encerrar, falharFechado } from './arquivos.mjs';
 import { normalizarSql } from './sql-normalizado.mjs';
 
-const PASTA =
-  process.argv[2] ?? join(import.meta.dirname, '../../api/src/infraestrutura/db/migracoes');
+const PASTA = process.argv[2] ?? join(import.meta.dirname, '../../api/src/infraestrutura/db/migracoes');
 
 const ISENCAO = /^[ \t]*--[ \t]*contrair:[ \t]*(\S.*)$/m;
 
 const REGRAS = [
   [/\bdrop\b/, 'DROP só com a linha "-- contrair: <motivo>"'],
   [/\brename\b/, 'RENAME só com a linha "-- contrair: <motivo>"'],
-  [
-    /\balter\s+(?:column\s+)?\S+\s+(?:set\s+data\s+)?type\b/,
-    'ALTER … TYPE só com a linha "-- contrair: <motivo>"',
-  ],
+  [/\balter\s+(?:column\s+)?\S+\s+(?:set\s+data\s+)?type\b/, 'ALTER … TYPE só com a linha "-- contrair: <motivo>"'],
   [/\b(money|real|double\s+precision|float\d*)\b/, 'tipo de ponto flutuante ou money (G-07)'],
   [/\b(numeric|decimal)\b/, 'numeric/decimal: valor em centavos inteiros (G-07)'],
 ];
@@ -43,11 +39,7 @@ function analisar(texto) {
 
   let deslocamento = 0;
   for (const comando of sql.split(';')) {
-    if (
-      /\badd\s+column\b/.test(comando) &&
-      /\bnot\s+null\b/.test(comando) &&
-      !/\bdefault\b/.test(comando)
-    ) {
+    if (/\badd\s+column\b/.test(comando) && /\bnot\s+null\b/.test(comando) && !/\bdefault\b/.test(comando)) {
       achados.push({
         linha: linhaDe(deslocamento + (comando.startsWith(' ') ? 1 : 0)),
         motivo: 'ADD COLUMN NOT NULL sem DEFAULT',

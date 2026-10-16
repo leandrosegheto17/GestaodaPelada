@@ -52,22 +52,17 @@ describe('fronteiras de pacote', () => {
 });
 
 describe('relógio (G-06)', () => {
-  it.each([
-    'Date.now();',
-    "Date['now']();",
-    'globalThis.Date.now();',
-    'new Date();',
-    'new globalThis.Date();',
-  ])('barra %s no domínio e na API', async (codigo) => {
-    expect((await regras(codigo, DOMINIO)).length).toBeGreaterThan(0);
-    expect((await regras(codigo, API)).length).toBeGreaterThan(0);
-  });
+  it.each(['Date.now();', "Date['now']();", 'globalThis.Date.now();', 'new Date();', 'new globalThis.Date();'])(
+    'barra %s no domínio e na API',
+    async (codigo) => {
+      expect((await regras(codigo, DOMINIO)).length).toBeGreaterThan(0);
+      expect((await regras(codigo, API)).length).toBeGreaterThan(0);
+    },
+  );
 
   it('aceita new Date(0) e o relógio de infraestrutura', async () => {
     expect(await regras('new Date(0);', DOMINIO)).toEqual([]);
-    expect(
-      await regras('Date.now();', 'backend/api/src/infraestrutura/relogio/relogio.ts'),
-    ).toEqual([]);
+    expect(await regras('Date.now();', 'backend/api/src/infraestrutura/relogio/relogio.ts')).toEqual([]);
   });
 });
 
@@ -93,23 +88,14 @@ describe('conversões e cookie', () => {
 
 describe('fronteiras por caminho real', () => {
   it('rota não importa rota', async () => {
-    const ids = await regras(
-      "import { a } from './outra';",
-      'backend/api/src/entrada/rotas/uma.ts',
-    );
+    const ids = await regras("import { a } from './outra';", 'backend/api/src/entrada/rotas/uma.ts');
     expect(ids).toContain('import-x/no-restricted-paths');
   });
 
   it('scripts só importam os quatro caminhos permitidos', async () => {
-    const fora = await regras(
-      "import { a } from '../api/src/aplicacao/partidas/x';",
-      'backend/scripts/x.ts',
-    );
+    const fora = await regras("import { a } from '../api/src/aplicacao/partidas/x';", 'backend/scripts/x.ts');
     expect(fora).toContain('import-x/no-restricted-paths');
-    const dentro = await regras(
-      "import { a } from '../api/src/aplicacao/acesso/senhas';",
-      'backend/scripts/x.ts',
-    );
+    const dentro = await regras("import { a } from '../api/src/aplicacao/acesso/senhas';", 'backend/scripts/x.ts');
     expect(dentro).not.toContain('import-x/no-restricted-paths');
   });
 });

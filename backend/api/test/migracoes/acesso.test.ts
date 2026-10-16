@@ -49,16 +49,10 @@ describe('migração de acesso', () => {
   it('só um pedido pendente por conta; depois de resolver, outro é aceito', async () => {
     const conta = await criarConta('pedido@teste-acesso.invalid');
     const inserir = () =>
-      executarSql('INSERT INTO pedidos_reset (conta_id, ultimo_pedido_em) VALUES ($1, $2)', [
-        conta,
-        AGORA,
-      ]);
+      executarSql('INSERT INTO pedidos_reset (conta_id, ultimo_pedido_em) VALUES ($1, $2)', [conta, AGORA]);
     await inserir();
     expect(await codigoDoErro(inserir())).toBe('23505');
-    await executarSql('UPDATE pedidos_reset SET resolvido_em = $2 WHERE conta_id = $1', [
-      conta,
-      AGORA,
-    ]);
+    await executarSql('UPDATE pedidos_reset SET resolvido_em = $2 WHERE conta_id = $1', [conta, AGORA]);
     expect(await codigoDoErro(inserir())).toBeNull();
   });
 

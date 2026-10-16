@@ -67,9 +67,7 @@ describe('acumuladoAte', () => {
     expect(acumuladoAte(presencas, [antiga, nova], '2026-08-27')).toBe(1);
   });
   it('a troca de pesos não muda as partidas anteriores', () => {
-    expect(acumuladoAte(presencas, [antiga], '2026-08-27')).toBe(
-      acumuladoAte(presencas, [antiga, nova], '2026-08-27'),
-    );
+    expect(acumuladoAte(presencas, [antiga], '2026-08-27')).toBe(acumuladoAte(presencas, [antiga, nova], '2026-08-27'));
     expect(acumuladoAte(presencas, [antiga, nova], '2026-09-10')).toBe(1 + 2 - 1);
   });
   it('lista vazia = 0 e acumulado pode ser negativo', () => {

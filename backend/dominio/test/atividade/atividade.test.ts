@@ -1,12 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  ativoEm,
-  ativoNoMes,
-  ativosEm,
-  ativosNoMes,
-  situacaoNaRodada,
-  validarPeriodos,
-} from '../../src/index.js';
+import { ativoEm, ativoNoMes, ativosEm, ativosNoMes, situacaoNaRodada, validarPeriodos } from '../../src/index.js';
 
 const entrouNoMeio = [{ inicio: '2026-10-15', fim: null }];
 const inativadoEReativado = [

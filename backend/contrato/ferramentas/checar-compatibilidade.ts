@@ -2,16 +2,10 @@ import { readFileSync } from 'node:fs';
 import { ARQUIVO_QUEBRAS, conferir, gerarInstantaneos, lerSnapshot } from './snapshot-lib.js';
 
 try {
-  const relatorio = conferir(
-    gerarInstantaneos(),
-    lerSnapshot(),
-    readFileSync(ARQUIVO_QUEBRAS, 'utf8'),
-  );
+  const relatorio = conferir(gerarInstantaneos(), lerSnapshot(), readFileSync(ARQUIVO_QUEBRAS, 'utf8'));
   const problemas = [
     ...relatorio.eDono.map((c) => `campo de entrada eDono proibido: ${c}`),
-    ...relatorio.quebras.map(
-      (q) => `quebra em ${q.esquema}${q.caminho ? `.${q.caminho}` : ''}: ${q.mudanca}`,
-    ),
+    ...relatorio.quebras.map((q) => `quebra em ${q.esquema}${q.caminho ? `.${q.caminho}` : ''}: ${q.mudanca}`),
   ];
   if (problemas.length === 0 && relatorio.desatualizados.length > 0) {
     problemas.push(

@@ -99,11 +99,7 @@ export function calcularRanking(entrada: EntradaRanking): ResultadoRanking {
     const porPartida = new Map(presencas.map((p) => [p.partidaId, p.situacao]));
     const ptsInicial = acumuladoAte(presencas, resolver, vespera);
     const rodadas = doMes.map((partida): Rodada => {
-      const situacao = situacaoNaRodada<SituacaoPresenca>(
-        jogador.periodos,
-        partida.data,
-        porPartida.get(partida.id),
-      );
+      const situacao = situacaoNaRodada<SituacaoPresenca>(jogador.periodos, partida.data, porPartida.get(partida.id));
       if (situacao === 'fora') return { situacao, pontos: null };
       if (situacao === 'falta') return { situacao, pontos: 0 };
       return {

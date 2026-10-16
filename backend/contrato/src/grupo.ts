@@ -7,14 +7,8 @@ import type { Esquemas } from './registro-tipos.js';
 export const nomeGrupo = z
   .string()
   .trim()
-  .min(
-    LIMITES.nomeGrupo.min,
-    `O nome precisa ter de ${LIMITES.nomeGrupo.min} a ${LIMITES.nomeGrupo.max} caracteres.`,
-  )
-  .max(
-    LIMITES.nomeGrupo.max,
-    `O nome precisa ter de ${LIMITES.nomeGrupo.min} a ${LIMITES.nomeGrupo.max} caracteres.`,
-  );
+  .min(LIMITES.nomeGrupo.min, `O nome precisa ter de ${LIMITES.nomeGrupo.min} a ${LIMITES.nomeGrupo.max} caracteres.`)
+  .max(LIMITES.nomeGrupo.max, `O nome precisa ter de ${LIMITES.nomeGrupo.min} a ${LIMITES.nomeGrupo.max} caracteres.`);
 
 /** Dados que o admin edita e que o dono informa ao criar o grupo. */
 export const dadosGrupo = z.strictObject({
@@ -39,9 +33,7 @@ export const resumoInicio = z.strictObject({
   pesosPadrao: z.boolean().optional(),
   admins: z.number().int().min(0),
   aparelhosNaSemana: z.number().int().min(0),
-  saldoAtualCentavos: centavos(Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER)
-    .nullable()
-    .optional(),
+  saldoAtualCentavos: centavos(Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER).nullable().optional(),
 });
 
 export const grupoDetalhe = z.strictObject({

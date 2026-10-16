@@ -3,11 +3,7 @@ import { criarResolvedorDePesos, type ResolvedorDePesos } from './pesos.js';
 import type { ConfigPesos, Pesos, PresencaDoJogador, SituacaoPresenca } from './tipos.js';
 
 /** Pontos de uma presença; expulso tem peso único, com ou sem chuva (RN-01). */
-export function pontosDaPresenca(
-  situacao: SituacaoPresenca,
-  choveu: boolean,
-  pesos: Pesos,
-): number {
+export function pontosDaPresenca(situacao: SituacaoPresenca, choveu: boolean, pesos: Pesos): number {
   switch (situacao) {
     case 'expulso':
       return pesos.expulso;

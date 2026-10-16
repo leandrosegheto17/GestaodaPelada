@@ -17,16 +17,14 @@ function criar(arquivos) {
   return raiz;
 }
 
-const rodar = (script, ...args) =>
-  spawnSync(process.execPath, [join(PASTA, script), ...args], { encoding: 'utf8' });
+const rodar = (script, ...args) => spawnSync(process.execPath, [join(PASTA, script), ...args], { encoding: 'utf8' });
 
 afterEach(() => {
   while (temporarias.length) rmSync(temporarias.pop(), { recursive: true, force: true });
 });
 
 describe('checar-migracao-aditiva', () => {
-  const status = (sql) =>
-    rodar('checar-migracao-aditiva.mjs', criar({ '202610010000_x.sql': sql })).status;
+  const status = (sql) => rodar('checar-migracao-aditiva.mjs', criar({ '202610010000_x.sql': sql })).status;
 
   it.each([
     'CREATE TABLE t (id integer, valor bigint);',
@@ -73,10 +71,7 @@ describe('checar-migracao-aditiva', () => {
   });
 
   it('aponta o arquivo e a linha', () => {
-    const r = rodar(
-      'checar-migracao-aditiva.mjs',
-      criar({ '202610010000_x.sql': 'SELECT 1;\n\nDROP TABLE t;' }),
-    );
+    const r = rodar('checar-migracao-aditiva.mjs', criar({ '202610010000_x.sql': 'SELECT 1;\n\nDROP TABLE t;' }));
     expect(r.stderr).toContain('202610010000_x.sql:3');
   });
 });

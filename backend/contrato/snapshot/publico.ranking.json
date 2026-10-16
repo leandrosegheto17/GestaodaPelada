@@ -170,16 +170,7 @@
         "type": "object"
       }
     },
-    "required": [
-      "grupo",
-      "mes",
-      "hoje",
-      "geradoEm",
-      "navegacao",
-      "resumoMes",
-      "partidas",
-      "linhas"
-    ],
+    "required": ["grupo", "mes", "hoje", "geradoEm", "navegacao", "resumoMes", "partidas", "linhas"],
     "type": "object"
   }
 }

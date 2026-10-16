@@ -147,9 +147,7 @@ describe('limites de mês', () => {
 
 describe('desempenho', () => {
   it('40 jogadores × 104 partidas calculam em menos de 5 ms (mediana)', () => {
-    const jogadores = Array.from({ length: 40 }, (_, i) =>
-      jogador(`j${i}`, `Jogador ${i}`, 1980 + (i % 20)),
-    );
+    const jogadores = Array.from({ length: 40 }, (_, i) => jogador(`j${i}`, `Jogador ${i}`, 1980 + (i % 20)));
     const partidas = Array.from({ length: 104 }, (_, i) => {
       const dia = new Date(Date.UTC(2024, 9, 3 + i * 7));
       return partida(dia.toISOString().slice(0, 10), i % 5 === 0);

@@ -15,9 +15,7 @@ export interface ComPeriodos {
 }
 
 export function ativoEm(periodos: readonly Periodo[], data: Data): boolean {
-  return periodos.some(
-    (p) => compararDatas(p.inicio, data) <= 0 && (p.fim === null || compararDatas(data, p.fim) < 0),
-  );
+  return periodos.some((p) => compararDatas(p.inicio, data) <= 0 && (p.fim === null || compararDatas(data, p.fim) < 0));
 }
 
 export function ativosEm<T extends ComPeriodos>(jogadores: readonly T[], data: Data): T[] {
@@ -29,9 +27,7 @@ export function ativoNoMes(periodos: readonly Periodo[], mes: Mes): boolean {
   const primeiro = primeiroDia(mes);
   const ultimo = ultimoDia(mes);
   return periodos.some(
-    (p) =>
-      compararDatas(p.inicio, ultimo) <= 0 &&
-      (p.fim === null || compararDatas(p.fim, primeiro) > 0),
+    (p) => compararDatas(p.inicio, ultimo) <= 0 && (p.fim === null || compararDatas(p.fim, primeiro) > 0),
   );
 }
 

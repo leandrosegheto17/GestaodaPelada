@@ -56,23 +56,13 @@ function ehNulo(ramo: unknown): boolean {
   return ehObjeto(ramo) && ramo['type'] === 'null';
 }
 
-function compararNo(
-  antigo: unknown,
-  novo: unknown,
-  direcao: Direcao,
-  caminho: string,
-  saida: string[][],
-): void {
+function compararNo(antigo: unknown, novo: unknown, direcao: Direcao, caminho: string, saida: string[][]): void {
   if (!ehObjeto(antigo) || !ehObjeto(novo)) return;
   const aqui = (mudanca: string, sub = caminho) => saida.push([sub, mudanca]);
 
   const tiposAntigos = tiposDe(antigo);
   const tiposNovos = tiposDe(novo);
-  if (
-    tiposAntigos.length > 0 &&
-    tiposNovos.length > 0 &&
-    tiposAntigos.join() !== tiposNovos.join()
-  ) {
+  if (tiposAntigos.length > 0 && tiposNovos.length > 0 && tiposAntigos.join() !== tiposNovos.join()) {
     aqui(`tipo trocado (${tiposAntigos.join('|')} → ${tiposNovos.join('|')})`);
   }
 
@@ -80,15 +70,10 @@ function compararNo(
     if (campo === 'enum' && Array.isArray(antigo['enum'])) {
       const novos = lista(novo['enum']).map((v) => JSON.stringify(v));
       for (const valor of antigo['enum']) {
-        if (!novos.includes(JSON.stringify(valor)))
-          aqui(`valor de enum removido (${String(valor)})`);
+        if (!novos.includes(JSON.stringify(valor))) aqui(`valor de enum removido (${String(valor)})`);
       }
     }
-    if (
-      campo === 'const' &&
-      'const' in antigo &&
-      JSON.stringify(antigo['const']) !== JSON.stringify(novo['const'])
-    ) {
+    if (campo === 'const' && 'const' in antigo && JSON.stringify(antigo['const']) !== JSON.stringify(novo['const'])) {
       aqui('valor constante trocado');
     }
   }
@@ -134,9 +119,7 @@ function compararNo(
     ramosAntigos.forEach((ramo, indice) => {
       const chave = discriminador(ramo);
       const par =
-        chave !== null
-          ? ramosNovos.find((candidato) => discriminador(candidato) === chave)
-          : ramosNovos[indice];
+        chave !== null ? ramosNovos.find((candidato) => discriminador(candidato) === chave) : ramosNovos[indice];
       if (par === undefined) {
         aqui(`ramo removido da união (${chave ?? indice})`, `${caminho}|${chave ?? indice}`);
         return;

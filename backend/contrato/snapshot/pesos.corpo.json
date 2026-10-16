@@ -29,13 +29,7 @@
         "type": "integer"
       }
     },
-    "required": [
-      "presencaSemChuva",
-      "presencaComChuva",
-      "lesionadoSemChuva",
-      "lesionadoComChuva",
-      "expulso"
-    ],
+    "required": ["presencaSemChuva", "presencaComChuva", "lesionadoSemChuva", "lesionadoComChuva", "expulso"],
     "type": "object"
   }
 }

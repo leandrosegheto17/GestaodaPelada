@@ -78,8 +78,7 @@ const semRelogio = [
   },
   { selector: "NewExpression[callee.name='Date'][arguments.length=0]", message: MSG_RELOGIO },
   {
-    selector:
-      "NewExpression[callee.object.name='globalThis'][callee.property.name='Date'][arguments.length=0]",
+    selector: "NewExpression[callee.object.name='globalThis'][callee.property.name='Date'][arguments.length=0]",
     message: MSG_RELOGIO,
   },
 ];
@@ -120,8 +119,7 @@ const semDocumentCookie = [
     message: MSG_COOKIE,
   },
   {
-    selector:
-      "VariableDeclarator[init.name='document'] > ObjectPattern > Property[key.name='cookie']",
+    selector: "VariableDeclarator[init.name='document'] > ObjectPattern > Property[key.name='cookie']",
     message: MSG_COOKIE,
   },
 ];
@@ -159,14 +157,7 @@ const ZONAS = [
 
 export default tseslint.config(
   {
-    ignores: [
-      '**/dist/**',
-      '.md/**',
-      '.claude/**',
-      '**/.wrangler/**',
-      '**/node_modules/**',
-      '**/coverage/**',
-    ],
+    ignores: ['**/dist/**', '.md/**', '.claude/**', '**/.wrangler/**', '**/node_modules/**', '**/coverage/**'],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
@@ -187,11 +178,7 @@ export default tseslint.config(
   {
     files: ['backend/api/**'],
     rules: {
-      'no-restricted-syntax': sintaxe(
-        dinamicos([...PROIBIDAS_GLOBAL, ...BANCO]),
-        semRelogio,
-        semAsUnknownAs,
-      ),
+      'no-restricted-syntax': sintaxe(dinamicos([...PROIBIDAS_GLOBAL, ...BANCO]), semRelogio, semAsUnknownAs),
     },
   },
   {
@@ -229,10 +216,7 @@ export default tseslint.config(
   {
     files: ['frontend/web/**'],
     rules: {
-      'no-restricted-imports': [
-        'error',
-        restritos([...PROIBIDAS_GLOBAL, ...BANCO, ...WEB_PROIBIDAS]),
-      ],
+      'no-restricted-imports': ['error', restritos([...PROIBIDAS_GLOBAL, ...BANCO, ...WEB_PROIBIDAS])],
       'no-restricted-syntax': sintaxe(
         dinamicos([...PROIBIDAS_GLOBAL, ...BANCO, ...WEB_PROIBIDAS]),
         semDocumentCookie,

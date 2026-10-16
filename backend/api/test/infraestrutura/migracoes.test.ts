@@ -2,11 +2,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import pg from 'pg';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import {
-  aplicarMigracoes,
-  MigracaoFalhou,
-  type Migracao,
-} from '../../src/infraestrutura/db/migracoes/aplicar.js';
+import { aplicarMigracoes, MigracaoFalhou, type Migracao } from '../../src/infraestrutura/db/migracoes/aplicar.js';
 import { criarBancoTemporario, temBanco, type BancoTemporario } from '../apoio/banco.js';
 
 const FIXTURE = join(import.meta.dirname, '../apoio/migracoes-fixture');
@@ -39,10 +35,7 @@ describe.skipIf(!temBanco)('migrações contra o Postgres de teste', () => {
   it('aplica do zero, em ordem, e registra', async () => {
     const r = await aplicarMigracoes(banco.url, [...ok].reverse());
     expect(r.aplicadas).toEqual(ok.map((m) => m.nome));
-    const linhas = await consultar<{ nome: string }>(
-      banco.url,
-      'SELECT nome FROM migracoes_aplicadas ORDER BY nome',
-    );
+    const linhas = await consultar<{ nome: string }>(banco.url, 'SELECT nome FROM migracoes_aplicadas ORDER BY nome');
     expect(linhas).toHaveLength(2);
   });
 
@@ -80,9 +73,7 @@ describe.skipIf(!temBanco)('migrações contra o Postgres de teste', () => {
 
   it('nome inválido não aplica nada', async () => {
     await expect(
-      aplicarMigracoes(banco.url, [
-        { nome: 'sem-carimbo.sql', sql: 'CREATE TABLE nao_deve_existir (id int);' },
-      ]),
+      aplicarMigracoes(banco.url, [{ nome: 'sem-carimbo.sql', sql: 'CREATE TABLE nao_deve_existir (id int);' }]),
     ).rejects.toThrow();
     const tabelas = await consultar<{ table_name: string }>(
       banco.url,

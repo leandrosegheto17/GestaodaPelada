@@ -2,13 +2,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync
 import { join } from 'node:path';
 import { z } from 'zod';
 import { REGISTRO } from '../src/registro.js';
-import {
-  acharEDono,
-  compararEsquema,
-  lerQuebrasAceitas,
-  type Direcao,
-  type Quebra,
-} from './comparar.js';
+import { acharEDono, compararEsquema, lerQuebrasAceitas, type Direcao, type Quebra } from './comparar.js';
 
 export const PASTA_SNAPSHOT = join(import.meta.dirname, '../snapshot');
 export const ARQUIVO_QUEBRAS = join(import.meta.dirname, '../QUEBRAS.md');
@@ -44,23 +38,17 @@ export function gerarInstantaneos(): Record<string, Instantaneo> {
   return saida;
 }
 
-export const serializar = (instantaneo: Instantaneo): string =>
-  `${JSON.stringify(instantaneo, null, 2)}\n`;
+export const serializar = (instantaneo: Instantaneo): string => `${JSON.stringify(instantaneo, null, 2)}\n`;
 
 /** Lê o snapshot versionado. Pasta ausente, vazia ou arquivo corrompido lança (falha fechado). */
 export function lerSnapshot(pasta = PASTA_SNAPSHOT): Record<string, Instantaneo> {
-  if (!existsSync(pasta))
-    throw new Error('Snapshot ausente: rode "pnpm --filter @pelada/contrato snapshot".');
+  if (!existsSync(pasta)) throw new Error('Snapshot ausente: rode "pnpm --filter @pelada/contrato snapshot".');
   const arquivos = readdirSync(pasta).filter((nome) => nome.endsWith('.json'));
-  if (arquivos.length === 0)
-    throw new Error('Snapshot vazio: rode "pnpm --filter @pelada/contrato snapshot".');
+  if (arquivos.length === 0) throw new Error('Snapshot vazio: rode "pnpm --filter @pelada/contrato snapshot".');
   const saida: Record<string, Instantaneo> = {};
   for (const arquivo of arquivos) {
     const bruto = JSON.parse(readFileSync(join(pasta, arquivo), 'utf8')) as Partial<Instantaneo>;
-    if (
-      (bruto.direcao !== 'entrada' && bruto.direcao !== 'resposta') ||
-      bruto.esquema === undefined
-    ) {
+    if ((bruto.direcao !== 'entrada' && bruto.direcao !== 'resposta') || bruto.esquema === undefined) {
       throw new Error(`Snapshot corrompido: ${arquivo}`);
     }
     saida[arquivo.replace(/\.json$/, '')] = { direcao: bruto.direcao, esquema: bruto.esquema };
@@ -93,9 +81,7 @@ export function conferir(
       }
       continue;
     }
-    quebras.push(
-      ...compararEsquema(nome, anterior.direcao, anterior.esquema, corrente.esquema, aceitas),
-    );
+    quebras.push(...compararEsquema(nome, anterior.direcao, anterior.esquema, corrente.esquema, aceitas));
   }
   for (const [nome, corrente] of Object.entries(atual)) {
     if (corrente.direcao === 'entrada') {

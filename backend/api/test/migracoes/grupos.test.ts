@@ -17,17 +17,7 @@ async function criarGrupo(slug: string, extras: Record<string, unknown> = {}): P
   const linhas = await executarSql<{ id: string }>(
     `INSERT INTO grupos (nome, slug, dia_semana, frequencia, horario, situacao_comercial, trial_inicio, criado_por, criado_em)
      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
-    [
-      v.nome,
-      slug,
-      v.dia_semana,
-      v.frequencia,
-      v.horario,
-      v.situacao_comercial,
-      v.trial_inicio,
-      autor,
-      AGORA,
-    ],
+    [v.nome, slug, v.dia_semana, v.frequencia, v.horario, v.situacao_comercial, v.trial_inicio, autor, AGORA],
   );
   return linhas[0]?.id as string;
 }
@@ -51,18 +41,10 @@ describe('migração de grupos', () => {
   it('o slug não muda, mas o nome sim', async () => {
     const id = await criarGrupo('teste-slug');
     const atualizar = (sql: string) => executarSql(sql, [id]);
-    expect(
-      await codigoDoErro(atualizar("UPDATE grupos SET slug = 'teste-outro' WHERE id = $1")),
-    ).toBe('P0001');
-    expect(
-      await codigoDoErro(atualizar("UPDATE grupos SET nome = 'Novo nome' WHERE id = $1")),
-    ).toBeNull();
-    expect(
-      await codigoDoErro(atualizar("UPDATE grupos SET slug = 'teste-slug' WHERE id = $1")),
-    ).toBeNull();
-    const linhas = await executarSql<{ slug: string }>('SELECT slug FROM grupos WHERE id = $1', [
-      id,
-    ]);
+    expect(await codigoDoErro(atualizar("UPDATE grupos SET slug = 'teste-outro' WHERE id = $1"))).toBe('P0001');
+    expect(await codigoDoErro(atualizar("UPDATE grupos SET nome = 'Novo nome' WHERE id = $1"))).toBeNull();
+    expect(await codigoDoErro(atualizar("UPDATE grupos SET slug = 'teste-slug' WHERE id = $1"))).toBeNull();
+    const linhas = await executarSql<{ slug: string }>('SELECT slug FROM grupos WHERE id = $1', [id]);
     expect(linhas[0]?.slug).toBe('teste-slug');
   });
 
@@ -77,10 +59,11 @@ describe('migração de grupos', () => {
   it('vínculo duplicado é recusado e financeiro começa desligado', async () => {
     const grupo = await criarGrupo('teste-vinculo');
     const vincular = () =>
-      executarSql(
-        'INSERT INTO vinculos_admin (conta_id, grupo_id, criado_por, criado_em) VALUES ($1, $2, $1, $3)',
-        [autor, grupo, AGORA],
-      );
+      executarSql('INSERT INTO vinculos_admin (conta_id, grupo_id, criado_por, criado_em) VALUES ($1, $2, $1, $3)', [
+        autor,
+        grupo,
+        AGORA,
+      ]);
     await vincular();
     expect(await codigoDoErro(vincular())).toBe('23505');
     const linhas = await executarSql<{ acessa_financeiro: boolean }>(
@@ -91,18 +74,12 @@ describe('migração de grupos', () => {
   });
 
   it('situação comercial e trial andam juntos', async () => {
-    expect(await codigoDoErro(criarGrupo('teste-t1', { situacao_comercial: 'trial' }))).toBe(
-      '23514',
-    );
+    expect(await codigoDoErro(criarGrupo('teste-t1', { situacao_comercial: 'trial' }))).toBe('23514');
     expect(
-      await codigoDoErro(
-        criarGrupo('teste-t2', { situacao_comercial: 'ativo', trial_inicio: '2026-10-01' }),
-      ),
+      await codigoDoErro(criarGrupo('teste-t2', { situacao_comercial: 'ativo', trial_inicio: '2026-10-01' })),
     ).toBe('23514');
     expect(
-      await codigoDoErro(
-        criarGrupo('teste-t3', { situacao_comercial: 'trial', trial_inicio: '2026-10-01' }),
-      ),
+      await codigoDoErro(criarGrupo('teste-t3', { situacao_comercial: 'trial', trial_inicio: '2026-10-01' })),
     ).toBeNull();
     const padrao = await criarGrupo('teste-t4');
     const linhas = await executarSql<{ situacao_comercial: string }>(

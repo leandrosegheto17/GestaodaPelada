@@ -1,11 +1,7 @@
 import { CODIGOS_ERRO, type ErroPadrao, type ZodError } from '@pelada/contrato';
 import type { Context } from 'hono';
 
-export function corpoErro(
-  codigo: string,
-  mensagem: string,
-  campos?: Record<string, string>,
-): ErroPadrao {
+export function corpoErro(codigo: string, mensagem: string, campos?: Record<string, string>): ErroPadrao {
   return { erro: { codigo, mensagem, ...(campos ? { campos } : {}) } };
 }
 

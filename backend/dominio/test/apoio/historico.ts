@@ -31,24 +31,13 @@ export function partida(data: string, choveu = false): PartidaDoRanking {
   return { id: `p-${data}`, data, choveu };
 }
 
-export function presenca(
-  jogadorId: string,
-  data: string,
-  situacao: SituacaoPresenca = 'presente',
-): PresencaDoRanking {
+export function presenca(jogadorId: string, data: string, situacao: SituacaoPresenca = 'presente'): PresencaDoRanking {
   return { partidaId: `p-${data}`, jogadorId, situacao };
 }
 
 /** Histórico de 3 meses (ago a out de 2026), com 6 jogadores e a troca de pesos de 01/09. */
 export function historicoDeTresMeses(): Omit<EntradaRanking, 'hoje' | 'mes'> {
-  const datas = [
-    '2026-08-06',
-    '2026-08-13',
-    '2026-09-03',
-    '2026-09-10',
-    '2026-10-01',
-    '2026-10-08',
-  ];
+  const datas = ['2026-08-06', '2026-08-13', '2026-09-03', '2026-09-10', '2026-10-01', '2026-10-08'];
   const partidas = datas.map((d) => partida(d, d === '2026-09-10' || d === '2026-10-08'));
   const jogadores = [
     jogador('a', 'Ana', 1990),

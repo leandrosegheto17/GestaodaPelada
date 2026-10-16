@@ -3,12 +3,8 @@ import { join, relative, resolve } from 'node:path';
 import ts from 'typescript';
 import { encerrar, falharFechado } from './arquivos.mjs';
 
-const PASTA = resolve(
-  process.argv[2] ?? join(import.meta.dirname, '../../api/src/infraestrutura/db/repositorios'),
-);
-const EXCECOES_JSON = resolve(
-  process.argv[3] ?? join(import.meta.dirname, 'grupo-id-excecoes.json'),
-);
+const PASTA = resolve(process.argv[2] ?? join(import.meta.dirname, '../../api/src/infraestrutura/db/repositorios'));
+const EXCECOES_JSON = resolve(process.argv[3] ?? join(import.meta.dirname, 'grupo-id-excecoes.json'));
 const TIPOS_EXECUTOR = new Set(['Db', 'Tx', 'ExecutorDb']);
 
 if (!existsSync(PASTA) || !statSync(PASTA).isDirectory()) {
@@ -31,9 +27,7 @@ try {
 }
 const usadas = new Set();
 const excecaoDe = (arquivo, funcao) => {
-  const indice = excecoes.findIndex(
-    (e) => e.arquivo === arquivo && (e.funcao === undefined || e.funcao === funcao),
-  );
+  const indice = excecoes.findIndex((e) => e.arquivo === arquivo && (e.funcao === undefined || e.funcao === funcao));
   if (indice >= 0) usadas.add(indice);
   return indice >= 0;
 };
@@ -74,8 +68,7 @@ function problemaDosParametros(funcao) {
   if (!alvo) return 'sem parâmetro grupoId';
   if (alvo.dotDotDotToken) return 'parâmetro rest no lugar de grupoId';
   if (!ts.isIdentifier(alvo.name)) return 'grupoId desestruturado';
-  if (alvo.name.text !== 'grupoId')
-    return `1º parâmetro de negócio é "${alvo.name.text}", não grupoId`;
+  if (alvo.name.text !== 'grupoId') return `1º parâmetro de negócio é "${alvo.name.text}", não grupoId`;
   return null;
 }
 
@@ -87,8 +80,7 @@ for (const caminho of arquivos) {
   if (!modulo) continue;
   const rel = relative(PASTA, caminho).replaceAll('\\', '/');
   for (const exportado of verificador.getExportsOfModule(modulo)) {
-    const real =
-      exportado.flags & ts.SymbolFlags.Alias ? verificador.getAliasedSymbol(exportado) : exportado;
+    const real = exportado.flags & ts.SymbolFlags.Alias ? verificador.getAliasedSymbol(exportado) : exportado;
     if (!(real.flags & ts.SymbolFlags.Value)) continue;
     for (const declaracao of real.declarations ?? []) {
       const funcao = funcaoDe(declaracao);

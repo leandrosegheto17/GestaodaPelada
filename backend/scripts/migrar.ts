@@ -2,10 +2,7 @@ import { join } from 'node:path';
 import { createInterface } from 'node:readline/promises';
 import { aplicarMigracoes } from '../api/src/infraestrutura/db/migracoes/aplicar.ts';
 import { lerMigracoes } from '../api/src/infraestrutura/db/migracoes/ler.ts';
-import {
-  exigirHostPermitido,
-  HostRecusado,
-} from '../api/src/infraestrutura/seguranca/trava-host.ts';
+import { exigirHostPermitido, HostRecusado } from '../api/src/infraestrutura/seguranca/trava-host.ts';
 
 const PASTA = join(import.meta.dirname, '../api/src/infraestrutura/db/migracoes');
 

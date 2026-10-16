@@ -1,8 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { centavos, data, email, horario, mes, slug, uuid } from '../src/index.js';
 
-const aceita = (schema: { safeParse: (v: unknown) => { success: boolean } }, v: unknown) =>
-  schema.safeParse(v).success;
+const aceita = (schema: { safeParse: (v: unknown) => { success: boolean } }, v: unknown) => schema.safeParse(v).success;
 
 describe('data', () => {
   it.each(['2024-02-29', '2026-10-16', '2026-12-31', '2026-01-01'])('aceita %s', (v) => {
@@ -26,16 +25,12 @@ describe('data', () => {
 
 describe('mes', () => {
   it.each(['2026-01', '2026-12'])('aceita %s', (v) => expect(aceita(mes, v)).toBe(true));
-  it.each(['2026-00', '2026-13', '2026-1', '2026-10-01'])('recusa %s', (v) =>
-    expect(aceita(mes, v)).toBe(false),
-  );
+  it.each(['2026-00', '2026-13', '2026-1', '2026-10-01'])('recusa %s', (v) => expect(aceita(mes, v)).toBe(false));
 });
 
 describe('horario', () => {
   it.each(['00:00', '23:59', '19:30'])('aceita %s', (v) => expect(aceita(horario, v)).toBe(true));
-  it.each(['24:00', '23:60', '7:00', '07:0', ''])('recusa %j', (v) =>
-    expect(aceita(horario, v)).toBe(false),
-  );
+  it.each(['24:00', '23:60', '7:00', '07:0', ''])('recusa %j', (v) => expect(aceita(horario, v)).toBe(false));
 });
 
 describe('slug', () => {
@@ -64,9 +59,8 @@ describe('uuid', () => {
 describe('centavos', () => {
   const valor = centavos(1, 99_999_999);
   it.each([1, 99_999_999])('aceita %s', (v) => expect(aceita(valor, v)).toBe(true));
-  it.each([0, 100_000_000, 1.5, '100', Number.NaN, Infinity, 2 ** 53, null, undefined])(
-    'recusa %s',
-    (v) => expect(aceita(valor, v)).toBe(false),
+  it.each([0, 100_000_000, 1.5, '100', Number.NaN, Infinity, 2 ** 53, null, undefined])('recusa %s', (v) =>
+    expect(aceita(valor, v)).toBe(false),
   );
   it('aceita faixa negativa do saldo inicial', () => {
     const saldo = centavos(-99_999_999, 99_999_999);

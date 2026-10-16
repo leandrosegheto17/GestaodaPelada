@@ -16,32 +16,19 @@ describe('respostas do mockup', () => {
     expect(sessaoEu.safeParse(json).success).toBe(true);
   });
   it('esqueci-senha.json', () => {
-    expect(
-      esqueciSenhaResposta.safeParse(respostas(/^esqueci-senha\.json$/)[0]?.json).success,
-    ).toBe(true);
+    expect(esqueciSenhaResposta.safeParse(respostas(/^esqueci-senha\.json$/)[0]?.json).success).toBe(true);
   });
   it('401 e 429', () => {
-    expect(
-      erroNaoAutenticado.safeParse(respostas(/^erro-nao-autenticado\.json$/)[0]?.json).success,
-    ).toBe(true);
-    expect(
-      erroNaoAutenticado.safeParse(respostas(/^sessao-entrar-erro\.json$/)[0]?.json).success,
-    ).toBe(true);
-    expect(
-      erroBloqueado.safeParse(respostas(/^sessao-entrar-bloqueado\.json$/)[0]?.json).success,
-    ).toBe(true);
+    expect(erroNaoAutenticado.safeParse(respostas(/^erro-nao-autenticado\.json$/)[0]?.json).success).toBe(true);
+    expect(erroNaoAutenticado.safeParse(respostas(/^sessao-entrar-erro\.json$/)[0]?.json).success).toBe(true);
+    expect(erroBloqueado.safeParse(respostas(/^sessao-entrar-bloqueado\.json$/)[0]?.json).success).toBe(true);
   });
-  it.each(respostas(/^erro-validacao-(nova-senha|senha-atual)\.json$/))(
-    '$nome é erro de validação',
-    ({ json }) => {
-      expect(erroPadrao.safeParse(json).success).toBe(true);
-    },
-  );
+  it.each(respostas(/^erro-validacao-(nova-senha|senha-atual)\.json$/))('$nome é erro de validação', ({ json }) => {
+    expect(erroPadrao.safeParse(json).success).toBe(true);
+  });
   it('enderecoNovo aceita ausente, null e URL; recusa texto solto', () => {
     const base = respostas(/^sessao-eu-admin\.json$/)[0]?.json as Record<string, unknown>;
-    const semEndereco = Object.fromEntries(
-      Object.entries(base).filter(([chave]) => chave !== 'enderecoNovo'),
-    );
+    const semEndereco = Object.fromEntries(Object.entries(base).filter(([chave]) => chave !== 'enderecoNovo'));
     expect(sessaoEu.safeParse(semEndereco).success).toBe(true);
     expect(sessaoEu.safeParse({ ...base, enderecoNovo: null }).success).toBe(true);
     expect(sessaoEu.safeParse({ ...base, enderecoNovo: 'https://exemplo.com' }).success).toBe(true);
@@ -69,9 +56,7 @@ describe('trocarSenhaCorpo', () => {
     if (!r.success) expect(r.error.issues[0]?.path).toEqual(['confirmacao']);
   });
   it('senhaAtual é opcional e campo extra é recusado', () => {
-    expect(trocarSenhaCorpo.safeParse({ ...corpo('12345678'), senhaAtual: 'x' }).success).toBe(
-      true,
-    );
+    expect(trocarSenhaCorpo.safeParse({ ...corpo('12345678'), senhaAtual: 'x' }).success).toBe(true);
     expect(trocarSenhaCorpo.safeParse({ ...corpo('12345678'), eDono: true }).success).toBe(false);
   });
   it('a mensagem de erro não ecoa a senha', () => {
@@ -82,9 +67,7 @@ describe('trocarSenhaCorpo', () => {
 
 describe('entrarCorpo e esqueciSenhaCorpo', () => {
   it('normaliza o e-mail e recusa extras', () => {
-    expect(entrarCorpo.parse({ email: ' Ana@Exemplo.com ', senha: 'x' }).email).toBe(
-      'ana@exemplo.com',
-    );
+    expect(entrarCorpo.parse({ email: ' Ana@Exemplo.com ', senha: 'x' }).email).toBe('ana@exemplo.com');
     expect(entrarCorpo.safeParse({ email: 'a@b.com', senha: 'x', outro: 1 }).success).toBe(false);
   });
   it('e-mail de 254 aceito e 255 recusado; sem @ recusado', () => {

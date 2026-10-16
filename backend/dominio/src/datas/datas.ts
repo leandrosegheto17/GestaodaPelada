@@ -31,16 +31,12 @@ export function ultimoDia(mes: Mes): Data {
 
 export function mesAnterior(mes: Mes): Mes {
   const [ano, m] = mes.split('-').map(Number) as [number, number];
-  return m === 1
-    ? `${String(ano - 1).padStart(4, '0')}-12`
-    : `${String(ano).padStart(4, '0')}-${doisDigitos(m - 1)}`;
+  return m === 1 ? `${String(ano - 1).padStart(4, '0')}-12` : `${String(ano).padStart(4, '0')}-${doisDigitos(m - 1)}`;
 }
 
 export function mesSeguinte(mes: Mes): Mes {
   const [ano, m] = mes.split('-').map(Number) as [number, number];
-  return m === 12
-    ? `${String(ano + 1).padStart(4, '0')}-01`
-    : `${String(ano).padStart(4, '0')}-${doisDigitos(m + 1)}`;
+  return m === 12 ? `${String(ano + 1).padStart(4, '0')}-01` : `${String(ano).padStart(4, '0')}-${doisDigitos(m + 1)}`;
 }
 
 /** Negativo, zero ou positivo. O formato fixo torna a comparação de texto correta. */

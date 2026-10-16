@@ -3,8 +3,7 @@ import { z } from 'zod';
 import { acharEDono, compararEsquema, lerQuebrasAceitas, type Direcao } from './comparar.js';
 import { conferir, serializar } from './snapshot-lib.js';
 
-const json = (schema: z.ZodType, io: 'input' | 'output') =>
-  z.toJSONSchema(schema, { io, unrepresentable: 'any' });
+const json = (schema: z.ZodType, io: 'input' | 'output') => z.toJSONSchema(schema, { io, unrepresentable: 'any' });
 const quebras = (direcao: Direcao, antes: z.ZodType, depois: z.ZodType) => {
   const io = direcao === 'entrada' ? 'input' : 'output';
   return compararEsquema('x', direcao, json(antes, io), json(depois, io));
@@ -22,12 +21,8 @@ describe('resposta', () => {
   });
 
   it('enum com valor removido é quebra; ampliado não', () => {
-    expect(
-      quebras('resposta', z.object({ e: z.enum(['a', 'b']) }), z.object({ e: z.enum(['a']) })),
-    ).toHaveLength(1);
-    expect(
-      quebras('resposta', z.object({ e: z.enum(['a']) }), z.object({ e: z.enum(['a', 'b']) })),
-    ).toEqual([]);
+    expect(quebras('resposta', z.object({ e: z.enum(['a', 'b']) }), z.object({ e: z.enum(['a']) }))).toHaveLength(1);
+    expect(quebras('resposta', z.object({ e: z.enum(['a']) }), z.object({ e: z.enum(['a', 'b']) }))).toEqual([]);
   });
 
   it('campo opcional novo e schema novo são aditivos', () => {
@@ -35,11 +30,7 @@ describe('resposta', () => {
   });
 
   it('campo movido para objeto aninhado é remoção no caminho antigo', () => {
-    const q = quebras(
-      'resposta',
-      base,
-      z.object({ a: z.string(), grupo: z.object({ b: z.number() }) }),
-    );
+    const q = quebras('resposta', base, z.object({ a: z.string(), grupo: z.object({ b: z.number() }) }));
     expect(q.map((x) => x.caminho)).toContain('b');
   });
 
@@ -54,26 +45,20 @@ describe('resposta', () => {
       z.object({ t: z.literal('a'), v: z.string() }),
       z.object({ t: z.literal('b') }),
     ]);
-    const uniaoDepois = z.discriminatedUnion('t', [
-      z.object({ t: z.literal('a') }),
-      z.object({ t: z.literal('b') }),
-    ]);
+    const uniaoDepois = z.discriminatedUnion('t', [z.object({ t: z.literal('a') }), z.object({ t: z.literal('b') })]);
     expect(quebras('resposta', uniaoAntes, uniaoDepois).length).toBeGreaterThan(0);
   });
 
   it('nullable acrescentado é quebra', () => {
     expect(
-      quebras('resposta', z.object({ a: z.string() }), z.object({ a: z.string().nullable() }))
-        .length,
+      quebras('resposta', z.object({ a: z.string() }), z.object({ a: z.string().nullable() })).length,
     ).toBeGreaterThan(0);
   });
 
   it('quebra listada em QUEBRAS.md é aceita', () => {
     const antes = json(base, 'output');
     const depois = json(z.object({ a: z.string() }), 'output');
-    expect(
-      compararEsquema('x', 'resposta', antes, depois, [{ esquema: 'x', caminho: 'b' }]),
-    ).toEqual([]);
+    expect(compararEsquema('x', 'resposta', antes, depois, [{ esquema: 'x', caminho: 'b' }])).toEqual([]);
   });
 });
 
@@ -102,12 +87,11 @@ describe('eDono em entrada (G-11)', () => {
 });
 
 describe('QUEBRAS.md', () => {
-  const cabecalho =
-    '| esquema | caminho | mudança | deploy 1 | deploy 2 |\n|---|---|---|---|---|\n';
+  const cabecalho = '| esquema | caminho | mudança | deploy 1 | deploy 2 |\n|---|---|---|---|---|\n';
   it('lê linhas completas', () => {
-    expect(
-      lerQuebrasAceitas(`${cabecalho}| x | b | removido | aceita ambos | remove antigo |`),
-    ).toEqual([{ esquema: 'x', caminho: 'b' }]);
+    expect(lerQuebrasAceitas(`${cabecalho}| x | b | removido | aceita ambos | remove antigo |`)).toEqual([
+      { esquema: 'x', caminho: 'b' },
+    ]);
   });
   it('linha sem plano de deploy falha', () => {
     expect(() => lerQuebrasAceitas(`${cabecalho}| x | b | removido | | |`)).toThrow();

@@ -18,8 +18,7 @@ export function validarPeriodos(periodos: readonly Periodo[]): ResultadoPeriodos
     }
   }
   const abertos = indexados.filter((p) => p.fim === null);
-  if (abertos.length > 1)
-    return { ok: false, erro: 'mais-de-um-aberto', indice: abertos[1]!.indice };
+  if (abertos.length > 1) return { ok: false, erro: 'mais-de-um-aberto', indice: abertos[1]!.indice };
 
   const ordenados = [...indexados].sort((a, b) => compararDatas(a.inicio, b.inicio));
   for (let i = 1; i < ordenados.length; i++) {
