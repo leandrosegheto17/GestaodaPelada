@@ -41,4 +41,16 @@ export const CASOS: Record<string, Caso> = {
     justificativa: 'Rota de sessão: troca só a senha da própria conta, sem dado de grupo.',
   },
   'GET /api/dono/painel': { tipo: 'dono' },
+  'GET /api/dono/grupos/:id': { tipo: 'dono' },
+  'POST /api/dono/grupos': {
+    tipo: 'dono',
+    corpo: {
+      nome: 'Grupo do Teste',
+      diaSemana: 'quinta',
+      frequencia: 'semanal',
+      horario: '20:00',
+      adminNome: 'Admin Teste',
+      adminEmail: 'admin-isolamento@teste.invalid',
+    },
+  },
 };
