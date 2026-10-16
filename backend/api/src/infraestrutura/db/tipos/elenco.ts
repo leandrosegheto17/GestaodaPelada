@@ -26,6 +26,8 @@ export interface HabilidadesTabela {
   id: Generated<string>;
   grupo_id: string;
   nome: string;
+  /** Ordem de cadastro (identidade). */
+  ordem: Generated<string>;
 }
 
 export interface NotasTabela {

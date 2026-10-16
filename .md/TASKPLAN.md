@@ -7,7 +7,7 @@ dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuá
 
 Atualizado: 2026-10-16 17:13
 
-Resumo: Não executada 162 · Executada (aguarda teste) 46 · total 208
+Resumo: Não executada 161 · Executada (aguarda teste) 47 · total 208
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -59,7 +59,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 44 | TP-0044 | executor | ✔ | Migração de pesos, partidas e presenças | L09 | TP-0015, TP-0016, TP-0042 | Executada (aguarda teste) |
 | 45 | TP-0045 | executor | ✔ | Migração de eventos de uso | L09 | TP-0015, TP-0016, TP-0026 | Executada (aguarda teste) |
 | 46 | TP-0046 | executor | ✔ | Repositório de jogadores e períodos | L10 | TP-0014, TP-0016, TP-0017, TP-0042 | Executada (aguarda teste) |
-| 47 | TP-0047 | executor | ✔ | Repositório de habilidades e notas | L10 | TP-0014, TP-0016, TP-0017, TP-0043 | Não executada |
+| 47 | TP-0047 | executor | ✔ | Repositório de habilidades e notas | L10 | TP-0014, TP-0016, TP-0017, TP-0043 | Executada (aguarda teste) |
 | 48 | TP-0048 | executor | ✔ | Repositório de pesos | L10 | TP-0014, TP-0016, TP-0017, TP-0044 | Não executada |
 | 49 | TP-0049 | executor | ✔ | Repositório de partidas e presenças | L10 | TP-0014, TP-0016, TP-0017, TP-0044 | Não executada |
 | 50 | TP-0050 | executor | ✔ | Repositório de eventos de uso | L10 | TP-0014, TP-0016, TP-0017, TP-0045 | Não executada |
