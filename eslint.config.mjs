@@ -95,6 +95,10 @@ const semAsUnknownAs = [
   },
   { selector: "TSTypeAssertion[expression.type='TSAsExpression']", message: MSG_UNKNOWN },
   {
+    selector: "TSTypeAssertion > TSTypeAssertion[typeAnnotation.type='TSUnknownKeyword']",
+    message: MSG_UNKNOWN,
+  },
+  {
     selector: "TSAsExpression[expression.typeAnnotation.type='TSUnknownKeyword']",
     message: MSG_UNKNOWN,
   },

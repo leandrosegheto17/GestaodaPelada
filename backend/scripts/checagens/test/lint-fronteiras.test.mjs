@@ -33,7 +33,7 @@ describe('fronteiras de pacote', () => {
     ['const m = await import(nome);', API],
     ["import bcrypt from 'bcryptjs';", API],
     ["import axios from 'axios';", WEB],
-    ["import { a } from '../../../../backend/dominio/src/x';", WEB],
+    ["import { a } from '../../../backend/dominio/src/index';", WEB],
   ])('barra %s em %s', async (codigo, arquivo) => {
     expect((await regras(codigo, arquivo)).length).toBeGreaterThan(0);
   });
@@ -88,12 +88,12 @@ describe('conversões e cookie', () => {
 
 describe('fronteiras por caminho real', () => {
   it('rota não importa rota', async () => {
-    const ids = await regras("import { a } from './outra';", 'backend/api/src/entrada/rotas/uma.ts');
+    const ids = await regras("import { a } from './sessao-eu';", 'backend/api/src/entrada/rotas/uma.ts');
     expect(ids).toContain('import-x/no-restricted-paths');
   });
 
   it('scripts só importam os quatro caminhos permitidos', async () => {
-    const fora = await regras("import { a } from '../api/src/aplicacao/partidas/x';", 'backend/scripts/x.ts');
+    const fora = await regras("import { a } from '../api/src/aplicacao/acesso/entrar';", 'backend/scripts/x.ts');
     expect(fora).toContain('import-x/no-restricted-paths');
     const dentro = await regras("import { a } from '../api/src/aplicacao/acesso/senhas';", 'backend/scripts/x.ts');
     expect(dentro).not.toContain('import-x/no-restricted-paths');
