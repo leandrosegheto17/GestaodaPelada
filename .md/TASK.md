@@ -550,6 +550,12 @@ Colunas lidas pelo `taskplan.py` pelo nome. **Est** em dias-pessoa. **Cria**/**U
 | TP-0205 | L45 | E2E de integração do I4 (API real) | Frontend | F5; RF-18, RN-15 | Playwright contra o `docker compose`: configurar caixa → marcar pagou (entrada criada) → desmarcar (entrada removida) → lançamento de saída → saldos conferem; admin sem financeiro recebe 403 | 0,5 d | TP-0138, TP-0199, TP-0200, TP-0201, TP-0202, TP-0190, TP-0191, TP-0192, TP-0193, TP-0195 | TP-0203, TP-0204 | `e2e/i4` | `e2e/i1`, `tela/T22`, `tela/T22-pagamentos`, `tela/T23`, `tela/T24`, `rota/fin-mes`, `rota/fin-config`, `rota/fin-marcar`, `rota/fin-desmarcar`, `rota/lanc-criar` | Pendente |
 | TP-0206 | L45 | [U] Go-live do I4 | Usuário [U] (Executor conduz o roteiro) | PRD §4 (I4) | Todas as tarefas do I4 aprovadas; deploy com `financeiro` e `privacidade` retirados de `VITE_RECURSOS_DESLIGADOS`; saldos conferidos com o caixa real do grupo | 0,5 d | TP-0185, TP-0194, TP-0196, TP-0197, TP-0198, TP-0203, TP-0204, TP-0205 | — | `go-live/i4` | `go-live/i3`, `e2e/i4`, `tela/T07`, `rota/aviso-privacidade` | Pendente |
 
+### Refatoração Lote-L01
+| ID | Lote | Título | Chapéu | Reqs | Aceite | Est | Dep | Par | Arquivos | Testes e diretrizes | Status |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| RTP-0001 | L01 | Lint: backend/scripts importando @pelada/api por alias fura a zona (e falta o teste do alias) | Backend | TP-0002; SDD §2; G-01 | Em eslint.config.mjs, importar `@pelada/api` ou `@pelada/api/*` (import, export from e import() literal) em `backend/scripts/**` falha, salvo os 4 caminhos permitidos (`infraestrutura/db/repositorios`, `infraestrutura/db/migracoes`, `infraestrutura/seguranca`, `aplicacao/acesso/senhas`). `lint-fronteiras.test.mjs` ganha o caso por alias (falha fora dos 4 caminhos, passa dentro). Hoje a zona só cobre caminho relativo: `@pelada/api/src/aplicacao/acesso/entrar` a partir de `backend/scripts` passa no lint (verificado com lintText). | 0,25 d | TP-0002 |  | eslint.config.mjs; backend/scripts/checagens/test/lint-fronteiras.test.mjs | lint-fronteiras | Pendente |
+
+
 ---
 
 ## 4. Dependências e Ordem de Execução
