@@ -1,6 +1,6 @@
 import { spawnSync } from 'node:child_process';
 import { join } from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { kyselyDe } from '../../src/infraestrutura/db/cliente.js';
 import * as contas from '../../src/infraestrutura/db/repositorios/contas.js';
 import * as sessoes from '../../src/infraestrutura/db/repositorios/sessoes.js';
@@ -8,6 +8,9 @@ import { usarDb } from '../apoio/db-teste.js';
 import { usarFabrica } from '../apoio/fabrica.js';
 import { executarSql } from '../apoio/sql.js';
 import { URL_BANCO_TESTE } from '../apoio/url-teste.js';
+
+// Cada teste sobe `pnpm exec tsx` num processo novo, lento no Windows.
+vi.setConfig({ testTimeout: 60_000 });
 
 const fabrica = usarFabrica();
 const abrir = usarDb(fabrica);
