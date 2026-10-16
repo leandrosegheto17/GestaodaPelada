@@ -296,6 +296,13 @@ Skills de apoio, de uso **opcional**:
   reprovação simples do chapéu QA) vira tarefa em `Refatoração Lote-X`, com prazo,
   não só uma nota solta no relatório — o próprio Validador cria a tarefa, na
   checagem estrutural que agora faz sozinho (sem depender do `coordenador`).
+  Exceção (chapéu QA): achado sem mudança de comportamento que cabe na **via
+  rápida** do `/testar` (formatação, comentário, documentação, byte inválido, até
+  ~10 linhas) é corrigido na hora e registrado em `## 5`, sem RTP. Fora dessas
+  condições, nunca altera código da tarefa.
+- NUNCA abre a 2ª RTP da mesma classe de erro sem devolver a linha `Padrão
+  repetido: …` com a regra sugerida (`testar.md`, item 3) — o padrão tem de chegar
+  ao usuário como regra, não só como mais uma RTP.
 - NUNCA aprova uma tarefa (chapéu QA) ou um build (chapéu DevSecOps) com achado de
   severidade alta/crítica ou compliance obrigatório em aberto.
 - NUNCA escala um bug isolado ao `coordenador` — só escala quando um padrão

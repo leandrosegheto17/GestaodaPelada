@@ -45,6 +45,11 @@
 //       "rota": "/", "respostas": [ { "url": "**/api/v1/divergencias*", "pendente": true } ] }
 //   ]
 // }
+// "recorte": { "mockup": "<seletor>", "app": "<seletor>" } (opcional, por tela) compara só o
+// elemento indicado em cada lado, ignorando o que está atrás (usado nas folhas: a página de
+// fundo é real no app e vazia no mockup). Com recorte, ".conteudo" deixa de ser ocultado.
+// "userAgent": "<string>" (opcional, por tela) define o user agent só do lado da aplicação (usado quando
+// o app muda conforme a plataforma, como a folha de instalar no iOS/Android).
 // Respostas da tela têm prioridade sobre as globais. "pendente": true nunca responde
 // (mantém a tela em "carregando"). Caminhos são relativos à pasta do telas.json.
 //
@@ -138,7 +143,10 @@ async function registrarRespostas(pagina, respostas, pastaConfig) {
 }
 
 async function capturar(navegador, viewport, url, opcoes) {
-  const contexto = await navegador.newContext({ viewport, deviceScaleFactor: 1, reducedMotion: "reduce" });
+  const contexto = await navegador.newContext({
+    viewport, deviceScaleFactor: 1, reducedMotion: "reduce",
+    ...(opcoes.userAgent ? { userAgent: opcoes.userAgent } : {}),
+  });
   const pagina = await contexto.newPage();
   if (opcoes.respostas?.length) await registrarRespostas(pagina, opcoes.respostas, opcoes.pastaConfig);
   await pagina.goto(url, { waitUntil: opcoes.pendente ? "domcontentloaded" : "networkidle" });
@@ -146,8 +154,21 @@ async function capturar(navegador, viewport, url, opcoes) {
     await pagina.waitForSelector(opcoes.esperar, { timeout: 15000 }).catch(() => {});
   }
   await prepararPagina(pagina, opcoes.ocultar);
-  await pagina.waitForTimeout(300);
-  const png = await pagina.screenshot({ fullPage: true });
+  // Estado carregando: o app só mostra o esqueleto depois do atraso de 300 ms e do carregamento da rota.
+  await pagina.waitForTimeout(opcoes.pendente ? 1500 : 300);
+  // O mockup é um print estático, sem estado de foco; o app foca o primeiro controle ao abrir a folha.
+  await pagina.evaluate(() => {
+    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+  });
+  let png;
+  if (opcoes.recorte) {
+    // Folha: captura só o elemento; a página de fundo (real no app, vazia no mockup) fica de fora.
+    const alvo = pagina.locator(opcoes.recorte).first();
+    await alvo.waitFor({ state: "visible", timeout: 15000 });
+    png = await alvo.screenshot();
+  } else {
+    png = await pagina.screenshot({ fullPage: true });
+  }
   await contexto.close();
   return png;
 }
@@ -270,7 +291,10 @@ async function main() {
       const estado = tela.estado ?? "sucesso";
       const respostas = [...(tela.respostas ?? []), ...(mapa.respostas ?? [])];
       const pendente = respostas.some((r) => r.pendente);
-      const ocultar = [...(mapa.ocultar ?? []), ...(tela.ocultar ?? [])];
+      const recorte = tela.recorte ?? null;
+      // Com recorte, o `.conteudo` guarda a própria folha no app: esconder a página de fundo
+      // esconderia a folha, então o seletor sai da lista (o recorte já a ignora).
+      const ocultar = [...(mapa.ocultar ?? []), ...(tela.ocultar ?? [])].filter((s) => !(recorte && s === ".conteudo"));
       for (const nomeViewport of tela.viewports ?? Object.keys(mapa.viewports ?? {})) {
         if (filtroViewport && filtroViewport !== nomeViewport) continue;
         const viewport = mapa.viewports?.[nomeViewport];
@@ -280,9 +304,11 @@ async function main() {
           const arquivoMockup = join(pastaConfig, tela.mockup);
           if (!existsSync(arquivoMockup.split(/[?#]/)[0])) throw new Error(`mockup não encontrado: ${tela.mockup}`);
           const urlMockup = pathToFileURL(arquivoMockup.split(/[?#]/)[0]).href + (tela.mockup.match(/[?#].*$/)?.[0] ?? "");
-          const pngMockup = await capturar(navegador, viewport, urlMockup, { ocultar, esperar: null, pastaConfig });
+          const pngMockup = await capturar(navegador, viewport, urlMockup, {
+            ocultar, esperar: null, pastaConfig, recorte: recorte?.mockup,
+          });
           const pngApp = await capturar(navegador, viewport, baseUrl + tela.rota, {
-            ocultar, esperar: pendente ? null : tela.esperar, respostas, pendente, pastaConfig,
+            ocultar, esperar: pendente ? null : tela.esperar, respostas, pendente, pastaConfig, recorte: recorte?.app, userAgent: tela.userAgent,
           });
           const r = await diferenca(navegador, pngMockup, pngApp, limiar);
           writeFileSync(join(saida, `${rotulo}--mockup.png`), pngMockup);

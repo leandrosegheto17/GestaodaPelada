@@ -67,7 +67,9 @@ comando: o controle volta ao `/desenvolver`.
      `/testar` e `/validar`. O script conta a devolução, somada às do `/testar` (limite de 2; na 3ª ele
      responde `LIMITE` e é bloqueio crítico — `testar.md`, Seção 3d).
    - **Achado não crítico** (baixa/média, débito): `sec-ok` e o `validador` abre uma
-     **`RTP-0000`** (`executar.md`, Seção 5a), conferida com `taskplan.py tarefa <RTP>`.
+     **`RTP-0000`** (`executar.md`, Seção 5a), conferida com `taskplan.py tarefa <RTP>`. Achado de
+     segurança **não** tem via rápida. Achado repetido (2ª RTP da mesma classe, ex.: falta de limite de
+     entrada) gera a linha `Padrão repetido: …` como no `testar.md` (item 3), levada ao resumo do fim.
 4. **Commit** (padrão): o que a validação produziu (seção 6, RTP) com a mensagem
    `<ID>: segurança aprovada|devolvida`, pelas regras de onde o código roda. Com `--nocommit`, não commite.
 

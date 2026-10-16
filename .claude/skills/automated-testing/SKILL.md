@@ -69,6 +69,11 @@ Do NOT use for:
    repetido (montar o banco de teste, criar um pedido válido, um evento de
    exemplo) vira **fábrica compartilhada** em `test/apoio/` (ou a pasta de apoio do
    projeto) — antes de criar uma fixture nova, procure se já existe uma.
+7. **Teste independente do estado e do calendário.** Teste que toca dados
+   compartilhados usa os ids do seed, apaga o que cria (mesmo em falha) e deriva
+   "hoje"/"mês atual" do sistema ou de um relógio fixado, nunca de data literal
+   (`CONVENCOES-DE-CODIGO.md` §7). Guarda ou parser de segurança tem a matriz de
+   casos adversariais (§9).
 
 ## Workflow
 
@@ -103,6 +108,8 @@ Do NOT use for:
 - [ ] Cobertura de regra de negócio/lógica de componente/tela atinge 70-80%
 - [ ] Nenhum arquivo de teste criado/ampliado passou de ~400 linhas sem
       justificativa; dados repetidos vêm de fábricas compartilhadas
+- [ ] Rodar a suíte duas vezes seguidas dá o mesmo resultado (nada sobrou no seed)
+      e nenhum teste depende de data literal
 
 ### MUST DO
 - Rodar os testes de fato (via Bash) antes de considerar a tarefa concluída — nunca

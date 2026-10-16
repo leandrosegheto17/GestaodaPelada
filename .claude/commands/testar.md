@@ -56,7 +56,8 @@ comando: o controle volta ao `/desenvolver`.
    `RTP`, nunca "observação sem severidade") e **escreve o resultado em `## 5. Resultado do QA`**
    (veredito, o que foi testado, evidências, achados com severidade; `### Rodada n` em reteste), e, como
    última linha da seção, `Resumo para o relatório: <uma linha>` (o `consolidar` monta a entrada de
-   `.md/QA-REPORT.md`; **o agente não edita esse arquivo**). **Não altera código da tarefa e não grava status.** Peça o
+   `.md/QA-REPORT.md`; **o agente não edita esse arquivo**). **Não altera código da tarefa (salvo a via
+   rápida, item 3) e não grava status.** Peça o
    **retorno em até 4 linhas** (APROVADA/DEVOLVIDA/BLOQUEIO, achados críticos e não críticos em
    contagem) e **não releia a seção 5**.
 3. **Resultado** (`concluir`):
@@ -69,7 +70,19 @@ comando: o controle volta ao `/desenvolver`.
    - **Achado não crítico** (ajuste pontual de baixo esforço): **não volta** — `qa-ok` e o
      `validador` abre uma **`RTP-0000`** (`executar.md`, Seção 5a: linha no `TASK.md` + arquivo
      em `.md/.taskplan/`), conferida com `taskplan.py tarefa <RTP>`.
-4. **Commit** (padrão): o que o QA produziu (seção 5, RTP) com a mensagem
+   - **Via rápida** (achado não crítico **sem mudança de comportamento**): o próprio `validador`
+     corrige na hora em vez de abrir RTP, quando **todas** as condições valem: só formatação (rodando
+     o formatador do projeto), comentário falso ou com ID de tarefa, texto de README/documentação de
+     operação, ou linha/byte inválido; no máximo ~10 linhas; não toca lógica, asserção de teste,
+     configuração de CI, de segurança ou de banco. Depois da correção roda de novo lint e formatação,
+     registra em `## 5` a linha `Corrigido na via rápida: <o quê, arquivos>` e segue para `qa-ok`. Na
+     dúvida, é RTP. (No MyMoney, cerca de 20 das 182 RTP eram desse tipo e passaram por três agentes cada.)
+   - **Achado repetido**: antes de abrir uma RTP, o `validador` procura no `TASK.md` RTP da mesma
+     classe (mesmo tipo de erro, outra tarefa). Na 2ª ocorrência, o retorno traz a linha
+     `Padrão repetido: <classe> (RTP-x, RTP-y) → regra sugerida: <texto>`. Leve essas linhas ao
+     resumo do fim: o usuário decide se a regra entra no `CONVENCOES-DE-CODIGO.md` ou na Seção 1 do
+     `TASK.md`, para o Executor parar de repetir o erro.
+4. **Commit** (padrão): o que o QA produziu (seção 5, RTP, correção da via rápida) com a mensagem
    `<ID>: QA aprovado|devolvido`, pelas regras de onde o código roda (em `--continuar`, na `main`;
    em `--tarefa`, na worktree, integrada à `main` no fim). Com `--nocommit`, não commite.
 
@@ -85,5 +98,5 @@ com o resumo do que falhou em cada volta. Tarefa bloqueada aqui, depois de `desb
 
 Rode `taskplan.py consolidar` (também monta a entrada de `QA-REPORT.md` a partir da linha `Resumo para o relatório:`). Resumo curto por tarefa: veredito, achados, RTP criadas, estado agora.
 No modo contínuo, o resumo final traz: aprovadas (`QA ✔`), devolvidas ao `/executar` (ID + motivo),
-bloqueadas, RTP abertas e puladas. Termine sugerindo `/validar` (e `/executar` se houve devolução).
+bloqueadas, RTP abertas, correções da via rápida, linhas `Padrão repetido` e puladas. Termine sugerindo `/validar` (e `/executar` se houve devolução).
 Nunca dispare `/deploy`.

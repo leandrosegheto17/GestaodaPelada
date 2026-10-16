@@ -157,6 +157,10 @@ aprova, pede ajuste ou reprova.
   ganha uma tarefa de extração própria, da qual as consumidoras dependem; versão
   nova de algo existente é "extrair o comum + acrescentar a diferença", nunca
   "arquivo novo espelhando o antigo" (`task-decomposition`, itens 5-7).
+- **`Cria` e `Usa` em toda tarefa**: o que nasce nela e o que ela consome de outra;
+  quem usa depende de quem cria, conferido por `taskplan.py checar-deps` antes de
+  apresentar o `TASK.md` (`task-decomposition` item 9, `dependency-sequencing` 3a).
+  Tarefas `[U]` de painel são agrupadas por serviço (item 10).
 - Fora da fase de planejamento (e do `/revisar`), só volta a atuar sobre um lote quando o Validador
   escalar (via `BLOCKERS.md`) uma inconsistência estrutural que **exige
   redesenho** de dependência/decomposição real — a confirmação de rotina do

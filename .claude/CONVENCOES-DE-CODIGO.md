@@ -91,6 +91,37 @@ repositório, arquivos de 400-570 linhas e 228 menções a IDs de tarefa nos com
 - Publicação/deploy é um script dedicado (ou workflow), não uma cadeia de `&&` dentro do
   `package.json`.
 
+## 7. Testes que tocam dados compartilhados
+
+Saiu da retrospectiva do MyMoney (2026-10-15): ~18 RTP só para corrigir testes que sujavam o
+seed ou quebravam com a virada do mês.
+
+- **Use os ids do seed**, nunca ids escritos à mão que só existem no seu teste.
+- **Apague o que criar.** Teste que insere registro no banco compartilhado (seed local, suíte
+  de API, e2e de integração) remove o que criou no fim, mesmo quando falha. O seed fica igual
+  ao que era antes da suíte; outro teste nunca depende da ordem de execução.
+- **Nada de data literal nem do relógio da máquina** para mês/dia "atual". Derive do "hoje"
+  do sistema (a função de data do banco ou o contexto da API) ou fixe o relógio no teste.
+  Teste que passa hoje e falha no dia 1º é defeito.
+- **Trava de host local** em todo script ou teste que escreve no banco (ver `GUARDRAILS.md`).
+
+## 8. Entrada validada nos limites
+
+Toda entrada que vem de fora (formulário, parâmetro de URL, argumento de RPC/endpoint, flag
+de script) é validada **no servidor** e, quando há interface, também no cliente, contra:
+tamanho máximo de texto, faixa plausível de número e data (inclusive estouro do tipo, ex.:
+`bigint`/centavos) e formato de identificador (uuid malformado não chega à consulta). O
+limite é definido uma vez (SDD/contrato) e os dois lados o usam. No MyMoney isso virou ~10
+RTP abertas pelo DevSecOps tarefa a tarefa; aqui passa a ser parte do aceite implícito.
+
+## 9. Guardas e parsers de segurança
+
+Script ou função cuja função é **barrar** algo (checagem de migration aditiva, validação de
+host, mascaramento de segredo, regra de lint de fronteira) nasce com uma **matriz de casos
+adversariais** no plano de teste: literais e comentários que escondem o padrão, aninhamento,
+codificação não ASCII, ferramenta ausente ou falhando (tem de **falhar fechado**), entrada
+vazia. Sem a matriz, cada rodada de QA encontra o próximo desvio e vira uma RTP em cadeia.
+
 ---
 
 ## Como cada papel usa este arquivo
@@ -99,5 +130,5 @@ repositório, arquivos de 400-570 linhas e 228 menções a IDs de tarefa nos com
 |---|---|
 | Coordenador (`implementation-guideline-drafting`) | A Seção 1 do `TASK.md` referencia este arquivo como camada base e só acrescenta o que é específico do projeto (limites diferentes, nomes de pastas). |
 | Executor | Segue as regras ao implementar; confere a lista "Antes de devolver" do `executor.md`. |
-| Validador (QA) | Violação de qualquer regra daqui é **achado não crítico** → abre `RTP` (ver `finding-severity-classification`). Nunca "sem severidade". |
+| Validador (QA) | Violação de qualquer regra daqui é **achado não crítico** → abre `RTP` (ver `finding-severity-classification`), salvo a correção na hora da via rápida (`/testar`). Nunca "sem severidade". |
 | Coordenador (`/revisar`) | `architecture-health-review` mede o projeto inteiro contra este arquivo e abre `RTP` para o que escapou da validação por tarefa. |

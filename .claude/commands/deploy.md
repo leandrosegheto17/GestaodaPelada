@@ -110,12 +110,8 @@ confirmar que nada mudou desde o veredito já registrado em `QA-REPORT.md`/
 comando `/executar`), e checar integração **entre os lotes** que serão publicados juntos —
 regressão cruzada que a validação por lote isolado não cobre.
 
-**Regressão visual** (projeto com interface): na mesma confirmação, rode a comparação
-de **todas** as telas do `telas.json`
-(`node .claude/scripts/comparar-visual.mjs --base-url <url local> --pacote <pacote da interface>`,
-ou com `--iniciar`) e passe o `resumo.md` ao `validador`. Tela fora do limite é achado
-bloqueante (a aparência aprovada é critério de aceite). Comparação que não roda também
-bloqueia, salvo aceite explícito do usuário.
+**Regressão visual**: não faz parte do `/deploy` (decisão do usuário, 2026-10-15). A
+comparação com o mockup é manual (`pnpm --filter @mymoney/web visual`).
 
 - **Achado bloqueante nesta confirmação**: **pare**, explique, e informe que a
   correção volta para `/executar` — a tarefa afetada refaz o ciclo completo do

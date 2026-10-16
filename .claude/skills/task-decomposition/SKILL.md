@@ -72,6 +72,25 @@ Do NOT use for:
      altura de página que o mockup". O limite padrão é 1%.
    - Componente compartilhado (cabeçalho, menu, cartão) é tarefa própria, conferida
      pelas telas que o usam.
+9. **O que a tarefa cria e o que ela usa.** Toda tarefa declara, em duas colunas
+   próprias do `TASK.md`:
+   - `Cria`: os artefatos nomeados que **nascem** nela e que outra tarefa pode
+     precisar (componente, módulo, função do banco, tabela/view, tipo do contrato,
+     script, fixture compartilhada). Cada artefato nasce em **uma** tarefa só.
+   - `Usa`: os artefatos que ela consome e não cria.
+   Use o mesmo nome nas duas colunas (`CabecalhoPagina`, `app.lar`,
+   `formatacao/links`). É daqui que o `dependency-sequencing` tira a Dep obrigatória
+   e o `taskplan.py checar-deps` confere mecanicamente. No MyMoney, 21 dos 38
+   bloqueios foram "a tarefa usa um componente que outra cria e que não está na
+   Dep"; as duas colunas existem para isso não se repetir.
+10. **Tarefas que exigem o painel do usuário** (`[U]`: conferir ou configurar algo
+   num painel externo — hospedagem, banco gerenciado, DNS, loja) são agrupadas **por
+   serviço** num único roteiro de sessão com o usuário, com todos os itens a
+   conferir e a evidência pedida em cada um. Uma tarefa `[U]` por item vira, na
+   execução, uma cadeia de BK e RTP (cada conferência esquecida abre outra).
+11. **CI acompanha o GUARDRAILS.** Para cada regra do `GUARDRAILS.md` cuja
+   verificação é "no CI", existe uma tarefa que cria o job/passo correspondente,
+   no mesmo lote (ou antes) da primeira tarefa que produz o que ele verifica.
 
 ## Workflow
 
@@ -88,14 +107,19 @@ Do NOT use for:
 6. Confira cada tarefa contra as fronteiras do SDD (item 7).
 6a. Com interface: crie a tarefa de base visual e ponha a comparação visual no aceite
    de toda tarefa de tela (item 8).
+6b. Preencha `Cria` e `Usa` de cada tarefa (item 9). Artefato que aparece em `Usa`
+   e em nenhum `Cria` (e ainda não existe no repositório) é tarefa faltando.
+6c. Junte as `[U]` por serviço (item 10) e confira os jobs de CI contra o
+   `GUARDRAILS.md` (item 11).
 7. Escreva a Seção 3 do `TASK.md` (Lista de Tarefas) — sem estimativa e sem
    dependência ainda, isso é papel das próximas skills.
 
 ## Output Esperado
 
 - **ID**: `TP-` + 4 dígitos sequenciais (`TP-0001`, `TP-0002`…) — nunca `T-nnn`.
-- **Formato**: Seção 3 do `TASK.md` — tabela `| ID | Tarefa | Time | Origem
-  (componente/tela) | Critério de Aceite | Estimativa | Status |` (colunas de
+- **Formato**: Seção 3 do `TASK.md` — tabela `| ID | Lote | Tarefa | Chapéu | Origem
+  (componente/tela) | Critério de Aceite | Est | Depende de | Paralelizável com |
+  Cria | Usa | Status |` (o `taskplan.py` lê as colunas pelo nome; colunas de
   estimativa e dependência preenchidas depois por outras skills; Status inicia como
   `Não iniciada` para toda tarefa nova — Backend/Frontend/Mobile atualizam essa
   coluna conforme executam, ver `task-status-tracking`).
@@ -116,6 +140,10 @@ Do NOT use for:
       fronteiras` do SDD.md
 - [ ] (Com interface) existe a tarefa de base visual e toda tarefa de tela depende
       dela e tem a comparação visual no critério de aceite
+- [ ] Toda tarefa tem `Cria` e `Usa` preenchidos (`—` quando vazio); nenhum artefato
+      é criado por duas tarefas
+- [ ] Tarefas `[U]` agrupadas por serviço; toda regra "no CI" do `GUARDRAILS.md`
+      tem a tarefa que cria o job
 
 ### MUST DO
 - Dividir toda tarefa que cruza mais de um time antes de considerá-la pronta.

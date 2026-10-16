@@ -41,6 +41,12 @@ Do NOT use for:
 3. **Paralelismo entre times.** Toda tarefa sem dependência declarada entre Backend/
    Frontend/Mobile pode (e deve) ser marcada como paralelizável — silêncio sobre
    dependência não deve virar sequenciamento por precaução.
+3a. **`Usa` → Dep é obrigatória, não precaução.** Se a tarefa B lista em `Usa` um
+   artefato que a tarefa A lista em `Cria`, A está na Dep de B (direta ou
+   transitivamente). Isso não é "sequenciar por via das dúvidas": é a dependência
+   real mais fácil de esquecer, porque um componente criado numa tela (ex.: o
+   cabeçalho nascido em Ajustes) é usado por outras dez. Confira com
+   `python .claude/scripts/taskplan.py checar-deps`, que precisa sair com código 0.
 4. **Caminho crítico.** Qual sequência de tarefas, se atrasar, atrasa a entrega
    inteira? Isso alimenta a Seção 5 (Riscos de Prazo) de `effort-estimation`.
 
@@ -48,6 +54,7 @@ Do NOT use for:
 
 1. Para cada tarefa, identifique se ela depende de outra já listada — se sim, com
    que direção e se é dependência de contrato ou de implementação completa.
+1a. Para cada item de `Usa`, ponha na Dep a tarefa que o tem em `Cria` (item 3a).
 2. Marque toda tarefa sem dependência real como paralelizável explicitamente.
 3. Identifique o caminho crítico — a sequência mais longa de dependências reais.
 4. Escreva a Seção 4 do `TASK.md` (Dependências e Ordem de Execução).
@@ -66,6 +73,8 @@ Do NOT use for:
 - [ ] Toda tarefa sem dependência real está marcada como paralelizável — nenhum
       sequenciamento "por via das dúvidas"
 - [ ] Caminho crítico identificado e nomeado
+- [ ] `taskplan.py checar-deps` sai com código 0 (nenhum `Usa` sem a tarefa criadora
+      na Dep, nenhum artefato criado duas vezes)
 
 ### MUST DO
 - Diferenciar dependência de contrato (libera paralelismo cedo) de dependência de

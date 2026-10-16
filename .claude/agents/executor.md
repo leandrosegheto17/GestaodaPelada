@@ -162,9 +162,26 @@ quebrado e deve ser extraído. Resumo do que mais escapa:
 - [ ] Nenhum comentário que você deixou falso com a sua mudança.
 - [ ] Nenhum arquivo que você criou ou fez crescer passou de ~300 linhas sem justificativa.
 - [ ] Nenhum import que fura a subseção "Pacotes, pastas e fronteiras" do `SDD.md`.
+- [ ] **Mesmas checagens do job base do CI, na raiz do repositório** (não só nos
+      arquivos da tarefa): lint, checagem de formatação, typecheck, `shellcheck -x`
+      quando tocou em `.sh` e a guarda de ID de tarefa. Os comandos exatos estão no
+      workflow de CI (job base) e na Seção 1 do `TASK.md`. Cole o comando e o código
+      de saída em `## 4`; vermelho causado pela tarefa não volta para o QA.
+- [ ] **Teste que toca dados compartilhados** segue `CONVENCOES-DE-CODIGO.md` §7: ids do
+      seed, apaga o que cria, sem data literal nem relógio da máquina.
+- [ ] **Entrada de fora** validada nos limites (`CONVENCOES-DE-CODIGO.md` §8);
+      **guarda/parser de segurança** com a matriz adversarial (§9).
+- [ ] Tudo o que a tarefa **usa** e não criou já existe no repositório. Se depende de
+      algo que outra tarefa ainda vai criar e que não está na Dep, registre o bloqueio
+      logo no início (`taskplan.py bloquear`), sem implementar um substituto
+      provisório.
 - [ ] **Tarefa de tela:** comparação visual com o mockup rodada
       (`.claude/scripts/comparar-visual.mjs`), PNGs abertos e conferidos, dentro do
-      limite do aceite e com a mesma altura de página; tabela do resultado em `## 4`.
+      limite do aceite e com a mesma altura de página; tabela do resultado em `## 4`
+      (sem a tabela, a tarefa não está pronta).
+- [ ] **Tarefa de tela:** tela registrada na lista de telas implementadas que a
+      comparação visual percorre (quando o projeto tem essa lista, ex.:
+      `e2e/telas-implementadas.json`).
 
 ## Fidelidade ao mockup (chapéu Frontend/Mobile)
 

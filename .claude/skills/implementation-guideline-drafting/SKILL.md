@@ -59,6 +59,15 @@ Para cada ADR/restrição relevante:
    SDD.md, o módulo único de acesso a cada banco, limites de tamanho diferentes
    (se houver) e a checagem automática de cada fronteira (regra de lint, teste ou
    comando).
+5a. **Checagens antes de devolver, com os comandos reais.** A Seção 1 lista os
+   comandos exatos que o job base do CI roda (lint da raiz, formatação, typecheck,
+   shellcheck, guarda de ID de tarefa…), para o Executor rodar os mesmos antes de
+   devolver a tarefa. Lista desatualizada em relação ao workflow de CI é defeito.
+5b. **Limites de entrada definidos uma vez.** Para cada entrada externa do domínio
+   (texto, valor, data, identificador), a Seção 1 fixa o limite (tamanho máximo,
+   faixa plausível, formato) e onde ele mora (contrato/constante comum), conforme
+   `CONVENCOES-DE-CODIGO.md` §8, para que cliente e servidor validem igual desde a
+   primeira tarefa.
 6. **Documentação mínima obrigatória.** Convenção fixa deste ambiente: `backend/` e
    `frontend/` cada um leva seu próprio `README.md` (setup, comandos de run/test) e
    `.env.example` versionado com todas as variáveis de ambiente necessárias (nunca
@@ -101,6 +110,8 @@ Para cada ADR/restrição relevante:
       texto dele
 - [ ] Toda fronteira do SDD.md tem regra prática com nomes reais e checagem
       automática indicada
+- [ ] Comandos do job base do CI listados para o Executor rodar antes de devolver
+- [ ] Limites de entrada do domínio (tamanho, faixa, formato) fixados num só lugar
 
 ### MUST DO
 - Traduzir todo ADR com implicação prática em regra concreta de implementação, não

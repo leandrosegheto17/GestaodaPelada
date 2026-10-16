@@ -21,6 +21,7 @@ Uso (a partir da raiz do projeto):
         --chapeu ... --reqs ... --aceite ... --est ... --dep ... --par ... --arquivos ... --testes ... [--apos ID] [--status Pendente]
   python .claude/scripts/taskplan.py deps-substituir ID-ANTIGO ID1,ID2   # reaponta dependências no TASK.md
   python .claude/scripts/taskplan.py tarefa ID                       # cabeçalho e estado da tarefa (sem ler o TASK.md)
+  python .claude/scripts/taskplan.py checar-deps                     # todo item de `Usa` nasce (`Cria`) numa tarefa da Dep (direta ou transitiva); código 1 se faltar
   python .claude/scripts/taskplan.py bloquear ID|- --por QUEM --escala QUEM-DECIDE --motivo "..." [--impacto "..."] [--sugestao "..."]
         [--tipo bk|spk] [--pergunta "..."] [--timebox "1 d"]
         # registra a entrada em .md/BLOCKERS.md E abre um BK-nnnn (ou SPK-nnnn, spike) em .md/.taskplan com a descrição do que
@@ -202,7 +203,7 @@ COLS = (
     ('id', ('id',)), ('lote', ('lote',)), ('titulo', ('tarefa', 'título', 'titulo')),
     ('chapeu', ('chap', 'time', 'agente')), ('reqs', ('req', 'origem')), ('aceite', ('crit', 'aceite')),
     ('est', ('est',)), ('dep', ('dep',)), ('par', ('par',)), ('arquivos', ('arq',)),
-    ('testes', ('test',)), ('status', ('status',)),
+    ('testes', ('test',)), ('cria', ('cria',)), ('usa', ('usa',)), ('status', ('status',)),
 )
 
 
@@ -1421,6 +1422,58 @@ def cmd_consolidar(args):
         gravados, ('; sem linha no TASK.md (mantidos locais): ' + ', '.join(ficaram)) if ficaram else '', rels))
 
 
+def _itens(cel):
+    """'`CabecalhoPagina`, app.lar; ItemLink' -> {'cabecalhopagina', 'app.lar', 'itemlink'} (sem '-'/'—')."""
+    return {x for x in (re.sub(r'[`*]', '', p).strip().lower() for p in re.split(r'[,;]', cel or ''))
+            if x and x not in ('-', '—')}
+
+
+def cmd_checar_deps(args):
+    """Toda coisa listada em `Usa` precisa nascer (`Cria`) numa tarefa que esteja na Dep, direta ou
+    transitivamente. Sai com código 1 se houver falta de Dep ou a mesma coisa criada por duas tarefas."""
+    rows = [r for t in tabelas() for r in t['rows']]
+    if not any(r['cria'] or r['usa'] for r in rows):
+        print('TASK.md sem colunas Cria/Usa preenchidas: nada a checar.')
+        return
+    deps = {norm(r['id']): {norm(x) for x in ID_RE.findall(r['dep'])} for r in rows}
+    criador, erros, avisos = {}, [], []
+    for r in rows:
+        for item in _itens(r['cria']):
+            k = norm(r['id'])
+            if item in criador and criador[item] != k:
+                erros.append('%s é criado por %s e por %s (nasce uma vez; a outra usa)' % (item, criador[item], k))
+            criador.setdefault(item, k)
+
+    def ancestrais(k, vistos=None):
+        vistos = set() if vistos is None else vistos
+        for d in deps.get(k, ()):
+            if d not in vistos:
+                vistos.add(d)
+                ancestrais(d, vistos)
+        return vistos
+
+    for r in rows:
+        k = norm(r['id'])
+        anc = None
+        for item in sorted(_itens(r['usa'])):
+            dono = criador.get(item)
+            if dono is None:
+                avisos.append('%s usa %s, que nenhuma tarefa cria (já existe no repositório?)' % (k, item))
+                continue
+            if dono == k:
+                continue
+            anc = ancestrais(k) if anc is None else anc
+            if dono not in anc:
+                erros.append('%s usa %s, criado por %s, que não está na Dep' % (k, item, dono))
+    for a in avisos:
+        print('AVISO  ' + a)
+    for e in erros:
+        print('ERRO   ' + e)
+    print('%d erro(s), %d aviso(s) em %d tarefas' % (len(erros), len(avisos), len(rows)))
+    if erros:
+        sys.exit(1)
+
+
 def cmd_tarefa(args):
     key = norm(args[0])
     for r in taskplan_rows():
@@ -1746,6 +1799,8 @@ def despachar(a):
         cmd_repriorizar(a[1:])
     elif cmd == 'tarefa' and len(a) == 2:
         cmd_tarefa(a[1:])
+    elif cmd == 'checar-deps':
+        cmd_checar_deps(a[1:])
     else:
         print(__doc__)
         sys.exit(1)

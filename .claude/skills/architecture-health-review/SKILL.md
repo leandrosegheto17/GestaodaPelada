@@ -61,7 +61,7 @@ tabela parecido; um `SELECT` pode estar no único módulo de dados permitido).
 | 12 | **Conversão forçada** de tipo do contrato em tipo do domínio | `saude.py` §7 | Baixa |
 | 13 | **Desempenho básico**: comando SQL preparado a cada chamada; consulta dentro de laço | Leitura do módulo de dados e dos laços que o chamam | Baixa |
 | 14 | **Troca de dados em produção** sem atomicidade/volta atrás, ou diferente do que o SDD §6 definiu | Script/DDL de publicação × SDD "Troca de dados em produção" | Média |
-| 15 | **CI**: caminho de cache/artefato que não bate com a pasta onde o comando roda; checagens do GUARDRAILS fora do pipeline | Arquivos de workflow × scripts do `package.json` (atenção a `--filter`) | Média |
+| 15 | **CI**: caminho de cache/artefato que não bate com a pasta onde o comando roda; checagens do GUARDRAILS fora do pipeline (para cada G-xx verificado "no CI", aponte o job/passo que o roda; sem job é achado) | Arquivos de workflow × scripts do `package.json` (atenção a `--filter`) × `GUARDRAILS.md` | Média |
 | 16 | **Publicação em cadeia de `&&`** no `package.json` em vez de script/workflow dedicado | `package.json` da raiz e dos pacotes | Baixa |
 | 17 | **Guardrail sem checagem automática** (coluna "Como verificar" só em prosa) | `GUARDRAILS.md` | Baixa |
 | 18 | **Regressão visual**: alguma tela saiu do mockup (mudança em componente compartilhado afeta telas que já estavam aprovadas); `tokens.css` do app diferente do mockup; tela sem entrada no `telas.json` | Resultado de `comparar-visual.mjs` sobre **todas** as telas (o comando roda) + `diff` entre `.md/mockup/tokens.css` e o do app | Alta (tela fora do limite) / Média |

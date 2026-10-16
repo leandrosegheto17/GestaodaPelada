@@ -128,6 +128,13 @@ republica no mesmo link.
 - [ ] `respostas/*.json` no formato exato do contrato e coerentes com o que as telas
       mostram
 - [ ] `telas.json` cobre toda tela × estado × tamanho do mockup
+- [ ] **Conferência cruzada mockup × UX-SPEC**, tela a tela e estado a estado: todo
+      elemento visível em cada estado (faixas, avisos, notas, mensagem de erro, ordem
+      erro/ajuda do campo, botões) está descrito no UX-SPEC com o mesmo texto, e
+      tudo que o UX-SPEC descreve num estado aparece na página desse estado. Campo
+      que o mockup mostra existe nas `respostas/*.json` e no contrato. Divergência é
+      corrigida antes de devolver, nunca deixada para a implementação (no MyMoney,
+      5 bloqueios e ~12 RTP vieram daqui)
 - [ ] Tabela de contraste na galeria, todos os pares no mínimo — ou desvio decidido
       pelo usuário na aprovação e registrado na §5 do UX-SPEC
 

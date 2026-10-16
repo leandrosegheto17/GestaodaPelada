@@ -94,7 +94,10 @@ ferramenta de Artifact):
 ### 2c. Fechamento do Loop B
 
 Só fecha quando o usuário aprova `SDD.md` + `UX-SPEC.md` + **mockup completo (B3)**
-**juntos** — é o checkpoint antes do Loop C poder começar. Sem mockup aprovado
+**juntos** — é o checkpoint antes do Loop C poder começar. Antes de pedir essa
+aprovação, o Coordenador entrega a **conferência cruzada mockup × UX-SPEC**
+(`visual-mockup-drafting`, critério de aceite) com zero divergência em aberto; mostre
+ao usuário o número de telas × estados conferidos. Sem mockup aprovado
 (projeto com interface), o Loop B não fecha.
 
 ## 3. Loop C — Coordenador (Tech Lead / decomposição)
@@ -117,6 +120,12 @@ Só fecha quando o usuário aprova `SDD.md` + `UX-SPEC.md` + **mockup completo (
    trabalho previsto) e já re-divide o que violar **antes** de mostrar o
    resultado. Apresente o rascunho já corrigido junto com uma nota breve do que
    foi dividido e por quê — nunca em silêncio.
+4a. **Checagem de dependências por artefato**: com o `TASK.md` escrito, o
+   orquestrador roda `python .claude/scripts/taskplan.py checar-deps`. Código 1
+   (tarefa usa algo criado por outra que não está na Dep, ou artefato criado por
+   duas tarefas) volta ao Coordenador via `SendMessage` para corrigir antes de
+   apresentar. Os avisos ("nenhuma tarefa cria") são mostrados ao usuário: ou o
+   artefato já existe no repositório, ou falta tarefa.
 5. Se o Coordenador sinalizar bloqueio: trate como bloqueio (Seção 7).
 
 ### 3b. Rodadas seguintes (mesma instância, via `SendMessage`)
