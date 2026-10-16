@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { filtrarJogadores, iniciarMarcacoes, listaParaEnvio, marcarTodos, normalizarBusca } from './marcacoes';
+import { filtrarJogadores, iniciarMarcacoes, listaParaEnvio, marcarTodos } from './marcacoes';
 
 const jogadores = [
   { id: 'j1', apelido: 'Léo Baiano', situacao: 'presente' as const },
@@ -23,7 +23,6 @@ describe('marcacoes', () => {
     expect(filtrarJogadores(jogadores, 'FUMACA').map((j) => j.apelido)).toEqual(['Fumaça']);
     expect(filtrarJogadores(jogadores, '  ')).toHaveLength(3);
     expect(filtrarJogadores(jogadores, 'zzz')).toEqual([]);
-    expect(normalizarBusca('  Ação ')).toBe('acao');
   });
 
   it('o envio leva todas as linhas na ordem da lista, com a situação atual', () => {

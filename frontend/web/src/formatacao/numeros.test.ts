@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatarPontos, pontosFalados } from './numeros';
+import { formatarNivel, formatarPontos, pontosFalados } from './numeros';
 
 describe('formatarPontos', () => {
   it('usa U+2212 para negativos', () => {
@@ -28,5 +28,20 @@ describe('pontosFalados', () => {
   it('inteiro não seguro lança', () => {
     expect(() => pontosFalados(2 ** 53)).toThrow(RangeError);
     expect(() => pontosFalados(0.5)).toThrow(RangeError);
+  });
+});
+
+describe('formatarNivel', () => {
+  it.each([
+    [6.1, '6,1'],
+    [6, '6,0'],
+    [10, '10,0'],
+    [5.25, '5,3'],
+  ])('%s', (nivel, texto) => {
+    expect(formatarNivel(nivel)).toBe(texto);
+  });
+
+  it('valor inválido lança', () => {
+    expect(() => formatarNivel(NaN)).toThrow(RangeError);
   });
 });

@@ -1,4 +1,5 @@
 import type { PartidaNova, SituacaoPresenca } from '@pelada/contrato';
+import { normalizarBusca } from '../../formatacao/texto';
 
 type Jogador = PartidaNova['jogadores'][number];
 
@@ -12,11 +13,6 @@ export function iniciarMarcacoes(jogadores: readonly Jogador[]): Marcacoes {
 /** Vale para a lista inteira, não só para a filtrada pela busca. */
 export function marcarTodos(marcacoes: Marcacoes, situacao: SituacaoPresenca): Marcacoes {
   return Object.fromEntries(Object.keys(marcacoes).map((id) => [id, situacao]));
-}
-
-/** Sem caixa e sem acento: "leo" acha "Léo Baiano". */
-export function normalizarBusca(texto: string): string {
-  return texto.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
 }
 
 /** A busca só filtra o que aparece; as marcações de quem some continuam valendo. */
