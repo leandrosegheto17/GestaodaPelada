@@ -2,7 +2,8 @@ import { grupoDono, type GrupoDono } from '@pelada/contrato';
 import type { ExecutorDb } from '../../infraestrutura/db/index.js';
 import * as grupos from '../../infraestrutura/db/repositorios/grupos.js';
 import * as vinculos from '../../infraestrutura/db/repositorios/vinculos.js';
-import { paraMetadadosGrupo, urlPublicaDoGrupo } from './metadados-grupo.js';
+import { urlPublicaDoGrupo } from '../grupos/url-publica.js';
+import { paraMetadadosGrupo } from './metadados-grupo.js';
 
 /** Grupo na visão do dono (inclui arquivado). Inexistente volta como `null`. */
 export async function carregarGrupoDono(

@@ -58,4 +58,5 @@ export const CASOS: Record<string, Caso> = {
   'POST /api/dono/grupos/:id/reativar': { tipo: 'dono' },
   'POST /api/dono/pedidos-reset/:id/resolver': { tipo: 'dono' },
   'POST /api/dono/contas/:id/redefinir-senha': { tipo: 'dono' },
+  'GET /api/grupos/:grupoId': { tipo: 'grupo' },
 };

@@ -38,8 +38,3 @@ export function paraMetadadosGrupo(grupo: Grupo): MetadadosGrupo {
     arquivadoEm: grupo.arquivadoEm ? dataEmSaoPaulo(grupo.arquivadoEm) : null,
   };
 }
-
-/** Único lugar que monta o link público do grupo; a base vem de `URL_PUBLICA`. */
-export function urlPublicaDoGrupo(urlPublica: string, slug: string): string {
-  return `${urlPublica.replace(/\/+$/, '')}/g/${slug}`;
-}

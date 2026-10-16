@@ -7,7 +7,7 @@ import { SlugEmUso } from '../../infraestrutura/db/repositorios/grupos.js';
 import * as habilidades from '../../infraestrutura/db/repositorios/habilidades.js';
 import * as pesos from '../../infraestrutura/db/repositorios/pesos.js';
 import { vincularOuCriarAdmin } from '../acesso/admin-por-email.js';
-import { urlPublicaDoGrupo } from './metadados-grupo.js';
+import { urlPublicaDoGrupo } from '../grupos/url-publica.js';
 
 export interface EntradaCriarGrupo {
   corpo: {

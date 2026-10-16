@@ -1,15 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { dataEmSaoPaulo, paraMetadadosGrupo, urlPublicaDoGrupo } from '../../../src/aplicacao/dono/metadados-grupo.js';
+import { dataEmSaoPaulo, paraMetadadosGrupo } from '../../../src/aplicacao/dono/metadados-grupo.js';
 
 describe('metadados do grupo', () => {
   it('a data vira o dia de São Paulo (virada de dia)', () => {
     expect(dataEmSaoPaulo(new Date('2026-10-16T02:30:00Z'))).toBe('2026-10-15');
     expect(dataEmSaoPaulo(new Date('2026-10-16T03:00:00Z'))).toBe('2026-10-16');
-  });
-
-  it('urlPublicaDoGrupo não duplica a barra', () => {
-    expect(urlPublicaDoGrupo('https://app.exemplo.dev', 'pelada')).toBe('https://app.exemplo.dev/g/pelada');
-    expect(urlPublicaDoGrupo('https://app.exemplo.dev/', 'pelada')).toBe('https://app.exemplo.dev/g/pelada');
   });
 
   it('só devolve os campos de metadados', () => {

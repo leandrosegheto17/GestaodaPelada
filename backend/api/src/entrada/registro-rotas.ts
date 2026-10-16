@@ -12,6 +12,7 @@ import { rotaDonoSituacao } from './rotas/dono/situacao.js';
 import { rotaDonoArquivar, rotaDonoReativar } from './rotas/dono/arquivamento.js';
 import { rotaDonoResolverPedido } from './rotas/dono/pedidos-reset.js';
 import { rotaDonoRedefinirSenha } from './rotas/dono/redefinir-senha.js';
+import { rotaGrupoLer } from './rotas/grupos/ler.js';
 
 /** Todas as rotas de negócio. Cada rota nova entra aqui, depois dos middlewares do app (ADR-005). */
 export const ROTAS: readonly Hono<AppEnv>[] = [
@@ -28,4 +29,5 @@ export const ROTAS: readonly Hono<AppEnv>[] = [
   rotaDonoReativar,
   rotaDonoResolverPedido,
   rotaDonoRedefinirSenha,
+  rotaGrupoLer,
 ];
