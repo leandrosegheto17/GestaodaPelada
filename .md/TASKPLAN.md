@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-16 18:31
+Atualizado: 2026-10-16 18:32
 
-Resumo: Não executada 94 · Executada (aguarda teste) 114 · total 208
+Resumo: Não executada 93 · Executada (aguarda teste) 115 · total 208
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -127,7 +127,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 112 | TP-0112 | executor | ✔ | T01 sem conexão, cache, grupo lembrado e evento de abertura | L24 | TP-0107, TP-0108, TP-0111 | Executada (aguarda teste) |
 | 113 | TP-0113 | executor | ✔ | T01 aviso de instalação no iPhone (D5) | L24 | TP-0089, TP-0107, TP-0111 | Executada (aguarda teste) |
 | 114 | TP-0114 | executor | ✔ | Tela T04: Entrar | L25 | TP-0019, TP-0089, TP-0091, TP-0095, TP-0096, TP-0105 | Executada (aguarda teste) |
-| 115 | TP-0115 | executor | ✔ | Tela T05: Esqueci a senha | L25 | TP-0019, TP-0089, TP-0091, TP-0095, TP-0096 | Não executada |
+| 115 | TP-0115 | executor | ✔ | Tela T05: Esqueci a senha | L25 | TP-0019, TP-0089, TP-0091, TP-0095, TP-0096 | Executada (aguarda teste) |
 | 116 | TP-0116 | executor | ✔ | Tela T06: Nova senha obrigatória | L25 | TP-0019, TP-0089, TP-0091, TP-0095, TP-0096, TP-0105 | Não executada |
 | 117 | TP-0117 | executor | ✔ | Tela T25: Minha senha | L25 | TP-0019, TP-0089, TP-0091, TP-0095, TP-0096, TP-0105 | Não executada |
 | 118 | TP-0118 | executor | ✔ | Tela T08: Escolher grupo | L25 | TP-0089, TP-0095, TP-0101, TP-0105 | Não executada |

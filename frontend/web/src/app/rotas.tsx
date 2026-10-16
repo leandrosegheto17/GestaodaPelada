@@ -15,6 +15,7 @@ export const roteador = createBrowserRouter([
     lazy: () => import('../telas/sem-grupo/SemGrupo'),
   },
   { path: '/entrar', lazy: () => import('../telas/entrar/Entrar') },
+  { path: '/entrar/esqueci', lazy: () => import('../telas/esqueci/EsqueciSenha') },
   { path: '/g/:slug', lazy: () => import('../telas/ranking/PaginaRanking') },
   // Áreas com login (/admin, /conta, /dono, /entrar/nova-senha): as telas entram aqui como filhas.
   {
