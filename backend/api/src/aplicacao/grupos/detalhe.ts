@@ -1,6 +1,7 @@
 import { diaSemana, grupoDetalhe, type GrupoDetalhe } from '@pelada/contrato';
 import { dataSugeridaPartida, mesDe, proximoDiaDeJogo } from '@pelada/dominio';
 import type { ExecutorDb } from '../../infraestrutura/db/index.js';
+import * as escalacoes from '../../infraestrutura/db/repositorios/escalacoes.js';
 import * as eventos from '../../infraestrutura/db/repositorios/eventos.js';
 import * as grupos from '../../infraestrutura/db/repositorios/grupos.js';
 import * as habilidades from '../../infraestrutura/db/repositorios/habilidades.js';
@@ -20,17 +21,18 @@ export interface EntradaDetalhe {
 }
 
 /**
- * Grupo com o resumo da tela inicial do admin. `escalacaoConfirmadaPara` e `saldoAtualCentavos`
- * ficam nulos até os incrementos do simulador e do financeiro os preencherem (um só lugar:
- * o objeto `inicio` abaixo).
+ * Grupo com o resumo da tela inicial do admin. `escalacaoConfirmadaPara` é a data do próximo jogo
+ * quando já há escalação confirmada para ela; `saldoAtualCentavos` fica nulo até o financeiro
+ * preenchê-lo (um só lugar: o objeto `inicio` abaixo).
  */
 export async function carregarGrupoDetalhe(ex: ExecutorDb, e: EntradaDetalhe): Promise<GrupoDetalhe | null> {
   const grupo = await grupos.buscarPorId(ex, e.grupoId);
   if (!grupo) return null;
   const dia = indiceDiaSemana(diaSemana.parse(grupo.diaSemana));
   const sugerida = dataSugeridaPartida(e.hoje, dia);
+  const proximo = proximoDiaDeJogo(e.hoje, dia);
 
-  const [naData, doMes, ativos, catalogo, vigente, admins, aparelhos] = await Promise.all([
+  const [naData, doMes, ativos, catalogo, vigente, admins, aparelhos, escalacao] = await Promise.all([
     partidas.porData(ex, e.grupoId, sugerida),
     partidas.porMes(ex, e.grupoId, mesDe(e.hoje)),
     ativosNaData(ex, e.grupoId, e.hoje),
@@ -38,6 +40,7 @@ export async function carregarGrupoDetalhe(ex: ExecutorDb, e: EntradaDetalhe): P
     pesos.vigenteEm(ex, e.grupoId, e.hoje),
     vinculos.contarAdmins(ex, e.grupoId),
     eventos.aparelhosDaSemana(ex, e.grupoId, e.hoje),
+    escalacoes.porData(ex, e.grupoId, proximo),
   ]);
 
   return grupoDetalhe.parse({
@@ -55,8 +58,8 @@ export async function carregarGrupoDetalhe(ex: ExecutorDb, e: EntradaDetalhe): P
     inicio: {
       dataSugeridaPartida: sugerida,
       partidaNaDataSugerida: naData !== null,
-      proximoDiaDeJogo: proximoDiaDeJogo(e.hoje, dia),
-      escalacaoConfirmadaPara: null,
+      proximoDiaDeJogo: proximo,
+      escalacaoConfirmadaPara: escalacao ? proximo : null,
       partidasNoMes: doMes.length,
       jogadoresAtivos: ativos.length,
       habilidades: catalogo.length,

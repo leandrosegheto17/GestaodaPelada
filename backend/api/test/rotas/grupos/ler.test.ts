@@ -2,6 +2,7 @@ import { grupoDetalhe } from '@pelada/contrato';
 import { PESOS_PADRAO } from '@pelada/dominio';
 import { describe, expect, it } from 'vitest';
 import { emTransacao } from '../../../src/infraestrutura/db/index.js';
+import * as escalacoes from '../../../src/infraestrutura/db/repositorios/escalacoes.js';
 import * as eventos from '../../../src/infraestrutura/db/repositorios/eventos.js';
 import * as habilidades from '../../../src/infraestrutura/db/repositorios/habilidades.js';
 import * as partidas from '../../../src/infraestrutura/db/repositorios/partidas.js';
@@ -46,6 +47,23 @@ describe('GET /api/grupos/:grupoId (workerd)', () => {
       escalacaoConfirmadaPara: null,
       saldoAtualCentavos: null,
     });
+  });
+
+  it('escalacaoConfirmadaPara: a data do próximo jogo quando há escalação; senão nulo (outra data e outro grupo não contam)', async () => {
+    const db = await abrir();
+    const cen = await montarCenario(db, fabrica);
+    const g = cen.grupoA.id;
+    const base = { formato: 'varios_times' as const, n: 2, k: null, composicao: { times: [] }, confirmadaEm: AGORA };
+    const ler = async (cookie: string) =>
+      grupoDetalhe.parse((await cliente(cookie).get(`/api/grupos/${g}`)).corpo).inicio.escalacaoConfirmadaPara;
+
+    expect(await ler(cen.adminA.cookie)).toBeNull();
+    await escalacoes.confirmar(db, g, { ...base, data: '2026-10-15', confirmadaPor: cen.adminA.id });
+    await escalacoes.confirmar(db, cen.grupoB.id, { ...base, data: HOJE, confirmadaPor: cen.adminB.id });
+    expect(await ler(cen.adminA.cookie)).toBeNull();
+    await escalacoes.confirmar(db, g, { ...base, data: HOJE, confirmadaPor: cen.adminA.id });
+    expect(await ler(cen.adminA.cookie)).toBe(HOJE);
+    expect(await ler(cen.adminASemFinanceiro.cookie)).toBe(HOJE);
   });
 
   it('sem financeiro: acessaFinanceiro false; admin de outro grupo: 404', async () => {
