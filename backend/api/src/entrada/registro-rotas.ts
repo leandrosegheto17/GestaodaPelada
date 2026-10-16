@@ -38,6 +38,7 @@ import { rotaHabilidadeCriar } from './rotas/grupos/habilidades/criar.js';
 import { rotaHabilidadeRenomear } from './rotas/grupos/habilidades/renomear.js';
 import { rotaHabilidadeExcluir } from './rotas/grupos/habilidades/excluir.js';
 import { rotaNotaSalvar } from './rotas/grupos/jogadores/nota-salvar.js';
+import { rotaSimuladorContexto } from './rotas/grupos/simulador/contexto.js';
 
 /** Todas as rotas de negócio. Cada rota nova entra aqui, depois dos middlewares do app (ADR-005). */
 export const ROTAS: readonly Hono<AppEnv>[] = [
@@ -84,4 +85,5 @@ export const ROTAS: readonly Hono<AppEnv>[] = [
   rotaHabilidadeRenomear,
   rotaHabilidadeExcluir,
   rotaNotaSalvar,
+  rotaSimuladorContexto,
 ];

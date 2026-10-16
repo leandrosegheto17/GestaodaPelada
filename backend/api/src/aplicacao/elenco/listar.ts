@@ -3,7 +3,7 @@ import { compararApelido } from '@pelada/dominio';
 import type { ExecutorDb } from '../../infraestrutura/db/index.js';
 import * as habilidades from '../../infraestrutura/db/repositorios/habilidades.js';
 import * as jogadores from '../../infraestrutura/db/repositorios/jogadores.js';
-import { nivelDaResposta } from './nivel.js';
+import { niveisPorJogador, nivelDaResposta } from './nivel.js';
 import { situacaoAtual } from './situacao.js';
 
 export type FiltroDeJogadores = 'ativos' | 'inativos';
@@ -19,15 +19,14 @@ export async function listarJogadores(
   filtro?: FiltroDeJogadores,
 ): Promise<ListaJogadores> {
   const [todos, notas] = await Promise.all([jogadores.listar(ex, grupoId), habilidades.notasDoGrupo(ex, grupoId)]);
-  const notasPorJogador = new Map<string, number[]>();
-  for (const n of notas) notasPorJogador.set(n.jogadorId, [...(notasPorJogador.get(n.jogadorId) ?? []), n.nota]);
+  const niveis = niveisPorJogador(notas);
 
   const ordenados = [...todos].sort(compararApelido);
   const item = (j: jogadores.Jogador) => ({
     id: j.id,
     apelido: j.apelido,
     posicao: j.posicao ?? POSICAO_PADRAO,
-    ...nivelDaResposta(notasPorJogador.get(j.id) ?? []),
+    ...(niveis.get(j.id) ?? nivelDaResposta([])),
   });
   const ativos = [];
   const inativos = [];
