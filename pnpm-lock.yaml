@@ -17,6 +17,9 @@ importers:
       '@pelada/contrato':
         specifier: workspace:*
         version: link:backend/contrato
+      '@pelada/dominio':
+        specifier: workspace:*
+        version: link:backend/dominio
       '@types/node':
         specifier: ^22.20.5
         version: 22.20.5

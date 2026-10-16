@@ -39,3 +39,17 @@ a suíte lista as rotas do app e falha se alguma não tiver caso (ou se um caso 
 `pnpm exec tsx backend/scripts/dono.ts criar` cria a conta do dono (e-mail de `DONO_EMAIL`) com senha temporária
 exibida uma única vez; `redefinir-senha` recupera o acesso. Os dois pedem para digitar o e-mail do dono e usam a
 trava de host (`--alvo producao` para o banco remoto). Nenhuma rota escreve o papel de dono.
+
+## Seed local
+
+`pnpm seed` (com `DATABASE_URL` apontando para o Postgres local) cria dados fictícios: os grupos
+"Pelada de Quinta" e "Racha de Domingo", 25 jogadores com notas e 3 meses de partidas relativos a hoje.
+É idempotente (apaga e recria só o que é do seed) e **só roda em host local**.
+
+| Conta                                                           | E-mail                      | Senha              |
+| --------------------------------------------------------------- | --------------------------- | ------------------ |
+| Dono e admin dos dois grupos                                    | leandrosegheto17@gmail.com  | senha-de-teste-123 |
+| Admin da Quinta, sem financeiro, aviso de privacidade não visto | marquinhos@exemplo.com.br   | senha-de-teste-123 |
+| Admin do Domingo, com financeiro                                | carlos.racha@exemplo.com.br | senha-de-teste-123 |
+| Senha temporária (troca obrigatória), sem grupo                 | rodrigo@exemplo.com.br      | Temporaria-teste-1 |
+| Sem grupo                                                       | paulo@exemplo.com.br        | senha-de-teste-123 |

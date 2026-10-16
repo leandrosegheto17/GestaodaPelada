@@ -11,12 +11,14 @@
     "typecheck": "pnpm -r typecheck && tsc --noEmit -p backend/scripts",
     "test": "pnpm -r test",
     "test:checagens": "vitest run backend/scripts",
-    "migrar": "tsx backend/scripts/migrar.ts"
+    "migrar": "tsx backend/scripts/migrar.ts",
+    "seed": "tsx backend/scripts/seed-local.ts"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20261015.1",
     "@eslint/js": "^10.0.1",
     "@pelada/contrato": "workspace:*",
+    "@pelada/dominio": "workspace:*",
     "@types/node": "^22.20.5",
     "eslint": "^10.12.0",
     "eslint-config-prettier": "^10.1.8",

@@ -2,6 +2,7 @@
   { "arquivo": "contas.ts", "motivo": "contas não são dado de grupo" },
   { "arquivo": "sessoes.ts", "motivo": "sessões não são dado de grupo" },
   { "arquivo": "tentativas.ts", "motivo": "tentativas de login não são dado de grupo" },
+  { "arquivo": "seed-local.ts", "motivo": "limpeza do seed local, por slug e e-mail" },
   { "arquivo": "pedidos-reset.ts", "motivo": "pedidos de reset são da conta, não de um grupo" },
   { "arquivo": "grupos.ts", "funcao": "buscarPorSlug", "motivo": "leitura pública pelo endereço do grupo" },
   { "arquivo": "grupos.ts", "funcao": "slugsComBase", "motivo": "geração de slug: o grupo ainda não existe" },

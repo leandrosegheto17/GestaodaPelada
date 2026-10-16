@@ -124,10 +124,12 @@ const semDocumentCookie = [
   },
 ];
 
-const MSG_DONO = 'criarContaDono só pode ser usada por backend/scripts/dono.ts (G-11).';
+const MSG_DONO = 'criarContaDono e apagarDadosDoSeed só podem ser usadas por backend/scripts.';
 const donoSoEmScripts = [
   { selector: "ImportSpecifier[imported.name='criarContaDono']", message: MSG_DONO },
   { selector: "MemberExpression[property.name='criarContaDono']", message: MSG_DONO },
+  { selector: "ImportSpecifier[imported.name='apagarDadosDoSeed']", message: MSG_DONO },
+  { selector: "MemberExpression[property.name='apagarDadosDoSeed']", message: MSG_DONO },
 ];
 
 const sintaxe = (...grupos) => ['error', ...grupos.flat()];

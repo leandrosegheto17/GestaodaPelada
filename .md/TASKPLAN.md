@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-16 17:15
+Atualizado: 2026-10-16 17:17
 
-Resumo: Não executada 158 · Executada (aguarda teste) 50 · total 208
+Resumo: Não executada 157 · Executada (aguarda teste) 51 · total 208
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -63,7 +63,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 48 | TP-0048 | executor | ✔ | Repositório de pesos | L10 | TP-0014, TP-0016, TP-0017, TP-0044 | Executada (aguarda teste) |
 | 49 | TP-0049 | executor | ✔ | Repositório de partidas e presenças | L10 | TP-0014, TP-0016, TP-0017, TP-0044 | Executada (aguarda teste) |
 | 50 | TP-0050 | executor | ✔ | Repositório de eventos de uso | L10 | TP-0014, TP-0016, TP-0017, TP-0045 | Executada (aguarda teste) |
-| 51 | TP-0051 | executor | ✔ | Script seed-local.ts com os dados do mockup | L10 | TP-0027, TP-0029, TP-0046, TP-0047, TP-0048, TP-0049 | Não executada |
+| 51 | TP-0051 | executor | ✔ | Script seed-local.ts com os dados do mockup | L10 | TP-0027, TP-0029, TP-0046, TP-0047, TP-0048, TP-0049 | Executada (aguarda teste) |
 | 52 | TP-0052 | executor | ✔ | Extração aplicacao/elenco/ativos (ativos numa data e no mês) | L11 | TP-0009, TP-0046 | Não executada |
 | 53 | TP-0053 | executor | ✔ | Extração aplicacao/pontuacao/historico (histórico do grupo para o domínio) | L11 | TP-0010, TP-0046, TP-0048, TP-0049 | Não executada |
 | 54 | TP-0054 | executor | ✔ | Endpoint GET /api/dono/painel | L11 | TP-0022, TP-0029, TP-0030, TP-0032, TP-0033 | Não executada |
