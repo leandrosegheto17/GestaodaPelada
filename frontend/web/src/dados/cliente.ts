@@ -73,8 +73,15 @@ export function lerComMeta<T>(
   return enviarComMeta(montarUrl(caminho), init, schema);
 }
 
-export function escrever<T>(metodo: MetodoEscrita, caminho: string, corpo: unknown, schema: Esquema<T>): Promise<T> {
+export function escrever<T>(
+  metodo: MetodoEscrita,
+  caminho: string,
+  corpo: unknown,
+  schema: Esquema<T>,
+  opcoes: { signal?: AbortSignal } = {},
+): Promise<T> {
   const init: RequestInit = { method: metodo, headers: { 'Content-Type': 'application/json', 'X-Pelada': '1' } };
   if (corpo !== undefined) init.body = JSON.stringify(corpo);
+  if (opcoes.signal) init.signal = opcoes.signal;
   return enviar(montarUrl(caminho), init, schema);
 }

@@ -1,0 +1,58 @@
+.estreito {
+  max-width: var(--largura-formulario);
+  margin: 0 auto;
+}
+.ladoALado {
+  display: grid;
+  gap: var(--esp-6);
+}
+.formulario {
+  display: grid;
+  gap: var(--esp-4);
+}
+.cartao {
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-linha);
+  border-radius: var(--raio);
+  padding: var(--esp-4);
+}
+.rotuloPrevia {
+  font-size: var(--texto-sm);
+  color: var(--cor-texto-sec);
+  margin: 0;
+}
+.previa {
+  font-family: var(--fonte-titulo);
+  font-size: var(--texto-xl);
+  font-weight: var(--peso-forte);
+  margin: 0;
+}
+.recalculando {
+  color: var(--cor-texto-sec);
+  font-style: italic;
+}
+.subtitulo {
+  font-size: var(--texto-xl);
+  text-transform: uppercase;
+  letter-spacing: var(--espacamento-caixa-alta);
+  margin: 0 0 var(--esp-3);
+}
+.grupoBotoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--esp-2);
+  margin-bottom: var(--esp-2);
+}
+.aptos > li {
+  min-height: 56px;
+  padding: var(--esp-1) var(--esp-3);
+}
+.nivel {
+  color: var(--cor-texto-sec);
+}
+@media (min-width: 1024px) {
+  .ladoALado {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+}

@@ -3,10 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRef } from 'react';
 import { escrever } from './cliente';
 import { chavesElenco } from './elenco';
-import { chaveGrupo } from './grupo';
-
-/** Chave do contexto do simulador (nível dos jogadores): invalidada quando uma nota muda. */
-export const chaveSimulador = (grupoId: string) => [...chaveGrupo(grupoId), 'simulador'] as const;
+import { chaveSimulador } from './simulador';
 
 interface Pedido {
   habilidadeId: string;

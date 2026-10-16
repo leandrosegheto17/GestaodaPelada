@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { Campo, type PropsCampo } from './Campo';
 import estilos from './Campo.module.css';
 
@@ -10,9 +11,23 @@ interface Props extends Omit<PropsCampo, 'children' | 'lado' | 'classeEntrada'> 
   rotuloDiminuir: string;
   /** Ex.: "Aumentar jogadores por time". */
   rotuloAumentar: string;
+  /** Desliga a entrada e os dois botões (ex.: limite "Ilimitado"). */
+  desabilitado?: boolean;
+  /** Controle depois do "+", na mesma linha (ex.: caixa "Ilimitado"). */
+  aoLado?: ReactNode;
 }
 
-export function CampoNumero({ valor, aoMudar, min, max, rotuloDiminuir, rotuloAumentar, ...moldura }: Props) {
+export function CampoNumero({
+  valor,
+  aoMudar,
+  min,
+  max,
+  rotuloDiminuir,
+  rotuloAumentar,
+  desabilitado,
+  aoLado,
+  ...moldura
+}: Props) {
   const limitar = (n: number) => Math.min(max, Math.max(min, n));
   const digitado = (texto: string) => {
     const n = Number.parseInt(texto, 10);
@@ -26,7 +41,7 @@ export function CampoNumero({ valor, aoMudar, min, max, rotuloDiminuir, rotuloAu
             type="button"
             className={estilos.numeroBotao}
             aria-label={rotuloDiminuir}
-            disabled={valor <= min}
+            disabled={desabilitado || valor <= min}
             onClick={() => aoMudar(limitar(valor - 1))}
           >
             {'−'}
@@ -38,17 +53,19 @@ export function CampoNumero({ valor, aoMudar, min, max, rotuloDiminuir, rotuloAu
             min={min}
             max={max}
             value={valor}
+            disabled={desabilitado}
             onChange={(e) => digitado(e.target.value)}
           />
           <button
             type="button"
             className={estilos.numeroBotao}
             aria-label={rotuloAumentar}
-            disabled={valor >= max}
+            disabled={desabilitado || valor >= max}
             onClick={() => aoMudar(limitar(valor + 1))}
           >
             +
           </button>
+          {aoLado}
         </div>
       )}
     </Campo>
