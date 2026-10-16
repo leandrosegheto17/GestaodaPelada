@@ -183,7 +183,7 @@ describe('PaginaHabilidades (T17)', () => {
       corpo: { nome: 'Passe longo' },
       xPelada: '1',
     });
-    expect(await screen.findByText('Salvo')).toBeInTheDocument();
+    expect(await screen.findByText('salvo')).toBeInTheDocument();
   });
 
   it('renomear: 422 mostra o erro no item e mantém o valor digitado', async () => {

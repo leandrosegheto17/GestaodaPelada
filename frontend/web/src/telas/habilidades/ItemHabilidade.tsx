@@ -1,7 +1,7 @@
 import { habilidadeCorpo, type Habilidade } from '@pelada/contrato';
 import { useState } from 'react';
 import { Botao } from '../../componentes/basicos/Botao';
-import { Selo } from '../../componentes/basicos/Selo';
+import { SeloSalvo } from '../../componentes/basicos/SeloSalvo';
 import { juntar } from '../../componentes/basicos/juntar';
 import { Item } from '../../componentes/listas/Item';
 import { ErroApi } from '../../dados/erros';
@@ -96,7 +96,7 @@ export function ItemHabilidade({ grupoId, habilidade, posicao, aoExcluir }: Prop
           </span>
         ) : null
       }
-      selo={salvo ? <Selo tom="sucesso">Salvo</Selo> : null}
+      selo={salvo ? <SeloSalvo /> : null}
       acoes={
         <Botao variante="textoDestrutivo" onClick={aoExcluir}>
           Excluir<span className="sr"> {habilidade.nome}</span>

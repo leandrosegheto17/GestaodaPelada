@@ -7,5 +7,7 @@ export { EstadoVazio } from './EstadoVazio';
 export { Faixa, type TipoFaixa } from './Faixa';
 export { Icone, type NomeIcone } from './Icone';
 export { Selo, type TomSelo } from './Selo';
+export { SeloSalvo } from './SeloSalvo';
 export { TelaMensagem } from './TelaMensagem';
 export { usarAtraso } from './usarAtraso';
+export { ValorDestaque } from './ValorDestaque';

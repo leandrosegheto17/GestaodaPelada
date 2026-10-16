@@ -65,7 +65,7 @@ export function Component() {
         </div>
       ) : null}
       {lista.length === 0 ? (
-        <EstadoVazio titulo="Nenhuma habilidade" texto="O simulador vai usar nível 5,5 para todos." />
+        <EstadoVazio icone={null} titulo="Nenhuma habilidade" texto="O simulador vai usar nível 5,5 para todos." />
       ) : (
         <Lista>
           {lista.map((h, i) => (

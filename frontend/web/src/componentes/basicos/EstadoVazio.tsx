@@ -3,8 +3,10 @@ import { Icone, type NomeIcone } from './Icone';
 import estilos from './EstadoVazio.module.css';
 
 interface Props {
-  icone?: NomeIcone;
-  titulo: string;
+  /** Ícone acima do título (padrão `info`); `null` não mostra ícone. */
+  icone?: NomeIcone | null;
+  /** Sem título, só o texto aparece (estados vazios de seção). */
+  titulo?: string;
   /** Nível do título na hierarquia da página (padrão 2). */
   nivel?: 2 | 3;
   texto?: ReactNode;
@@ -15,10 +17,12 @@ export function EstadoVazio({ icone = 'info', titulo, nivel = 2, texto, acao }: 
   const Titulo = nivel === 2 ? 'h2' : 'h3';
   return (
     <div className={estilos.vazio}>
-      <div className={estilos.icone}>
-        <Icone nome={icone} tamanho={48} />
-      </div>
-      <Titulo className={estilos.titulo}>{titulo}</Titulo>
+      {icone ? (
+        <div className={estilos.icone}>
+          <Icone nome={icone} tamanho={48} />
+        </div>
+      ) : null}
+      {titulo ? <Titulo className={estilos.titulo}>{titulo}</Titulo> : null}
       {texto ? <p className={estilos.texto}>{texto}</p> : null}
       {acao}
     </div>

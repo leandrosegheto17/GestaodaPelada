@@ -19,8 +19,10 @@ import {
 import { ErroApi } from '../../dados/erros';
 import { deErroApi, type ErrosDeCampos } from '../../dados/errosDeCampos';
 import { useGrupo } from '../../dados/grupo';
+import { recursos } from '../../config/recursos';
 import { DialogoInativar } from './DialogoInativar';
 import { FormularioJogador } from './FormularioJogador';
+import { SecaoNotas } from './SecaoNotas';
 import { SecaoSituacao } from './SecaoSituacao';
 import estilos from './jogador.module.css';
 
@@ -153,6 +155,7 @@ export function Component() {
           aoSalvar={aoSalvar}
         />
       </section>
+      {jogador && recursos.ligado('simulador') ? <SecaoNotas grupoId={grupoId} jogador={jogador} /> : null}
       {jogador ? (
         <SecaoSituacao
           jogador={jogador}
