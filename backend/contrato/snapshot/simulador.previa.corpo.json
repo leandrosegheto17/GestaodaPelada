@@ -1,0 +1,87 @@
+{
+  "direcao": "entrada",
+  "esquema": {
+    "oneOf": [
+      {
+        "additionalProperties": false,
+        "properties": {
+          "aptos": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+                  "type": "string"
+                },
+                "so1oTempo": {
+                  "type": "boolean"
+                }
+              },
+              "required": ["id", "so1oTempo"],
+              "type": "object"
+            },
+            "maxItems": 60,
+            "minItems": 1,
+            "type": "array"
+          },
+          "formato": {
+            "const": "dois_times",
+            "type": "string"
+          },
+          "k": {
+            "anyOf": [
+              {
+                "maximum": 20,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "const": "ilimitado",
+                "type": "string"
+              }
+            ]
+          },
+          "n": {
+            "maximum": 11,
+            "minimum": 2,
+            "type": "integer"
+          }
+        },
+        "required": ["formato", "n", "k", "aptos"],
+        "type": "object"
+      },
+      {
+        "additionalProperties": false,
+        "properties": {
+          "aptos": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+                  "type": "string"
+                }
+              },
+              "required": ["id"],
+              "type": "object"
+            },
+            "maxItems": 60,
+            "minItems": 1,
+            "type": "array"
+          },
+          "formato": {
+            "const": "varios_times",
+            "type": "string"
+          },
+          "n": {
+            "maximum": 11,
+            "minimum": 2,
+            "type": "integer"
+          }
+        },
+        "required": ["formato", "n", "aptos"],
+        "type": "object"
+      }
+    ]
+  }
+}

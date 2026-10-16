@@ -1,0 +1,43 @@
+{
+  "direcao": "resposta",
+  "esquema": {
+    "additionalProperties": false,
+    "properties": {
+      "dataSugerida": {
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+        "type": "string"
+      },
+      "hoje": {
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+        "type": "string"
+      },
+      "jogadores": {
+        "items": {
+          "additionalProperties": false,
+          "properties": {
+            "apelido": {
+              "type": "string"
+            },
+            "id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "nivel": {
+              "maximum": 10,
+              "minimum": 1,
+              "type": "number"
+            },
+            "semNota": {
+              "type": "boolean"
+            }
+          },
+          "required": ["id", "apelido", "nivel", "semNota"],
+          "type": "object"
+        },
+        "type": "array"
+      }
+    },
+    "required": ["dataSugerida", "hoje", "jogadores"],
+    "type": "object"
+  }
+}

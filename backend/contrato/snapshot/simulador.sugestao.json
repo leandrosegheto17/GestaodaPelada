@@ -1,0 +1,409 @@
+{
+  "direcao": "resposta",
+  "esquema": {
+    "oneOf": [
+      {
+        "additionalProperties": false,
+        "properties": {
+          "avisos": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "texto": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "tipo": {
+                  "enum": ["sem_nota", "so_1o_tempo_sem_reserva", "composicao_diferente", "incompleto_pequeno"],
+                  "type": "string"
+                }
+              },
+              "required": ["tipo", "texto"],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "data": {
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "type": "string"
+          },
+          "formato": {
+            "const": "dois_times",
+            "type": "string"
+          },
+          "k": {
+            "anyOf": [
+              {
+                "maximum": 20,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "const": "ilimitado",
+                "type": "string"
+              }
+            ]
+          },
+          "n": {
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer"
+          },
+          "naoEntra": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "apelido": {
+                  "type": "string"
+                },
+                "id": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "semNota": {
+                  "type": "boolean"
+                }
+              },
+              "required": ["id", "apelido", "semNota"],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "ordemPrioridade": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "times": {
+            "items": false,
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "entramNo2oTempo": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "apelido": {
+                          "type": "string"
+                        },
+                        "id": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "semNota": {
+                          "type": "boolean"
+                        },
+                        "so1oTempo": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": ["id", "apelido", "so1oTempo", "semNota"],
+                      "type": "object"
+                    },
+                    "type": "array"
+                  },
+                  "indicadores": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "idadeMedia": {
+                        "type": "number"
+                      },
+                      "nivelMedio1oTempo": {
+                        "type": "number"
+                      },
+                      "nivelMedio2oTempo": {
+                        "type": "number"
+                      },
+                      "nivelSoma1oTempo": {
+                        "type": "number"
+                      },
+                      "nivelSoma2oTempo": {
+                        "type": "number"
+                      },
+                      "substituicoes": {
+                        "maximum": 9007199254740991,
+                        "minimum": 0,
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "nivelSoma1oTempo",
+                      "nivelMedio1oTempo",
+                      "nivelSoma2oTempo",
+                      "nivelMedio2oTempo",
+                      "idadeMedia",
+                      "substituicoes"
+                    ],
+                    "type": "object"
+                  },
+                  "nome": {
+                    "type": "string"
+                  },
+                  "titulares": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "apelido": {
+                          "type": "string"
+                        },
+                        "id": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "saiNoIntervalo": {
+                          "type": "boolean"
+                        },
+                        "semNota": {
+                          "type": "boolean"
+                        },
+                        "so1oTempo": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": ["id", "apelido", "so1oTempo", "saiNoIntervalo", "semNota"],
+                      "type": "object"
+                    },
+                    "type": "array"
+                  },
+                  "trocas": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "entra": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "sai": {
+                          "minLength": 1,
+                          "type": "string"
+                        }
+                      },
+                      "required": ["sai", "entra"],
+                      "type": "object"
+                    },
+                    "type": "array"
+                  }
+                },
+                "required": ["nome", "titulares", "entramNo2oTempo", "trocas", "indicadores"],
+                "type": "object"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "entramNo2oTempo": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "apelido": {
+                          "type": "string"
+                        },
+                        "id": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "semNota": {
+                          "type": "boolean"
+                        },
+                        "so1oTempo": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": ["id", "apelido", "so1oTempo", "semNota"],
+                      "type": "object"
+                    },
+                    "type": "array"
+                  },
+                  "indicadores": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "idadeMedia": {
+                        "type": "number"
+                      },
+                      "nivelMedio1oTempo": {
+                        "type": "number"
+                      },
+                      "nivelMedio2oTempo": {
+                        "type": "number"
+                      },
+                      "nivelSoma1oTempo": {
+                        "type": "number"
+                      },
+                      "nivelSoma2oTempo": {
+                        "type": "number"
+                      },
+                      "substituicoes": {
+                        "maximum": 9007199254740991,
+                        "minimum": 0,
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "nivelSoma1oTempo",
+                      "nivelMedio1oTempo",
+                      "nivelSoma2oTempo",
+                      "nivelMedio2oTempo",
+                      "idadeMedia",
+                      "substituicoes"
+                    ],
+                    "type": "object"
+                  },
+                  "nome": {
+                    "type": "string"
+                  },
+                  "titulares": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "apelido": {
+                          "type": "string"
+                        },
+                        "id": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "saiNoIntervalo": {
+                          "type": "boolean"
+                        },
+                        "semNota": {
+                          "type": "boolean"
+                        },
+                        "so1oTempo": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": ["id", "apelido", "so1oTempo", "saiNoIntervalo", "semNota"],
+                      "type": "object"
+                    },
+                    "type": "array"
+                  },
+                  "trocas": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "entra": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "sai": {
+                          "minLength": 1,
+                          "type": "string"
+                        }
+                      },
+                      "required": ["sai", "entra"],
+                      "type": "object"
+                    },
+                    "type": "array"
+                  }
+                },
+                "required": ["nome", "titulares", "entramNo2oTempo", "trocas", "indicadores"],
+                "type": "object"
+              }
+            ],
+            "type": "array"
+          }
+        },
+        "required": ["formato", "data", "n", "k", "avisos", "ordemPrioridade", "times", "naoEntra"],
+        "type": "object"
+      },
+      {
+        "additionalProperties": false,
+        "properties": {
+          "avisos": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "texto": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "tipo": {
+                  "enum": ["sem_nota", "so_1o_tempo_sem_reserva", "composicao_diferente", "incompleto_pequeno"],
+                  "type": "string"
+                }
+              },
+              "required": ["tipo", "texto"],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "data": {
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "type": "string"
+          },
+          "formato": {
+            "const": "varios_times",
+            "type": "string"
+          },
+          "n": {
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer"
+          },
+          "times": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "incompleto": {
+                  "type": "boolean"
+                },
+                "indicadores": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "idadeMedia": {
+                      "type": "number"
+                    },
+                    "jogadores": {
+                      "maximum": 9007199254740991,
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "nivelMedio": {
+                      "type": "number"
+                    },
+                    "nivelSoma": {
+                      "type": "number"
+                    }
+                  },
+                  "required": ["jogadores", "nivelMedio", "nivelSoma", "idadeMedia"],
+                  "type": "object"
+                },
+                "jogadores": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "apelido": {
+                        "type": "string"
+                      },
+                      "id": {
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "semNota": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": ["id", "apelido", "semNota"],
+                    "type": "object"
+                  },
+                  "type": "array"
+                },
+                "nome": {
+                  "type": "string"
+                }
+              },
+              "required": ["nome", "incompleto", "jogadores", "indicadores"],
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": ["formato", "data", "n", "avisos", "times"],
+        "type": "object"
+      }
+    ]
+  }
+}

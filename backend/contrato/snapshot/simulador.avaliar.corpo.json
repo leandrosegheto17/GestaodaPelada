@@ -1,0 +1,230 @@
+{
+  "direcao": "entrada",
+  "esquema": {
+    "oneOf": [
+      {
+        "additionalProperties": false,
+        "properties": {
+          "aptos": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+                  "type": "string"
+                },
+                "so1oTempo": {
+                  "type": "boolean"
+                }
+              },
+              "required": ["id", "so1oTempo"],
+              "type": "object"
+            },
+            "maxItems": 60,
+            "minItems": 1,
+            "type": "array"
+          },
+          "composicao": {
+            "additionalProperties": false,
+            "properties": {
+              "naoEntra": {
+                "items": {
+                  "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+                  "type": "string"
+                },
+                "maxItems": 60,
+                "type": "array"
+              },
+              "times": {
+                "items": false,
+                "maxItems": 2,
+                "minItems": 2,
+                "prefixItems": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "entramNo2oTempo": {
+                        "items": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "id": {
+                              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+                              "type": "string"
+                            },
+                            "so1oTempo": {
+                              "type": "boolean"
+                            }
+                          },
+                          "required": ["id", "so1oTempo"],
+                          "type": "object"
+                        },
+                        "maxItems": 60,
+                        "type": "array"
+                      },
+                      "titulares": {
+                        "items": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "id": {
+                              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+                              "type": "string"
+                            },
+                            "so1oTempo": {
+                              "type": "boolean"
+                            }
+                          },
+                          "required": ["id", "so1oTempo"],
+                          "type": "object"
+                        },
+                        "maxItems": 60,
+                        "type": "array"
+                      }
+                    },
+                    "required": ["titulares", "entramNo2oTempo"],
+                    "type": "object"
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "entramNo2oTempo": {
+                        "items": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "id": {
+                              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+                              "type": "string"
+                            },
+                            "so1oTempo": {
+                              "type": "boolean"
+                            }
+                          },
+                          "required": ["id", "so1oTempo"],
+                          "type": "object"
+                        },
+                        "maxItems": 60,
+                        "type": "array"
+                      },
+                      "titulares": {
+                        "items": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "id": {
+                              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+                              "type": "string"
+                            },
+                            "so1oTempo": {
+                              "type": "boolean"
+                            }
+                          },
+                          "required": ["id", "so1oTempo"],
+                          "type": "object"
+                        },
+                        "maxItems": 60,
+                        "type": "array"
+                      }
+                    },
+                    "required": ["titulares", "entramNo2oTempo"],
+                    "type": "object"
+                  }
+                ],
+                "type": "array"
+              }
+            },
+            "required": ["times", "naoEntra"],
+            "type": "object"
+          },
+          "data": {
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "type": "string"
+          },
+          "formato": {
+            "const": "dois_times",
+            "type": "string"
+          },
+          "k": {
+            "anyOf": [
+              {
+                "maximum": 20,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "const": "ilimitado",
+                "type": "string"
+              }
+            ]
+          },
+          "n": {
+            "maximum": 11,
+            "minimum": 2,
+            "type": "integer"
+          }
+        },
+        "required": ["formato", "data", "n", "k", "aptos", "composicao"],
+        "type": "object"
+      },
+      {
+        "additionalProperties": false,
+        "properties": {
+          "aptos": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+                  "type": "string"
+                }
+              },
+              "required": ["id"],
+              "type": "object"
+            },
+            "maxItems": 60,
+            "minItems": 1,
+            "type": "array"
+          },
+          "composicao": {
+            "additionalProperties": false,
+            "properties": {
+              "times": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "jogadores": {
+                      "items": {
+                        "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+                        "type": "string"
+                      },
+                      "maxItems": 60,
+                      "type": "array"
+                    }
+                  },
+                  "required": ["jogadores"],
+                  "type": "object"
+                },
+                "maxItems": 60,
+                "type": "array"
+              }
+            },
+            "required": ["times"],
+            "type": "object"
+          },
+          "data": {
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+            "type": "string"
+          },
+          "formato": {
+            "const": "varios_times",
+            "type": "string"
+          },
+          "n": {
+            "maximum": 11,
+            "minimum": 2,
+            "type": "integer"
+          }
+        },
+        "required": ["formato", "data", "n", "aptos", "composicao"],
+        "type": "object"
+      }
+    ]
+  }
+}

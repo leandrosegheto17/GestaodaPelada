@@ -13,4 +13,5 @@ export * from './elenco.js';
 export * from './habilidades.js';
 export * from './pesos.js';
 export * from './partidas.js';
+export * from './simulador/index.js';
 export * from './uso.js';

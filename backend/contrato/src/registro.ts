@@ -9,6 +9,7 @@ import { esquemasPartidas } from './partidas.js';
 import { esquemasPesos } from './pesos.js';
 import { esquemasPublico } from './publico.js';
 import { esquemasSessao } from './sessao.js';
+import { esquemasSimulador } from './simulador/index.js';
 import { esquemasUso } from './uso.js';
 
 export type { EsquemaRegistrado, Esquemas } from './registro-tipos.js';
@@ -28,5 +29,6 @@ export const REGISTRO: Esquemas = {
   ...esquemasPesos,
   ...esquemasPublico,
   ...esquemasSessao,
+  ...esquemasSimulador,
   ...esquemasUso,
 };
