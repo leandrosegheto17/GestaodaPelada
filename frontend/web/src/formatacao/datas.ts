@@ -1,3 +1,6 @@
+import { DIAS_DA_SEMANA } from '@pelada/contrato';
+import { ROTULO_DIA_SEMANA } from '../rotulos';
+
 const DATA = /^(\d{4})-(\d{2})-(\d{2})$/;
 const MES = /^(\d{4})-(\d{2})$/;
 
@@ -28,6 +31,14 @@ function lerData(texto: string): { ano: number; mes: number; dia: number } {
 export function dataCompleta(data: string): string {
   lerData(data);
   return `${data.slice(8, 10)}/${data.slice(5, 7)}/${data.slice(0, 4)}`;
+}
+
+/** `2026-10-15` → `Quinta, 15/10/2026` (dia da semana por extenso, como nos rótulos do app). */
+export function diaSemanaData(data: string): string {
+  const { ano, mes, dia } = lerData(data);
+  const chave = DIAS_DA_SEMANA[new Date(Date.UTC(ano, mes - 1, dia)).getUTCDay()];
+  if (!chave) throw new RangeError(`Data inválida: "${data}".`);
+  return `${ROTULO_DIA_SEMANA[chave]}, ${dataCompleta(data)}`;
 }
 
 /** `2026-10-22` → `22/10`. */
