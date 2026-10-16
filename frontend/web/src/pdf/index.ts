@@ -1,4 +1,8 @@
-export { desenharCabecalho, FRASE_MES_VAZIO, type AreaPdf } from './cabecalho';
+export { escolherTamanho, PISO_FONTE_PDF, type TamanhoEscolhido } from './ajuste-fonte';
+export { alturaDoCabecalho, desenharCabecalho, FRASE_MES_VAZIO, type AreaPdf } from './cabecalho';
+export { gerarPdf, montarDocumento, type ResumoDoPdf } from './gerar-pdf';
+export { desenharLegenda, textoLegenda } from './legenda';
+export { desenharRodape, enderecoParaLer, NOME_DO_APP } from './rodape';
 export {
   ALTURA_LINHA_POR_FONTE,
   desenharFolha,

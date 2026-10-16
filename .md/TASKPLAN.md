@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-16 20:56
+Atualizado: 2026-10-16 20:59
 
-Resumo: Não executada 199 · Executada (aguarda teste) 8 · Testada (aguarda segurança) 2 · total 209
+Resumo: Não executada 198 · Executada (aguarda teste) 9 · Testada (aguarda segurança) 2 · total 209
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -197,7 +197,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 182 | TP-0180 | executor | ✔ | contrato/pdf (estrito) | L39 | TP-0018, TP-0020 | Executada (aguarda teste) |
 | 183 | TP-0181 | executor | ✔ | Endpoint GET /api/publico/:slug/pdf?mes= | L39 | TP-0013, TP-0029, TP-0033, TP-0053, TP-0179, TP-0180 | Executada (aguarda teste) |
 | 184 | TP-0182 | executor | ✔ | Gerador de PDF: desenho da folha | L39 | TP-0004, TP-0088, TP-0092, TP-0093, TP-0180 | Executada (aguarda teste) |
-| 185 | TP-0183 | executor | ✔ | Gerador de PDF: uma página, legenda e rodapé | L39 | TP-0182 | Não executada |
+| 185 | TP-0183 | executor | ✔ | Gerador de PDF: uma página, legenda e rodapé | L39 | TP-0182 | Executada (aguarda teste) |
 | 186 | TP-0184 | executor | ✔ | T01: Exportar PDF (compartilhar ou baixar) | L39 | TP-0091, TP-0099, TP-0111, TP-0180, TP-0183 | Não executada |
 | 187 | TP-0185 | executor | ✔ | [U] Go-live do I3 e início da janela de 8 semanas | L40 | TP-0178, TP-0181, TP-0184 | Não executada |
 | 188 | TP-0186 | executor | ✔ | contrato/financeiro | L41 | TP-0005, TP-0018 | Não executada |

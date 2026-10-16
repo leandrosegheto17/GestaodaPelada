@@ -13,6 +13,12 @@ export interface AreaPdf {
 /** Frase do cabeçalho quando o mês exibido não tem partidas. */
 export const FRASE_MES_VAZIO = 'Nenhuma partida registrada neste mês';
 
+/** Altura do cabeçalho: título, subtítulo, barra verde e respiro (a mesma conta do desenho). */
+export function alturaDoCabecalho(tokens: TokensPdf): number {
+  const { fonte, espaco } = tokens;
+  return fonte.titulo * 0.85 + fonte.sub * 1.15 + espaco.e2 + espaco.e3;
+}
+
 /**
  * Cabeçalho: nome do grupo em maiúsculas, "Ranking: <mês> de <ano>" e "Gerado em ..." à direita, com a
  * barra verde embaixo. Devolve o `y` onde a tabela pode começar.
