@@ -84,7 +84,7 @@ export function paraSugestaoVarios(r: ValidaVarios, entrada: EntradaMontada): Su
       const ind = r.indicadores[i]!;
       return {
         nome: nomeDoTime(i),
-        incompleto: r.composicao.incompleto === i,
+        incompleto: time.jogadores.length < entrada.n,
         jogadores: time.jogadores.map((id) => ({
           id,
           apelido: apelido(id),

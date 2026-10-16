@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-16 19:56
+Atualizado: 2026-10-16 20:01
 
-Resumo: Não executada 52 · Executada (aguarda teste) 156 · total 208
+Resumo: Não executada 51 · Executada (aguarda teste) 157 · total 208
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -179,7 +179,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 164 | TP-0163 | executor | ✔ | Endpoint POST /api/grupos/:g/simulador/previa | L35 | TP-0032, TP-0033, TP-0146, TP-0147 | Executada (aguarda teste) |
 | 165 | TP-0164 | executor | ✔ | Extração aplicacao/simulador/entrada (aptos prontos para o domínio) | L35 | TP-0011, TP-0047, TP-0053, TP-0148 | Executada (aguarda teste) |
 | 166 | TP-0165 | executor | ✔ | Endpoint POST /api/grupos/:g/simulador/sugerir | L35 | TP-0032, TP-0033, TP-0146, TP-0154, TP-0164 | Executada (aguarda teste) |
-| 167 | TP-0166 | executor | ✔ | Endpoint POST /api/grupos/:g/simulador/avaliar | L36 | TP-0032, TP-0033, TP-0146, TP-0150, TP-0153, TP-0164 | Não executada |
+| 167 | TP-0166 | executor | ✔ | Endpoint POST /api/grupos/:g/simulador/avaliar | L36 | TP-0032, TP-0033, TP-0146, TP-0150, TP-0153, TP-0164 | Executada (aguarda teste) |
 | 168 | TP-0167 | executor | ✔ | Endpoint POST /api/grupos/:g/escalacoes | L36 | TP-0014, TP-0032, TP-0033, TP-0050, TP-0146, TP-0161 | Não executada |
 | 169 | TP-0168 | executor | ✔ | Pré-marcação pela escalação em GET .../partidas/nova | L36 | TP-0078, TP-0161 | Não executada |
 | 170 | TP-0169 | executor | ✔ | Resumo do início com a escalação confirmada | L36 | TP-0061, TP-0161 | Não executada |
