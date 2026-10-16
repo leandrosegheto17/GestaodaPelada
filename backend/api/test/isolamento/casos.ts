@@ -108,4 +108,5 @@ export const CASOS: Record<string, Caso> = {
     justificativa: 'Pública por slug: grava só evento anônimo do próprio grupo do slug.',
   },
   'GET /api/grupos/:grupoId/uso': { tipo: 'grupo' },
+  'GET /api/grupos/:grupoId/habilidades': { tipo: 'grupo' },
 };

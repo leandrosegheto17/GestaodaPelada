@@ -33,6 +33,7 @@ import { rotaPartidaEditar, rotaPartidaExcluir, rotaPartidaSalvar } from './rota
 import { rotaPublicoRanking } from './rotas/publico/ranking.js';
 import { rotaPublicoEventos } from './rotas/publico/eventos.js';
 import { rotaGrupoUso } from './rotas/grupos/uso.js';
+import { rotaHabilidadesListar } from './rotas/grupos/habilidades/listar.js';
 
 /** Todas as rotas de negócio. Cada rota nova entra aqui, depois dos middlewares do app (ADR-005). */
 export const ROTAS: readonly Hono<AppEnv>[] = [
@@ -74,4 +75,5 @@ export const ROTAS: readonly Hono<AppEnv>[] = [
   rotaPublicoRanking,
   rotaPublicoEventos,
   rotaGrupoUso,
+  rotaHabilidadesListar,
 ];
