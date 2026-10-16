@@ -67,6 +67,8 @@ export const sessaoEu = z.strictObject({
 });
 export type SessaoEu = z.infer<typeof sessaoEu>;
 
+export const MENSAGEM_ESQUECI_SENHA = 'Solicite o reset de senha a outro admin.';
+
 export const esqueciSenhaResposta = z.strictObject({ mensagem: z.string() });
 
 export const erroNaoAutenticado = estenderErro({

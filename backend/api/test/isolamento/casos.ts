@@ -32,4 +32,8 @@ export const CASOS: Record<string, Caso> = {
     tipo: 'nao_se_aplica',
     justificativa: 'Encerra só a sessão do próprio cookie, sem dado de grupo.',
   },
+  'POST /api/sessao/esqueci-senha': {
+    tipo: 'nao_se_aplica',
+    justificativa: 'Rota de sessão sem dado de grupo: só registra o pedido da própria conta.',
+  },
 };
