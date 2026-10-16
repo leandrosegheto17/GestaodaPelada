@@ -7,13 +7,15 @@ export interface NivelDaResposta {
   semNota: boolean;
 }
 
-/**
- * Converte o nível do domínio (média × 100, ex.: 683) para a unidade da resposta, com meio
- * arredondado para cima na primeira casa, só em inteiros. O × 100 fica interno.
- */
+/** Valor em centésimos (683) para a unidade da resposta com uma casa (6.8), meio para cima, só em inteiros. */
+export function centesimosParaDecimal(centesimos: number): number {
+  return Math.floor((centesimos + 5) / 10) / 10;
+}
+
+/** Nível do domínio (média × 100, ex.: 683) na unidade da resposta. O × 100 fica interno. */
 export function nivelDaResposta(notas: readonly number[]): NivelDaResposta {
   const { nivel, semNota } = calcularNivel(notas);
-  return { nivel: Math.floor((nivel + 5) / 10) / 10, semNota };
+  return { nivel: centesimosParaDecimal(nivel), semNota };
 }
 
 /** Agrupa as notas do grupo por jogador, numa passada. */

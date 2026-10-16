@@ -122,6 +122,16 @@ export const CASOS: Record<string, Caso> = {
       aptos: [{ id: '00000000-0000-4000-8000-000000000001', so1oTempo: false }],
     },
   },
+  'POST /api/grupos/:grupoId/simulador/sugerir': {
+    tipo: 'grupo',
+    corpo: {
+      formato: 'dois_times',
+      data: '2026-10-22',
+      n: 2,
+      k: 0,
+      aptos: [1, 2, 3, 4].map((i) => ({ id: `00000000-0000-4000-8000-00000000000${i}`, so1oTempo: false })),
+    },
+  },
   'PUT /api/grupos/:grupoId/jogadores/:id/notas/:habilidadeId': {
     tipo: 'grupo',
     parametros: () => ({ habilidadeId: '00000000-0000-4000-8000-0000000000aa' }),
