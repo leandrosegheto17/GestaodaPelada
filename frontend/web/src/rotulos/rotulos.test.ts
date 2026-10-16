@@ -46,6 +46,16 @@ describe('conferência com o mockup', () => {
     for (const { letra } of Object.values(r.ROTULO_SITUACAO_PRESENCA)) expect(letra).toMatch(/^[A-Z]$/);
   });
 
+  it('plural e ordem da contagem', () => {
+    expect(r.ORDEM_CONTAGEM.map((v) => r.ROTULO_SITUACAO_PRESENCA[v].plural)).toEqual([
+      'Presentes',
+      'Lesionados',
+      'Expulsos',
+      'Ausentes',
+    ]);
+    expect([...r.ORDEM_CONTAGEM].sort()).toEqual([...SITUACOES_PRESENCA].sort());
+  });
+
   it('ordens', () => {
     expect(r.ORDEM_DIA_SEMANA[0]).toBe('domingo');
     expect(r.ORDEM_DIA_SEMANA[6]).toBe('sabado');

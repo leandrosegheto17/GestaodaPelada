@@ -1,0 +1,65 @@
+.seletor {
+  display: flex;
+  gap: var(--esp-1);
+  flex-shrink: 0;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+.seletor label {
+  display: flex;
+}
+.seletor input {
+  position: absolute;
+  opacity: 0;
+}
+.opcao {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  min-height: var(--alvo-toque);
+  padding: var(--esp-1) 0;
+  border: 2px solid var(--cor-linha);
+  border-radius: var(--raio-sm);
+  font-family: var(--fonte-titulo);
+  font-size: var(--texto-lg);
+  font-weight: var(--peso-extra);
+  line-height: 1;
+  cursor: pointer;
+  background: var(--cor-superficie);
+  color: var(--cor-texto-sec);
+}
+.opcao i {
+  font-style: normal;
+}
+.opcao small {
+  font-family: var(--fonte-texto);
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-semi);
+  margin-top: 2px;
+}
+.seletor input:checked + .opcao {
+  border-color: currentColor;
+}
+.ausente input:checked + .opcao {
+  background: var(--cor-f-fundo);
+  color: var(--cor-f-texto);
+}
+.presente input:checked + .opcao {
+  background: var(--cor-p-fundo);
+  color: var(--cor-p-texto);
+}
+.lesionado input:checked + .opcao {
+  background: var(--cor-l-fundo);
+  color: var(--cor-l-texto);
+}
+.expulso input:checked + .opcao {
+  background: var(--cor-e-fundo);
+  color: var(--cor-e-texto);
+}
+.seletor input:focus-visible + .opcao {
+  outline: var(--foco-largura) solid var(--cor-foco);
+  outline-offset: var(--foco-afastamento);
+}

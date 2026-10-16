@@ -1,0 +1,38 @@
+.lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-linha);
+  border-radius: var(--raio);
+}
+.linha {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-2);
+  padding: var(--esp-2) var(--esp-2) var(--esp-2) var(--esp-3);
+  border-bottom: 1px solid var(--cor-linha);
+}
+.linha:last-child {
+  border-bottom: 0;
+}
+.nome {
+  font-weight: var(--peso-semi);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.duas {
+  display: block;
+}
+@media (min-width: 1024px) {
+  .duas {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .duas .linha:nth-last-child(2) {
+    border-bottom: 0;
+  }
+}

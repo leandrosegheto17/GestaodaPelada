@@ -19,12 +19,14 @@ import {
 /** Único lugar com texto de enum do contrato; a ordem de exibição segue o mockup. */
 
 export const ROTULO_SITUACAO_PRESENCA = {
-  ausente: { letra: 'A', texto: 'Ausente' },
-  presente: { letra: 'P', texto: 'Presente' },
-  lesionado: { letra: 'L', texto: 'Lesionado' },
-  expulso: { letra: 'E', texto: 'Expulso' },
-} as const satisfies Record<SituacaoPresenca, { letra: string; texto: string }>;
+  ausente: { letra: 'A', texto: 'Ausente', plural: 'Ausentes' },
+  presente: { letra: 'P', texto: 'Presente', plural: 'Presentes' },
+  lesionado: { letra: 'L', texto: 'Lesionado', plural: 'Lesionados' },
+  expulso: { letra: 'E', texto: 'Expulso', plural: 'Expulsos' },
+} as const satisfies Record<SituacaoPresenca, { letra: string; texto: string; plural: string }>;
 export const ORDEM_SITUACAO_PRESENCA: readonly SituacaoPresenca[] = SITUACOES_PRESENCA;
+/** Ordem da contagem fixa da tela de partida (difere da do seletor). */
+export const ORDEM_CONTAGEM: readonly SituacaoPresenca[] = ['presente', 'lesionado', 'expulso', 'ausente'];
 
 export type SituacaoRodada = (typeof SITUACOES_RODADA)[number];
 

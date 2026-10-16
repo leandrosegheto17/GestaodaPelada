@@ -1,0 +1,11 @@
+.contagem {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--cor-fundo);
+  padding: var(--esp-2) 0;
+  margin: 0 0 var(--esp-2);
+  font-weight: var(--peso-semi);
+  font-variant-numeric: tabular-nums;
+  border-bottom: 1px solid var(--cor-linha);
+}
