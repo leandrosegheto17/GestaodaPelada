@@ -17,6 +17,7 @@ const PERMITIDAS = new Set([
 
 /** Devolve as chaves proibidas de um wrangler.jsonc (raiz e `env.*`); lança se o arquivo não for JSONC. */
 export function chavesForaDaLista(texto: string): string[] {
+  if (texto.trim() === '') throw new Error('wrangler.jsonc vazio');
   const { config, error } = ts.parseConfigFileTextToJson('wrangler.jsonc', texto);
   if (error || typeof config !== 'object' || config === null) throw new Error('wrangler.jsonc inválido');
   const fora: string[] = [];
