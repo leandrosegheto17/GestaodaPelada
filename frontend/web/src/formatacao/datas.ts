@@ -51,6 +51,14 @@ export function mesPorExtenso(mes: string): string {
   return formatoMes.format(new Date(Date.UTC(Number(achado[1]), numero - 1, 1)));
 }
 
+/** `2026-10` → `10/2026`. */
+export function mesNumerico(mes: string): string {
+  const achado = MES.exec(mes);
+  const numero = Number(achado?.[2]);
+  if (!achado || numero < 1 || numero > 12) throw new RangeError(`Mês inválido: "${mes}".`);
+  return `${achado[2]}/${achado[1]}`;
+}
+
 function partesDoInstante(iso: string): Record<string, string> {
   const instante = new Date(iso);
   if (!/^\d{4}-\d{2}-\d{2}T/.test(iso) || Number.isNaN(instante.getTime())) {

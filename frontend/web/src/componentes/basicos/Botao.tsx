@@ -1,7 +1,7 @@
-import type { ButtonHTMLAttributes, MouseEvent } from 'react';
+import type { ComponentPropsWithRef, MouseEvent } from 'react';
 import { classesBotao, type VarianteBotao } from './classesBotao';
 
-interface Props extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'className'> {
+interface Props extends Omit<ComponentPropsWithRef<'button'>, 'className'> {
   variante?: VarianteBotao;
   bloco?: boolean;
   topo?: boolean;

@@ -51,6 +51,7 @@
   /* ---------- Tipografia ---------- */
   --fonte-titulo:"Barlow Condensed","Arial Narrow",sans-serif;
   --fonte-texto:"Barlow","Segoe UI",sans-serif;
+  --fonte-mono:ui-monospace,"Cascadia Mono",Consolas,monospace;
   --peso-normal:400; --peso-medio:500; --peso-semi:600; --peso-forte:700; --peso-extra:800;
   --texto-xs:12px;   /* rótulos sob as letras do seletor de situação */
   --texto-sm:14px;

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { dataCompleta, diaMes, diaMesHora, diaSemanaCurto, hora, mesPorExtenso } from './datas';
+import { dataCompleta, diaMes, diaMesHora, diaSemanaCurto, hora, mesNumerico, mesPorExtenso } from './datas';
 
 describe('datas de negócio', () => {
   it.each([
@@ -24,6 +24,19 @@ describe('datas de negócio', () => {
 
   it.each(['2026-13', '2026-00', '202610', ''])('mês malformado %j lança', (mes) => {
     expect(() => mesPorExtenso(mes)).toThrow(RangeError);
+  });
+});
+
+describe('mesNumerico', () => {
+  it.each([
+    ['2026-10', '10/2026'],
+    ['2026-01', '01/2026'],
+  ])('%s', (mes, esperado) => {
+    expect(mesNumerico(mes)).toBe(esperado);
+  });
+
+  it('malformado lança', () => {
+    expect(() => mesNumerico('2026-13')).toThrow(RangeError);
   });
 });
 

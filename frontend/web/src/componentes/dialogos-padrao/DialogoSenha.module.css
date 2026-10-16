@@ -1,0 +1,33 @@
+.senha {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-3);
+  padding: var(--esp-3) var(--esp-4);
+  background: var(--cor-zebra);
+  border: 2px solid var(--cor-contorno);
+  border-radius: var(--raio-sm);
+  font-family: var(--fonte-mono);
+  font-size: var(--texto-2xl);
+  font-weight: var(--peso-forte);
+  letter-spacing: 0.08em;
+  user-select: all;
+}
+.aviso {
+  margin-top: var(--esp-3);
+  margin-bottom: var(--esp-4);
+}
+.fechar {
+  position: absolute;
+  top: var(--esp-2);
+  right: var(--esp-2);
+  width: var(--alvo-toque);
+  height: var(--alvo-toque);
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}

@@ -8,6 +8,8 @@ interface Props {
   descricao?: string;
   /** Ação destrutiva: vira `alertdialog` e Esc não fecha. O véu nunca fecha. */
   destrutivo?: boolean;
+  /** Esc fecha (padrão: sim, exceto no destrutivo). Na confirmação, Esc equivale a "Cancelar". */
+  fecharComEsc?: boolean;
   refFocoInicial?: RefObject<HTMLElement | null>;
   aoFechar: () => void;
   children?: ReactNode;
@@ -16,11 +18,20 @@ interface Props {
 }
 
 /** Montado = aberto. Quem usa renderiza condicionalmente. */
-export function Dialogo({ titulo, descricao, destrutivo, refFocoInicial, aoFechar, children, acoes }: Props) {
+export function Dialogo({
+  titulo,
+  descricao,
+  destrutivo,
+  fecharComEsc,
+  refFocoInicial,
+  aoFechar,
+  children,
+  acoes,
+}: Props) {
   const idTitulo = useId();
   const idDescricao = useId();
   const refConteudo = useRef<HTMLElement>(null);
-  usarFocoModal({ refConteudo, refFocoInicial, aoFechar, fecharComEsc: !destrutivo });
+  usarFocoModal({ refConteudo, refFocoInicial, aoFechar, fecharComEsc: fecharComEsc ?? !destrutivo });
   return createPortal(
     <div className={estilos.veu}>
       <section
