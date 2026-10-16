@@ -109,4 +109,5 @@ export const CASOS: Record<string, Caso> = {
   },
   'GET /api/grupos/:grupoId/uso': { tipo: 'grupo' },
   'GET /api/grupos/:grupoId/habilidades': { tipo: 'grupo' },
+  'POST /api/grupos/:grupoId/habilidades': { tipo: 'grupo', corpo: { nome: 'Cabeceio' } },
 };
