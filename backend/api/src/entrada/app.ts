@@ -12,6 +12,7 @@ import { exigirCabecalhoPelada } from './middlewares/csrf.js';
 import { exigirDono } from './middlewares/dono.js';
 import { exigirFinanceiro, exigirVinculo } from './middlewares/grupo.js';
 import { carregarSessao } from './middlewares/sessao.js';
+import { ROTAS } from './registro-rotas.js';
 
 export interface Variaveis {
   relogio: Relogio;
@@ -59,6 +60,7 @@ export function criarApp(opcoes: OpcoesApp = {}): Hono<AppEnv> {
   app.use('/api/dono/*', exigirDono);
 
   app.get('/api/saude', (c) => c.json({ ok: true }));
+  for (const rota of ROTAS) app.route('/', rota);
 
   app.notFound((c) => naoEncontrado(c));
   app.onError((erro, c) => {

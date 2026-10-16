@@ -62,4 +62,17 @@ describe('repositório de tentativas de login', () => {
     const restantes = await executarSql('SELECT 1 FROM tentativas_login WHERE email = $1', [EMAIL]);
     expect(restantes).toHaveLength(1);
   });
+
+  it('um sucesso zera a contagem e o bloqueio informa quando libera', async () => {
+    const db = await preparar();
+    for (let i = 5; i >= 1; i--) {
+      await tentativas.registrar(db, { email: EMAIL, sucesso: false, agora: antes(i * MINUTO) });
+    }
+    const bloqueio = await tentativas.consultarBloqueio(db, EMAIL, base);
+    expect(bloqueio.falhas).toBe(5);
+    expect(bloqueio.liberaEm).toEqual(new Date(antes(MINUTO).getTime() + 15 * MINUTO));
+    await tentativas.registrar(db, { email: EMAIL, sucesso: true, agora: antes(30_000) });
+    expect(await tentativas.contarFalhasRecentes(db, EMAIL, base)).toBe(0);
+    expect((await tentativas.consultarBloqueio(db, EMAIL, base)).liberaEm).toBeNull();
+  });
 });

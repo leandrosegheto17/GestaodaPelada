@@ -23,4 +23,5 @@ export const CASOS: Record<string, Caso> = {
     tipo: 'nao_se_aplica',
     justificativa: 'Verificação de saúde: não lê dado de grupo nem de conta.',
   },
+  'POST /api/sessao/entrar': { tipo: 'nao_se_aplica', justificativa: 'Rota de autenticação, sem dado de grupo.' },
 };
