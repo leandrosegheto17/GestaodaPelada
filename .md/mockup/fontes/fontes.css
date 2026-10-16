@@ -1,0 +1,10 @@
+/*
+ * fontes.css — Barlow (400, 500, 600, 700) e Barlow Condensed (600, 700, 800). Licença SIL OFL 1.1.
+ *
+ * ESTADO ATUAL: carregamento provisório pelo Google Fonts.
+ * Para auto-hospedar (exigência do mockup final e da implementação), rode uma vez:
+ *     node .md/mockup/fontes/baixar-fontes.mjs
+ * O script baixa os .woff2 para esta pasta, grava OFL.txt e REESCREVE este arquivo
+ * com @font-face apontando só para os arquivos locais.
+ */
+@import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap");

@@ -1,0 +1,498 @@
+# PRD-TECNICO — Gestão da Pelada
+
+Versão: rascunho 4.1 (Loop A, reabertura pontual das colunas do ranking) | Data: 2026-10-16 | Autor: Gestor (chapéu Business Analyst)
+Base: `.md/PRD.md` (rascunho 4.1), `.md/CTO-REVIEW.md` (Gate 1 e adendo da rodada 2), `.md/PLANO-COMERCIAL.md` v2 e as respostas do Leandro nas rodadas 1 a 4 e na decisão P-30.
+
+Este documento detalha **o quê** o sistema faz e **com que regras**. Não decide arquitetura, stack, banco ou algoritmo: isso é do Coordenador no `SDD.md`. Toda ambiguidade resolvida está na Seção 7. Há uma interpretação provisória pendente (I-42, ligada à P-32).
+
+**Reabertura pontual 4.1 (P-30, colunas do ranking):**
+- Tela e PDF passam a ter as colunas #, Jogador, PTS INICIAL, uma coluna por partida do mês com os **pontos** da rodada (cor por situação; ícone de chuva ou de sol no cabeçalho) e PTS FINAL. Saem as contagens de presenças e faltas do mês (I-41).
+- É mudança **só de apresentação**, confirmada pelo usuário: pontuação (RN-01), acumulado contínuo (I-35) e ordem sempre pelo acumulado atual em qualquer mês (P-26, RF-30, RN-05, RN-06) não mudam.
+- Alterados: RF-29, RF-31, RF-32, RF-50, RN-03, RNF-10, F1, F4. Nova: RN-21. Novas interpretações: I-41 (confirmada), I-42 (provisória), I-43 (BA).
+
+**Rodada 4:**
+- No formato de 3 ou mais times, quem sobra forma um time incompleto (P-29, opção c).
+- O número de times passa a ser arredondado para cima.
+- Não existe mais "aguardam".
+- O equilíbrio do formato de 3 ou mais times passa a comparar médias, não somas (decisão I-39).
+
+**Rodada 3:**
+- Ranking sempre na ordem do acumulado atual, sem "foto" por mês (P-26).
+- Simulador em dois formatos: 2 times, com 1º e 2º tempo e substituições; ou 3 ou mais times, só com a divisão inicial (P-27).
+- "Só 1º tempo" pode ficar como "não entra" (P-28).
+- Os IDs de RF da rodada 2 foram mantidos.
+
+Convenções:
+- Os critérios de aceite usam o formato EARS (Quando / Enquanto / Se... então / O sistema deve).
+- "Admin" é um admin autenticado e vinculado ao grupo em questão.
+- "Dono" é o dono da plataforma.
+- "Link do grupo" é a URL pública e somente leitura do ranking de um grupo.
+- Numeração renovada nesta rodada: os IDs de RF da rodada 1 não valem mais.
+
+---
+
+## 1. Requisitos Funcionais
+
+### 1.1 Dono da plataforma (RA-16, RA-13)
+
+| ID | Requisito | Critério de aceite (EARS) |
+|---|---|---|
+| RF-01 | Conta do dono | **O sistema deve** ter exatamente uma conta com o papel de dono da plataforma, de e-mail **leandrosegheto17@gmail.com**, criada na implantação. O dono entra pela mesma tela de login dos admins. A forma de criar a credencial inicial é decisão do Coordenador. |
+| RF-02 | Criar grupo e primeiro admin | **Quando** o dono informar o nome do grupo (de 3 a 60 caracteres), o dia da semana, a frequência (semanal, quinzenal ou mensal), o horário (HH:MM) e o nome e e-mail do primeiro admin, **o sistema deve**: criar o grupo; aplicar os pesos padrão e as 6 habilidades iniciais (RN-18); definir a situação comercial "uso próprio"; gerar o link do grupo; e criar o admin com uma **senha aleatória exibida uma única vez** ao dono, com permissão de financeiro e troca obrigatória no primeiro login (RF-14). **Se** o e-mail já pertencer a um admin, **então** o sistema deve apenas vinculá-lo ao novo grupo, sem mudar a senha. **Se** faltar algum campo obrigatório, **então** deve recusar e apontar o campo. |
+| RF-03 | Arquivar e reativar grupo | **Quando** o dono arquivar um grupo e confirmar digitando o nome dele, **o sistema deve** bloquear o acesso dos admins a esse grupo, e o link do grupo deve passar a mostrar "Grupo indisponível", com os dados preservados. **Quando** o dono reativar o grupo, **o sistema deve** restaurar o acesso. |
+| RF-04 | Situação comercial | **O sistema deve** guardar em cada grupo uma situação comercial (uso próprio, trial com data de início, ativo, inadimplente ou cancelado), editável só pelo dono. **O sistema não deve** mudar nenhum comportamento por causa desse campo (RN-16). |
+| RF-05 | Redefinir senha de qualquer admin | **Quando** o dono pedir a redefinição da senha de qualquer admin, **o sistema deve** gerar uma senha temporária, exibi-la uma vez ao dono e aplicar RF-14 no próximo login desse admin. |
+| RF-06 | Pedidos de "esqueci a senha" | **Quando** o dono entrar na área administrativa e houver pedidos pendentes (RF-12), **o sistema deve** mostrar a lista com e-mail do admin, grupos dele e data e hora do último pedido. Para cada pedido, deve oferecer "Redefinir senha" (RF-05) e "Marcar como resolvido". Um pedido some da lista quando é resolvido ou quando a senha daquele admin é redefinida por qualquer meio. **O sistema não deve** mostrar esses pedidos a nenhum outro usuário. |
+| RF-07 | Alcance do dono | **O sistema deve** mostrar ao dono os metadados de todos os grupos: nome, dia, frequência, horário, situação comercial, admins, data de criação e se o grupo está arquivado. **Se** o dono não for admin de um grupo, **então** o sistema não deve mostrar a ele jogadores, notas, partidas nem o financeiro desse grupo (I-30). O dono pode ser também admin de grupos, como qualquer outro admin. |
+
+### 1.2 Grupos (RA-01)
+
+| ID | Requisito | Critério de aceite (EARS) |
+|---|---|---|
+| RF-08 | Editar grupo | **Quando** um admin editar o nome, o dia, a frequência ou o horário do grupo, **o sistema deve** salvar sem alterar o histórico. A criação e o arquivamento de grupos são exclusivos do dono (I-31). |
+| RF-09 | Isolamento por grupo | **Se** uma operação de leitura ou escrita sobre dados de um grupo G vier de alguém que não é admin de G, **então** o sistema deve negar a operação sem revelar se o recurso existe. As exceções são a leitura pública do ranking e do PDF pelo link de G e os metadados vistos pelo dono (RF-07). |
+| RF-10 | Grupo ativo do admin | **Enquanto** um admin estiver vinculado a mais de um grupo, **o sistema deve** mostrar um seletor de grupo na área administrativa, e toda operação deve valer só para o grupo selecionado. |
+
+### 1.3 Admins e acesso (RA-02)
+
+| ID | Requisito | Critério de aceite (EARS) |
+|---|---|---|
+| RF-11 | Login | **Quando** alguém tocar na engrenagem ou no "$" sem estar autenticado, **o sistema deve** pedir e-mail e senha. **Quando** as credenciais forem válidas, **o sistema deve** abrir a área pedida no grupo ativo. Para o dono, abre primeiro a área do dono, com os pedidos pendentes de RF-06. **Se** as credenciais forem inválidas, **então** deve mostrar a mensagem genérica "e-mail ou senha incorretos". **Se** houver 5 falhas para o mesmo e-mail em 15 minutos, **então** deve bloquear novas tentativas desse e-mail por 15 minutos. |
+| RF-12 | Esqueci a senha | **Quando** alguém tocar em "Esqueci a senha" na tela de login e informar um e-mail, **o sistema deve** mostrar a mensagem "Solicite o reset de senha a outro admin". **Se** o e-mail pertencer a um admin, **então** o sistema deve registrar um pedido pendente visível só ao dono (RF-06). Se já houver um pedido pendente desse e-mail, deve apenas atualizar a data e a hora. **Se** o e-mail não pertencer a nenhum admin, **então** o sistema deve mostrar a mesma mensagem e não registrar nada (I-29). **O sistema não deve** enviar e-mail. |
+| RF-13 | Adicionar admin ao grupo | **Quando** um admin informar nome e e-mail de um novo admin do grupo, **o sistema deve** criar a credencial com uma senha temporária aleatória, exibida uma única vez ao admin que fez o cadastro, e vincular o novo admin ao grupo, sem permissão de financeiro por padrão. **Se** o e-mail já pertencer a um admin, **então** o sistema deve apenas vinculá-lo ao grupo. |
+| RF-14 | Troca obrigatória de senha temporária | **Quando** um admin entrar com uma senha temporária ou aleatória, **o sistema deve** exigir uma nova senha (mínimo de 8 caracteres, diferente da temporária) antes de liberar qualquer área. |
+| RF-15 | Remover admin do grupo | **Quando** um admin remover outro admin do grupo, **o sistema deve** desfazer o vínculo e encerrar o acesso dele a esse grupo. **Se** ele for o último admin do grupo, **então** o sistema deve recusar (RN-13). |
+| RF-16 | Redefinir senha de outro admin do grupo | **Quando** um admin pedir a redefinição da senha de outro admin do mesmo grupo, **o sistema deve** gerar uma senha temporária, exibi-la uma vez e aplicar RF-14 no próximo login. Também deve resolver o pedido pendente desse e-mail, se houver (RF-06). |
+| RF-17 | Trocar a própria senha e sair | **Quando** um admin ou o dono trocar a própria senha informando a senha atual, **o sistema deve** salvar a nova. **Quando** tocar em "Sair", **o sistema deve** encerrar a sessão no dispositivo. |
+| RF-18 | Permissão de financeiro | **O sistema deve** manter, por admin e por grupo, a permissão "acessa financeiro". **Se** um admin sem essa permissão tocar no "$", **então** o sistema deve negar o acesso com aviso. Um admin com a permissão pode concedê-la ou retirá-la de outros admins do grupo. |
+
+### 1.4 Jogadores (RA-03)
+
+| ID | Requisito | Critério de aceite (EARS) |
+|---|---|---|
+| RF-19 | Cadastrar jogador | **Quando** um admin informar os dados abaixo e salvar, **o sistema deve** criar o jogador como ativo. Os dados são: nome/apelido (de 2 a 30 caracteres, único no grupo, sem diferenciar maiúsculas), ano de nascimento (de 1940 até o ano atual menos 10), posição (Goleiro, Defensor, Meio-campo ou Atacante, só para cadastro, I-22), telefone (opcional, formato brasileiro com DDD) e data de entrada no grupo (padrão: hoje). **Se** o apelido já existir no grupo, **então** deve recusar e avisar. |
+| RF-20 | Editar jogador | **Quando** um admin editar um jogador, **o sistema deve** salvar. Uma mudança no ano de nascimento ou na data de entrada se reflete no desempate e nas faltas (RN-03, RN-05). |
+| RF-21 | Inativar e reativar | **Quando** um admin inativar um jogador, informando a data de saída (padrão: hoje), **o sistema deve** tirá-lo do lançamento, do simulador e do financeiro a partir dessa data. Ele sai das linhas do ranking (RN-06), mas o histórico e os pontos acumulados são preservados. **Quando** o admin reativar o jogador, **o sistema deve** voltar a considerá-lo a partir da data da reativação, mantendo o acumulado anterior. |
+| RF-22 | Excluir jogador | **Quando** um admin pedir a exclusão de um jogador sem nenhuma presença, nota ou registro financeiro, **o sistema deve** excluí-lo. **Se** houver histórico, **então** deve recusar e oferecer a inativação. |
+
+### 1.5 Pontuação (RA-04)
+
+| ID | Requisito | Critério de aceite (EARS) |
+|---|---|---|
+| RF-23 | Configurar pesos | **Quando** um admin informar os 5 pesos (presença sem chuva, presença com chuva, lesionado sem chuva, lesionado com chuva e expulso), cada um inteiro de −10 a 10, e salvar, **o sistema deve** registrar uma nova configuração vigente a partir de hoje, aplicada segundo RN-04. **Se** algum peso estiver fora da faixa ou não for inteiro, **então** deve recusar. **O sistema não deve** aceitar data de vigência no passado. |
+| RF-24 | Histórico de pesos | **Quando** um admin abrir a pontuação, **o sistema deve** mostrar a configuração vigente e as anteriores, com as datas de vigência e quem as registrou. |
+
+### 1.6 Partidas (RA-05)
+
+| ID | Requisito | Critério de aceite (EARS) |
+|---|---|---|
+| RF-25 | Lançar partida | **Quando** um admin abrir "Nova partida", **o sistema deve** sugerir como data o dia de jogo mais recente do grupo até hoje (I-26), mostrar a opção "Choveu?" (padrão: não) e listar os jogadores ativos na data. Cada jogador pode ser marcado como ausente (padrão), presente, lesionado (foi e não jogou) ou expulso. **Quando** o admin salvar, **o sistema deve** registrar a partida e atualizar o ranking. |
+| RF-26 | Pré-preenchimento pelo simulador | **Se** existir uma escalação confirmada (RF-48) para o grupo naquela data, **então** o sistema deve marcar como "presente" todos os aptos dessa escalação, **inclusive os "não entra"** (RN-19). O admin pode alterar antes de salvar. |
+| RF-27 | Restrições de data | **Se** a data for futura, **então** o sistema deve recusar. **Se** já existir partida do grupo nessa data, **então** deve recusar e oferecer a edição da partida existente (RN-14). |
+| RF-28 | Editar e excluir partida | **Quando** um admin editar ou excluir uma partida, **o sistema deve** recalcular o ranking e registrar quem alterou e quando (RNF-12). A exclusão exige confirmação. |
+
+### 1.7 Ranking (RA-06)
+
+| ID | Requisito | Critério de aceite (EARS) |
+|---|---|---|
+| RF-29 | Ranking como tela principal | **Quando** alguém abrir o link do grupo ou o app instalado, **o sistema deve** mostrar, sem pedir login: o ranking geral com o nome do grupo; as partidas do mês corrente (RN-07); e uma linha por jogador listado (RN-06). Cada linha tem, nesta ordem (I-41): **#** (posição, RF-30); **Jogador** (apelido); **PTS INICIAL** do mês exibido; **uma coluna por partida do mês**, em ordem de data, com os **pontos da rodada** do jogador e a indicação da situação dele (presente, lesionado, expulso, falta ou "–" quando não estava ativo na data), segundo RN-21; e **PTS FINAL** do mês exibido (RN-21). O cabeçalho de cada coluna de partida mostra a data (dd/mm) e um ícone de **chuva** (partida com chuva) ou de **sol** (partida sem chuva), com texto alternativo (RNF-10). **O sistema não deve** mostrar contagens de presenças nem de faltas do mês. |
+| RF-30 | Ordenação | **O sistema deve** ordenar o ranking sempre pelo acumulado geral atual (todas as partidas até hoje), com o desempate da RN-05. **O sistema não deve** mudar a ordem, as posições nem os pontos acumulados ao trocar o mês exibido (P-26). Jogadores empatados nos três critérios recebem a mesma posição. |
+| RF-31 | Navegação entre meses | **Quando** o usuário tocar em "mês anterior" ou "mês seguinte", **o sistema deve** trocar as colunas de partida, o PTS INICIAL e o PTS FINAL para os daquele mês (RN-21), mantendo as linhas e a ordem (RF-30). **O sistema não deve** permitir navegar para depois do mês corrente nem para antes do mês da primeira partida do grupo. |
+| RF-32 | Mês sem partidas | **Se** o mês exibido não tiver partidas, **então** o sistema deve manter as linhas e a ordem (posição, apelido), mostrar PTS INICIAL e PTS FINAL do mês (iguais entre si, RN-21), mostrar "Nenhuma partida registrada neste mês" no lugar das colunas de partida e manter a navegação. |
+| RF-33 | Dados exibidos publicamente | **O sistema não deve** mostrar na visão pública nem no PDF: telefone, ano de nascimento, idade, posição, notas, nível ou dados financeiros (RNF-06). |
+| RF-34 | Lembrar o grupo | **Quando** alguém abrir o link de um grupo, **o sistema deve** lembrar esse grupo no dispositivo, para que a abertura seguinte do app instalado vá direto ao ranking dele. |
+
+### 1.8 Habilidades (RA-07)
+
+| ID | Requisito | Critério de aceite (EARS) |
+|---|---|---|
+| RF-35 | Catálogo de habilidades | **Quando** um grupo for criado, **o sistema deve** cadastrar as 6 habilidades iniciais (RN-18). **Quando** um admin criar, renomear ou excluir uma habilidade (nome de 2 a 30 caracteres, único no grupo), **o sistema deve** atualizar o catálogo. A exclusão exige confirmação e apaga as notas daquela habilidade. |
+| RF-36 | Avaliar jogador | **Quando** um admin der a um jogador uma nota inteira de 1 a 10 em uma habilidade, **o sistema deve** salvá-la. **Se** a nota estiver fora da faixa, **então** deve recusar. A nota pode ficar em branco. |
+| RF-37 | Nível do jogador | **O sistema deve** calcular o nível segundo RN-11 e mostrá-lo só na área administrativa e no simulador. |
+
+### 1.9 Simulador de divisão de times (RA-08)
+
+| ID | Requisito | Critério de aceite (EARS) |
+|---|---|---|
+| RF-38 | Acesso | **O sistema deve** liberar o simulador só para os admins do grupo. |
+| RF-39 | Entradas | **Quando** um admin abrir o simulador, **o sistema deve** pedir: data da partida (padrão: o próximo dia de jogo do grupo, hoje incluso); **formato**, que pode ser "2 times (1º e 2º tempo)" (padrão) ou "3 ou mais times"; jogadores por time N (inteiro de 2 a 11); e aptos (seleção entre os jogadores ativos). **Enquanto** o formato for "2 times", **o sistema deve** pedir também a marcação "só 1º tempo" de cada apto (padrão: não) e o limite de substituições por time K (inteiro de 0 a 20, ou "ilimitado"). **Enquanto** o formato for "3 ou mais times", **o sistema não deve** mostrar "só 1º tempo" nem o limite K. Deve mostrar o número de times calculado, T = aptos ÷ N **arredondado para cima**, e a composição prevista (ex.: "5 times de 4 + 1 time de 2") (I-38). |
+| RF-40 | Aptos insuficientes | **Se** o formato for "2 times" e houver menos de 2×N aptos, **então** o sistema deve impedir a sugestão e mostrar o maior N possível (aptos ÷ 2, arredondado para baixo). **Se** o formato for "3 ou mais times" e houver até 2×N aptos (o que daria menos de 3 times), **então** deve impedir a sugestão e indicar um N menor ou o formato "2 times". |
+| RF-41 | Ordem de prioridade (só 2 times) | **Enquanto** o formato for "2 times", **o sistema deve** ordenar os aptos segundo RN-08 e mostrar essa ordem ao pedir a sugestão. No formato "3 ou mais times", todos os aptos jogam, a ordem do ranking não é usada e não é mostrada (RN-09B). |
+| RF-42 | Classificação dos aptos | **Se** o formato for "2 times", **então** o sistema deve classificar cada apto como titular, reserva que entra no 2º tempo ou "não entra", segundo RN-09A. Os "não entra" aparecem numa lista à parte, com o aviso de que recebem a pontuação de presença (RN-19). **Se** o formato for "3 ou mais times", **então** deve colocar todos os aptos em times: os completos com N jogadores e, quando a divisão não for exata, um único time incompleto com o resto (RN-09B), identificado como "incompleto". |
+| RF-43 | Quem sai no 2º tempo (só 2 times) | **Enquanto** o formato for "2 times", **o sistema deve** definir em cada time quem sai no intervalo, segundo RN-09A, e mostrar os pares "sai → entra". Um reserva marcado "só 1º tempo" aparece com a indicação "joga só o 2º tempo", e pode ficar como "não entra" se o limite acabar antes dele (P-28). |
+| RF-44 | Distribuição equilibrada | **O sistema deve** distribuir os jogadores entre os times segundo RN-10A (2 times) ou RN-10B (3 ou mais times). O resultado deve ser determinístico: as mesmas entradas geram a mesma sugestão. |
+| RF-45 | Indicadores | **Enquanto** uma divisão estiver na tela, **o sistema deve** mostrar, por time: no formato "2 times", nível somado e médio no 1º e no 2º tempo, idade média e número de substituições; no formato "3 ou mais times", número de jogadores, nível médio e somado e idade média. |
+| RF-46 | Ajuste manual | **Quando** o admin mover um jogador entre os times e, no formato "2 times", as listas "reservas" e "não entra", trocar dois jogadores ou, no formato "2 times", mudar o "só 1º tempo", **o sistema deve** recalcular os indicadores (e, em 2 times, os pares "sai → entra") sem refazer a sugestão. **Quando** ele tocar em "Refazer sugestão", **o sistema deve** descartar os ajustes e sugerir de novo. |
+| RF-47 | Avisos | **O sistema deve** avisar, sem bloquear, quando: (a) no formato "2 times", um time tiver mais titulares "só 1º tempo" do que reservas entrando nele (fica com menos jogadores no 2º tempo); (b) um ajuste manual deixar times com composição diferente da prevista (no formato "2 times", times com tamanhos diferentes; no formato "3 ou mais times", mais de um time incompleto ou um time com mais de N jogadores); (c) houver apto sem nenhuma nota (nível neutro aplicado, RN-11); (d) no formato "3 ou mais times", o time incompleto tiver menos da metade de N jogadores. Nesse caso, o aviso sugere outros valores de N (I-40). **O sistema não deve** ter regra nem aviso sobre goleiros (P-13). |
+| RF-48 | Confirmar escalação | **Quando** o admin confirmar a divisão, **o sistema deve** salvá-la como a escalação do grupo naquela data, substituindo uma confirmação anterior da mesma data, e registrar o evento de uso (RF-57). A escalação confirmada alimenta RF-26. |
+
+### 1.10 PDF do ranking (RA-09)
+
+| ID | Requisito | Critério de aceite (EARS) |
+|---|---|---|
+| RF-49 | Exportar | **Quando** qualquer pessoa que esteja vendo o ranking de um mês tocar em "Exportar PDF", **o sistema deve** gerar o PDF desse mês e registrar o evento de uso (RF-57). |
+| RF-50 | Conteúdo | **O sistema deve** incluir no PDF: nome do grupo, mês exibido e data de geração; a tabela do ranking na ordem do acumulado geral atual, com as mesmas colunas e na mesma ordem da tela (#, Jogador, PTS INICIAL, uma coluna por partida com os pontos da rodada e a indicação da situação, PTS FINAL; RF-29, RN-21), sem contagens de presenças e faltas; o cabeçalho de cada coluna de partida com a data (dd/mm) e o ícone de chuva ou de sol, igual à tela (RF-29), com a legenda dos dois ícones; a legenda das situações (com equivalente que não dependa de cor, RNF-10); e um rodapé com o nome do app. As colunas de partida incluem todas as partidas do mês e, se couber, as anteriores, até 12 no total, com separação visual entre os meses. Com colunas de meses anteriores, o PTS INICIAL segue a I-42 (provisória). Os dados de RF-33 ficam de fora. |
+| RF-51 | Uma página | **O sistema deve** gerar em A4 retrato com exatamente 1 página para até 40 jogadores e 12 colunas de partida, com fonte de no mínimo 7 pt. **Se** não couber, **então** deve cortar primeiro as colunas de meses anteriores e nunca remover partidas do mês exibido. |
+| RF-52 | Compartilhar | **Quando** o dispositivo permitir compartilhar arquivos, **o sistema deve** abrir a folha de compartilhamento do sistema. **Se** não permitir, **então** deve baixar o arquivo. |
+
+### 1.11 PWA e TWA (RA-10, RA-14)
+
+| ID | Requisito | Critério de aceite (EARS) |
+|---|---|---|
+| RF-53 | Instalação do PWA | **O sistema deve** ser instalável na tela inicial no Android (Chrome) e no iPhone (Safari) e abrir em tela cheia, com nome e ícone próprios. **Quando** for aberto no Safari do iPhone sem estar instalado, **o sistema deve** mostrar instruções de "Adicionar à Tela de Início". |
+| RF-54 | Ranking sem conexão (Should) | **Enquanto** não houver conexão, **o sistema deve** mostrar o último ranking carregado, somente leitura, com o aviso "sem conexão, atualizado em dd/mm hh:mm". As funções administrativas exigem conexão. |
+| RF-55 | TWA na Google Play (Should) | **O sistema deve** ser distribuído na Google Play como TWA da mesma URL do PWA, abrindo sem a barra do navegador (vínculo de domínio verificado) e com as mesmas funcionalidades do PWA. **Quando** o I1 estiver no ar, **o sistema deve** entrar em teste fechado com pelo menos 12 testadores por 14 dias contínuos. Só depois disso deve ir para produção (PR-13). |
+
+### 1.12 Registro de uso (RA-11)
+
+| ID | Requisito | Critério de aceite (EARS) |
+|---|---|---|
+| RF-56 | Identificador anônimo | **Quando** o ranking for aberto pela primeira vez num dispositivo, **o sistema deve** gerar um identificador aleatório, sem relação com a pessoa, e guardá-lo no dispositivo. |
+| RF-57 | Eventos | **O sistema deve** registrar, por grupo: abertura do ranking (identificador anônimo, data e hora), exportação de PDF (data e hora, mês exportado), escalação confirmada (data da partida) e partida lançada (data da partida e data do lançamento). **O sistema não deve** registrar nome, telefone, IP nem localização nesses eventos. |
+| RF-58 | Painel de uso (Should) | **Quando** um admin abrir "Uso do app", **o sistema deve** mostrar, por semana: dispositivos distintos que abriram o ranking, PDFs exportados, partidas lançadas (e quantas em até 48 h) e escalações confirmadas em relação às partidas lançadas. |
+
+### 1.13 Financeiro do caixa da pelada (RA-12)
+
+| ID | Requisito | Critério de aceite (EARS) |
+|---|---|---|
+| RF-59 | Configuração | **Quando** um admin com permissão de financeiro informar o valor da mensalidade (opcional) e o saldo inicial com sua data, **o sistema deve** salvar. |
+| RF-60 | Pagamentos do mês | **Quando** o admin abrir o financeiro, **o sistema deve** mostrar o mês corrente (com navegação entre meses) e a lista dos jogadores ativos no mês, cada um marcado como pagou ou não pagou (padrão: não pagou). |
+| RF-61 | Marcar e desmarcar pagamento | **Quando** o admin marcar "pagou" e houver mensalidade configurada, **o sistema deve** criar a entrada vinculada (descrição "Mensalidade <apelido> <mm/aaaa>", valor igual à mensalidade, editável), segundo RN-15. **Quando** o admin desmarcar e confirmar, **o sistema deve** remover a entrada vinculada. **Se** não houver mensalidade configurada, **então** deve apenas registrar a marcação. |
+| RF-62 | Lançamentos | **Quando** o admin criar, editar ou excluir um lançamento de entrada ou saída, com data, descrição (obrigatória, até 80 caracteres) e valor (maior que zero, com 2 casas decimais), **o sistema deve** salvar e atualizar os saldos. |
+| RF-63 | Saldos | **O sistema deve** mostrar o saldo atual (saldo inicial + entradas − saídas) e, para o mês exibido: total de entradas, total de saídas, resultado do mês e quantos jogadores não pagaram. |
+
+### 1.14 Privacidade (RA-15)
+
+| ID | Requisito | Critério de aceite (EARS) |
+|---|---|---|
+| RF-64 | Aviso de privacidade | **O sistema deve** oferecer, a partir do ranking e da área administrativa, um aviso curto em pt-BR dizendo: quais dados são guardados; quem os vê (o público vê apelido e pontos; os admins veem o resto); e como pedir a exclusão (ao admin do grupo). **Quando** um admin entrar pela primeira vez, **o sistema deve** exibir o aviso uma vez. |
+
+---
+
+## 2. Requisitos Não-Funcionais
+
+| ID | Categoria | Requisito | Como verificar |
+|---|---|---|---|
+| RNF-01 | Plataformas | Funcionar no Safari do iOS 16.4 ou posterior (no navegador e instalado), no Chrome para Android nas 2 últimas versões principais, na TWA da Google Play e nos navegadores de desktop atuais (para os admins) | Teste manual em aparelhos reais do grupo |
+| RNF-02 | Localização | Interface em pt-BR. Datas em dd/mm/aaaa e moeda em R$ 1.234,56. Mês e "hoje" no fuso America/Sao_Paulo | Teste com partidas na virada de mês |
+| RNF-03 | Desempenho | Ranking em até 2 s (p75) em 4G num celular intermediário. Sugestão do simulador em até 2 s para 30 aptos, nos dois formatos. PDF em até 5 s | Medição em homologação |
+| RNF-04 | Usabilidade | Lançar uma partida de 20 a 24 jogadores com mediana de até 2 minutos (G1). Interface pensada primeiro para celular, com alvos de toque de pelo menos 44×44 px | Cronometragem no fim do I1 (PR-02) |
+| RNF-05 | Segurança | Senhas guardadas com hash forte e não reversível. Senhas aleatórias e temporárias geradas com fonte criptograficamente segura e válidas só para a troca obrigatória (RF-14). Tráfego só por HTTPS. Autorização verificada no servidor, por grupo e por papel, em toda operação (RF-07, RF-09). Limite de tentativas de login (RF-11). "Esqueci a senha" não revela se um e-mail existe (RF-12). Sessão expira após 30 dias sem uso. O papel de dono não pode ser atribuído pela interface | Revisão do Validador (DevSecOps) |
+| RNF-06 | Privacidade | Telefone, ano de nascimento, posição, notas, nível e financeiro ficam só na área administrativa. Eventos de uso são anônimos. Exclusão de jogador a pedido, por admin (PR-09) | Checagem da visão pública e do PDF |
+| RNF-07 | Durabilidade | RPO de até 24 h, com cópia de segurança restaurável testada uma vez antes do go-live. Sem SLA formal | Teste de restauração |
+| RNF-08 | Custo | Infraestrutura da Fase 1 em plano gratuito (meta). Custo total de caixa até R$ 180, sem a conta da Play, que já está paga | Estimativa no SDD.md (PR-08) |
+| RNF-09 | Escala | Fase 1: até 5 grupos, 40 jogadores ativos por grupo e cerca de 1 partida por semana. A modelagem deve aceitar N grupos sem mudar estrutura. O ranking acumulado é contínuo, sem limite de tempo (I-35) | Revisão do SDD.md |
+| RNF-10 | Acessibilidade | Contraste WCAG 2.1 AA. A situação de cada rodada (presente, lesionado, expulso, falta, "–") e a chuva nunca indicadas só por cor, na tela e no PDF: com os pesos padrão, presente e lesionado valem os dois 1 ponto, e a falta vale 0, o mesmo número de um peso configurado como 0, então a cor sozinha não basta (I-43). A forma do indicador secundário é do Coordenador/UX | Ferramenta de contraste e checagem da grade em escala de cinza |
+| RNF-11 | Prontidão para TWA | O PWA cumpre os critérios de instalabilidade do Chrome, de modo que a TWA não exige mudança de funcionalidade | Auditoria de instalabilidade |
+| RNF-12 | Rastreabilidade | Partidas, pesos, lançamentos financeiros, pagamentos e redefinições de senha guardam quem fez e quando | Teste funcional |
+
+---
+
+## 3. Regras de Negócio
+
+| ID | Regra | Racional |
+|---|---|---|
+| RN-01 | Os pontos de uma presença são o peso da situação do jogador (presente, lesionado ou expulso) combinada com a chuva, segundo a configuração vigente na data da partida. A expulsão tem um peso único, que não varia com a chuva. Os **pontos acumulados** de um jogador são a soma dos pontos de todas as suas partidas no grupo até a data de referência | Briefing, item 1, e respostas P-05 e P-10 |
+| RN-02 | Cada jogador tem exatamente uma situação por partida: ausente, presente, lesionado (foi e não jogou) ou expulso. Expulso prevalece sobre qualquer outra | Resposta P-09. Evita contagem dupla |
+| RN-03 | Falta é a partida em que o jogador estava ativo (RN-06) e ficou ausente. Falta vale 0 ponto. Na grade, aparece como 0 com a indicação de falta (RN-21). Não há contagem de faltas exibida (P-30) | Respostas P-11 e P-30 |
+| RN-04 | Uma nova configuração de pesos vale da data do registro em diante e nunca altera partidas anteriores a essa data | Resposta P-06 |
+| RN-05 | A ordem do ranking segue três critérios: (1) pontos acumulados até a data de referência, do maior para o menor; (2) ano de nascimento crescente, ou seja, o mais velho primeiro; (3) apelido em ordem alfabética, sem diferenciar maiúsculas nem acentos. Na tela e no PDF, a data de referência é **sempre hoje**, qualquer que seja o mês exibido | Briefing e respostas P-05, P-12 e P-26 |
+| RN-06 | Um jogador está ativo numa data quando a data de entrada é igual ou anterior a ela e ele não está inativado nela. As linhas do ranking são os jogadores **ativos hoje**, iguais em qualquer mês exibido. Um jogador inativado sai do ranking, mas seu histórico é preservado e volta se ele for reativado (I-37). Numa partida em que o jogador não estava ativo, a marcação é "–" e não conta falta | Respostas P-24 e P-26 |
+| RN-07 | O mês é o mês do calendário no fuso America/Sao_Paulo | Clareza nas viradas de mês |
+| RN-08 | A prioridade do simulador segue a ordem da RN-05, usando como data de referência o dia anterior à data da partida (só partidas anteriores contam). **Se** o grupo ainda não tiver partidas, **então** só o desempate decide | Resposta P-05: o ranking é geral e contínuo |
+| RN-09A | **Formato 2 times**, com N jogadores por time e limite K por time (ou ilimitado). (1) Os 2×N primeiros na ordem são titulares. (2) Os demais são reservas, em ordem; entram no 2º tempo, pela ordem, até 2×min(K, N) reservas (no ilimitado, até 2×N, porque um time não troca mais jogadores do que tem em campo, I-32). Os que passarem disso ficam como "não entra". (3) Em cada time, saem no intervalo primeiro os titulares "só 1º tempo" e depois os de pior prioridade, até igualar o número de reservas que entram naquele time. Titulares "só 1º tempo" saem mesmo sem reserva para substituí-los. (4) Um reserva marcado "só 1º tempo" joga só o 2º tempo e segue a regra (2) como qualquer reserva; se o limite acabar antes dele, fica como "não entra" | Briefing, item 4, e respostas P-15, P-16 e P-28 |
+| RN-09B | **Formato 3 ou mais times**, com N jogadores por time. Não há 1º e 2º tempo, substituições, "só 1º tempo" nem "não entra", e todos os aptos jogam. Com R = resto de aptos ÷ N: o número de times é T = aptos ÷ N **arredondado para cima**; há (aptos − R) ÷ N times completos de N jogadores; e, se R > 0, um time incompleto de R jogadores. O formato exige T ≥ 3, ou seja, mais de 2×N aptos. Exemplos: 22 aptos com N = 4 dão 5 times de 4 e 1 time de 2; 20 aptos com N = 4 dão 5 times de 4. A ordem do ranking não define quem fica no time incompleto (I-36) | Respostas P-27 e P-29 |
+| RN-10A | Equilíbrio no formato 2 times, por prioridade: (1) N titulares em cada time (regra rígida); (2) diferença máxima de 1 no número de substituições entre os times (regra rígida sempre que possível); (3) menor diferença de nível somado entre os times, no 1º e no 2º tempo; (4) menor diferença de idade média | Resposta P-17 |
+| RN-10B | Equilíbrio no formato 3 ou mais times, por prioridade: (1) composição da RN-09B (times completos com N e no máximo 1 time incompleto com R; regra rígida); (2) menor diferença entre o maior e o menor **nível médio** entre todos os times, incluindo o incompleto; (3) menor diferença entre a maior e a menor idade média, incluindo o incompleto. Todos os aptos são candidatos ao time incompleto. Nenhum é colocado nele por ranking ou por nível baixo (I-39) | Respostas P-27 e P-29. A média torna comparáveis times de tamanhos diferentes. Entre times completos, ela equivale à soma |
+| RN-11 | O nível de um jogador é a média simples das suas notas, de 1 a 10. Um jogador sem nenhuma nota recebe nível 5,5 e fica sinalizado | Valor neutro, para não favorecer nem penalizar quem ainda não foi avaliado |
+| RN-12 | A idade, para o equilíbrio, é o ano corrente menos o ano de nascimento | Só se captura o ano |
+| RN-13 | Todo grupo tem pelo menos 1 admin | Evita grupo sem gestão |
+| RN-14 | Um grupo tem no máximo uma partida por data | Evita lançamento duplicado |
+| RN-15 | Marcar "pagou" com mensalidade configurada gera exatamente uma entrada vinculada a (jogador, mês). Desmarcar remove essa entrada | Resposta P-20 |
+| RN-16 | A situação comercial não altera nenhum comportamento na Fase 1 | Prepara a Fase 2 |
+| RN-17 | Nenhum dado de um grupo é visível ou alterável a partir de outro grupo. O dono só vê metadados de grupos dos quais não é admin. O financeiro é o caixa da pelada, nunca a cobrança do app | Isolamento (Gate 1) e I-30 |
+| RN-18 | Todo grupo novo nasce com: pesos de 1 para presença sem chuva, presença com chuva, lesionado sem chuva e lesionado com chuva, e −1 para expulsão; e as 6 habilidades Visão de Jogo, Passe, Preparo Físico, Drible, Chute e Desarme | Respostas P-04, P-10 e P-22 |
+| RN-19 | Um apto que ficou como "não entra" no simulador (só existe no formato 2 times) compareceu: recebe a situação "presente" e a pontuação de presença correspondente, com ou sem chuva. Nunca conta como falta | Respostas P-16 e P-28 |
+| RN-20 | Só existe um dono da plataforma (leandrosegheto17@gmail.com). Só ele cria e arquiva grupos e vê os pedidos de "esqueci a senha" | Resposta P-07 e P-25 |
+| RN-21 | Colunas de pontos do ranking, para um jogador e um mês M exibido. (1) **Pontos da rodada** numa partida de M: os pontos da RN-01 se ele estava presente, lesionado ou expulso; 0 se teve falta (RN-03); "–" se não estava ativo na data (RN-06), sem valor numérico. (2) **PTS INICIAL**: soma dos pontos de todas as partidas do grupo com data anterior ao dia 1 de M (0 para quem não tinha partidas antes). (3) **PTS FINAL**: PTS INICIAL + soma dos pontos das rodadas de M. Logo, o PTS FINAL de um mês é igual ao PTS INICIAL do mês seguinte, e no mês corrente é igual ao acumulado até hoje (RN-01), que é o critério de ordem (RN-05). Pontos de partidas em que o jogador estava inativo não existem, e um período de inativação não zera nem altera o acumulado (RF-21) | Decisão P-30 do usuário. O item (1) para falta e "–" é a I-43 |
+
+---
+
+## 4. Fluxos de Usuário/Processo
+
+### F1 — Jogador consulta o ranking
+
+```mermaid
+flowchart TD
+  A[Abre o link do grupo ou o app instalado / TWA] --> B{Tem grupo lembrado ou link?}
+  B -- Não --> B1[Peça o link ao admin do seu grupo]
+  B -- Sim --> C{Grupo arquivado?}
+  C -- Sim --> C1[Grupo indisponível]
+  C -- Não --> D{Há conexão?}
+  D -- Não --> D1{Há ranking em cache?}
+  D1 -- Sim --> D2[Último ranking + aviso 'sem conexão']
+  D1 -- Não --> D3[Mensagem: sem conexão]
+  D -- Sim --> E[Ranking na ordem do acumulado atual; mês corrente: PTS INICIAL, pontos por rodada com situação, PTS FINAL = acumulado até hoje; evento de uso]
+  E --> F{Ação}
+  F -- Mês anterior/seguinte --> G{Dentro dos limites?}
+  G -- Sim --> H{Mês tem partidas?}
+  H -- Sim --> E2[Mesmas linhas e mesma ordem; troca PTS INICIAL, colunas de rodada e PTS FINAL para os do mês: RN-21]
+  H -- Não --> H1[Mesma ordem; PTS INICIAL = PTS FINAL; 'Nenhuma partida registrada neste mês']
+  G -- Não --> E
+  F -- Exportar PDF --> P[Fluxo F4]
+  F -- Engrenagem ou $ --> L[Fluxo F2]
+```
+
+### F2 — Login, esqueci a senha e acesso às áreas
+
+```mermaid
+flowchart TD
+  A[Toca na engrenagem ou no $] --> B{Sessão válida?}
+  B -- Sim --> R
+  B -- Não --> C[Login: e-mail + senha]
+  C --> X{Esqueci a senha?}
+  X -- Sim --> X1[Informa e-mail] --> X2[Mensagem: Solicite o reset de senha a outro admin]
+  X2 --> X3{E-mail é de admin?}
+  X3 -- Sim --> X4[Cria/atualiza pedido pendente visível só ao dono]
+  X3 -- Não --> X5[Nada é registrado]
+  X -- Não --> D{Bloqueado por tentativas?}
+  D -- Sim --> D1[Aguarde 15 min]
+  D -- Não --> E{Credenciais válidas?}
+  E -- Não --> E1[Mensagem genérica] --> C
+  E -- Sim --> F{Senha temporária/aleatória?}
+  F -- Sim --> F1[Troca obrigatória] --> R
+  F -- Não --> R{Papel}
+  R -- Dono --> S[Área do dono: pedidos pendentes, grupos, situação comercial]
+  R -- Admin --> G{Admin do grupo do link?}
+  G -- Não --> G1[Seletor com os grupos do admin]
+  G -- Sim --> H{Área pedida}
+  H -- Engrenagem --> I[Área administrativa]
+  H -- $ --> J{Permissão de financeiro?}
+  J -- Não --> J1[Acesso negado com aviso]
+  J -- Sim --> K[Financeiro]
+```
+
+### F3 — Dia de jogo: simulador, partida e ranking (fluxo crítico de G1 e M4)
+
+```mermaid
+flowchart TD
+  A[Admin abre o simulador] --> B[Data, formato, N por time, aptos]
+  B --> Q{Formato}
+  Q -- 2 times --> B2[Informa só 1º tempo e limite K]
+  B2 --> C{Aptos >= 2N?}
+  C -- Não --> C1[Mostra o maior N possível] --> B
+  C -- Sim --> D[Ordena pelo acumulado antes da data: RN-08]
+  D --> E[Titulares, reservas que entram e não entra: RN-09A]
+  E --> F[Distribui entre os 2 times: RN-10A]
+  F --> G[Times, pares sai/entra, indicadores, avisos, lista não entra]
+  Q -- 3 ou mais times --> T1[T = aptos ÷ N, arredondado para cima]
+  T1 --> T2{T >= 3, ou seja, aptos > 2N?}
+  T2 -- Não --> T3[Sugere N menor ou formato 2 times] --> B
+  T2 -- Sim --> T4[Times completos de N + 1 time incompleto com o resto, se houver: RN-09B]
+  T4 --> T5[Distribui todos os aptos pelo nível médio e pela idade média: RN-10B]
+  T5 --> T6[Times, indicadores, avisos; incompleto identificado]
+  T6 --> H
+  G --> H{Admin satisfeito?}
+  H -- Ajusta --> I[Move/troca; recalcula] --> G
+  H -- Refazer --> Q
+  H -- Confirma --> J[Salva escalação + evento de uso]
+  J --> K[Jogo acontece]
+  K --> L[Nova partida na data]
+  L --> M{Há escalação confirmada?}
+  M -- Sim --> M1[Pré-marca todos os aptos como presentes, inclusive não entra]
+  M -- Não --> M2[Todos ausentes]
+  M1 --> N[Marca chuva, lesionados e expulsos; corrige]
+  M2 --> N
+  N --> O{Data válida e sem duplicidade?}
+  O -- Não --> O1[Recusa / oferece editar a existente] --> L
+  O -- Sim --> P[Salva + evento de uso; ranking acumulado atualizado]
+```
+
+### F4 — Exportar o ranking em PDF
+
+```mermaid
+flowchart TD
+  A[Ranking geral com o mês exibido na tela] --> B[Exportar PDF]
+  B --> C[Ranking na ordem do acumulado atual; colunas #, Jogador, PTS INICIAL, rodadas do mês exibido + anteriores até 12 com pontos e situação, PTS FINAL; legenda]
+  C --> D{Cabe em 1 página A4?}
+  D -- Não --> D1[Remove colunas de meses anteriores; recalcula o PTS INICIAL: I-42] --> D
+  D -- Sim --> E[Gera PDF + evento de uso]
+  E --> F{Dispositivo compartilha arquivos?}
+  F -- Sim --> G[Folha de compartilhamento]
+  F -- Não --> H[Baixa o arquivo]
+```
+
+### F5 — Financeiro: fechar o mês
+
+```mermaid
+flowchart TD
+  A[Admin com permissão abre $] --> B[Mês: ativos com pagou/não pagou]
+  B --> C{Ação}
+  C -- Marca pagou --> D{Mensalidade configurada?}
+  D -- Sim --> D1[Cria entrada vinculada; saldo atualizado]
+  D -- Não --> D2[Só registra a marcação]
+  C -- Desmarca --> E{Confirma?}
+  E -- Sim --> E1[Remove marcação e entrada vinculada]
+  C -- Novo lançamento --> F[Entrada ou saída] --> G[Saldo atual e resumo do mês]
+  C -- Outro mês --> B
+```
+
+### F6 — Dono cria um grupo e o primeiro admin
+
+```mermaid
+flowchart TD
+  A[Dono na área do dono] --> B[Novo grupo: nome, dia, frequência, horário, nome e e-mail do 1º admin]
+  B --> C{Campos válidos?}
+  C -- Não --> B
+  C -- Sim --> D{E-mail já é admin?}
+  D -- Sim --> D1[Vincula ao novo grupo, sem mudar senha]
+  D -- Não --> D2[Cria admin com senha aleatória exibida uma vez]
+  D1 --> E[Grupo criado: pesos padrão, 6 habilidades, uso próprio, link]
+  D2 --> E
+  E --> F[Dono repassa e-mail + senha ao admin fora do app]
+  F --> G[1º login do admin: troca obrigatória de senha]
+  G --> H[Admin cadastra outros admins, jogadores, pesos]
+```
+
+---
+
+## 5. Dependências entre Requisitos e Integrações Externas
+
+### 5.1 Dependências entre requisitos
+
+| Requisito | Depende de | Motivo |
+|---|---|---|
+| RF-02 a RF-07 (dono) | RF-01 | É preciso a conta do dono |
+| RF-08 a RF-10 (grupos) | RF-02 | O grupo nasce pelo dono |
+| RF-11 a RF-18 (admins) | RF-02 | O primeiro admin nasce com o grupo |
+| RF-12 → RF-06 | — | O pedido de "esqueci a senha" aparece na área do dono |
+| RF-19 a RF-22 (jogadores) | RF-02, RF-11 | O jogador pertence a um grupo e é cadastrado por admin |
+| RF-23/24 (pesos) | RF-02 (RN-18) | Os pesos padrão nascem com o grupo |
+| RF-25 a RF-28 (partidas) | RF-19, RF-23 | Usam os jogadores e os pesos vigentes |
+| RF-29 a RF-34 (ranking) | RF-25, RF-23, RF-19 | O ranking acumulado é calculado das partidas |
+| RF-35 a RF-37 (habilidades) | RF-02, RF-19 | O catálogo inicial nasce com o grupo; as notas são por jogador |
+| RF-38 a RF-48 (simulador) | RF-29/30 (RN-08), RF-37, RF-19 | Ordem pelo acumulado, nível e idade |
+| RF-26 (pré-preenchimento) | RF-48 | Usa a escalação confirmada |
+| RF-49 a RF-52 (PDF) | RF-29 a RF-32 | Reproduz o ranking |
+| RF-56 a RF-58 (uso) | RF-29, RF-48, RF-49, RF-25 | Os eventos vêm dessas ações |
+| RF-59 a RF-63 (financeiro) | RF-18, RF-19, RF-21 | Permissão e jogadores ativos |
+| RF-55 (TWA) | RF-53, RNF-11, I1 no ar | A TWA empacota o PWA instalável |
+
+Caminho crítico até a janela de 8 semanas:
+RF-01 → RF-02 → RF-11/14 → RF-19 → RF-23 → RF-25 → RF-29/30 → (RF-35/36 → RF-38..48) → RF-49..52 + RF-56/57.
+
+A TWA (RF-55) corre em paralelo a partir do fim do I1.
+
+### 5.2 Integrações externas
+
+| Integração | Uso | Obrigatória? | Observação |
+|---|---|---|---|
+| Navegador (Safari iOS e Chrome Android): instalação de PWA, service worker, armazenamento local | RF-53, RF-54, RF-34, RF-56 | Sim | Restrições do iOS na Seção 6 (PR-06) |
+| Folha de compartilhamento do sistema (Web Share com arquivos) | RF-52 | Não (há alternativa: baixar) | PR-07 |
+| Google Play Console e vínculo de domínio (TWA) | RF-55 | Sim (Should) | A conta já está paga. Teste fechado com 12 testadores por 14 dias (PR-13) |
+| Hospedagem, banco de dados e domínio | Todos | Sim | Escolha do Coordenador, com meta de plano gratuito |
+| WhatsApp | Só como destino do compartilhamento | Não | Sem integração por API |
+| Gateway de pagamento / Pix | — | Não (fora da Fase 1) | Cobrança do app é da Fase 2 |
+| Serviço de e-mail | — | **Não** | Por decisão do usuário (P-25), a recuperação de senha é interna, sem e-mail |
+
+---
+
+## 6. Premissas e Riscos Resolvidos
+
+Status de cada premissa ou risco herdado do PRD.md §6. "Validada" e "Refutada" têm evidência citada. "Não resolvível por pesquisa" significa que só o usuário ou o uso real resolvem. Essas ficam abertas, com dono e prazo.
+
+| # | Premissa / risco | Status | Evidência / conclusão | Efeito no requisito |
+|---|---|---|---|---|
+| PR-01 | O grupo aceita os pesos e o desempate por idade | **Não resolvível por pesquisa** | Depende de conversa com o grupo. Dono: Leandro, antes do I1. O usuário já definiu os pesos padrão (1 e −1) | RN-18. RN-04 protege contra efeito retroativo |
+| PR-02 | Lançamento de partida em até 2 min | **Não resolvível agora** | Medição no fim do I1 | O pré-preenchimento (RF-26) reduz o tempo |
+| PR-03 | O admin sabe quem foi lesionado ou expulso | **Não resolvível por pesquisa** | A confirmar com o Leandro antes do I1. A definição "foi e não jogou" (P-09) facilita, porque é observável na hora | RF-28 permite corrigir depois |
+| PR-04 | O simulador é usado | **Não resolvível agora** | M4 via RF-57/58 | — |
+| PR-05 | Os jogadores abrem o ranking sem login | **Parcialmente sustentada pelo desenho** | Acesso público por link, confirmado (P-08). A adesão é medida por M2 | RF-29, RF-34 |
+| PR-06 | O PWA no iPhone mantém dados e sessão | **Parcialmente validada, com risco residual** | A Apple esclareceu que apps na tela de início têm contador próprio no limite de 7 dias e não espera apagar seus dados próprios ([The Register, 2020](https://www.theregister.com/2020/03/26/apple_relax_were_not_totally/); [Search Engine Land](https://searchengineland.com/what-safaris-7-day-cap-on-script-writeable-storage-means-for-pwa-developers-332519)). Segundo o WebKit, cookies criados por JavaScript ainda podem ser apagados no domínio principal; cookies do servidor e armazenamento HTML não ([WebKit Bugzilla 211775](https://bugs.webkit.org/show_bug.cgi?id=211775)). Há um relato de logout após 7 dias ([WebKit Bugzilla 237350](https://bugs.webkit.org/show_bug.cgi?id=237350)) | **Risco para o Coordenador avaliar no SDD.md:** a sessão do admin no iPhone não deve depender de um mecanismo sujeito ao limite. Teste em iPhone real. Os dados ficam no servidor |
+| PR-07 | Compartilhar o PDF no WhatsApp | **Parcialmente validada** | A Web Share API é suportada no Safari do iOS e no Chrome para Android ([caniuse](https://www.caniuse.com/web-share)), exige HTTPS e um gesto do usuário ([web.dev](https://web.dev/web-share?authuser=1)). O suporte a arquivos no iOS atual não foi confirmado ([WebKit Bugzilla 198606](https://bugs.webkit.org/show_bug.cgi?id=198606)) | RF-52 tem a alternativa de baixar. Testar em aparelho real no I3 |
+| PR-08 | A infraestrutura cabe no plano gratuito | **Não resolvida, com dono técnico** | O volume (RNF-09) segue para o Coordenador | Dono: Coordenador, no `/definir` |
+| PR-09 | Dados pessoais sem exposição indevida (LGPD) | **Validada em nível estratégico** | O art. 4º, I, da Lei 13.709/2018 exclui o tratamento por pessoa natural para fins exclusivamente particulares e não econômicos ([Senado, LGPD 1ª ed.](https://www2.senado.leg.br/bdsf/bitstream/handle/id/658231/Lei_geral_protecao_dados_pessoais_1ed.pdf); [Trilhante](https://trilhante.com.br/trilha/direito-do-trabalho/curso/lgpd-nas-relacoes-trabalhistas/aula/a-lgpd-se-aplica-as-relacoes-de-trabalho-domesticas-2)). A Fase 1 tende a se enquadrar e a Fase 2 sai da exclusão. Não é parecer jurídico. Os pedidos de "esqueci a senha" guardam só o e-mail de um admin, sem dado de jogador | RF-33, RNF-06, RF-64 |
+| PR-10 | Escopo largo para horas de hobby | **Mitigada** | Incrementos I1 a I4 (PRD.md §4) | Caminho crítico (5.1) |
+| PR-11 | Disputa ao mudar os pesos | **Resolvida pelo usuário** | Os pesos valem só daqui para a frente (P-06) | RN-04, RF-23 (sem vigência no passado) |
+| PR-12 | Com o ranking contínuo, os veteranos dominam o topo e os novatos quase nunca são titulares | **Não resolvível agora** (é efeito social) | Consequência direta de P-05. Observar nas 8 semanas a posição dos jogadores com menos de 2 meses de grupo | Nenhuma mudança agora. Uma janela móvel ou temporada seria mudança de escopo, a decidir pelo usuário no futuro |
+| PR-13 | Teste fechado da Play com 12 testadores por 14 dias | **Validada como exigência; adesão do grupo pendente** | A Ajuda do Play Console exige, para contas pessoais criadas depois de 13/11/2023, teste fechado com pelo menos 12 testadores inscritos por 14 dias contínuos ([Google Play Console Help, answer 14151465](https://support.google.com/googleplay/android-developer/answer/14151465?hl=en-GB)). Se a conta do Leandro for anterior a essa data ou de organização, a exigência pode não se aplicar; isso não foi verificado | RF-55. Recrutamento no grupo: Leandro, no fim do I1 |
+| PR-14 | Recuperação de senha sem e-mail não deixa admin travado | **Não resolvível agora** | Depende da rotina do dono em atender os pedidos (RF-06). Se o próprio dono perder a senha, a recuperação é manual, pela infraestrutura (I-34) | RF-06, RF-12, RF-16 |
+
+---
+
+## 7. Interpretações Registradas
+
+### 7.1 Interpretações provisórias (aguardam o usuário)
+
+| ID | Ambiguidade | Interpretação escolhida | Por quê | Pergunta |
+|---|---|---|---|---|
+| I-42 | No PDF com colunas de meses anteriores (I-17), a que se refere o PTS INICIAL | PTS INICIAL do PDF = acumulado antes da **primeira partida impressa** (não do mês exibido). PTS FINAL = o do mês exibido (RN-21). Assim a linha sempre fecha: PTS INICIAL + rodadas impressas = PTS FINAL. Se o PDF tiver só partidas do mês exibido, coincide com a tela. O cabeçalho da coluna deve deixar claro a partir de quando ela conta (forma: Coordenador/UX) | Preserva ao mesmo tempo a fórmula que o usuário definiu na P-30 e a decisão P-19. A alternativa (PTS INICIAL do mês exibido, com as colunas anteriores "fora da conta") deixaria a linha sem fechar | P-32 (PRD.md §7.1) |
+
+### 7.1.1 Interpretações confirmadas pelo usuário (reabertura pontual 4.1)
+
+| ID | Ambiguidade original | Interpretação vigente | Origem |
+|---|---|---|---|
+| I-41 | Colunas do ranking na tela e no PDF | Nesta ordem: #, Jogador, PTS INICIAL (acumulado até o início do mês exibido = PTS FINAL do mês anterior), uma coluna por partida do mês com os **pontos** da rodada do jogador (no lugar das letras P/L/E/F), com cor por situação (presente, lesionado, expulso, falta, "–" antes de entrar no grupo) e, no cabeçalho, ícone de chuva (com chuva) ou de sol (sem chuva), e PTS FINAL (PTS INICIAL + soma das rodadas do mês = PTS INICIAL do mês seguinte; no mês corrente, acumulado até hoje). As contagens de presenças e faltas do mês saem da tela e do PDF. Substitui a composição de colunas de RF-29 e RF-50 da rodada 4; complementa I-02 (a navegação agora troca PTS INICIAL, rodadas e PTS FINAL, não mais contagens) e I-06 (o público continua vendo presença e falta, por rodada, não em contagem). **Mudança só de apresentação:** pontuação, acumulado contínuo e ordem sempre pelo acumulado atual (P-26) ficam como estão, também em mês passado, mesmo que nele a ordem não acompanhe o PTS FINAL exibido | P-30, decisão do Leandro, com o complemento de que o conceito do ranking não muda |
+
+### 7.2 Interpretações confirmadas pelo usuário (rodada 4)
+
+| ID | Ambiguidade original | Interpretação vigente | Origem |
+|---|---|---|---|
+| I-36 | Sobra no formato 3 ou mais times | Quem sobra forma um único time incompleto. T é arredondado para cima. Não há "aguardam" (RN-09B). Substitui a opção (a), que tinha sido aplicada provisoriamente na rodada 3 | P-29, opção (c) |
+
+### 7.3 Interpretações confirmadas pelo usuário (rodada 3)
+
+| ID | Ambiguidade original | Interpretação vigente | Origem |
+|---|---|---|---|
+| I-02 | Ranking contínuo e tela mensal | A ordem e os pontos acumulados são sempre os atuais (até hoje), em qualquer mês exibido. A navegação troca só as partidas do mês e as contagens de presenças e faltas daquele mês. Não existe "foto" do ranking por mês. O simulador usa o acumulado até a véspera do jogo | P-26 (corrigiu a interpretação provisória da rodada 2) |
+| I-12 | Modelo com 3 ou mais times | Sem 1º e 2º tempo, sem substituições, sem "só 1º tempo" e sem "não entra". Só a divisão inicial equilibrada por habilidade e idade. Esse esquema completo vale só para o formato de 2 times | P-27 (corrigiu a interpretação provisória da rodada 2) |
+| I-13 | "Só 1º tempo" fora dos titulares | Reserva comum: entra no 2º tempo pela ordem e pode ficar como "não entra" se o limite acabar, com pontuação de presença | P-28 |
+
+### 7.4 Interpretações confirmadas pelo usuário (rodada 2)
+
+| ID | Ambiguidade original | Interpretação vigente | Origem |
+|---|---|---|---|
+| I-01 | Semântica de "habilidades" | Catálogo por grupo, 6 habilidades iniciais (Visão de Jogo, Passe, Preparo Físico, Drible, Chute, Desarme), nota de 1 a 10 por jogador em cada uma. O nível é a média | P-04 |
+| I-03 | Mudança de pesos | Vale só da data do registro em diante | P-06 |
+| I-04 | Senha única ou login individual | Login individual com e-mail e senha | P-07 |
+| I-05 | Senha separada para o "$" | Mesmo login, com permissão de financeiro | P-07 |
+| I-06 | Ranking público | Público por link, sem login, mostrando apelido, presenças, faltas e pontos | P-08 |
+| I-07 | "Lesionado" | Foi e não jogou | P-09 |
+| I-08 | Pontos da expulsão | Peso único, sem variar com chuva. Pesos inteiros de −10 a 10. Padrão −1 | P-10 |
+| I-09 | Falta pontua? | Vale 0, só contagem | P-11 |
+| I-10 | Desempate com o mesmo ano | Apelido em ordem alfabética | P-12 |
+| I-11 | Goleiros no simulador | **Substituída:** os goleiros não são controlados. A posição é só um dado de cadastro | P-13 |
+| I-14 | Sobra com limite de substituições | Os de pior ranking ficam "não entra", **com pontuação de presença** (RN-19) | P-16 |
+| I-15 | Prioridade do equilíbrio | Formato 2 times: substituições iguais, depois habilidade, depois idade. Formato 3 ou mais times: habilidade, depois idade (P-27) | P-17 |
+| I-16 | Quem usa o simulador | Só admin | P-18 |
+| I-17 | Colunas do PDF | Partidas do mês e, se couber, as anteriores, até 12 | P-19 |
+| I-18 | Financeiro | Mensalidade opcional. "Pagou" gera a entrada vinculada. Sem jogador avulso | P-20 |
+| I-19 | Jogador em vários grupos | Um cadastro por grupo | P-21 |
+| I-20 | Tamanho do grupo | Até 40 ativos e até 30 presentes (usuário indiferente; premissa mantida) | P-01 |
+| I-21 | Pesos iniciais | 1 para cada presença e −1 para expulsão | P-22, P-10 |
+| I-24 | Quem exporta o PDF | Qualquer pessoa com o link | P-23 |
+| I-25 | Faltas de quem entrou no meio do mês | Campo de data de entrada. As faltas contam só a partir dela | P-24 |
+| I-27 | Recuperação de senha | Outro admin do grupo ou o dono redefine. "Esqueci a senha" gera aviso interno só ao dono. Sem e-mail | P-25 |
+
+### 7.5 Interpretações do BA sem pergunta pendente (decisão de interpretação, não de produto)
+
+As decisões I-29, I-30 e I-32 (rodada 2) e I-37 (rodada 3) foram apresentadas ao usuário e não foram contestadas. Ficam mantidas.
+
+| ID | Ambiguidade | Interpretação escolhida | Por quê |
+|---|---|---|---|
+| I-22 | Valores de "posição" | Goleiro, Defensor, Meio-campo, Atacante, só para cadastro | O briefing pede o campo. Com a P-13, a posição não tem efeito em nenhuma regra |
+| I-23 | Mais de uma partida por dia | No máximo uma por grupo por data | Evita duplicidade numa pelada recorrente |
+| I-26 | Uso do dia e da frequência do grupo | Informativos, e usados para sugerir a data na partida e no simulador | O briefing pede os campos sem dizer o uso |
+| I-28 | Edição da situação comercial | **Atualizada:** editável só pelo dono, na área dele, sem efeito no comportamento | Com o papel de dono (P-07), passou a existir um lugar natural para essa edição |
+| I-29 | "Esqueci a senha" com e-mail que não é de admin | Mostra a mesma mensagem e não registra nada. Se o e-mail já tem pedido pendente, só atualiza a data | Não revela quais e-mails são de admin (segurança) e evita lotar a área do dono com pedidos repetidos. O comportamento pedido para o e-mail válido fica igual |
+| I-30 | Alcance do dono sobre os dados dos grupos | Só metadados dos grupos dos quais não é admin. Jogadores, notas, partidas e financeiro ficam fora | O usuário definiu o dono como quem cria grupos e admins, não como quem opera cada grupo. Também prepara a privacidade da Fase 2 |
+| I-31 | "CRUD de grupos" na área admin e o dono criando grupos | Criar e arquivar: só o dono. Editar dados do grupo: os admins do grupo | Concilia o briefing (CRUD de grupos) com P-07 (o dono cria o grupo) |
+| I-32 | "Ilimitado" com mais reservas do que titulares | Cada time troca no máximo os seus N titulares no intervalo. Os reservas excedentes ficam "não entra" (com presença) | Um time não tem mais vagas no 2º tempo do que jogadores em campo |
+| I-33 | Faixa do número de times | **Substituída pela I-38.** Não existe mais uma faixa de T digitada | P-27 mostrou que, com 3 ou mais times, o número de times sai dos aptos |
+| I-34 | O dono perde a própria senha | Recuperação manual, pela infraestrutura, fora do app | Não há ninguém acima do dono. Detalhe operacional do Coordenador |
+| I-35 | "Contínuo": o acumulado zera em algum momento? | Nunca zera. Soma desde a primeira partida do grupo | Leitura literal de "geral e contínuo". Qualquer temporada seria uma mudança futura (PR-12) |
+| I-37 | Quem aparece nas linhas do ranking, se a ordem é sempre a atual | Os jogadores ativos hoje, iguais em qualquer mês exibido. Um inativado sai das linhas (histórico preservado; volta se for reativado). Numa partida anterior à entrada do jogador, a marcação é "–" | Com a ordem fixa no acumulado atual (P-26), a lista também é a atual. Consequência: ao ver um mês antigo, as presenças de quem já saiu do grupo não aparecem na grade |
+| I-38 | Como se escolhe entre 2 times e 3 ou mais times, e de onde sai T | O admin escolhe o formato. No formato 3 ou mais times, T = aptos ÷ N **arredondado para cima** (atualizado na rodada 4, P-29), e precisa ser 3 ou mais (aptos > 2×N) | Os exemplos do usuário derivam T dos aptos. O formato precisa ser escolhido porque 2 times com reservas e 3 ou mais times sem reservas podem ter os mesmos aptos e o mesmo N |
+| I-39 | Como o time incompleto entra no equilíbrio de habilidade e idade | Todos os times, inclusive o incompleto, são comparados pelo **nível médio** e pela **idade média**. Qualquer apto pode ir para o time incompleto. Não há regra de ranking nem de nível para escolher quem vai para ele | Times de tamanhos diferentes não são comparáveis por soma: a soma sempre deixaria o incompleto "mais fraco" e empurraria para ele os melhores. A média equilibra a qualidade por jogador, que é o que o usuário pediu ("divisão inicial equilibrada"). Sem 2º tempo nem reservas nesse formato, não há mérito de ranking a preservar. A desvantagem numérica do time incompleto é aceita, porque foi a escolha do usuário |
+| I-43 | O que a coluna de uma partida mostra quando o jogador não pontuou | Falta: o número 0, com a indicação de falta. Jogador não ativo na data (antes de entrar, ou inativado): "–", sem número, e não entra em nenhuma soma. Presente, lesionado e expulso: o número de pontos da RN-01 (ex.: 1, 1 e −1 com os pesos padrão), cada um com sua indicação. Como os números se repetem entre situações, a situação precisa de indicador além da cor (RNF-10) | O usuário pediu os pontos no lugar das letras e cor por situação, e citou o "–". Falta vale 0 (P-11), então o número coerente é 0. A exigência de não depender só de cor já existia (RNF-10) e fica mais crítica porque presente e lesionado têm o mesmo número no padrão |
+| I-40 | Time incompleto muito pequeno (ex.: 9 aptos com N = 4 dão 2 times de 4 e 1 time de 1) | Permitido, com aviso que sugere outros valores de N. Não bloqueia | Respeita a escolha do usuário pelo time incompleto e deixa o admin decidir pelo ajuste de N |
