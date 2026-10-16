@@ -20,6 +20,9 @@ export const roteador = createBrowserRouter([
   // Áreas com login (/admin, /conta, /dono, /entrar/nova-senha): as telas entram aqui como filhas.
   {
     Component: RotaProtegida,
-    children: [{ path: '/admin/:grupoId', Component: LayoutAdmin, children: [] }],
+    children: [
+      { path: '/entrar/nova-senha', lazy: () => import('../telas/nova-senha/NovaSenha') },
+      { path: '/admin/:grupoId', Component: LayoutAdmin, children: [] },
+    ],
   },
 ]);

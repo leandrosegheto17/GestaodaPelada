@@ -9,9 +9,11 @@ interface Props extends Omit<PropsCampo, 'children' | 'lado' | 'classeEntrada' |
   /** Obrigatório: `current-password` ou `new-password`. */
   autoComplete: 'current-password' | 'new-password';
   id?: string;
+  /** Mostra o botão "Mostrar" (padrão). Telas de nova senha não têm. */
+  comMostrar?: boolean;
 }
 
-export function CampoSenha({ valor, aoMudar, autoComplete, id, ...moldura }: Props) {
+export function CampoSenha({ valor, aoMudar, autoComplete, id, comMostrar = true, ...moldura }: Props) {
   const gerado = useId();
   const idEntrada = id ?? gerado;
   const [visivel, setVisivel] = useState(false);
@@ -20,14 +22,16 @@ export function CampoSenha({ valor, aoMudar, autoComplete, id, ...moldura }: Pro
       {...moldura}
       id={idEntrada}
       lado={
-        <Botao
-          variante="secundario"
-          aria-pressed={visivel}
-          aria-controls={idEntrada}
-          onClick={() => setVisivel(!visivel)}
-        >
-          Mostrar
-        </Botao>
+        comMostrar ? (
+          <Botao
+            variante="secundario"
+            aria-pressed={visivel}
+            aria-controls={idEntrada}
+            onClick={() => setVisivel(!visivel)}
+          >
+            Mostrar
+          </Botao>
+        ) : undefined
       }
     >
       {(entrada) => (
