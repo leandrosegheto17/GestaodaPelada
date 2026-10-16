@@ -70,3 +70,27 @@ jobs:
           cache-dependency-path: pnpm-lock.yaml
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @pelada/api test
+
+  e2e:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @pelada/web exec playwright install --with-deps chromium
+      - run: pnpm --filter @pelada/web build
+      - run: pnpm --filter @pelada/web e2e
+      - run: pnpm --filter @pelada/web visual
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: visual
+          path: frontend/web/e2e/resultado/
+          if-no-files-found: ignore

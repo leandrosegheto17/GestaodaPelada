@@ -11,7 +11,9 @@
     "preview": "vite preview",
     "test": "vitest run --passWithNoTests",
     "typecheck": "tsc --noEmit -p .",
-    "lint:css": "stylelint \"src/**/*.css\""
+    "lint:css": "stylelint \"src/**/*.css\"",
+    "e2e": "playwright test -c e2e/playwright.config.ts --pass-with-no-tests",
+    "visual": "node e2e/visual.mjs"
   },
   "dependencies": {
     "@pelada/contrato": "workspace:*",

@@ -8,3 +8,4 @@ coverage
 .dev.vars
 test-results
 playwright-report
+frontend/web/e2e/resultado/
