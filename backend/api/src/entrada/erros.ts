@@ -35,3 +35,13 @@ export function responderValidacao(c: Context, erro: ZodError): Response {
 export function conflito(c: Context, codigo: string, mensagem: string): Response {
   return c.json(corpoErro(codigo, mensagem), 409);
 }
+
+/** 422 em `aptos` para ids que não são de jogadores ativos do grupo na data; a mesma mensagem vale para "de outro grupo" e "inexistente". */
+export function responderAptoInvalido(c: Context): Response {
+  return c.json(
+    corpoErro(CODIGOS_ERRO.validacao, 'Corrija os campos indicados.', {
+      aptos: 'Há jogadores que não estão ativos no grupo nesta data.',
+    }),
+    422,
+  );
+}
