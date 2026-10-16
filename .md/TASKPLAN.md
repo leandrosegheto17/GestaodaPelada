@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-16 19:02
+Atualizado: 2026-10-16 19:05
 
-Resumo: Não executada 80 · Executada (aguarda teste) 128 · total 208
+Resumo: Não executada 79 · Executada (aguarda teste) 129 · total 208
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -141,7 +141,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 126 | TP-0126 | executor | ✔ | Tela T19: Admins do grupo | L27 | TP-0021, TP-0089, TP-0095, TP-0096, TP-0097, TP-0100, TP-0101, TP-0106 | Executada (aguarda teste) |
 | 127 | TP-0127 | executor | ✔ | Tela T20: Dados do grupo e link | L27 | TP-0021, TP-0089, TP-0093, TP-0095, TP-0096, TP-0097, TP-0106 | Executada (aguarda teste) |
 | 128 | TP-0128 | executor | ✔ | Tela T21: Uso do app | L27 | TP-0024, TP-0089, TP-0095, TP-0101, TP-0106 | Executada (aguarda teste) |
-| 129 | TP-0129 | executor | ✔ | Tela T26: Área do dono | L28 | TP-0022, TP-0089, TP-0095, TP-0097, TP-0098, TP-0100, TP-0101, TP-0105 | Não executada |
+| 129 | TP-0129 | executor | ✔ | Tela T26: Área do dono | L28 | TP-0022, TP-0089, TP-0095, TP-0097, TP-0098, TP-0100, TP-0101, TP-0105 | Executada (aguarda teste) |
 | 130 | TP-0130 | executor | ✔ | Tela T27: Novo grupo | L28 | TP-0022, TP-0089, TP-0093, TP-0095, TP-0096, TP-0097, TP-0098, TP-0100, TP-0105 | Não executada |
 | 131 | TP-0131 | executor | ✔ | Tela T28: Grupo (visão do dono) | L28 | TP-0022, TP-0089, TP-0093, TP-0095, TP-0096, TP-0098, TP-0100, TP-0101, TP-0105 | Não executada |
 | 132 | TP-0132 | executor | ✔ | [U] Neon: projeto novo em São Paulo (PI-1) — **tarefa manual do usuário** | L29 | — | Não executada |

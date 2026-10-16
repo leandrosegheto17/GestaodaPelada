@@ -1,0 +1,76 @@
+.subtitulo {
+  font-size: var(--texto-xl);
+  text-transform: uppercase;
+  letter-spacing: var(--espacamento-caixa-alta);
+  margin: var(--esp-6) 0 var(--esp-3);
+}
+.secao {
+  margin-top: var(--esp-6);
+  padding-top: var(--esp-4);
+  border-top: 1px solid var(--cor-linha);
+}
+.secao .subtitulo {
+  margin-top: 0;
+}
+.primeira .subtitulo {
+  margin-top: 0;
+}
+.grupoBotoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--esp-2);
+  align-items: center;
+}
+.acima3 {
+  margin-top: var(--esp-3);
+}
+.faixa {
+  margin-bottom: var(--esp-3);
+}
+.estreito {
+  max-width: var(--largura-formulario);
+  margin: 0 auto;
+}
+.formulario {
+  display: grid;
+  gap: var(--esp-4);
+}
+.duasColunas {
+  display: grid;
+  gap: var(--esp-4);
+}
+.cartao {
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-linha);
+  border-radius: var(--raio);
+  padding: var(--esp-4);
+}
+.indicadores {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px var(--esp-3);
+  margin: var(--esp-3) 0 0;
+  font-size: var(--texto-sm);
+}
+.indicadores dt {
+  color: var(--cor-texto-sec);
+}
+.indicadores dd {
+  margin: 0;
+  font-weight: var(--peso-forte);
+  text-align: right;
+}
+.paragrafo {
+  margin: 0 0 var(--esp-3);
+  overflow-wrap: anywhere;
+}
+.ajuda {
+  font-size: var(--texto-sm);
+  color: var(--cor-texto-sec);
+  margin: 0;
+}
+@media (min-width: 600px) {
+  .duasColunas {
+    grid-template-columns: 1fr 1fr;
+  }
+}

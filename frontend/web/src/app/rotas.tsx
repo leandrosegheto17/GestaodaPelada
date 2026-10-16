@@ -1,5 +1,6 @@
 import { createBrowserRouter } from 'react-router';
 import { LayoutAdmin } from '../componentes/layout-admin';
+import { LayoutDono } from '../componentes/layout-dono/LayoutDono';
 import { carregarEntrada } from '../telas/entrada/carregarEntrada';
 import { RotaProtegida } from './guarda/RotaProtegida';
 
@@ -21,6 +22,11 @@ export const roteador = createBrowserRouter([
   {
     Component: RotaProtegida,
     children: [
+      {
+        path: '/dono',
+        Component: LayoutDono,
+        children: [{ index: true, lazy: () => import('../telas/dono/AreaDono') }],
+      },
       { path: '/admin', lazy: () => import('../telas/grupos/EscolherGrupo') },
       { path: '/conta/senha', lazy: () => import('../telas/minha-senha/MinhaSenha') },
       { path: '/entrar/nova-senha', lazy: () => import('../telas/nova-senha/NovaSenha') },

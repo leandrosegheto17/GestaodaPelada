@@ -1,6 +1,6 @@
 import { DIAS_DA_SEMANA, FREQUENCIAS } from '@pelada/contrato';
 import { describe, expect, it } from 'vitest';
-import { descreverAgenda } from './agenda';
+import { descreverAgenda, diaEFrequencia } from './agenda';
 
 describe('descreverAgenda', () => {
   it.each([
@@ -20,5 +20,15 @@ describe('descreverAgenda', () => {
         expect(descreverAgenda({ diaSemana, frequencia, horario: '20:00' })).toMatch(/20:00$/);
       }
     }
+  });
+});
+
+describe('diaEFrequencia', () => {
+  it.each([
+    ['quinta', 'semanal', 'Quinta, semanal'],
+    ['domingo', 'quinzenal', 'Domingo, quinzenal'],
+    ['terca', 'mensal', 'Terça, mensal'],
+  ] as const)('%s %s', (diaSemana, frequencia, esperado) => {
+    expect(diaEFrequencia({ diaSemana, frequencia })).toBe(esperado);
   });
 });
