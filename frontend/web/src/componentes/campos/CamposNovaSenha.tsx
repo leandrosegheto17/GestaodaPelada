@@ -10,10 +10,12 @@ interface Props {
   aoMudarNova: (valor: string) => void;
   aoMudarConfirmacao: (valor: string) => void;
   erros: { novaSenha?: string | undefined; confirmacao?: string | undefined };
+  /** Com um único erro na tela (sem resumo), o erro do campo vira `role=alert`. */
+  erroComoAlerta?: boolean;
 }
 
 /** Par "Nova senha" + "Confirmar nova senha", com a regra do contrato visível. Sem "Mostrar". */
-export function CamposNovaSenha({ nova, confirmacao, aoMudarNova, aoMudarConfirmacao, erros }: Props) {
+export function CamposNovaSenha({ nova, confirmacao, aoMudarNova, aoMudarConfirmacao, erros, erroComoAlerta }: Props) {
   return (
     <>
       <CampoSenha
@@ -23,6 +25,7 @@ export function CamposNovaSenha({ nova, confirmacao, aoMudarNova, aoMudarConfirm
         comMostrar={false}
         ajuda={`De ${LIMITES.senha.min} a ${LIMITES.senha.max} caracteres.`}
         erro={erros.novaSenha}
+        {...(erroComoAlerta ? { erroComoAlerta } : {})}
         valor={nova}
         aoMudar={aoMudarNova}
       />
@@ -32,6 +35,7 @@ export function CamposNovaSenha({ nova, confirmacao, aoMudarNova, aoMudarConfirm
         autoComplete="new-password"
         comMostrar={false}
         erro={erros.confirmacao}
+        {...(erroComoAlerta ? { erroComoAlerta } : {})}
         valor={confirmacao}
         aoMudar={aoMudarConfirmacao}
       />

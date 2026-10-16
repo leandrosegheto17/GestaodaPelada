@@ -7,7 +7,7 @@ import estilos from './Barra.module.css';
 export interface PropsMenuConta {
   menuAberto?: boolean;
   /** Abre a folha do menu da conta (a folha em si é do layout). */
-  aoAbrirMenu: () => void;
+  aoAbrirMenu?: (() => void) | undefined;
 }
 
 interface Props extends PropsMenuConta {
@@ -29,16 +29,20 @@ export function BarraInterna({ nome, textoLink, destinoLink, destinoRanking, men
           </Link>
         ) : null}
       </div>
-      <nav className={estilos.acoes} aria-label="Atalhos">
-        {destinoRanking ? (
-          <BotaoIcone rotulo="Ver ranking" para={destinoRanking} semBorda>
-            <Icone nome="lista" tamanho={24} />
-          </BotaoIcone>
-        ) : null}
-        <BotaoIcone rotulo="Menu da conta" aoClicar={aoAbrirMenu} menu={{ aberto: menuAberto }} semBorda>
-          <Icone nome="conta" tamanho={24} />
-        </BotaoIcone>
-      </nav>
+      {destinoRanking || aoAbrirMenu ? (
+        <nav className={estilos.acoes} aria-label="Atalhos">
+          {destinoRanking ? (
+            <BotaoIcone rotulo="Ver ranking" para={destinoRanking} semBorda>
+              <Icone nome="lista" tamanho={24} />
+            </BotaoIcone>
+          ) : null}
+          {aoAbrirMenu ? (
+            <BotaoIcone rotulo="Menu da conta" aoClicar={aoAbrirMenu} menu={{ aberto: menuAberto }} semBorda>
+              <Icone nome="conta" tamanho={24} />
+            </BotaoIcone>
+          ) : null}
+        </nav>
+      ) : null}
     </header>
   );
 }

@@ -8,11 +8,13 @@ import { OpcaoFolha } from '../dialogos/OpcaoFolha';
 
 interface Props {
   conta: SessaoEu['conta'];
+  /** Grupo em que a pessoa está: a tela de senha mostra o mesmo grupo na barra. */
+  grupoId: string;
   aoFechar: () => void;
 }
 
 /** Folha do menu da conta. Esconder opções é conveniência; a API é quem autoriza. */
-export function MenuConta({ conta, aoFechar }: Props) {
+export function MenuConta({ conta, grupoId, aoFechar }: Props) {
   const navegar = useNavigate();
   const sair = useSair();
   const aoSair = () => {
@@ -23,7 +25,7 @@ export function MenuConta({ conta, aoFechar }: Props) {
     <Folha titulo={conta.nome} aoFechar={aoFechar}>
       {sair.isError ? <Faixa tipo="erro">Não foi possível sair. Tente de novo.</Faixa> : null}
       <ListaFolha>
-        <OpcaoFolha para="/conta/senha">Minha senha</OpcaoFolha>
+        <OpcaoFolha para={`/conta/senha?grupo=${encodeURIComponent(grupoId)}`}>Minha senha</OpcaoFolha>
         {recursos.ligado('privacidade') ? <OpcaoFolha para="/privacidade">Privacidade</OpcaoFolha> : null}
         {conta.eDono ? <OpcaoFolha para="/dono">Área do dono</OpcaoFolha> : null}
         <OpcaoFolha aoEscolher={aoSair}>Sair</OpcaoFolha>

@@ -46,7 +46,9 @@ export function LayoutAdmin() {
       <main id="conteudo" tabIndex={-1} className={estilos.conteudo}>
         <Outlet />
       </main>
-      {menuAberto && dadosSessao ? <MenuConta conta={dadosSessao.conta} aoFechar={() => setMenuAberto(false)} /> : null}
+      {menuAberto && dadosSessao ? (
+        <MenuConta conta={dadosSessao.conta} grupoId={grupoId} aoFechar={() => setMenuAberto(false)} />
+      ) : null}
     </>
   );
 }

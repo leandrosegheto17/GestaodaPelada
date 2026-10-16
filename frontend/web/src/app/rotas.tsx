@@ -21,6 +21,7 @@ export const roteador = createBrowserRouter([
   {
     Component: RotaProtegida,
     children: [
+      { path: '/conta/senha', lazy: () => import('../telas/minha-senha/MinhaSenha') },
       { path: '/entrar/nova-senha', lazy: () => import('../telas/nova-senha/NovaSenha') },
       { path: '/admin/:grupoId', Component: LayoutAdmin, children: [] },
     ],
