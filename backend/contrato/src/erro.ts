@@ -7,7 +7,7 @@ export const CODIGOS_ERRO = {
   erroInterno: 'erro_interno',
   requisicaoRecusada: 'requisicao_recusada',
   trocaDeSenhaObrigatoria: 'troca_de_senha_obrigatoria',
-  semPermissao: 'sem_permissao',
+  semPermissaoFinanceiro: 'sem_permissao_financeiro',
   corpoGrande: 'corpo_grande',
 } as const;
 

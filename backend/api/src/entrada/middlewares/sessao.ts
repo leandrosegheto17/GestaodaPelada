@@ -1,5 +1,5 @@
 import { CODIGOS_ERRO } from '@pelada/contrato';
-import type { MiddlewareHandler } from 'hono';
+import type { Context, MiddlewareHandler } from 'hono';
 import { resolverSessao } from '../../aplicacao/acesso/sessao.js';
 import { definirCookieSessao, lerTokenSessao, limparCookieSessao } from '../../infraestrutura/sessao/cookie.js';
 import type { AppEnv } from '../app.js';
@@ -32,13 +32,18 @@ export const exigirSessao: MiddlewareHandler<AppEnv> = async (c, proximo) => {
   return proximo();
 };
 
-/** Sessão de escopo completo; quem ainda precisa trocar a senha recebe 403. */
-export const exigirSessaoCompleta: MiddlewareHandler<AppEnv> = async (c, proximo) => {
+/** Resposta de recusa se não há sessão completa (401 sem sessão, 403 se falta trocar a senha); senão `null`. */
+export function recusarSemSessaoCompleta(c: Context<AppEnv>): Response | null {
   if (c.var.sessao === null) {
     return c.json(corpoErro(CODIGOS_ERRO.naoAutenticado, 'Entre para continuar.'), 401);
   }
   if (c.var.sessao.escopo !== 'completo') {
     return c.json(corpoErro(CODIGOS_ERRO.trocaDeSenhaObrigatoria, 'Troque a senha temporária para continuar.'), 403);
   }
-  return proximo();
+  return null;
+}
+
+/** Sessão de escopo completo; quem ainda precisa trocar a senha recebe 403. */
+export const exigirSessaoCompleta: MiddlewareHandler<AppEnv> = async (c, proximo) => {
+  return recusarSemSessaoCompleta(c) ?? proximo();
 };
