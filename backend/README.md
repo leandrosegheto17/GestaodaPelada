@@ -53,3 +53,13 @@ trava de host (`--alvo producao` para o banco remoto). Nenhuma rota escreve o pa
 | Admin do Domingo, com financeiro                                | carlos.racha@exemplo.com.br | senha-de-teste-123 |
 | Senha temporária (troca obrigatória), sem grupo                 | rodrigo@exemplo.com.br      | Temporaria-teste-1 |
 | Sem grupo                                                       | paulo@exemplo.com.br        | senha-de-teste-123 |
+
+## Backup
+
+O workflow `backup.yml` roda todo dia às 07:00 UTC (04:00 em São Paulo) e sob demanda. Ele faz `pg_dump` com o usuário
+só de leitura, cifra o dump com `age` (`BACKUP_CHAVE` é uma identidade `AGE-SECRET-KEY-1…`) e guarda só o arquivo
+cifrado como artefato por 30 dias.
+
+- A falha do workflow agendado avisa por e-mail pelo GitHub: confira que as notificações de Actions estão ligadas.
+- Para decifrar e restaurar, veja o `DEPLOY.md`.
+- O dump contém dados pessoais (telefone, notas): nunca fica em claro e a chave fica no gerenciador de senhas.
