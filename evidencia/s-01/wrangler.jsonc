@@ -1,0 +1,10 @@
+{
+  // Só para `wrangler dev --remote` do SPK-0001. Não é publicado (G-15: deploy só pelo deploy.yml).
+  "name": "spike-s01",
+  "main": "worker.ts",
+  "compatibility_date": "2026-08-15",
+  "compatibility_flags": ["nodejs_compat"],
+  "hyperdrive": [
+    { "binding": "HYPERDRIVE", "id": "e06363bd85874f1eaffc6382da6d394b" }
+  ]
+}
