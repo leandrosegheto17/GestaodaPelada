@@ -3,7 +3,7 @@ import type { jsPDF } from 'jspdf';
 import { alturaDoCabecalho } from './cabecalho';
 import { escolherTamanho } from './ajuste-fonte';
 import { desenharFolha, MARGEM_PT } from './desenhar-folha';
-import { registrarFontes, type LerFonte } from './fontes-pdf';
+import { precarregarFontes, registrarFontes, type LerFonte } from './fontes-pdf';
 import { alturaDaLegenda, desenharLegenda, linhasDaLegenda } from './legenda';
 import { alturaDoRodape, desenharRodape, MARGEM_INFERIOR_PT } from './rodape';
 import { medirTabela } from './tabela';
@@ -66,4 +66,9 @@ export async function gerarPdf(projecao: ProjecaoPdf, opcoes: { lerFonte?: LerFo
   await registrarFontes(doc, opcoes.lerFonte);
   montarDocumento(doc, projecao);
   return doc.output('blob');
+}
+
+/** Traz o jsPDF e as fontes para a memória, em segundo plano, antes do toque em "Exportar PDF". */
+export async function precarregarPdf(opcoes: { lerFonte?: LerFonte } = {}): Promise<void> {
+  await Promise.all([import('jspdf'), precarregarFontes(opcoes.lerFonte)]);
 }

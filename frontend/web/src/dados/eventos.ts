@@ -20,6 +20,13 @@ export function registrarAbertura(slug: string): void {
   void enviarAbertura(slug).catch(() => undefined);
 }
 
+/** Registra que um PDF do mês foi gerado e entregue (RF-57): só o tipo e o mês; falha de envio é ignorada. */
+export function registrarPdfExportado(slug: string, mes: string): void {
+  const corpo = eventoPublicoCorpo.safeParse({ tipo: 'pdf_exportado', mes });
+  if (!corpo.success) return;
+  void escrever('POST', `/publico/${encodeURIComponent(slug)}/eventos`, corpo.data, semCorpo).catch(() => undefined);
+}
+
 /** Só para testes: esquece as aberturas já registradas. */
 export function reiniciarAberturas(): void {
   aberturasRegistradas.clear();

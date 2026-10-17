@@ -24,6 +24,10 @@ vi.mock('../../pwa/armazenamento', () => ({
   idAnonimo: vi.fn(async () => '00000000-0000-4000-8000-000000000000'),
 }));
 vi.mock('../../dados/eventos', () => ({ registrarAbertura: vi.fn() }));
+vi.mock('../../pdf/gerar-pdf', () => ({
+  gerarPdf: vi.fn(),
+  precarregarPdf: vi.fn(async () => undefined),
+}));
 
 const RESPOSTAS = join(import.meta.dirname, '../../../../../.md/mockup/respostas');
 const fixture = (nome: string): JsonBodyType => JSON.parse(readFileSync(join(RESPOSTAS, nome), 'utf8')) as JsonBodyType;
@@ -48,6 +52,7 @@ function responder(resposta: (mes: string | null) => Response | Promise<Response
       pedidos.push(mes ?? 'atual');
       return resposta(mes);
     }),
+    http.get('/api/publico/pelada-de-quinta/pdf', () => HttpResponse.json(fixture('publico-pdf-2026-10.json'))),
   );
 }
 const ok = (arquivo: string) => () => HttpResponse.json(fixture(arquivo));

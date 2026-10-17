@@ -1,4 +1,4 @@
-import { rankingPublico, type RankingPublico } from '@pelada/contrato';
+import { projecaoPdf, rankingPublico, type RankingPublico } from '@pelada/contrato';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import {
@@ -8,7 +8,7 @@ import {
   rankingAtual,
   ultimoRanking,
 } from '../pwa/armazenamento';
-import { lerComMeta } from './cliente';
+import { ler, lerComMeta } from './cliente';
 import { ErroApi } from './erros';
 import { registrarAbertura } from './eventos';
 
@@ -16,6 +16,21 @@ import { registrarAbertura } from './eventos';
 export function caminhoRanking(slug: string, mes?: string): string {
   const base = `/publico/${encodeURIComponent(slug)}/ranking`;
   return mes ? `${base}?mes=${encodeURIComponent(mes)}` : base;
+}
+
+/** `/publico/<slug>/pdf?mes=`: dados do PDF do mês. */
+export function caminhoPdf(slug: string, mes: string): string {
+  return `/publico/${encodeURIComponent(slug)}/pdf?mes=${encodeURIComponent(mes)}`;
+}
+
+/** Projeção do PDF do mês, buscada de antemão para o toque em "Exportar PDF" já a encontrar pronta. */
+export function useProjecaoPdf(slug: string, mes: string, habilitado: boolean) {
+  return useQuery({
+    queryKey: ['publico', slug, 'pdf', mes],
+    queryFn: ({ signal }) => ler(caminhoPdf(slug, mes), projecaoPdf, { signal }),
+    enabled: habilitado,
+    staleTime: 60_000,
+  });
 }
 
 export type EstadoRanking =

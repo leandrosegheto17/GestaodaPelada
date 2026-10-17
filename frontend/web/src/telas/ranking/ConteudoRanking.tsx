@@ -14,10 +14,12 @@ interface Props {
   ranking: RankingPublico;
   aoTrocarMes: (mes: string) => void;
   atualizando?: boolean;
+  /** Exportar PDF: o botão do topo (PC) aparece quando há `aoExportar`. */
+  exportar?: { preparando: boolean; aoExportar: () => void };
 }
 
 /** Miolo da T01: mês, resumo, tabela, legenda e rodapé. Só exibe o que a API devolveu. */
-export function ConteudoRanking({ ranking, aoTrocarMes, atualizando = false }: Props) {
+export function ConteudoRanking({ ranking, aoTrocarMes, atualizando = false, exportar }: Props) {
   const temJogadores = ranking.linhas.length > 0;
   return (
     <>
@@ -30,7 +32,11 @@ export function ConteudoRanking({ ranking, aoTrocarMes, atualizando = false }: P
         />
         {temJogadores && recursos.ligado('pdf') ? (
           <span className={estilos.exportarTopo}>
-            <Botao>
+            <Botao
+              carregando={exportar?.preparando ?? false}
+              rotuloCarregando="Preparando PDF…"
+              onClick={exportar?.aoExportar}
+            >
               <Icone nome="exportar" />
               Exportar PDF
             </Botao>

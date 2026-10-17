@@ -16,6 +16,9 @@
 .exportarTopo {
   display: none;
 }
+.faixaPdf {
+  margin-bottom: var(--esp-3);
+}
 .resumo {
   margin: 2px var(--esp-3) var(--esp-3);
   font-size: var(--texto-sm);
