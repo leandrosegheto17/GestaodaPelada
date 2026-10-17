@@ -5,6 +5,7 @@ import {
   contextoSimulador,
   entradaPrevia,
   entradaSimulador,
+  escalacaoConfirmada,
   escalacaoCorpo,
   previaSimulador,
   sugestaoSimulador,
@@ -25,6 +26,9 @@ describe('respostas do mockup', () => {
   });
   it.each(respostas(/^simulador-sugestao.*\.json$/))('$nome passa em sugestaoSimulador', ({ json }) => {
     expect(sugestaoSimulador.safeParse(json).success).toBe(true);
+  });
+  it.each(respostas(/^simulador-escalacao.*\.json$/))('$nome passa em escalacaoConfirmada', ({ json }) => {
+    expect(escalacaoConfirmada.safeParse(json).success).toBe(true);
   });
   it('a resposta de avaliar não tem ordem de prioridade', () => {
     const [dois2] = respostas(/^simulador-sugestao-dois\.json$/);
