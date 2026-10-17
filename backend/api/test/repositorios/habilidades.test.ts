@@ -1,4 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { HABILIDADES_INICIAIS } from '@pelada/dominio';
+import pg from 'pg';
+import { describe, expect, it, vi } from 'vitest';
 import * as habilidades from '../../src/infraestrutura/db/repositorios/habilidades.js';
 import { NomeHabilidadeEmUso } from '../../src/infraestrutura/db/repositorios/habilidades.js';
 import { usarDb } from '../apoio/db-teste.js';
@@ -8,7 +10,7 @@ import { criarBase } from '../apoio/sql-dados.js';
 
 const fabrica = usarFabrica();
 const abrir = usarDb(fabrica);
-const INICIAIS = ['Visão de Jogo', 'Passe', 'Preparo Físico', 'Drible', 'Chute', 'Desarme'];
+const INICIAIS = HABILIDADES_INICIAIS;
 
 describe('repositório de habilidades', () => {
   it('catálogo inicial na ordem da RN-18; repetir não duplica', async () => {
@@ -82,5 +84,42 @@ describe('repositório de habilidades', () => {
     const todas = await habilidades.notasDoJogador(db, base.grupo.id, jogador);
     expect(todas.map((n) => n.habilidade)).toEqual(INICIAIS);
     expect(todas.every((n) => n.nota === null)).toBe(true);
+  });
+
+  it('isolamento: notasDoGrupo não traz notas de outro grupo; grupo A não mexe no B', async () => {
+    const db = await abrir();
+    const base = await criarBase(db, fabrica);
+    const habB = await habilidades.criar(db, base.outroGrupo.id, 'Chute');
+    const jogadorB = await criarJogador(db, base.outroGrupo.id, base.contaId);
+    expect(await habilidades.gravarNota(db, base.outroGrupo.id, jogadorB, habB, 4)).toBe(true);
+    const hab = await habilidades.criar(db, base.grupo.id, 'Passe');
+    const jogador = await criarJogador(db, base.grupo.id, base.contaId);
+    expect(await habilidades.gravarNota(db, base.grupo.id, jogadorB, hab, 5)).toBe(false);
+    expect(await habilidades.gravarNota(db, base.grupo.id, jogador, habB, 5)).toBe(false);
+    expect(await habilidades.notasDoGrupo(db, base.grupo.id)).toEqual([]);
+    expect(await habilidades.excluir(db, base.grupo.id, habB)).toBe(false);
+    expect(await habilidades.apagarNota(db, base.grupo.id, jogadorB, habB)).toBe(false);
+    expect(await habilidades.notasDoGrupo(db, base.outroGrupo.id)).toEqual([
+      { jogadorId: jogadorB, habilidadeId: habB, nota: 4 },
+    ]);
+  });
+
+  it('notasDoGrupo é uma consulta só (3 jogadores x 6 habilidades)', async () => {
+    const db = await abrir();
+    const base = await criarBase(db, fabrica);
+    await habilidades.criarCatalogoInicial(db, base.grupo.id, INICIAIS);
+    const catalogo = await habilidades.listar(db, base.grupo.id);
+    for (let i = 0; i < 3; i++) {
+      const jogador = await criarJogador(db, base.grupo.id, base.contaId);
+      for (const h of catalogo) await habilidades.gravarNota(db, base.grupo.id, jogador, h.id, 5);
+    }
+    const espiao = vi.spyOn(pg.Client.prototype, 'query');
+    try {
+      const notas = await habilidades.notasDoGrupo(db, base.grupo.id);
+      expect(notas).toHaveLength(18);
+      expect(espiao).toHaveBeenCalledTimes(1);
+    } finally {
+      espiao.mockRestore();
+    }
   });
 });
