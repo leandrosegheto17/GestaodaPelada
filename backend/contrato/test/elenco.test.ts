@@ -80,6 +80,40 @@ describe('jogadorCorpo', () => {
   });
 });
 
+describe('bordas adicionais', () => {
+  const schema = jogadorCorpo(HOJE);
+  const ok = { apelido: 'Toninho', anoNascimento: 1978, posicao: 'atacante' };
+  it('chaves de campos do erro de validação existem no corpo', () => {
+    const erro = respostas(/^erro-validacao\.json$/)[0]?.json as { erro: { campos: Record<string, string> } };
+    for (const chave of Object.keys(erro.erro.campos)) {
+      expect(Object.keys(jogadorCorpoBase.shape)).toContain(chave);
+    }
+  });
+  it('apelido só com espaços, ano decimal ou texto são recusados', () => {
+    expect(schema.safeParse({ ...ok, apelido: '     ' }).success).toBe(false);
+    expect(schema.safeParse({ ...ok, anoNascimento: 1978.5 }).success).toBe(false);
+    expect(schema.safeParse({ ...ok, anoNascimento: '1978' }).success).toBe(false);
+  });
+  it('data inexistente e campos de servidor são recusados', () => {
+    expect(schema.safeParse({ ...ok, dataEntrada: '2026-02-30' }).success).toBe(false);
+    for (const extra of [{ id: 'x' }, { nivel: 5 }, { eDono: true }]) {
+      expect(schema.safeParse({ ...ok, ...extra }).success).toBe(false);
+    }
+  });
+  it('item inativo sem inativoDesde é recusado', () => {
+    const item = { id: 'j1', apelido: 'Zé', posicao: 'goleiro', nivel: 5, semNota: false };
+    expect(listaJogadores.safeParse({ ativos: [], inativos: [item] }).success).toBe(false);
+    expect(listaJogadores.safeParse({ ativos: [], inativos: [{ ...item, inativoDesde: '2026-01-01' }] }).success).toBe(
+      true,
+    );
+  });
+  it('nota null é aceita no detalhe', () => {
+    const base = respostas(/^jogador-toninho\.json$/)[0]?.json as { notas: { nota: number | null }[] };
+    const notas = base.notas.map((n, i) => (i === 0 ? { ...n, nota: null } : n));
+    expect(jogadorDetalhe.safeParse({ ...base, notas }).success).toBe(true);
+  });
+});
+
 describe('inativar e nota', () => {
   it('data de saída no futuro é recusada', () => {
     expect(inativarCorpo(HOJE).safeParse({ dataSaida: '2026-10-23' }).success).toBe(false);
