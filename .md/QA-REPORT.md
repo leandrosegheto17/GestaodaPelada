@@ -134,3 +134,12 @@ APROVADA; 0 críticos, 1 não crítico (RTP-0022: ConteudoPagina sem a classe .c
 
 ## TP-0017 — QA — 2026-10-17
 APROVADA - reteste workers saude/apoio-banco sai 0 sem Unhandled Rejection, node db verde (16/16), ouvinte de erro só no fechamento; 0 críticos, 0 não críticos.
+
+## TP-0145 — QA — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; 24/24 testes, compatibilidade e tsc ok.
+
+## TP-0146 — QA — 2026-10-17
+APROVADA; 31 testes e compatibilidade de snapshot verdes, 9 JSONs de respostas (incl. 2 novos) validam nos schemas; 0 críticos, 0 não críticos.
+
+## TP-0186 — QA — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; 30 testes passando, snapshot compatível, tsc limpo.

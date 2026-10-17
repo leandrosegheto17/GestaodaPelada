@@ -128,3 +128,6 @@ APROVADA; 0 achados; redirect validado pelo schema do contrato, link relativo, s
 
 ## TP-0207 — DevSecOps — 2026-10-17
 APROVADA; 0 achados de segurança (sem innerHTML/style/console, sem dependência nova, sem dado pessoal).
+
+## TP-0017 — DevSecOps — 2026-10-17
+APROVADA - trava de host antes de escrita, banco de teste só local/descartável, sem credencial real, ouvinte de erro em cliente.ts restrito ao fechamento; 0 críticos, 0 não críticos (revisão de leitura, nada executado).
