@@ -269,3 +269,144 @@ APROVADA — 0 críticos, 0 não críticos; vitest 20/20, t14.spec 2/2 (vite pr�
 
 ## TP-0184 — QA — 2026-10-17
 APROVADA; 0 críticos, 1 não crítico (RTP-0050, lacunas de teste); vitest 139/139 e visual T01 13/13 OK.
+
+## RTP-0001 — QA — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; lint-fronteiras 57/57 e eslint . limpo, alias @pelada/api barrado em scripts fora dos 4 caminhos.
+
+## RTP-0002 — QA — 2026-10-17
+APROVADA — aliases de Date/document barrados no lint com casos de falha e passe; 57 testes e eslint verdes; 0 achados.
+
+## RTP-0003 — QA — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; novo teste passa (8/8) e falha ao remover valor do enum (mutação).
+
+## RTP-0004 — QA — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; vitest test/grupos 34 verdes, teste duplicado removido e casos migrados.
+
+## RTP-0008 — QA — 2026-10-17
+APROVADA — audit sem sharp/undici (resta só braces, fora de escopo), overrides no lockfile corretos, runtime workerd sobe; falhas da suíte são de outras tarefas; 0 críticos, 0 não críticos.
+
+## RTP-0009 — QA — 2026-10-17
+APROVADA; 8/8 testes e tsc ok, aceite (tipo público e pid dentro/fora) cumprido; 0 achados.
+
+## RTP-0010 — QA — 2026-10-17
+APROVADA — 66 testes passando, enumeração confirma elenco "todos candidatos" e chave lexicográfica; 0 achados.
+
+## RTP-0011 — QA — 2026-10-17
+APROVADA — regra de saída delegada a saidaNoIntervalo, equivalência confirmada, 67 testes/tsc/eslint ok; 0 achados.
+
+## RTP-0012 — QA — 2026-10-17
+APROVADA, 0 críticos/0 não críticos; teto de 60 aptos com RangeError, vitest 66/66, eslint e prettier limpos.
+
+## RTP-0013 — QA — 2026-10-17
+APROVADA — Shift+Tab a partir do título volta ao último focável; 35 testes, eslint e tsc limpos; 0 achados.
+
+## RTP-0015 — QA — 2026-10-17
+APROVADA — 2 actions de terceiros fixadas em SHA que confere com as tags; actionlint rc=0; 0 achados.
+
+## RTP-0016 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (resumo do app com ícone ausente no mockup, RTP-0052); borda 2px e recuo da lista aplicados e conferidos em pc/celular, testes 24/24, stylelint 0.
+
+## RTP-0018 — QA — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; 405 testes do contrato verdes, 4 casos do aceite cobertos (eDono entrada/resposta, enum, CLI snapshot exit 1 com snapshot intacto).
+
+## RTP-0019 — QA — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; sonda dos 3 casos falha fechado (status 1), 56/56 testes verdes (timeouts de 5s só sob carga paralela, verdes isolados).
+
+## RTP-0020 — QA — 2026-10-17
+APROVADA, 0 críticos/0 não críticos; 21 testes passando, indexedDB.open/setItem não chamados, senha presente antes e ausente após unmount, classe monoespaçada confirmada.
+
+## RTP-0021 — QA — 2026-10-17
+APROVADA, 0 críticos/0 não críticos; contrato 405 testes, snapshot e compatibilidade ok, enderecoNovo obrigatório e recusado quando ausente.
+
+## RTP-0022 — QA — 2026-10-17
+APROVADA — ConteudoPagina com classe própria igual ao .conteudo do mockup, teste e stylelint verdes; 0 achados.
+
+## RTP-0023 — QA — 2026-10-17
+APROVADA, 0 críticos/0 não críticos; sem `ul[role=status]` no mockup e T13/T14 pixel-idênticas (1280 e 390 px) antes e depois da troca.
+
+## RTP-0024 — QA — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; debounce via usarValorAtrasado, 25 testes, eslint e tsc ok.
+
+## RTP-0025 — QA — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; vitest ajuste-simulador 25/25 verde, tsc e eslint limpos, caso de corpo nulo coberto.
+
+## RTP-0026 — QA — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; CSS corrigido, vitest 4 ok, visual T02/T03/T05/T08/T25 0,00% em pc e celular.
+
+## RTP-0027 — QA — 2026-10-17
+APROVADA; 2 casos de Legenda (sem/com partidas) cobrem o aceite, TelaRanking 15/15 passando; 0 achados.
+
+## RTP-0028 — QA — 2026-10-17
+APROVADA; 0 achados; 15/15 testes de src/telas/admins passam com os casos axe de D1 e D2 abertos.
+
+## RTP-0029 — QA — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; `.barra-acao` dentro do main em t10/t13/t14/t15/t22/t26 (varredura limpa), T10 pc 0,02%/0,07% e celular 0,05%/0,07% (limite 1%).
+
+## RTP-0030 — QA — 2026-10-17
+APROVADA, 0 críticos/0 não críticos; CV de T15 0,00% nos 3 estados em pc e celular, barra-acao no main e seta nos itens conferidas.
+
+## RTP-0031 — QA — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; vitest nova-senha 13/13 com caso de 72 caracteres (envios=1).
+
+## RTP-0032 — QA — 2026-10-17
+APROVADA, 0 críticos/0 não críticos; 60 testes passando, axe em erro e salvo, ajuda ligada por aria-describedby, rótulos em src/rotulos.
+
+## RTP-0033 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0053: inativo sem ajuda do apelido); CV T16 edicao pc 0,18% / celular 0,41% com alturas iguais, Dados alinhada.
+
+## RTP-0034 — QA — 2026-10-17
+APROVADA, 0 críticos/0 não críticos; CV T09 celular (4 estados) OK, sem-jogadores 0,00% de divergência.
+
+## RTP-0035 — QA — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; T12 vazio pc e celular 0,00% de divergência, cartão com 512 px, 22/22 testes do simulador.
+
+## RTP-0036 — QA — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; T20 sucesso pc 0,04% e celular 0,12% com 390×924 nos dois lados.
+
+## RTP-0037 — QA — 2026-10-17
+APROVADA; 0 achados; CV T26 sucesso/vazio pc e celular <= 0.07%, alturas iguais, PNGs conferidos.
+
+## RTP-0038 — QA — 2026-10-17
+APROVADA — CV T22 vazio-config 0,00% (era 0,42), sem-permissao 0,00%, vitest 46 ok, sem `-112px` fixo; 0 achados.
+
+## RTP-0040 — QA — 2026-10-17
+APROVADA, 0 críticos/0 não críticos; T16 edicao pc 0,18% e celular 0,41% (<=1%), selects de nota em 88px com rótulo legível.
+
+## RTP-0041 — QA — 2026-10-17
+APROVADA; 18/18 testes passando, todos os casos do aceite cobertos, eslint/prettier limpos; 0 achados.
+
+## RTP-0042 — QA — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; NovoGrupo.test.tsx 12/12 passando (3 reruns), aceite coberto.
+
+## RTP-0044 — QA — 2026-10-17
+APROVADA, 0 achados; 17/17 `p.campo__erro` com ícone igual ao do app; CV T11 data-futura e duplicada pc/celular 0,00%, mesma altura.
+
+## RTP-0045 — QA — 2026-10-17
+APROVADA; 0 achados; vitest partida+pagina 40/40 e CV T11 12/12 OK (máx. 0,65%), alturas iguais.
+
+## RTP-0046 — QA — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; 42 testes verdes, corpo inválido não chega à rede (msw=0) e cai em "Não salvou".
+
+## RTP-0047 — QA — 2026-10-17
+APROVADA, 0 críticos/0 não críticos; CV T24 pc 0,00% e celular 0,00%, largura 512 px, vitest 16/16.
+
+## RTP-0048 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0055: teste de mensalidade alterada depois); mutação do fallback para config falha o teste novo, 30/30 verdes.
+
+## RTP-0049 — QA — 2026-10-17
+APROVADA; teste da faixa de exclusão (com/sem estado) verde (8/8) e UX-SPEC T11 atualizada; 0 achados.
+
+## RTP-0050 — QA — 2026-10-17
+APROVADA; 5 testes novos verdes (16/16 isolado, 3 execuções); 0 críticos, 1 não crítico (RTP-0054: teste antigo flaky por delay de 150 ms).
+
+## TP-0010 — QA — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; 11 testes + tsc/eslint/prettier ok, desempenho 40x104 < 5 ms.
+
+## TP-0025 — QA — 2026-10-17
+APROVADA — 7/7 testes de migração + 8/8 db, checagem aditiva verde, tsc/eslint limpos; 0 achados críticos, 0 não críticos.
+
+## TP-0187 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0051, suítes de teste duplicadas); 25 testes verdes, tsc/eslint limpos, aceite e convenções conferidos.
+
+## RTP-0043 — QA — 2026-10-17
+APROVADA — 13/13 testes de PaginaResultado isolados; ajuda do Não entra agora no mesmo y do mockup (pc 1245=1245, altura 1499=1499; celular 1937=1937); 0 críticos, 0 não críticos.
