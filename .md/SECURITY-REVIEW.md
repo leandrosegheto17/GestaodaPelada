@@ -473,3 +473,42 @@ APROVADA — migração sem dado pessoal (7 colunas confirmadas no banco), dispo
 
 ## TP-0160 — DevSecOps — 2026-10-17
 APROVADA; migração aditiva, FK/UNIQUE por grupo e auditoria ok, 13/13 testes e checagem aditiva verdes; 0 achados.
+
+## RTP-0062 — DevSecOps — 2026-10-17
+APROVADA; só teste, SQL parametrizado, sem segredo/dado pessoal/dependência; 0 achados.
+
+## RTP-0063 — DevSecOps — 2026-10-17
+APROVADA; cookie de sessão duplicado recusado antes do banco, atributos do cookie intactos, sem exposição de dado; 0 achados (revisão de leitura, nada executado pelo DevSecOps).
+
+## RTP-0064 — DevSecOps — 2026-10-17
+APROVADA; revisão do diff sem achados (decisão por tipo, falha fechada), checagem real exit 0, sem dependência/dado pessoal alterados.
+
+## RTP-0065 — DevSecOps — 2026-10-17
+APROVADA; regex sem âncora verificada por execução (variantes recusadas, chaves legítimas aceitas), 0 achados.
+
+## RTP-0066 — DevSecOps — 2026-10-17
+APROVADA; teste agora prova custo bcrypt igual (12) do hash fixo, export é constante não secreta; 0 críticos, 0 não críticos.
+
+## TP-0032 — DevSecOps — 2026-10-17
+APROVADA; 404 uniforme, 403 só com vínculo, uuid validado antes do banco, `use` antes das rotas, dono sem atalho; revisão de diff, 0 críticos, 0 não críticos.
+
+## TP-0037 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; revisão do diff confirma transação única, senha só no hash do Postgres e fora de log/auditoria, e chamadores com autorização própria.
+
+## TP-0038 — DevSecOps — 2026-10-17
+APROVADA em segurança; senha temporária só no retorno, conta existente sem troca de senha/nome, sem e_dono, erro genérico sem vazar SQL; 0 críticos, 0 não críticos (revisão de leitura).
+
+## TP-0043 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; FKs compostas por grupo_id e migração aditiva conferidas por leitura do diff.
+
+## TP-0044 — DevSecOps — 2026-10-17
+APROVADA; migração com isolamento por grupo (FKs compostas), autoria em contas e aditiva (checagem rc 0); 0 críticos, 0 não críticos.
+
+## TP-0050 — DevSecOps — 2026-10-17
+APROVADA - revisão de diff: união fechada sem dado pessoal, uuid anônimo com CHECK, grupo_id em toda consulta, SQL parametrizado e fuso literal; 0 críticos, 0 não críticos; nada executado além dos testes do QA.
+
+## TP-0161 — DevSecOps — 2026-10-17
+APROVADA, 0 críticos/0 não críticos; isolamento por grupo_id no upsert e SQL parametrizado conferidos por leitura; nada executado; conferir no TP-0167 que composicao leve só ids.
+
+## TP-0188 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; revisão do diff confirma isolamento por grupo via FK composta, centavos inteiros, sem DEFAULT now() e sem dado pessoal novo (testes não reexecutados pelo DevSecOps).
