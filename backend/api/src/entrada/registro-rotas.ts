@@ -49,6 +49,7 @@ import { rotaFinanceiroConfig } from './rotas/grupos/financeiro/config.js';
 import { rotaPagamentoMarcar } from './rotas/grupos/financeiro/pagamentos.js';
 import { rotaPagamentoDesmarcar } from './rotas/grupos/financeiro/pagamentos-desmarcar.js';
 import { rotaLancamentoCriar } from './rotas/grupos/financeiro/lancamentos/criar.js';
+import { rotaLancamentoLer } from './rotas/grupos/financeiro/lancamentos/ler.js';
 
 /** Todas as rotas de negócio. Cada rota nova entra aqui, depois dos middlewares do app (ADR-005). */
 export const ROTAS: readonly Hono<AppEnv>[] = [
@@ -106,4 +107,5 @@ export const ROTAS: readonly Hono<AppEnv>[] = [
   rotaPagamentoMarcar,
   rotaPagamentoDesmarcar,
   rotaLancamentoCriar,
+  rotaLancamentoLer,
 ];
