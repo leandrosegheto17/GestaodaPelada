@@ -44,3 +44,18 @@ APROVADA — 35 testes, build com chunks por rota, stylelint e tsc limpos, build
 
 ## TP-0150 — QA — 2026-10-17
 APROVADA; 0 críticos, 1 não crítico (RTP-0006: teste duplicado em src/, 3ª ocorrência; falta exemplo literal de 19 aptos); 27 testes e tsc verdes.
+
+## TP-0014 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0009: faltam teste de tipo e pid fora da transação); 7/7 testes contra Postgres local, lint/prettier/tsc ok.
+
+## TP-0091 — QA — 2026-10-17
+APROVADA — 73 testes ok, tsc/eslint limpos, aceite e plano de teste cobertos; 0 achados.
+
+## TP-0092 — QA — 2026-10-17
+APROVADA — 94 testes de src/formatacao passando (incl. TZ distinto), lint/tipos limpos, 0 achados.
+
+## TP-0093 — QA — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; vitest src/rotulos 20/20 passando, módulo único derivado do contrato.
+
+## TP-0095 — QA — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; 26 testes vitest passando (axe, timers 300 ms, papéis da Faixa, ErroRede) e revisão do diff sem violação de convenção.
