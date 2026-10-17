@@ -583,6 +583,7 @@ Colunas lidas pelo `taskplan.py` pelo nome. **Est** em dias-pessoa. **Cria**/**U
 | RTP-0008 | Refatoração Lote-L03 | Atualizar sharp e undici transitivos do wrangler/miniflare (pnpm audit alto) | Backend | TP-0013; G-08; SDD §7 | pnpm audit --audit-level high sem sharp<0.35.5 nem undici<7.29.1 no caminho backend/api>wrangler/@cloudflare/vitest-pool-workers>miniflare (override ou bump de wrangler/vitest-pool-workers); testes do pacote api verdes; prazo: antes do /deploy | 0,25 d | TP-0013 | - | package.json, pnpm-lock.yaml | pnpm audit, pnpm --filter @pelada/api test | Concluída · QA ✔ |
 | RTP-0009 | Refatoração Lote-L03 | Teste do módulo de dados: cobrir tipo público e pid fora da transação | Backend | TP-0014; plano de teste TP-0014 | Em backend/api/test/infraestrutura/db.test.ts: (1) teste de tipo (expectTypeOf ou @ts-expect-error) provando que o tipo de Db/Tx não expõe Kysely/pg nem permite chamar métodos de conexão; (2) pg_backend_pid() lido fora da transação (mesmo Db) é igual ao de dentro dela; testes passam | 0,25 d | TP-0014 | - | backend/api/test/infraestrutura/db.test.ts | pnpm --filter @pelada/api test -- db | Concluída · QA ✔ |
 | RTP-0019 | Refatoração Lote-L03 | checar-grupo-id: cobrir exports que não são function/arrow direta (classe, objeto, função envolvida em chamada) | Backend | TP-0016; G-03; SDD §6 | checar-grupo-id.mjs falha (ou exige exceção explícita) para: export const f = envolver((id)=>…); método de objeto exportado; método de classe exportada; teste novo para cada caso, nos três falhando sem grupoId em posição de negócio; scripts verdes no repo (origem: DevSecOps TP-0016, média; prazo: antes do 1º repositório de dado de grupo, L04) | 0,25 d | TP-0016 | nao | backend/scripts/checagens/checar-grupo-id.mjs, backend/scripts/checagens/test/banco.test.mjs | npx vitest run backend/scripts/checagens/test/banco.test.mjs | Concluída · QA ✔ |
+| RTP-0057 | Refatoração Lote-L03 | checar-grupo-id: cobrir alias, ternário, acesso a membro, namespace e arrow com satisfies | Backend | RTP-0019; G-03; SDD §6 | checar-grupo-id.mjs falha fechado (sai ≠ 0) para export const f = alias de função, ternário/// de funções, acesso a membro (o.l), await de função, export namespace com função e arrow com satisfies/as sem grupoId; teste para cada caso. | 0,25 d | RTP-0019 |  | backend/scripts/checagens/checar-grupo-id.mjs | backend/scripts/checagens/test/banco.test.mjs | Pendente |
 
 ### Refatoração Lote-33
 | ID | Lote | Título | Chapéu | Reqs | Aceite | Est | Dep | Par | Arquivos | Testes e diretrizes | Status |
@@ -705,6 +706,12 @@ Colunas lidas pelo `taskplan.py` pelo nome. **Est** em dias-pessoa. **Cria**/**U
 | ID | Lote | Título | Chapéu | Reqs | Aceite | Est | Dep | Par | Arquivos | Testes e diretrizes | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | RTP-0051 | Refatoração Lote-L41 | dominio/caixa: unificar testes duplicados | Backend | RF-61, RF-63, RN-15 | Uma só suíte de testes do caixa, sem casos duplicados; cobertura de saldos, resumo e mensalidade preservada | 0,25 d | TP-0187 |  | backend/dominio/src/caixa/*.test.ts, backend/dominio/test/caixa/caixa.test.ts | pnpm --filter @pelada/dominio exec vitest run caixa | Pendente |
+
+### Refatoração Lote-L06
+| ID | Lote | Título | Chapéu | Reqs | Aceite | Est | Dep | Par | Arquivos | Testes e diretrizes | Status |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| RTP-0056 | Refatoração Lote-L06 | Documentar no banco que auditoria.resumo nunca recebe senha/token | Backend | SDD §7 (LGPD); ADR-003, ADR-015 | nova migração aditiva com COMMENT ON COLUMN auditoria.resumo (e tentativas_login: sem IP/user-agent) dizendo que senha, token e dado pessoal além do necessário nunca entram; checar-migracao-aditiva verde. Origem: DevSecOps TP-0025 (baixa) | 0,1 d | TP-0025 | Não | backend/api/src/infraestrutura/db/migracoes/<carimbo>_comentarios_acesso.sql | node backend/scripts/checagens/checar-migracao-aditiva.mjs; vitest run migracoes | Pendente |
+
 
 
 
