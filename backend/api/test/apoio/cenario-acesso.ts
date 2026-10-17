@@ -1,3 +1,4 @@
+import { sql } from 'kysely';
 import { kyselyDe } from '../../src/infraestrutura/db/cliente.js';
 import type { Db } from '../../src/infraestrutura/db/index.js';
 import { criarConta, type ContaCriada } from './fabricas/contas.js';
@@ -6,6 +7,7 @@ import type { Fabrica } from './fabrica.js';
 import { entrarComo } from './sessao.js';
 
 export const EMAIL_DONO = 'leandrosegheto17@gmail.com';
+const CHAVE_LOCK_DONO = 7_106_001;
 
 export interface Cenario {
   grupoA: GrupoCriado;
@@ -31,6 +33,13 @@ export async function montarCenario(db: Db, fabrica: Fabrica): Promise<Cenario> 
   await vincularAdmin(db, grupoB.id, adminB.id, { acessaFinanceiro: false });
 
   // O papel de dono só existe para o e-mail do RF-01; a conta é marcada direto no banco do teste.
+  // O e-mail do dono é único no banco: arquivos de teste em paralelo se revezam nele por um lock de
+  // sessão, solto só depois que a conta do dono é apagada (a limpeza roda na ordem inversa).
+  const banco = kyselyDe(db);
+  await sql`select pg_advisory_lock(${CHAVE_LOCK_DONO})`.execute(banco);
+  fabrica.registrar(async () => {
+    await sql`select pg_advisory_unlock(${CHAVE_LOCK_DONO})`.execute(banco);
+  });
   const dono = await criarConta(db, fabrica, { nome: 'Dono' });
   await kyselyDe(db).updateTable('contas').set({ email: EMAIL_DONO, e_dono: true }).where('id', '=', dono.id).execute();
   const donoComEmail = { ...dono, email: EMAIL_DONO };
