@@ -56,6 +56,12 @@ describe('checar-escrita-e-dono', () => {
     "const o = {};\no.eDono ||= true;\nawait db.insertInto('c').values(o).execute();",
     "const o = { eDono: f(x) };\nawait db.insertInto('c').values(o).execute();",
     "const o = { eDono: x.y || z };\nawait db.updateTable('c').set(o).execute();",
+    "const o = {};\no.eDono |= true;\nawait db.insertInto('c').values(o).execute();",
+    "const o = {};\no.eDono &= x;\nawait db.insertInto('c').values(o).execute();",
+    "const o = {};\no.eDono ^= x;\nawait db.updateTable('c').set(o).execute();",
+    "const o = {};\no.eDono >>= 1;\nawait db.updateTable('c').set(o).execute();",
+    "const o = {};\no.eDono <<= 1;\nawait db.updateTable('c').set(o).execute();",
+    "const o = {};\no.eDono >>>= 1;\nawait db.updateTable('c').set(o).execute();",
   ])('falha: %s', (corpo) => {
     expect(rodar(repositorio(rota(corpo)))).toBe(1);
   });
@@ -74,6 +80,7 @@ describe('checar-escrita-e-dono', () => {
     'export const ler = (c) => ({ eDono: c.eDono, outro: f(c) });',
     'export const s = { eDono: z.boolean(), n: 1 };',
     'if (c["e_dono"] === true || c.eDono !== false) { x(); }',
+    'if (c.eDono <= 1 || c.eDono >= 1 || c.eDono != 2) { x(); }',
     "const u = 'http://x'; // db.insertInto('c').values({ e_dono: true })\nexport {};",
     "const u = 'a--b'; -- values({ e_dono: true })\nexport {};",
   ])('passa: %s', (corpo) => {
