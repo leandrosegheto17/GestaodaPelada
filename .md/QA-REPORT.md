@@ -101,3 +101,9 @@ APROVADA; 0 críticos, 1 não crítico (RTP-0018, lacunas de teste); 29 testes e
 
 ## TP-0089 — QA — 2026-10-17
 APROVADA; 0 críticos, 1 não crítico (RTP-0017: prova do job e2e em PR e teste de dist ausente); testes 6/6 e visual T02 sem ERRO.
+
+## TP-0017 — QA — 2026-10-17
+DEVOLVIDA - workers saude/apoio-banco passam (3/3), mas Unhandled Rejection "Stream was cancelled" faz o vitest sair com 1 e quebra o job api do CI; 1 crítico, 0 não críticos.
+
+## TP-0100 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0020: cobertura de teste indexedDB/monoespaçada); 46 testes passando; mockup (--fonte-mono, X nos 3 HTML) conforme decisão.
