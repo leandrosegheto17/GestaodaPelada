@@ -1,6 +1,7 @@
 import type { TabelasAcesso } from './tipos/acesso.js';
 import type { TabelasElenco } from './tipos/elenco.js';
 import type { TabelasEscalacoes } from './tipos/escalacoes.js';
+import type { TabelasFinanceiro } from './tipos/financeiro.js';
 import type { TabelasGrupos } from './tipos/grupos.js';
 import type { TabelasPartidas } from './tipos/partidas.js';
 import type { TabelasUso } from './tipos/uso.js';
@@ -10,4 +11,11 @@ import type { TabelasUso } from './tipos/uso.js';
  * cada migração nova acrescenta o seu contexto aqui.
  */
 export interface TabelasBanco
-  extends TabelasAcesso, TabelasGrupos, TabelasElenco, TabelasPartidas, TabelasUso, TabelasEscalacoes {}
+  extends
+    TabelasAcesso,
+    TabelasGrupos,
+    TabelasElenco,
+    TabelasPartidas,
+    TabelasUso,
+    TabelasEscalacoes,
+    TabelasFinanceiro {}

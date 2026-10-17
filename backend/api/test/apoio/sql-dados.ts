@@ -33,6 +33,7 @@ export async function inserirJogador(
   );
   const id = linhas[0]?.id as string;
   fabrica.registrar(async () => {
+    await executarSql('DELETE FROM pagamentos_mes WHERE jogador_id = $1', [id]);
     await executarSql('DELETE FROM presencas WHERE jogador_id = $1', [id]);
     await executarSql('DELETE FROM notas WHERE jogador_id = $1', [id]);
     await executarSql('DELETE FROM periodos_ativos WHERE jogador_id = $1', [id]);

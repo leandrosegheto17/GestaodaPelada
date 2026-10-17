@@ -39,6 +39,9 @@ export async function criarGrupo(
     for (const tabela of [
       'eventos_uso',
       'escalacoes',
+      'pagamentos_mes',
+      'lancamentos',
+      'config_financeira',
       'presencas',
       'partidas',
       'config_pesos',
