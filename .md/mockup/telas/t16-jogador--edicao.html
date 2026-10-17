@@ -17,7 +17,7 @@
   <section aria-labelledby="s-dados">
     <h2 id="s-dados" class="subtitulo">Dados</h2>
     <form class="formulario" novalidate>
-      <div class="campo"><label class="campo__rotulo" for="apelido">Apelido</label><input class="campo__entrada" id="apelido" value="Toninho" maxlength="30"></div>
+      <div class="campo"><label class="campo__rotulo" for="apelido">Apelido</label><input class="campo__entrada" id="apelido" value="Toninho" maxlength="30" aria-describedby="apelido-ajuda"><p class="campo__ajuda" id="apelido-ajuda">De 2 a 30 caracteres. É o nome que aparece no ranking.</p></div>
       <div class="duas-colunas">
         <div class="campo"><label class="campo__rotulo" for="ano">Ano de nascimento</label><input class="campo__entrada" id="ano" type="number" inputmode="numeric" min="1940" max="2016" value="1978"></div>
         <div class="campo"><label class="campo__rotulo" for="pos">Posição</label><select class="campo__entrada" id="pos" aria-describedby="pos-ajuda"><option>Goleiro</option><option>Defensor</option><option>Meio-campo</option><option selected>Atacante</option></select><p class="campo__ajuda" id="pos-ajuda">Só para cadastro.</p></div>
