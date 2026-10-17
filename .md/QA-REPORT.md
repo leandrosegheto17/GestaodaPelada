@@ -806,3 +806,18 @@ APROVADA — publico-ranking (7) e publico.test (3) passam isolados; falha em ro
 
 ## TP-0203 — QA — 2026-10-17
 APROVADA — aviso-privacidade (204, idempotente, strict, sessão completa) com 76 testes de rota/isolamento verdes; 0 achados.
+
+## RTP-0098 — QA — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; `vitest run trocar-senha` sem flags passa (18 testes) com timeout explícito de 30 s no caso dos 5 erros.
+
+## RTP-0099 — QA — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; vitest ler 38/38 passando e jogadoresEPartidas reutiliza criarPartida.
+
+## RTP-0104 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0110: `o.e_dono = v` e valor-expressão escapam da heurística); vitest 45/45 e checador na raiz exit 0.
+
+## RTP-0105 — QA — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; 18 testes passando, caso de 10 pedidos paralelos -> 5 recusadas + 5 bloqueadas, serialização por advisory lock por conta igual ao entrar.
+
+## RTP-0106 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0111, montarCenario 2x no mesmo teste); elenco+simulador/contexto x3 verdes (40 testes) e isolamento (70) verde, sem contas_email_unico em paralelo.
