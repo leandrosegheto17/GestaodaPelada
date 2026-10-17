@@ -11,14 +11,18 @@ const LIMIAR_MS = 4;
 const AQUECIMENTOS = 5;
 const MEDICOES = 50;
 
+/** Chamadas por medição: o relógio de CPU do Windows avança em passos de ~15,6 ms, então o tempo de uma
+ * chamada só é legível se dividido entre um lote; cada medição é a média por chamada do lote. */
+const CHAMADAS_POR_MEDICAO = 100;
+
 function medir(entrada: EntradaSugerir): { mediana: number; p99: number } {
   for (let i = 0; i < AQUECIMENTOS; i += 1) sugerir(entrada);
   const tempos: number[] = [];
   for (let i = 0; i < MEDICOES; i += 1) {
     const antes = process.cpuUsage();
-    sugerir(entrada);
+    for (let c = 0; c < CHAMADAS_POR_MEDICAO; c += 1) sugerir(entrada);
     const depois = process.cpuUsage(antes);
-    tempos.push((depois.user + depois.system) / 1000);
+    tempos.push((depois.user + depois.system) / 1000 / CHAMADAS_POR_MEDICAO);
   }
   tempos.sort((a, b) => a - b);
   return { mediana: tempos[Math.floor(MEDICOES / 2)]!, p99: tempos[Math.ceil(MEDICOES * 0.99) - 1]! };

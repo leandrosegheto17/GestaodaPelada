@@ -1,5 +1,5 @@
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
-import { join, relative, resolve } from 'node:path';
+import { isAbsolute, join, relative, resolve } from 'node:path';
 import ts from 'typescript';
 import { encerrar, falharFechado } from './arquivos.mjs';
 
@@ -83,32 +83,76 @@ const ehDadoLiteral = (e) =>
   (ts.isPrefixUnaryExpression(e) && ts.isLiteralExpression(e.operand)) ||
   (ts.isArrayLiteralExpression(e) && e.elements.every((x) => ehDadoLiteral(exprSemAsserts(x))));
 
-// Forma que pode esconder função de repositório (chamada, objeto com métodos, classe) e que
-// funcaoDe não consegue conferir parâmetro a parâmetro.
-function formaNaoAnalisavel(declaracao) {
-  if (ts.isModuleDeclaration(declaracao)) return MOTIVO_NAO_ANALISAVEL;
-  if (ts.isClassDeclaration(declaracao)) {
-    return declaracao.members.some((m) => ts.isMethodDeclaration(m) || ts.isAccessor(m)) ? MOTIVO_NAO_ANALISAVEL : null;
+const TIPOS_DADO = new Set([
+  ts.SyntaxKind.StringKeyword,
+  ts.SyntaxKind.NumberKeyword,
+  ts.SyntaxKind.BooleanKeyword,
+  ts.SyntaxKind.BigIntKeyword,
+  ts.SyntaxKind.NullKeyword,
+  ts.SyntaxKind.UndefinedKeyword,
+]);
+const ehTipoDado = (t) =>
+  !!t &&
+  (TIPOS_DADO.has(t.kind) ||
+    ts.isLiteralTypeNode(t) ||
+    (ts.isUnionTypeNode(t) && t.types.every(ehTipoDado)) ||
+    (ts.isArrayTypeNode(t) && ehTipoDado(t.elementType)));
+
+const ehObjetoDeDados = (e) =>
+  e.properties.every((p) => ts.isPropertyAssignment(p) && ts.isLiteralExpression(exprSemAsserts(p.initializer)));
+
+// Lista de permitidos: só passa sem análise parâmetro a parâmetro o que for comprovadamente dado
+// (literal, objeto só de literais, enum literal, classe sem herança nem função como membro).
+// Qualquer outra forma de declaração exportada falha fechado.
+function membroDeClasseEhDado(m) {
+  if (ts.isSemicolonClassElement(m) || ts.isIndexSignatureDeclaration(m)) return true;
+  if (ts.isPropertyDeclaration(m)) {
+    return m.initializer ? ehDadoLiteral(exprSemAsserts(m.initializer)) : ehTipoDado(m.type);
   }
-  let expr = null;
-  if (ts.isVariableDeclaration(declaracao)) expr = declaracao.initializer;
-  else if (ts.isExportAssignment(declaracao)) expr = declaracao.expression;
-  if (!expr) return null;
-  expr = exprSemAsserts(expr);
-  if (ehCallable(expr)) return null;
-  if (!ts.isObjectLiteralExpression(expr)) return ehDadoLiteral(expr) ? null : MOTIVO_NAO_ANALISAVEL;
-  {
-    const temFuncao = expr.properties.some(
-      (p) =>
-        ts.isMethodDeclaration(p) ||
-        ts.isAccessor(p) ||
-        ts.isSpreadAssignment(p) ||
-        ts.isShorthandPropertyAssignment(p) ||
-        (ts.isPropertyAssignment(p) && !ts.isLiteralExpression(exprSemAsserts(p.initializer))),
-    );
-    return temFuncao ? MOTIVO_NAO_ANALISAVEL : null;
+  if (ts.isConstructorDeclaration(m)) {
+    return m.parameters.every((p) => {
+      const ehPropriedade = ts.canHaveModifiers(p) && (ts.getModifiers(p) ?? []).length > 0;
+      if (!ehPropriedade) return true;
+      return p.initializer ? ehDadoLiteral(exprSemAsserts(p.initializer)) : ehTipoDado(p.type);
+    });
   }
+  return false;
 }
+
+// Única herança aceita: `extends Error` com o Error global da biblioteca padrão.
+function heranca(clausula) {
+  if (clausula.token !== ts.SyntaxKind.ExtendsKeyword) return false;
+  const [tipo] = clausula.types;
+  if (clausula.types.length !== 1 || !ts.isIdentifier(tipo.expression) || tipo.typeArguments) return false;
+  if (tipo.expression.text !== 'Error') return false;
+  const simbolo = verificador.getSymbolAtLocation(tipo.expression);
+  const decls = simbolo?.declarations ?? [];
+  return decls.length > 0 && decls.every((x) => programa.isSourceFileDefaultLibrary(x.getSourceFile()));
+}
+
+function declaracaoEhDado(d) {
+  if (ts.isClassDeclaration(d)) {
+    return (d.heritageClauses ?? []).every(heranca) && d.members.every(membroDeClasseEhDado);
+  }
+  if (ts.isEnumDeclaration(d)) {
+    return d.members.every((m) => !m.initializer || ehDadoLiteral(exprSemAsserts(m.initializer)));
+  }
+  if (ts.isVariableDeclaration(d)) {
+    const lista = d.parent;
+    const somenteLeitura = ts.isVariableDeclarationList(lista) && (lista.flags & ts.NodeFlags.Const) !== 0;
+    if (!d.initializer) return ehTipoDado(d.type) && ts.isIdentifier(d.name);
+    if (!somenteLeitura || !ts.isIdentifier(d.name)) return false;
+    const e = exprSemAsserts(d.initializer);
+    return ts.isObjectLiteralExpression(e) ? ehObjetoDeDados(e) : ehDadoLiteral(e);
+  }
+  if (ts.isExportAssignment(d)) {
+    const e = exprSemAsserts(d.expression);
+    return ts.isObjectLiteralExpression(e) ? ehObjetoDeDados(e) : ehDadoLiteral(e);
+  }
+  return false;
+}
+
+const formaNaoAnalisavel = (declaracao) => (declaracaoEhDado(declaracao) ? null : MOTIVO_NAO_ANALISAVEL);
 
 function problemaDosParametros(funcao) {
   const parametros = [...funcao.parameters];
@@ -129,11 +173,37 @@ for (const caminho of arquivos) {
   const modulo = verificador.getSymbolAtLocation(fonte);
   if (!modulo) continue;
   const rel = relative(PASTA, caminho).replaceAll('\\', '/');
+  for (const instrucao of fonte.statements) {
+    if (!ts.isExportDeclaration(instrucao) || !instrucao.moduleSpecifier) continue;
+    const alvo = ts.resolveModuleName(instrucao.moduleSpecifier.text, caminho, programa.getCompilerOptions(), ts.sys)
+      .resolvedModule?.resolvedFileName;
+    const destino = alvo && relative(PASTA, alvo).replaceAll('\\', '/');
+    const dentro = destino && destino !== '..' && !destino.startsWith('../') && !isAbsolute(destino);
+    if (!dentro && !excecaoDe(rel, '*')) {
+      const { line } = fonte.getLineAndCharacterOfPosition(instrucao.getStart());
+      achados.push(`${rel}:${line + 1}: re-export de módulo fora da pasta: ${MOTIVO_NAO_ANALISAVEL}`);
+    }
+  }
   for (const exportado of verificador.getExportsOfModule(modulo)) {
     const real = exportado.flags & ts.SymbolFlags.Alias ? verificador.getAliasedSymbol(exportado) : exportado;
-    if (!(real.flags & ts.SymbolFlags.Value)) continue;
+    if (!(real.flags & ts.SymbolFlags.Value) && (real.declarations ?? []).length) continue;
+    const viaImportEquals = (exportado.declarations ?? []).some((d) => ts.isImportEqualsDeclaration(d));
+    // Alias que não resolve a nenhuma declaração (módulo inexistente/fora do programa): fail-closed.
+    const semDeclaracao = !(real.declarations ?? []).length;
+    if (semDeclaracao && exportado.flags & ts.SymbolFlags.Alias && !excecaoDe(rel, exportado.name)) {
+      achados.push(`${rel}: ${exportado.name}: ${MOTIVO_NAO_ANALISAVEL}`);
+    }
     for (const declaracao of real.declarations ?? []) {
       const donoRel = relative(PASTA, declaracao.getSourceFile().fileName).replaceAll('\\', '/');
+      const foraDaPasta = donoRel === '..' || donoRel.startsWith('../') || isAbsolute(donoRel);
+      if (foraDaPasta || viaImportEquals) {
+        if (!excecaoDe(rel, exportado.name)) {
+          const origem = exportado.declarations?.[0] ?? declaracao;
+          const { line } = origem.getSourceFile().getLineAndCharacterOfPosition(origem.getStart());
+          achados.push(`${rel}:${line + 1}: ${exportado.name}: ${MOTIVO_NAO_ANALISAVEL}`);
+        }
+        continue;
+      }
       if (donoRel !== rel) continue; // reexportada: avaliada no arquivo de origem
       const funcao = funcaoDe(declaracao);
       const problema = funcao ? problemaDosParametros(funcao) : formaNaoAnalisavel(declaracao);

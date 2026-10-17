@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { calcularPdf, calcularRanking, escolherColunasPdf, MAX_COLUNAS_PDF, somarDias } from '../../src/index.js';
-import { historicoDeTresMeses, partida } from '../apoio/historico.js';
+import {
+  CONFIGS,
+  esperadoDoMockup,
+  historicoDeTresMeses,
+  historicoDoMockup,
+  jogador,
+  partida,
+  presenca,
+} from '../apoio/historico.js';
 
 const datas = (inicio: string, quantas: number, passo = 7) =>
   Array.from({ length: quantas }, (_, i) => somarDias(inicio, i * passo));
@@ -103,5 +111,57 @@ describe('calcularPdf', () => {
 
   it('só os ativos hoje aparecem (inativado some)', () => {
     expect(calcularPdf(entrada('2026-10')).linhas.some((l) => l.jogadorId === 'f')).toBe(false);
+  });
+});
+
+describe('calcularPdf: reprodução dos PDFs do mockup', () => {
+  const base = historicoDoMockup();
+  it.each([
+    ['2026-07', '2026-10-22'],
+    ['2026-10', '2026-10-22'],
+  ] as const)('%s: colunas, ordem, ptsInicial, rodadas (fora = null) e ptsFinal', (mes, hoje) => {
+    const pdf = calcularPdf({ ...base, hoje, mes });
+    const esperado = esperadoDoMockup(mes);
+    expect(pdf.semPartidasNoMes).toBe(mes === '2026-07');
+    expect(pdf.colunas).toHaveLength(12);
+    expect(pdf.linhas.map((l) => ({ ...l, jogadorId: undefined }))).toEqual(
+      esperado.map((e) => ({ ...e, jogadorId: undefined })),
+    );
+  });
+
+  it('troca de pesos entre colunas: chuva vale 1 em 13/08 e 2 em 17/09 e 08/10', () => {
+    const pdf = calcularPdf({ ...base, hoje: '2026-10-22', mes: '2026-10' });
+    const chuvosas = pdf.colunas.filter((c) => c.choveu).map((c) => c.data);
+    expect(chuvosas).toEqual(['2026-08-13', '2026-09-17', '2026-10-08']);
+    const pontos = pdf.linhas[0]!.rodadas.map((r) => r.pontos);
+    expect(chuvosas.map((d) => pontos[pdf.colunas.findIndex((c) => c.data === d)])).toEqual([1, 2, 2]);
+  });
+});
+
+describe('calcularPdf: troca de pesos e mês com mais de 12 partidas', () => {
+  it('pontos por data: a mesma chuva vale 1 antes de 01/09 e 2 depois; expulso na chuva vale -1', () => {
+    const base = historicoDeTresMeses();
+    const pdf = calcularPdf({ ...base, hoje: '2026-10-10', mes: '2026-09' });
+    expect(pdf.colunas.map((c) => c.data)).toEqual(['2026-08-06', '2026-08-13', '2026-09-03', '2026-09-10']);
+    const ana = pdf.linhas.find((l) => l.jogadorId === 'a')!;
+    expect(ana.rodadas.map((r) => r.pontos)).toEqual([1, 1, 1, 2]);
+    const cris = pdf.linhas.find((l) => l.jogadorId === 'c')!;
+    expect(cris.rodadas.map((r) => r.pontos)).toEqual([1, 0, 0, -1]);
+  });
+
+  it('mês com 14 partidas (comportamento atual): 12 colunas, as mais recentes; ptsInicial absorve as 2 primeiras', () => {
+    const dias = Array.from({ length: 14 }, (_, i) => `2026-10-${String(i + 1).padStart(2, '0')}`);
+    const entrada = {
+      jogadores: [jogador('a', 'Ana')],
+      partidas: partidasEm(dias),
+      presencas: dias.map((d) => presenca('a', d)),
+      configsPesos: CONFIGS,
+      hoje: '2026-10-20',
+      mes: '2026-10',
+    };
+    const pdf = calcularPdf(entrada);
+    expect(pdf.colunas.map((c) => c.data)).toEqual(dias.slice(2));
+    expect(pdf.linhas[0]).toMatchObject({ ptsInicial: 2, ptsFinal: 14 });
+    expect(pdf.linhas[0]!.rodadas).toHaveLength(12);
   });
 });

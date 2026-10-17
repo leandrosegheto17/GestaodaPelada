@@ -1,5 +1,6 @@
 import { randomBytes } from 'node:crypto';
-import { describe, expect, it } from 'vitest';
+import pg from 'pg';
+import { describe, expect, it, vi } from 'vitest';
 import * as sessoes from '../../src/infraestrutura/db/repositorios/sessoes.js';
 import { DURACAO_SESSAO } from '../../src/infraestrutura/db/repositorios/sessoes.js';
 import { usarDb } from '../apoio/db-teste.js';
@@ -78,6 +79,35 @@ describe('repositório de sessões', () => {
     const dia29 = depois(29 * 24 * HORA);
     expect((await sessoes.buscarValidaEDeslizar(db, hash, dia29))?.renovada).toBe(true);
     expect(await sessoes.buscarValidaEDeslizar(db, hash, depois(40 * 24 * HORA))).not.toBeNull();
+  });
+
+  it('buscarValidaEDeslizar faz exatamente 1 consulta em cada desfecho', async () => {
+    const db = await abrir();
+    const conta = await criarConta(db, fabrica);
+    const hash = novoHash();
+    const { expiraEm } = await sessoes.criar(db, {
+      contaId: conta.id,
+      tokenHash: hash,
+      escopo: 'completo',
+      agora: base,
+    });
+    const espiao = vi.spyOn(pg.Client.prototype, 'query');
+    try {
+      const casos: [string, Uint8Array, Date, boolean][] = [
+        ['válida', hash, depois(HORA), true],
+        ['renovada', hash, depois(25 * HORA), true],
+        ['expirada', hash, new Date(expiraEm.getTime() + 40 * 24 * HORA), false],
+        ['hash inexistente', novoHash(), base, false],
+      ];
+      for (const [nome, h, agora, existe] of casos) {
+        espiao.mockClear();
+        const sessao = await sessoes.buscarValidaEDeslizar(db, h, agora);
+        expect(sessao !== null, nome).toBe(existe);
+        expect(espiao, nome).toHaveBeenCalledTimes(1);
+      }
+    } finally {
+      espiao.mockRestore();
+    }
   });
 
   it('troca de escopo, encerrar uma e encerrar todas', async () => {

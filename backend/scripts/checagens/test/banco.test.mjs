@@ -117,6 +117,27 @@ describe('checar-grupo-id', () => {
     'export namespace N { export function g(id: string) { return id; } }',
     'export const f = await Promise.resolve((id: string) => id);',
     'export const f = ((id: string) => id) satisfies unknown;',
+    'export class C { static f = (id: string) => id; }',
+    'export class C { f = function (id: string) { return id; }; }',
+    'export class C { constructor(public f = (id: string) => id) {} }',
+    'export class C { constructor(public f: (id: string) => string) {} }',
+    'export class C { f!: (id: string) => string; }',
+    'export class C { static { (globalThis as any).x = 1; } }',
+    'class B { m(id: string) { return id; } } export class C extends B {}',
+    'export class C extends (globalThis as any).Base {}',
+    'class Error { m(id: string) { return id; } } export class C extends Error {}',
+    'export let f: (id: string) => string; f = (id) => id;',
+    'export var f: (id: string) => string;',
+    'export declare const f: (id: string) => string;',
+    'export let n = 1;',
+    'const b = (id: string) => id; export import X = b;',
+    'import b = require("./interno"); export import X = b;',
+    'export const { a } = { a: (id: string) => id };',
+    'export enum E { A = (globalThis as any).x() }',
+    'export default class { static f = (id: string) => id; }',
+    "export { y } from '../fora';",
+    "export * from '../fora';",
+    "export * as ns from '../fora';",
   ])('falha: %s', (corpo) => {
     expect(rodarRepo(repo(corpo)).status).toBe(1);
   });
@@ -146,6 +167,28 @@ describe('checar-grupo-id', () => {
       'indice.ts': "export * from './interno';",
     });
     expect(r.status).toBe(1);
+  });
+
+  it('re-export de módulo fora da pasta falha mesmo com a função certa lá', () => {
+    const raiz = criar({
+      'repos/partidas.ts': "export { ok } from '../fora';",
+      'fora.ts': 'export function ok(grupoId: string) { return grupoId; }',
+      'excecoes.json': '[]',
+    });
+    expect(rodar('checar-grupo-id.mjs', join(raiz, 'repos'), join(raiz, 'excecoes.json')).status).toBe(1);
+  });
+
+  it('dados e classes só com construtor de dados passam', () => {
+    for (const corpo of [
+      'export class C { constructor(readonly id: string, public n: number) {} }',
+      'export class C { static k = 1; v: string = "a"; x?: number; }',
+      'export enum E { A, B = 2, C = "c" }',
+      'export const o = { a: 1, b: "x" };',
+      'export declare const s: string;',
+      'export default { a: 1 };',
+    ]) {
+      expect(rodarRepo(repo(corpo)).status).toBe(0);
+    }
   });
 
   it('erro de sintaxe e pasta ausente falham fechado', () => {

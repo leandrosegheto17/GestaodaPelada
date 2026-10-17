@@ -1,4 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
+import { sql } from 'kysely';
+import { kyselyDe } from '../../src/infraestrutura/db/cliente.js';
+import { emTransacao } from '../../src/infraestrutura/db/transacao.js';
 import * as contas from '../../src/infraestrutura/db/repositorios/contas.js';
 import { criarConta, SENHA_PADRAO } from '../apoio/fabricas/contas.js';
 import { usarFabrica } from '../apoio/fabrica.js';
@@ -30,21 +33,25 @@ describe('repositório de contas', () => {
     expect(await contas.verificarSenha(db, conta.email, `${base}b`)).not.toBeNull();
   });
 
-  it('e-mail inexistente gasta o mesmo custo (mesma ordem de grandeza)', async () => {
+  it('e-mail existente e inexistente executam exatamente um crypt cada', async () => {
     const db = await abrir();
     const conta = await criarConta(db, fabrica);
-    const medir = async (email: string): Promise<number> => {
-      const tempos: number[] = [];
-      for (let i = 0; i < 5; i++) {
-        const t0 = performance.now();
-        await contas.verificarSenha(db, email, 'qualquer');
-        tempos.push(performance.now() - t0);
-      }
-      return tempos.sort((a, b) => a - b)[2] as number;
-    };
-    const existente = await medir(conta.email);
-    const inexistente = await medir('nao-existe@teste.invalid');
-    expect(Math.max(existente, inexistente) / Math.min(existente, inexistente)).toBeLessThan(1.5);
+    const chamadasDeCrypt = (email: string) =>
+      emTransacao(db, async (tx) => {
+        const k = kyselyDe(tx);
+        await sql`SET LOCAL track_functions = 'all'`.execute(k);
+        const total = async () => {
+          const r = await sql<{ chamadas: string }>`
+            SELECT coalesce(sum(calls), 0)::text AS chamadas
+            FROM pg_stat_xact_user_functions WHERE funcname = 'crypt'`.execute(k);
+          return Number(r.rows[0]?.chamadas);
+        };
+        const antes = await total();
+        await contas.verificarSenha(tx, email, 'qualquer');
+        return (await total()) - antes;
+      });
+    expect(await chamadasDeCrypt(conta.email)).toBe(1);
+    expect(await chamadasDeCrypt('nao-existe@teste.invalid')).toBe(1);
   });
 
   it('cria com hash bcrypt de custo 12 e nunca expõe o hash', async () => {

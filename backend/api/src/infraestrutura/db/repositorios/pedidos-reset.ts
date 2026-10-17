@@ -19,7 +19,10 @@ export interface PedidoPendente {
   ultimoPedidoEm: Date;
 }
 
-/** Pendentes do mais recente para o mais antigo, numa só consulta. */
+/**
+ * Pendentes do mais recente para o mais antigo, numa só consulta. Devolve e-mail: só a rota do
+ * dono (sob `/api/dono`) pode chamá-la.
+ */
 export async function listarPendentes(ex: ExecutorDb): Promise<PedidoPendente[]> {
   const resultado = await sql<{
     id: string;

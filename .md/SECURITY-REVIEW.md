@@ -404,3 +404,42 @@ APROVADA — dono único e credenciais só em hash garantidos no banco, sem IP/U
 
 ## TP-0187 — DevSecOps — 2026-10-17
 APROVADA; 0 críticos, 0 não críticos; grep G-01/G-06/G-07 limpo, estouro tratado, 13 testes verdes, sem mudança de dependências.
+
+## RTP-0039 — DevSecOps — 2026-10-17
+APROVADA, 0 achados; apenas JSON de harness do mockup com dados fictícios, sem chegar ao app de produção (verificado por leitura do diff e busca de referências).
+
+## RTP-0051 — DevSecOps — 2026-10-17
+APROVADA - só testes de domínio/caixa unificados, sem código de produção, segredo ou dependência alterados; 0 achados.
+
+## RTP-0052 — DevSecOps — 2026-10-17
+APROVADA, 0 críticos/0 não críticos; diff só de apresentação (prop semIcone), sem superfície de segurança, sem dado pessoal; revisão de leitura, sem comando executado.
+
+## RTP-0053 — DevSecOps — 2026-10-17
+APROVADA; 0 achados; HTML estático sem script/handler/URL externa nem dado sensível (grep executado).
+
+## RTP-0054 — DevSecOps — 2026-10-17
+APROVADA — mudança só em teste (promessa controlada, msw), sem impacto de segurança; 0 achados.
+
+## RTP-0055 — DevSecOps — 2026-10-17
+APROVADA — só teste com dados fictícios, sem impacto de segurança; 0 achados (leitura, nada executado).
+
+## RTP-0056 — DevSecOps — 2026-10-17
+APROVADA; migração só com 2 COMMENT ON, aditiva, sem dado sensível e texto confere com o schema; 0 achados (revisão de leitura).
+
+## RTP-0057 — DevSecOps — 2026-10-17
+APROVADA COM DÉBITO — 7 contornos do aceite fechados; 7 novos contornos executados (classe com propriedade/extends, let/declare sem init, import=, re-export externo) exit 0; 0 críticos, 1 média (RTP-0061).
+
+## TP-0026 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; slug imutável/único e vínculo (conta, grupo) único confirmados por 5/5 testes e checagem aditiva no Postgres 55432.
+
+## TP-0027 — DevSecOps — 2026-10-17
+APROVADA em segurança: bcrypt 12 com hash fixo de mesmo custo (medido ~300 ms nos dois caminhos), parâmetros sem SQL injection, sem hash/senha em retorno ou log, aleatoriedade WebCrypto; 0 críticos, 0 novos (RTP-0060 existente cobre o teste de custo).
+
+## TP-0028 — DevSecOps — 2026-10-17
+APROVADA — hash SHA-256 only, expiração no SQL, SQL parametrizado, sem IP/UA/log, retenção de tentativas de 1 dia; 0 críticos, 0 não críticos (lido; sem dependência alterada).
+
+## TP-0148 — DevSecOps — 2026-10-17
+APROVADA; 0 achados; função pura sem relógio/aleatoriedade/import externo/duplicação, grep limpo e 24 testes passando.
+
+## TP-0179 — DevSecOps — 2026-10-17
+APROVADA — função pura sem relógio/I/O, saída só com apelido/pontos (G-10), colunas limitadas a 12 e custo linear (G-12), 27 testes passando; 0 achados.

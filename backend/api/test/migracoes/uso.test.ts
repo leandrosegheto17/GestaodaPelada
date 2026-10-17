@@ -52,8 +52,13 @@ describe('migração de eventos de uso', () => {
       "SELECT column_name FROM information_schema.columns WHERE table_name = 'eventos_uso'",
     );
     const nomes = colunas.map((c) => c.column_name);
-    for (const proibido of ['nome', 'telefone', 'ip', 'user_agent', 'latitude', 'cidade', 'jogador_id']) {
-      expect(nomes).not.toContain(proibido);
-    }
+    expect([...nomes].sort()).toEqual(
+      ['data_partida', 'dispositivo_id', 'grupo_id', 'id', 'mes_exportado', 'momento', 'tipo'].sort(),
+    );
+  });
+
+  it('mês em formato curto e dispositivo não uuid são recusados', async () => {
+    expect(await inserir('pdf_exportado', { mes: '26-10' })).toBe('23514');
+    expect(await inserir('ranking_aberto', { dispositivo: 'nao-e-uuid' })).toBe('22P02');
   });
 });

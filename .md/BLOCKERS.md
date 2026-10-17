@@ -44,3 +44,12 @@
 - Impacto se não resolvido: —
 - Sugestão: —
 - Status: Em aberto
+
+## Bloqueio 006 — 2026-10-17 (BK-0006)
+- Reportado por: Executor
+- Escalado para: usuário
+- Artefato/trecho afetado: TP-0154
+- Descrição: Orçamento de CPU de sugerir estourado (2 times de 11, 30 aptos: mediana 3,9-4,8 ms vs limiar 4 ms, ADR-017): decidir entre otimizar distribuirDoisTimes ou rever o limiar
+- Impacto se não resolvido: —
+- Sugestão: —
+- Status: Em aberto

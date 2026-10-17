@@ -410,3 +410,42 @@ APROVADA; 0 críticos, 1 não crítico (RTP-0051, suítes de teste duplicadas); 
 
 ## RTP-0043 — QA — 2026-10-17
 APROVADA — 13/13 testes de PaginaResultado isolados; ajuda do Não entra agora no mesmo y do mockup (pc 1245=1245, altura 1499=1499; celular 1937=1937); 0 críticos, 0 não críticos.
+
+## RTP-0039 — QA — 2026-10-17
+APROVADA, 0 críticos/0 não críticos; CV T27 vazio 0,05% (pc) e 0,16% (celular), alturas iguais, verificado em build+preview próprio com PNGs abertos.
+
+## RTP-0051 — QA — 2026-10-17
+APROVADA - nenhum caso perdido na unificação (13 casos removidos têm equivalente), 17 testes verdes, 0 achados.
+
+## RTP-0052 — QA — 2026-10-17
+APROVADA, 0 críticos/0 não críticos; comparação visual T06 erro (pc e celular) com geometria idêntica ao mockup e sem ícone; 51 testes de basicos/campos passando.
+
+## RTP-0053 — QA — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; linha 20 do T16 inativo idêntica à edição e ao app (grep).
+
+## RTP-0054 — QA — 2026-10-17
+APROVADA — teste sem dependência de tempo (promessa controlada), 20/20 sob carga de CPU em todos os núcleos, 44 testes da pasta verdes; 0 achados.
+
+## RTP-0055 — QA — 2026-10-17
+APROVADA — teste novo cobre mensalidade alterada (entrada ≠ config) e falha na mutação com a prioridade invertida; 31/31 verdes; 0 achados.
+
+## RTP-0056 — QA — 2026-10-17
+APROVADA; 10 migrações em ordem, reaplicação ok, 66/66 testes e checar-migracao-aditiva verdes, COMMENT confirmados em pg_description; 0 achados.
+
+## RTP-0057 — QA — 2026-10-17
+APROVADA — 7 formas de bypass do G-03 agora falham (exit 1), 63/63 testes e checagem real exit 0; 0 achados.
+
+## TP-0026 — QA — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; 5/5 testes e checagem aditiva verde no Postgres 55432.
+
+## TP-0027 — QA — 2026-10-17
+APROVADA — aceite cumprido no código (bcrypt 12, hash fixo, sem vazamento, token/senha temporária ok), 11/12 testes (o de custo igual falha sob carga); 0 críticos, 1 não crítico (RTP-0060: tornar o teste de custo determinístico).
+
+## TP-0028 — QA — 2026-10-17
+APROVADA — 9/9 testes e checagem de grupoId ok, aceite atendido; 0 críticos, 1 não crítico (RTP-0059: falta teste de uma consulta por chamada).
+
+## TP-0148 — QA — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; 40 testes (ranking/prioridade/pdf) e tsc ok, extração em ranking.ts sem regressão no TP-0010.
+
+## TP-0179 — QA — 2026-10-17
+APROVADA — colunas/ptsInicial/ptsFinal conferem com aceite e mockup, 27 testes passando; 0 críticos, 1 não crítico (RTP-0058: testes de mockup/troca de pesos); decisão pendente: mês >12 partidas (ADR-008 x aceite "até 12").
