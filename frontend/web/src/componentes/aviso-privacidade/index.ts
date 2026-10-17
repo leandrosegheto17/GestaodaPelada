@@ -1,0 +1,1 @@
+export { DialogoPrivacidade } from './DialogoPrivacidade';

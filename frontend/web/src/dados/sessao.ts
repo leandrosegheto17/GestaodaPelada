@@ -27,3 +27,18 @@ export function useSair() {
     onSuccess: () => cliente.clear(),
   });
 }
+
+/**
+ * Marca o aviso de privacidade como visto. A resposta é 204: o cache da sessão ganha o campo na hora,
+ * sem um segundo GET.
+ */
+export function useMarcarAvisoVisto() {
+  const cliente = useQueryClient();
+  return useMutation({
+    mutationFn: () => escrever('POST', '/sessao/aviso-privacidade', {}, semCorpo),
+    onSuccess: () =>
+      cliente.setQueryData<SessaoEu | null>(chaveSessao, (sessao) =>
+        sessao ? { ...sessao, avisoPrivacidadeVisto: true } : sessao,
+      ),
+  });
+}

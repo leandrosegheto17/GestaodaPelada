@@ -19,6 +19,9 @@ export const roteador = createBrowserRouter([
   { path: '/entrar', lazy: () => import('../telas/entrar/Entrar') },
   { path: '/entrar/esqueci', lazy: () => import('../telas/esqueci/EsqueciSenha') },
   { path: '/g/:slug', lazy: () => import('../telas/ranking/PaginaRanking') },
+  ...(recursos.ligado('privacidade')
+    ? [{ path: '/privacidade', lazy: () => import('../telas/privacidade/PaginaPrivacidade') }]
+    : []),
   // Áreas com login (/admin, /conta, /dono, /entrar/nova-senha): as telas entram aqui como filhas.
   {
     Component: RotaProtegida,

@@ -11,6 +11,8 @@ interface Props {
   /** Esc fecha (padrão: sim, exceto no destrutivo). Na confirmação, Esc equivale a "Cancelar". */
   fecharComEsc?: boolean;
   refFocoInicial?: RefObject<HTMLElement | null>;
+  /** O foco inicial vai ao título (que passa a ser focável por programa), não ao primeiro botão. */
+  focoNoTitulo?: boolean;
   aoFechar: () => void;
   children?: ReactNode;
   /** Botões, na ordem de leitura (no celular aparecem empilhados com o primeiro embaixo). */
@@ -24,6 +26,7 @@ export function Dialogo({
   destrutivo,
   fecharComEsc,
   refFocoInicial,
+  focoNoTitulo,
   aoFechar,
   children,
   acoes,
@@ -31,7 +34,13 @@ export function Dialogo({
   const idTitulo = useId();
   const idDescricao = useId();
   const refConteudo = useRef<HTMLElement>(null);
-  usarFocoModal({ refConteudo, refFocoInicial, aoFechar, fecharComEsc: fecharComEsc ?? !destrutivo });
+  const refTitulo = useRef<HTMLHeadingElement>(null);
+  usarFocoModal({
+    refConteudo,
+    refFocoInicial: focoNoTitulo ? refTitulo : refFocoInicial,
+    aoFechar,
+    fecharComEsc: fecharComEsc ?? !destrutivo,
+  });
   return createPortal(
     <div className={estilos.veu}>
       <section
@@ -43,7 +52,7 @@ export function Dialogo({
         aria-describedby={descricao ? idDescricao : undefined}
         tabIndex={-1}
       >
-        <h2 id={idTitulo} className={estilos.titulo}>
+        <h2 id={idTitulo} ref={refTitulo} className={estilos.titulo} tabIndex={focoNoTitulo ? -1 : undefined}>
           {titulo}
         </h2>
         {descricao ? (
