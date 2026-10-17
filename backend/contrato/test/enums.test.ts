@@ -39,4 +39,11 @@ describe('enums cobrem os valores das respostas do mockup', () => {
   it('situação de presença conhecida', () => {
     expect(SITUACOES_PRESENCA).toEqual(['ausente', 'presente', 'lesionado', 'expulso']);
   });
+
+  it('situacao de presença das respostas pertence ao enum (falta/fora são do ranking)', () => {
+    const doRanking = new Set(['falta', 'fora']);
+    const presenca = [...usados('situacao')].filter((v) => !doRanking.has(v));
+    expect(presenca.length).toBeGreaterThan(0);
+    for (const valor of presenca) expect(SITUACOES_PRESENCA as readonly string[]).toContain(valor);
+  });
 });
