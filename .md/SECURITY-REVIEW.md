@@ -809,3 +809,6 @@ APROVADA; 0 críticos/0 não críticos; revisão do diff (nada executado pelo De
 
 ## RTP-0106 — DevSecOps — 2026-10-17
 APROVADA; 0 críticos, 0 não críticos; só código de teste (lock advisory com chave constante, sem segredo/dado sensível/src), verificado por leitura do diff, nada executado.
+
+## TP-0132 — DevSecOps — 2026-10-17
+APROVADA — 0 críticos, 2 não críticos (baixa: senhas dos papéis pelada_* no histórico do SQL Editor do Neon sem rotação → RTP-0114; + higiene .gitignore → RTP-0115); repo/histórico sem segredo (gitleaks e grep executados), menor privilégio e TLS/Free conforme evidência do usuário, não reexecutável.

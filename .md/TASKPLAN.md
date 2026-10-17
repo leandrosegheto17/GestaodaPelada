@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-17 15:42
+Atualizado: 2026-10-17 15:44
 
-Resumo: Não executada 29 · Em execução 17 · Executada (aguarda teste) 1 · Testada (aguarda segurança) 1 · Aprovada 277 · Bloqueada 3 · total 328
+Resumo: Não executada 31 · Em execução 17 · Executada (aguarda teste) 1 · Aprovada 278 · Bloqueada 3 · total 330
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -148,7 +148,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 133 | TP-0129 | executor | ✔ | Tela T26: Área do dono | L28 | TP-0022, TP-0089, TP-0095, TP-0097, TP-0098, TP-0100, TP-0101, TP-0105, TP-0106, TP-0207 | Aprovada |
 | 134 | TP-0130 | executor | ✔ | Tela T27: Novo grupo | L28 | TP-0022, TP-0089, TP-0093, TP-0095, TP-0096, TP-0097, TP-0098, TP-0100, TP-0105, TP-0129, TP-0207 | Aprovada |
 | 135 | TP-0131 | executor | ✔ | Tela T28: Grupo (visão do dono) | L28 | TP-0022, TP-0089, TP-0093, TP-0095, TP-0096, TP-0098, TP-0100, TP-0101, TP-0105, TP-0129, TP-0207 | Aprovada |
-| 136 | TP-0132 | executor | ✔ | [U] Neon: projeto novo em São Paulo (PI-1) — **tarefa manual do usuário** | L29 | — | Testada (aguarda segurança) |
+| 136 | TP-0132 | executor | ✔ | [U] Neon: projeto novo em São Paulo (PI-1) — **tarefa manual do usuário** | L29 | — | Aprovada |
 | 137 | TP-0133 | executor | ✔ | [U] Cloudflare: subdomínio, token e Hyperdrive (PI-2, PI-3) | L29 | TP-0013, TP-0132 | Não executada |
 | 138 | TP-0134 | executor | ✔ | [U] GitHub: secrets e environments (PI-4) | L29 | TP-0132, TP-0133 | Não executada |
 | 139 | SPK-0001 | coordenador | — | Spike S-01: transação interativa pg sobre o Hyperdrive | L29 | TP-0014, TP-0133 | Não executada |
@@ -337,7 +337,9 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 322 | RTP-0101 | executor | ✔ | Teste do PUT partidas: 404 de :data malformada sem consulta ao banco | L18 | TP-0082 | Não executada |
 | 323 | RTP-0107 | executor | ✔ | sw.ts: validade máxima (maxAgeSeconds) no cache do ranking público | L23 | TP-0108 | Não executada |
 | 324 | RTP-0113 | executor | ✔ | Alinhar o nome do branch de produção do Neon (production) em deploy.yml, SDD e tarefas... | Refatoração Lote-L29 | TP-0132 | Não executada |
-| 325 | BK-0003 | coordenador | ✔ | Exige push da branch ci-prova e PR real no remoto (ação manual/autorização do usuário); ro | — | — | Não executada |
-| 326 | RTP-0014 | executor | ✔ | Executar a prova do CI em PR real (ci-prova) | Refatoração Lote-L01 | BK-0003, TP-0003 | Bloqueada |
-| 327 | BK-0005 | coordenador | ✔ | Item (b) feito; item (a) exige PR real com job e2e verde (push/PR autorizado pelo usuário) | — | — | Não executada |
-| 328 | RTP-0017 | executor | ✔ | Provar job e2e verde em PR real e cobrir dist/ ausente em visual.mjs | Refatoração Lote-L20 | BK-0005, TP-0089 | Bloqueada |
+| 325 | RTP-0114 | executor | ✔ | Rotacionar senhas de pelada_app/pelada_backup do Neon antes do primeiro uso real | Refatoração Lote-L29 | TP-0132 | Não executada |
+| 326 | RTP-0115 | executor | ✔ | Ignorar .pnpm-store/ e .tmp-out.txt no .gitignore | Refatoração Lote-L29 | TP-0132 | Não executada |
+| 327 | BK-0003 | coordenador | ✔ | Exige push da branch ci-prova e PR real no remoto (ação manual/autorização do usuário); ro | — | — | Não executada |
+| 328 | RTP-0014 | executor | ✔ | Executar a prova do CI em PR real (ci-prova) | Refatoração Lote-L01 | BK-0003, TP-0003 | Bloqueada |
+| 329 | BK-0005 | coordenador | ✔ | Item (b) feito; item (a) exige PR real com job e2e verde (push/PR autorizado pelo usuário) | — | — | Não executada |
+| 330 | RTP-0017 | executor | ✔ | Provar job e2e verde em PR real e cobrir dist/ ausente em visual.mjs | Refatoração Lote-L20 | BK-0005, TP-0089 | Bloqueada |
