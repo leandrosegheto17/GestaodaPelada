@@ -24,8 +24,18 @@ describe('slugBase', () => {
     ['API', 'api-grupo'],
     ['Admin', 'admin-grupo'],
     ['g', 'grupo'],
+    ['Privacidade', 'privacidade-grupo'],
+    ['--x--', 'grupo'],
+    ['​​', 'grupo'],
+    ['%2F..%2Fx', '2f-2fx'],
+    ['Pe​lada', 'pe-lada'],
   ])('%j → %s', (nome, esperado) => {
     expect(slugBase(nome)).toBe(esperado);
+  });
+
+  it('corta em 40 sem terminar em hífen', () => {
+    expect(slugBase(`${'a'.repeat(39)} bbbbbbbbbb`)).toBe('a'.repeat(39));
+    expect(slugBase('a'.repeat(100))).toHaveLength(40);
   });
 
   it('corta no limite sem deixar hífen no fim', () => {
@@ -63,5 +73,30 @@ describe('gerarSlug', () => {
     const longo = 'x'.repeat(100);
     const slug = gerarSlug(longo, new Set([slugBase(longo)]));
     expect(slug.length).toBeLessThanOrEqual(64);
+  });
+  it('preenche lacuna no sufixo', () => {
+    expect(gerarSlug('Pelada', new Set(['pelada', 'pelada-3']))).toBe('pelada-2');
+  });
+  it('1000 colisões chegam a -1000 dentro do formato', () => {
+    const longo = 'a'.repeat(40);
+    const usados = new Set([longo]);
+    for (let n = 2; n < 1000; n++) usados.add(`${longo}-${n}`);
+    const slug = gerarSlug(longo, usados);
+    expect(slug).toBe(`${longo}-1000`);
+    expect(slug).toMatch(/^[a-z0-9-]{1,64}$/);
+  });
+  it('propriedade: saída de gerarSlug sempre válida em nomes variados', () => {
+    const pecas = ['Fúria', 'São', '⚽', ' ', '--', 'Ação', '🔥', 'x', '2026', '__', 'Пел', 'ç', '/', '.'];
+    let semente = 7;
+    const prox = () => (semente = (semente * 1103515245 + 12345) % 2147483648);
+    for (let i = 0; i < 200; i++) {
+      let nome = '';
+      const n = (prox() % 12) + 1;
+      for (let k = 0; k < n; k++) nome += pecas[prox() % pecas.length];
+      const s = gerarSlug(nome, new Set(['grupo', 'x']));
+      expect(s).toMatch(/^[a-z0-9-]{1,64}$/);
+      expect(s).not.toContain('--');
+      expect(s.startsWith('-') || s.endsWith('-')).toBe(false);
+    }
   });
 });
