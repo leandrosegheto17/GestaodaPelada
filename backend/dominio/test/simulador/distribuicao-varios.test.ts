@@ -65,13 +65,41 @@ describe('distribuirVariosTimes: propriedades', () => {
   });
 });
 
+describe('distribuirVariosTimes: ótimo local', () => {
+  it.each([0, 5, 11, 17, 23, 31, 40, 49])('elenco %i: nenhuma troca reduz a chave', (c) => {
+    const n = 2 + (c % 6);
+    const js = elenco(2 * n + 1 + ((c * 5) % 17));
+    const mapa = new Map(js.map((j) => [j.id, j]));
+    const chave = (times: string[][]): number[] => {
+      const ags = times.map((ids) => agregar(ids, mapa));
+      const nivel = ags.map((g) => g.somaNivel / g.n);
+      const idade = ags.map((g) => g.somaIdade / g.n);
+      return [Math.max(...nivel) - Math.min(...nivel), Math.max(...idade) - Math.min(...idade)];
+    };
+    const times = distribuirVariosTimes({ n, jogadores: js }).times.map((t) => [...t.jogadores]);
+    const base = chave(times);
+    for (let a = 0; a < times.length; a += 1)
+      for (let b = a + 1; b < times.length; b += 1)
+        for (let i = 0; i < times[a]!.length; i += 1)
+          for (let j = 0; j < times[b]!.length; j += 1) {
+            const copia = times.map((t) => [...t]);
+            [copia[a]![i], copia[b]![j]] = [times[b]![j]!, times[a]![i]!];
+            const k = chave(copia);
+            const reduz = k[0]! < base[0]! - 1e-6 || (Math.abs(k[0]! - base[0]!) <= 1e-6 && k[1]! < base[1]! - 1e-6);
+            expect(reduz).toBe(false);
+          }
+  });
+});
+
 describe('distribuirVariosTimes: incompleto e determinismo', () => {
-  it('o melhor jogador pode ficar no incompleto quando isso equilibra a média', () => {
-    const js = elenco(9, 500, 30);
-    js[0] = { ...js[0]!, nivel: 900 };
-    const r = distribuirVariosTimes({ n: 4, jogadores: js });
-    const incompleto = r.times[r.incompleto!]!;
-    expect(incompleto.jogadores).toContain('j01');
+  it('nada força o pior no incompleto: o objetivo é a média, com todos candidatos', () => {
+    const niveis = [1000, 800, 900, 900, 900, 900, 900, 900];
+    const js = niveis.map((nivel, i) => ({ ...elenco(8)[i]!, nivel, idade: 30 }));
+    const r = distribuirVariosTimes({ n: 3, jogadores: js });
+    const mapa = new Map(js.map((j) => [j.id, j]));
+    const medias = r.times.map((t) => agregar(t.jogadores, mapa).somaNivel / t.jogadores.length);
+    expect(Math.max(...medias) - Math.min(...medias)).toBe(0);
+    expect(r.times[r.incompleto!]!.jogadores).not.toContain('j02');
   });
 
   it('a lista embaralhada por permutações fixas dá a mesma saída', () => {
