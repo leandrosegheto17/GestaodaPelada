@@ -86,6 +86,9 @@ export function criarDb(fonte: FonteDeConexao, contexto: ContextoDeExecucao): Db
       try {
         if (conexao) {
           await conexao.catch(() => undefined);
+          // Ao fechar, o socket do Workers cancela a leitura pendente e o erro sobe até o cliente;
+          // sem ouvinte vira rejeição não tratada.
+          cliente.on('error', () => undefined);
           await cliente.end().catch(() => undefined);
         }
       } finally {
