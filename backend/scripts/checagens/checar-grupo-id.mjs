@@ -60,6 +60,48 @@ function funcaoDe(declaracao) {
   return null;
 }
 
+const MOTIVO_NAO_ANALISAVEL = 'forma de export não analisável; use função declarada ou exceção com motivo';
+const exprSemAsserts = (e) => {
+  let atual = e;
+  while (
+    ts.isParenthesizedExpression(atual) ||
+    ts.isAsExpression(atual) ||
+    ts.isSatisfiesExpression(atual) ||
+    ts.isNonNullExpression(atual)
+  ) {
+    atual = atual.expression;
+  }
+  return atual;
+};
+const ehCallable = (n) => ts.isArrowFunction(n) || ts.isFunctionExpression(n);
+
+// Forma que pode esconder função de repositório (chamada, objeto com métodos, classe) e que
+// funcaoDe não consegue conferir parâmetro a parâmetro.
+function formaNaoAnalisavel(declaracao) {
+  if (ts.isClassDeclaration(declaracao)) {
+    return declaracao.members.some((m) => ts.isMethodDeclaration(m) || ts.isAccessor(m)) ? MOTIVO_NAO_ANALISAVEL : null;
+  }
+  let expr = null;
+  if (ts.isVariableDeclaration(declaracao)) expr = declaracao.initializer;
+  else if (ts.isExportAssignment(declaracao)) expr = declaracao.expression;
+  if (!expr) return null;
+  expr = exprSemAsserts(expr);
+  if (ehCallable(expr)) return null;
+  if (ts.isCallExpression(expr) || ts.isNewExpression(expr) || ts.isClassExpression(expr)) return MOTIVO_NAO_ANALISAVEL;
+  if (ts.isObjectLiteralExpression(expr)) {
+    const temFuncao = expr.properties.some(
+      (p) =>
+        ts.isMethodDeclaration(p) ||
+        ts.isAccessor(p) ||
+        ts.isSpreadAssignment(p) ||
+        ts.isShorthandPropertyAssignment(p) ||
+        (ts.isPropertyAssignment(p) && !ts.isLiteralExpression(exprSemAsserts(p.initializer))),
+    );
+    return temFuncao ? MOTIVO_NAO_ANALISAVEL : null;
+  }
+  return null;
+}
+
 function problemaDosParametros(funcao) {
   const parametros = [...funcao.parameters];
   const primeiro = parametros[0];
@@ -83,11 +125,10 @@ for (const caminho of arquivos) {
     const real = exportado.flags & ts.SymbolFlags.Alias ? verificador.getAliasedSymbol(exportado) : exportado;
     if (!(real.flags & ts.SymbolFlags.Value)) continue;
     for (const declaracao of real.declarations ?? []) {
-      const funcao = funcaoDe(declaracao);
-      if (!funcao) continue;
       const donoRel = relative(PASTA, declaracao.getSourceFile().fileName).replaceAll('\\', '/');
       if (donoRel !== rel) continue; // reexportada: avaliada no arquivo de origem
-      const problema = problemaDosParametros(funcao);
+      const funcao = funcaoDe(declaracao);
+      const problema = funcao ? problemaDosParametros(funcao) : formaNaoAnalisavel(declaracao);
       if (problema && !excecaoDe(rel, exportado.name)) {
         const { line } = fonte.getLineAndCharacterOfPosition(declaracao.getStart());
         achados.push(`${rel}:${line + 1}: ${exportado.name}: ${problema}`);

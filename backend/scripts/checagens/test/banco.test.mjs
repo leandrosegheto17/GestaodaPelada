@@ -101,8 +101,29 @@ describe('checar-grupo-id', () => {
     'export function f(grupo_id: string) { return grupo_id; }',
     'function g(x: string) { return x; } export { g as h };',
     'export default function (x: string) { return x; }',
+    'const envolver = (f: unknown) => f; export const f = envolver((id: string) => id);',
+    'export const f = (envolver as any)((id: string) => id);',
+    'export const o = { listar(id: string) { return id; } };',
+    'export const o = { listar: (id: string) => id };',
+    'const m = { a: 1 }; export const o = { ...m };',
+    'export class R { listar(id: string) { return id; } }',
+    'export const C = class { listar(id: string) { return id; } };',
+    'export default { listar(id: string) { return id; } };',
+    'export default (globalThis as any).envolver((id: string) => id);',
   ])('falha: %s', (corpo) => {
     expect(rodarRepo(repo(corpo)).status).toBe(1);
+  });
+
+  it('forma não analisável aceita exceção com motivo e dados literais passam', () => {
+    const corpo = repo('export const f = (globalThis as any).envolver((id: string) => id);');
+    expect(rodarRepo(corpo, [{ arquivo: 'partidas.ts', funcao: 'f', motivo: 'envolvida' }]).status).toBe(0);
+    expect(
+      rodarRepo(
+        repo(
+          "export const k = { a: 1, b: 'x' }; export class V extends Error { constructor(readonly id: string) { super(id); } }",
+        ),
+      ).status,
+    ).toBe(0);
   });
 
   it('exceção válida passa; exceção obsoleta falha', () => {
