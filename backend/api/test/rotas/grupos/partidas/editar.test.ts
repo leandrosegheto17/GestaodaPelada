@@ -1,5 +1,10 @@
 import { partidaDetalhe } from '@pelada/contrato';
+import { Hono } from 'hono';
 import { describe, expect, it } from 'vitest';
+import type { SessaoAtual } from '../../../../src/aplicacao/acesso/sessao.js';
+import type { VinculoAtual } from '../../../../src/aplicacao/acesso/vinculo.js';
+import type { AppEnv } from '../../../../src/entrada/app.js';
+import { rotaPartidaEditar } from '../../../../src/entrada/rotas/grupos/partidas/escrever.js';
 import { kyselyDe } from '../../../../src/infraestrutura/db/cliente.js';
 import { montarCenario } from '../../../apoio/cenario-acesso.js';
 import { clienteTeste } from '../../../apoio/cliente.js';
@@ -32,7 +37,11 @@ describe('PUT /api/grupos/:g/partidas/:data (workerd)', () => {
     expect(r.status).toBe(200);
     expect(r.headers.get('Cache-Control')).toContain('no-store');
     expect(partidaDetalhe.parse(r.corpo)).toMatchObject({ choveu: true, alteradaPor: 'Admin A' });
-    const linha = await kyselyDe(db).selectFrom('partidas').select('alterada_em').where('grupo_id', '=', g).executeTakeFirst();
+    const linha = await kyselyDe(db)
+      .selectFrom('partidas')
+      .select('alterada_em')
+      .where('grupo_id', '=', g)
+      .executeTakeFirst();
     expect(linha?.alterada_em.getTime()).toBe(AGORA_TESTE.getTime());
   });
 
@@ -55,6 +64,47 @@ describe('PUT /api/grupos/:g/partidas/:data (workerd)', () => {
     }
     const outro = clienteTeste({ relogio: relogioFixo(HOJE_TESTE), cookie: cen.adminB.cookie });
     expect((await outro.put(`/api/grupos/${g}/partidas/${data}`, corpo)).status).toBe(404);
+  });
+
+  it('404 de :data malformada ou impossível sem pedir a conexão ao banco', async () => {
+    let pedidos = 0;
+    const app = new Hono<AppEnv>();
+    app.use('*', async (c, proximo) => {
+      c.set('relogio', relogioFixo(HOJE_TESTE));
+      c.set('db', () => {
+        pedidos++;
+        throw new Error('sem banco neste teste');
+      });
+      const sessao: SessaoAtual = {
+        sessaoId: 'sessao',
+        conta: {
+          id: 'conta',
+          nome: 'Admin',
+          email: 'admin@teste.invalid',
+          eDono: false,
+          avisoPrivacidadeVistoEm: null,
+        },
+        escopo: 'completo',
+        renovada: false,
+      };
+      const vinculo: VinculoAtual = { grupoId: 'grupo', acessaFinanceiro: false };
+      c.set('sessao', sessao);
+      c.set('vinculo', vinculo);
+      await proximo();
+    });
+    app.route('/', rotaPartidaEditar);
+    const corpo = { data: diaRelativo(-3), choveu: true, marcacoes: [] };
+    const put = (d: string) =>
+      app.request(`/api/grupos/g/partidas/${d}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(corpo),
+      });
+    for (const d of ['2026-13-01', 'abc', '2026-02-30', '2026-00-10']) expect((await put(d)).status).toBe(404);
+    expect(pedidos).toBe(0);
+    // Controle: com data válida o mesmo app pede a conexão (o contador funciona).
+    await put(corpo.data);
+    expect(pedidos).toBeGreaterThan(0);
   });
 
   it('401 sem sessão e 403 sem X-Pelada', async () => {
