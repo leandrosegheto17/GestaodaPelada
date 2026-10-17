@@ -96,6 +96,12 @@ export type MesFinanceiro = z.infer<typeof mesFinanceiro>;
 /** 403: o admin é do grupo mas não tem a permissão do financeiro. */
 export const erroSemPermissaoFinanceiro = estenderErro({ codigo: z.literal(CODIGOS_ERRO.semPermissaoFinanceiro) });
 
+/** 409: a entrada é a mensalidade de um pagamento marcado; só sai desmarcando o pagamento. */
+export const erroLancamentoVinculado = estenderErro({ codigo: z.literal(CODIGOS_ERRO.lancamentoVinculado) });
+
+/** 409: o pagamento do jogador naquele mês já está marcado. */
+export const erroPagamentoJaMarcado = estenderErro({ codigo: z.literal(CODIGOS_ERRO.pagamentoJaMarcado) });
+
 export const esquemasFinanceiro: Esquemas = {
   'financeiro.mes.consulta': { direcao: 'entrada', schema: mesFinanceiroConsulta },
   'financeiro.mes': { direcao: 'resposta', schema: mesFinanceiro },
@@ -106,4 +112,6 @@ export const esquemasFinanceiro: Esquemas = {
   'financeiro.lancamento.corpo': { direcao: 'entrada', schema: lancamentoCorpo },
   'financeiro.lancamento': { direcao: 'resposta', schema: lancamento },
   'financeiro.erro.sem-permissao': { direcao: 'resposta', schema: erroSemPermissaoFinanceiro },
+  'financeiro.erro.lancamento-vinculado': { direcao: 'resposta', schema: erroLancamentoVinculado },
+  'financeiro.erro.pagamento-ja-marcado': { direcao: 'resposta', schema: erroPagamentoJaMarcado },
 };
