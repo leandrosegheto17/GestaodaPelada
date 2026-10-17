@@ -27,6 +27,13 @@ describe('respostas do mockup', () => {
   it.each(respostas(/^erro-validacao-(nova-senha|senha-atual)\.json$/))('$nome é erro de validação', ({ json }) => {
     expect(erroPadrao.safeParse(json).success).toBe(true);
   });
+  it('as chaves de campos dos erros de validação são nomes do corpo de trocar-senha', () => {
+    const nomes = ['senhaAtual', 'novaSenha', 'confirmacao'];
+    for (const { json } of respostas(/^erro-validacao-(nova-senha|senha-atual)\.json$/)) {
+      const campos = (json as { erro: { campos: Record<string, string> } }).erro.campos;
+      for (const chave of Object.keys(campos)) expect(nomes).toContain(chave);
+    }
+  });
   it('enderecoNovo aceita ausente, null e URL; recusa texto solto', () => {
     const base = respostas(/^sessao-eu-admin\.json$/)[0]?.json as Record<string, unknown>;
     const semEndereco = Object.fromEntries(Object.entries(base).filter(([chave]) => chave !== 'enderecoNovo'));
