@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
-  <!-- Cores de tokens.css: verde --cor-verde, faixa --cor-verde-faixa, bola --cor-amarelo, contorno --cor-texto -->
-  <rect width="512" height="512" fill="#0B6B34"/>
-  <rect x="64" width="64" height="512" fill="#0E7A3C"/>
-  <rect x="192" width="64" height="512" fill="#0E7A3C"/>
-  <rect x="320" width="64" height="512" fill="#0E7A3C"/>
-  <rect x="448" width="64" height="512" fill="#0E7A3C"/>
-  <circle cx="256" cy="256" r="120" fill="#FFD23F" stroke="#14201A" stroke-width="16"/>
-  <polygon points="256,196 307,233 288,293 224,293 205,233" fill="#14201A"/>
-  <path d="M256 196V136M307 233l57-18M288 293l35 48M224 293l-35 48M205 233l-57-18" stroke="#14201A" stroke-width="12" stroke-linecap="round" fill="none"/>
-=======
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <title>Gestão da Pelada</title>
   <!-- Icone maskable: fundo de borda a borda; o motivo cabe no circulo central de raio 204 (area segura de 80%).
@@ -31,5 +19,4 @@
     <line x1="230.2" y1="291.6" x2="186.6" y2="351.5"/>
     <line x1="214.2" y1="242.4" x2="143.8" y2="219.5"/>
   </g>
->>>>>>> worktree-execucao+executar-TP-0006
 </svg>
