@@ -842,3 +842,15 @@ APROVADA — evento só com tipo+id anônimo via escrever/schema, cache restrito
 
 ## TP-0138 — DevSecOps — 2026-10-17
 APROVADA em segurança; 0 críticos, 2 não críticos (RTP-0118 senha temporária no trace, baixa; RTP-0119 e-mail real do dono em literal no compose); revisão do diff, nada executado por mim.
+
+## RTP-0118 — DevSecOps — 2026-10-17
+APROVADA; 0 achados; trace/screenshot/video off e sem log de senha na API, verificado por leitura do diff/ci.yml e grep (e2e não executado).
+
+## RTP-0119 — DevSecOps — 2026-10-17
+APROVADA — compose lê DONO_EMAIL de ids.ts; sem vetor de injeção (fonte é constante do repo) nem segredo; escape `$$` e substituição executados; 0 achados; `compose up`/i1 não executados.
+
+## RTP-0120 — DevSecOps — 2026-10-17
+APROVADA — i--/--i deixam de esconder e_dono (só estreita falso negativo), 46 testes e checagem na raiz exit 0 executados; 0 achados.
+
+## RTP-0121 — DevSecOps — 2026-10-17
+APROVADA — 0 críticos, 1 não crítico (RTP-0122: `|=`/`&=`/`^=`/`>>=` escapam da guarda); 46 testes + checagem na raiz executados.

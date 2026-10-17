@@ -860,3 +860,15 @@ APROVADA; 7/7 do i1 passam contra o compose real; 0 críticos, 2 não críticos 
 
 ## TP-0196 — QA — 2026-10-17
 BLOQUEIO de ambiente: 74 testes de lancamentos/ler+isolamento passam, mas afterAll do isolamento falha por linhas residuais (conta órfã em pelada_teste); 0 achados, rever após limpar o banco.
+
+## RTP-0118 — QA — 2026-10-17
+APROVADA; 0 achados; trace/screenshot/video em off no e2e-integracao, verificado por leitura do diff e do ci.yml.
+
+## RTP-0119 — QA — 2026-10-17
+APROVADA — compose lê DONO_EMAIL de ids.ts sem literal, `compose config` válido e substituição conferida no sh; 0 achados; `compose up`/i1 não executados (valor idêntico ao anterior).
+
+## RTP-0120 — QA — 2026-10-17
+APROVADA — aceite atendido (i--/--i não escondem e_dono), 46 testes passando e checagem na raiz exit 0; 0 achados.
+
+## RTP-0121 — QA — 2026-10-17
+APROVADA — 0 achados; 46 testes e a checagem na raiz (527 arquivos) passam, aceite coberto.
