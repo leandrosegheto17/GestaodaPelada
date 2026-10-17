@@ -1,4 +1,4 @@
-import { diaSemana, data as esquemaData, partidaNova, type PartidaNova, type SituacaoPresenca } from '@pelada/contrato';
+import { diaSemana, data as esquemaData, idsDaComposicao, partidaNova, type PartidaNova, type SituacaoPresenca } from '@pelada/contrato';
 import { compararDatas, dataSugeridaPartida } from '@pelada/dominio';
 import type { ExecutorDb } from '../../infraestrutura/db/index.js';
 import * as escalacoes from '../../infraestrutura/db/repositorios/escalacoes.js';
@@ -6,7 +6,7 @@ import * as grupos from '../../infraestrutura/db/repositorios/grupos.js';
 import * as partidas from '../../infraestrutura/db/repositorios/partidas.js';
 import { ativosNaData } from '../elenco/ativos.js';
 import { indiceDiaSemana } from '../grupos/dia-semana.js';
-import { idsDaComposicao, lerComposicao } from '../simulador/composicao.js';
+import { lerComposicao } from '../simulador/composicao.js';
 import { montarLinhas } from './linhas.js';
 
 export class DataInvalida extends Error {

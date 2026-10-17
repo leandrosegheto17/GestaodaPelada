@@ -21,12 +21,16 @@ export const composicaoVarios = z.strictObject({
   times: z.array(z.strictObject({ jogadores: z.array(uuid).max(LIMITES.aptosMax) })).max(LIMITES.aptosMax),
 });
 
-function idsDaComposicaoDois(c: z.infer<typeof composicaoDois>): string[] {
-  return [...c.times.flatMap((t) => [...t.titulares, ...t.entramNo2oTempo].map((j) => j.id)), ...c.naoEntra];
-}
+/** Formato e composição de uma escalação. */
+export type Escalada =
+  | { formato: 'dois_times'; composicao: z.infer<typeof composicaoDois> }
+  | { formato: 'varios_times'; composicao: z.infer<typeof composicaoVarios> };
 
-function idsDaComposicaoVarios(c: z.infer<typeof composicaoVarios>): string[] {
-  return c.times.flatMap((t) => t.jogadores);
+/** Ids que aparecem na composição: titulares, reservas e "não entra" (dois times), ou todos os times. */
+export function idsDaComposicao(escalada: Escalada): string[] {
+  if (escalada.formato === 'varios_times') return escalada.composicao.times.flatMap((t) => t.jogadores);
+  const { times, naoEntra } = escalada.composicao;
+  return [...times.flatMap((t) => [...t.titulares, ...t.entramNo2oTempo].map((j) => j.id)), ...naoEntra];
 }
 
 /** Ids sem repetição e todos dentro dos aptos (base do 422 de avaliar e confirmar). */
@@ -37,12 +41,12 @@ function composicaoValida(ids: string[], aptos: readonly { id: string }[]): stri
 }
 
 const avaliarDois = entradaDois.extend({ composicao: composicaoDois }).superRefine((corpo, contexto) => {
-  const problema = composicaoValida(idsDaComposicaoDois(corpo.composicao), corpo.aptos);
+  const problema = composicaoValida(idsDaComposicao(corpo), corpo.aptos);
   if (problema) contexto.addIssue({ code: 'custom', path: ['composicao'], message: problema });
 });
 
 const avaliarVarios = entradaVarios.extend({ composicao: composicaoVarios }).superRefine((corpo, contexto) => {
-  const problema = composicaoValida(idsDaComposicaoVarios(corpo.composicao), corpo.aptos);
+  const problema = composicaoValida(idsDaComposicao(corpo), corpo.aptos);
   if (problema) contexto.addIssue({ code: 'custom', path: ['composicao'], message: problema });
 });
 

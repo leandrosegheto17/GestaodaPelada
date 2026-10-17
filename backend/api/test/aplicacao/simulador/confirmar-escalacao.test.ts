@@ -1,6 +1,6 @@
-import type { EscalacaoCorpo } from '@pelada/contrato';
+import { idsDaComposicao, type EscalacaoCorpo } from '@pelada/contrato';
 import { describe, expect, it } from 'vitest';
-import { confirmarEscalacao, idsDaComposicao } from '../../../src/aplicacao/simulador/confirmar-escalacao.js';
+import { confirmarEscalacao } from '../../../src/aplicacao/simulador/confirmar-escalacao.js';
 import { kyselyDe } from '../../../src/infraestrutura/db/cliente.js';
 import * as escalacoes from '../../../src/infraestrutura/db/repositorios/escalacoes.js';
 import { usarDb } from '../../apoio/db-teste.js';

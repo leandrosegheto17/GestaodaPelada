@@ -1,9 +1,8 @@
-import type { EscalacaoConfirmada, EscalacaoCorpo } from '@pelada/contrato';
+import { idsDaComposicao, type EscalacaoConfirmada, type EscalacaoCorpo } from '@pelada/contrato';
 import { emTransacao, type Db } from '../../infraestrutura/db/index.js';
 import * as escalacoes from '../../infraestrutura/db/repositorios/escalacoes.js';
 import * as eventos from '../../infraestrutura/db/repositorios/eventos.js';
 import { ativosNaData } from '../elenco/ativos.js';
-import { idsDaComposicao } from './composicao.js';
 
 export type ResultadoConfirmar =
   { ok: true; confirmada: EscalacaoConfirmada } | { ok: false; campos: Record<string, string> };
@@ -11,8 +10,6 @@ export type ResultadoConfirmar =
 export const MSG_COMPOSICAO_FORA_DO_GRUPO = 'Há jogadores que não estão ativos no grupo nesta data.';
 
 export const MSG_COMPOSICAO_REPETIDA = 'Há jogador repetido na composição.';
-
-export { idsDaComposicao } from './composicao.js';
 
 export interface DependenciasConfirmar {
   /** Troca o registro do evento (testes de atomicidade). */
