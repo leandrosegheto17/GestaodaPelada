@@ -74,6 +74,18 @@ describe('SeletorSituacao', () => {
     expect(seguinte.contains(document.activeElement)).toBe(true);
   });
 
+  it('teclado: ArrowDown avança, a ponta volta ao início e Espaço marca', async () => {
+    const aoMudar = vi.fn();
+    render(<Controlado inicial="expulso" aoMudar={aoMudar} />);
+    await userEvent.tab();
+    await userEvent.keyboard('{ArrowDown}');
+    expect(aoMudar).toHaveBeenLastCalledWith('ausente');
+    await userEvent.keyboard('{ArrowRight}');
+    expect(aoMudar).toHaveBeenLastCalledWith('presente');
+    await userEvent.keyboard(' ');
+    expect(screen.getAllByRole('radio', { name: 'Presente' })[0]).toBeChecked();
+  });
+
   it('o CSS garante alvo de toque mínimo', () => {
     const css = readFileSync(join(import.meta.dirname, 'SeletorSituacao.module.css'), 'utf8');
     expect(css).toContain('min-height: var(--alvo-toque)');
