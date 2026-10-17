@@ -43,7 +43,9 @@ export function usarFocoModal({ refConteudo, refFocoInicial, aoFechar, fecharCom
       }
       const ativo = document.activeElement;
       const dentro = ativo instanceof Node && conteudo.contains(ativo);
-      if (evento.shiftKey && (ativo === primeiro || !dentro || ativo === conteudo)) {
+      const antesDoPrimeiro =
+        ativo instanceof Node && (ativo.compareDocumentPosition(primeiro) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0;
+      if (evento.shiftKey && (ativo === primeiro || !dentro || ativo === conteudo || antesDoPrimeiro)) {
         evento.preventDefault();
         ultimo.focus();
       } else if (!evento.shiftKey && (ativo === ultimo || !dentro)) {

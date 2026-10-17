@@ -10,6 +10,7 @@ function ComDialogo(props: {
   destrutivo?: boolean;
   focoNoCancelar?: boolean;
   semFocaveis?: boolean;
+  focoNoTitulo?: boolean;
   aoFechar?: () => void;
 }) {
   const [aberto, setAberto] = useState(false);
@@ -24,6 +25,7 @@ function ComDialogo(props: {
           titulo="Excluir partida"
           descricao="Isso não pode ser desfeito."
           destrutivo={props.destrutivo}
+          focoNoTitulo={props.focoNoTitulo}
           refFocoInicial={props.focoNoCancelar ? cancelar : undefined}
           aoFechar={() => {
             props.aoFechar?.();
@@ -80,6 +82,17 @@ describe('Dialogo', () => {
     expect(screen.getByRole('button', { name: 'Cancelar' })).toHaveFocus();
     await userEvent.tab({ shift: true });
     expect(excluir).toHaveFocus();
+  });
+
+  it('com foco no título: Shift+Tab leva ao último focável e Tab ao primeiro', async () => {
+    render(<ComDialogo focoNoTitulo />);
+    await userEvent.click(screen.getByRole('button', { name: 'Abrir' }));
+    const titulo = screen.getByRole('heading', { name: 'Excluir partida' });
+    expect(titulo).toHaveFocus();
+    await userEvent.tab({ shift: true });
+    expect(screen.getByRole('button', { name: 'Excluir' })).toHaveFocus();
+    await userEvent.tab();
+    expect(screen.getByRole('button', { name: 'Cancelar' })).toHaveFocus();
   });
 
   it('sem focáveis, o foco fica no próprio diálogo', async () => {
