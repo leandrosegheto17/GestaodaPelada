@@ -1,6 +1,9 @@
-import { describe, expect, it } from 'vitest';
+import pg from 'pg';
+import { describe, expect, it, vi } from 'vitest';
+import { kyselyDe, type Db } from '../../src/infraestrutura/db/cliente.js';
 import * as eventos from '../../src/infraestrutura/db/repositorios/eventos.js';
 import { usarDb } from '../apoio/db-teste.js';
+import { criarEvento } from '../apoio/fabricas/eventos.js';
 import { usarFabrica } from '../apoio/fabrica.js';
 import { relogioFixo } from '../apoio/relogio.js';
 import { criarBase } from '../apoio/sql-dados.js';
@@ -10,6 +13,7 @@ const abrir = usarDb(fabrica);
 const em = (data: string, hora: string) => new Date(relogioFixo(data, hora).agoraIso());
 const D1 = '123e4567-e89b-12d3-a456-426614174001';
 const D2 = '123e4567-e89b-12d3-a456-426614174002';
+const D3 = '123e4567-e89b-12d3-a456-426614174003';
 
 describe('repositório de eventos de uso', () => {
   it('os 4 tipos são gravados e agregados por semana (segunda a domingo)', async () => {
@@ -100,5 +104,113 @@ describe('repositório de eventos de uso', () => {
     });
     expect(await eventos.porSemana(db, base.grupo.id)).toEqual([]);
     expect(await eventos.aparelhosDaSemana(db, base.grupo.id, '2026-10-14')).toBe(0);
+  });
+
+  it('eventos de B não entram em aparelhosDaSemana(A) nem em porSemana(A), com A também populado', async () => {
+    const db = await abrir();
+    const base = await criarBase(db, fabrica);
+    const a = base.grupo.id;
+    const b = base.outroGrupo.id;
+    await criarEvento(db, fabrica, a, {
+      tipo: 'ranking_aberto',
+      dispositivoId: D1,
+      momento: em('2026-10-14', '10:00'),
+    });
+    await criarEvento(db, fabrica, b, {
+      tipo: 'ranking_aberto',
+      dispositivoId: D2,
+      momento: em('2026-10-14', '10:00'),
+    });
+    await criarEvento(db, fabrica, b, {
+      tipo: 'ranking_aberto',
+      dispositivoId: D3,
+      momento: em('2026-10-15', '10:00'),
+    });
+    await criarEvento(db, fabrica, b, { tipo: 'pdf_exportado', mes: '2026-10', momento: em('2026-10-15', '11:00') });
+    expect(await eventos.aparelhosDaSemana(db, a, '2026-10-14')).toBe(1);
+    expect(await eventos.aparelhosDaSemana(db, b, '2026-10-14')).toBe(2);
+    const [semanaA] = await eventos.porSemana(db, a);
+    expect(semanaA?.aparelhosRanking).toBe(1);
+    expect(semanaA?.pdfsExportados).toBe(0);
+  });
+
+  it('porSemana com 4 semanas usa 1 consulta', async () => {
+    const db = await abrir();
+    const base = await criarBase(db, fabrica);
+    const g = base.grupo.id;
+    for (const dia of ['2026-10-05', '2026-10-12', '2026-10-19', '2026-10-26']) {
+      await criarEvento(db, fabrica, g, { tipo: 'ranking_aberto', dispositivoId: D1, momento: em(dia, '10:00') });
+    }
+    const consultas = vi.spyOn(pg.Client.prototype, 'query');
+    try {
+      const semanas = await eventos.porSemana(db, g);
+      expect(semanas).toHaveLength(4);
+      expect(consultas).toHaveBeenCalledTimes(1);
+    } finally {
+      consultas.mockRestore();
+    }
+  });
+
+  describe('colunas gravadas por tipo', () => {
+    const ler = (db: Db, grupoId: string) =>
+      kyselyDe(db)
+        .selectFrom('eventos_uso')
+        .select(['tipo', 'dispositivo_id', 'mes_exportado', 'data_partida'])
+        .where('grupo_id', '=', grupoId)
+        .execute();
+
+    it('ranking_aberto grava só dispositivo_id', async () => {
+      const db = await abrir();
+      const base = await criarBase(db, fabrica);
+      await criarEvento(db, fabrica, base.grupo.id, {
+        tipo: 'ranking_aberto',
+        dispositivoId: D1,
+        momento: em('2026-10-14', '10:00'),
+      });
+      expect(await ler(db, base.grupo.id)).toEqual([
+        { tipo: 'ranking_aberto', dispositivo_id: D1, mes_exportado: null, data_partida: null },
+      ]);
+    });
+
+    it('pdf_exportado grava só mes_exportado', async () => {
+      const db = await abrir();
+      const base = await criarBase(db, fabrica);
+      await criarEvento(db, fabrica, base.grupo.id, {
+        tipo: 'pdf_exportado',
+        mes: '2026-10',
+        momento: em('2026-10-14', '10:00'),
+      });
+      expect(await ler(db, base.grupo.id)).toEqual([
+        { tipo: 'pdf_exportado', dispositivo_id: null, mes_exportado: '2026-10', data_partida: null },
+      ]);
+    });
+
+    it.each(['escalacao_confirmada', 'partida_lancada'] as const)('%s grava só data_partida', async (tipo) => {
+      const db = await abrir();
+      const base = await criarBase(db, fabrica);
+      await criarEvento(db, fabrica, base.grupo.id, {
+        tipo,
+        dataPartida: '2026-10-15',
+        momento: em('2026-10-15', '12:00'),
+      });
+      expect(await ler(db, base.grupo.id)).toEqual([
+        { tipo, dispositivo_id: null, mes_exportado: null, data_partida: '2026-10-15' },
+      ]);
+    });
+  });
+
+  it('o tipo fechado recusa dado pessoal e exige dispositivoId em ranking_aberto', () => {
+    // Só checagem de tipo (tsc); a função nunca roda.
+    const _nunca = async (db: Db): Promise<void> => {
+      // @ts-expect-error campo livre `ip` não existe no evento
+      await eventos.registrar(db, 'g', { tipo: 'pdf_exportado', mes: '2026-10', momento: M, ip: '1.2.3.4' });
+      // @ts-expect-error campo livre `nome` não existe no evento
+      await eventos.registrar(db, 'g', { tipo: 'partida_lancada', dataPartida: '2026-10-15', momento: M, nome: 'Ana' });
+      // @ts-expect-error ranking_aberto exige dispositivoId
+      await eventos.registrar(db, 'g', { tipo: 'ranking_aberto', momento: M });
+      // @ts-expect-error dispositivoId só existe em ranking_aberto
+      await eventos.registrar(db, 'g', { tipo: 'pdf_exportado', mes: '2026-10', momento: M, dispositivoId: D1 });
+    };
+    expect(typeof _nunca).toBe('function');
   });
 });
