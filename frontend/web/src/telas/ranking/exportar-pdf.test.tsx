@@ -8,6 +8,7 @@ import { setupServer } from 'msw/node';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { violacoes } from '../../../test/apoio/axe';
+import { recursos } from '../../config/recursos';
 import { criarClienteConsultas } from '../../dados/consultas';
 import * as eventos from '../../dados/eventos';
 import * as entrega from '../../pdf/entregar';
@@ -75,6 +76,7 @@ beforeEach(() => {
   compartilhar.mockReset().mockResolvedValue('compartilhado');
   baixar.mockReset();
   registrar.mockReset();
+  vi.mocked(recursos.ligado).mockReset().mockReturnValue(true);
 });
 
 function montar() {
@@ -205,6 +207,72 @@ describe('Exportar PDF na T01', () => {
     await screen.findByText('Nenhum jogador no ranking ainda.');
     expect(screen.queryByRole('button', { name: 'Exportar PDF' })).not.toBeInTheDocument();
     expect(pedidosPdf).toEqual([]);
+  });
+
+  it('trocar de mês pede a projeção do novo mês', async () => {
+    api();
+    servidor.use(
+      http.get('/api/publico/pelada-de-quinta/ranking', ({ request }) =>
+        HttpResponse.json(
+          fixture(
+            new URL(request.url).searchParams.get('mes') === '2026-09'
+              ? 'publico-ranking-2026-07.json'
+              : 'publico-ranking-2026-10.json',
+          ),
+        ),
+      ),
+    );
+    montar();
+    await waitFor(() => expect(pedidosPdf).toEqual(['?mes=2026-10']));
+    await userEvent.click(await screen.findByRole('button', { name: 'Mês anterior, setembro de 2026' }));
+    await waitFor(() => expect(pedidosPdf).toHaveLength(2));
+    expect(pedidosPdf[1]).toMatch(/^\?mes=2026-\d{2}$/);
+    expect(pedidosPdf[1]).not.toBe('?mes=2026-10');
+  });
+
+  it('registro real: POST /eventos com {tipo, mes} e X-Pelada', async () => {
+    api();
+    const real = await vi.importActual<typeof import('../../dados/eventos')>('../../dados/eventos');
+    registrar.mockImplementation(real.registrarPdfExportado);
+    const envios: { corpo: unknown; cabecalho: string | null }[] = [];
+    servidor.use(
+      http.post('/api/publico/pelada-de-quinta/eventos', async ({ request }) => {
+        envios.push({ corpo: await request.json(), cabecalho: request.headers.get('X-Pelada') });
+        return new HttpResponse(null, { status: 204 });
+      }),
+    );
+    montar();
+    await waitFor(() => expect(pedidosPdf).toHaveLength(1));
+    await userEvent.click((await screen.findAllByRole('button', { name: 'Exportar PDF' }))[0]!);
+    await waitFor(() => expect(envios).toHaveLength(1));
+    expect(envios[0]).toEqual({ corpo: { tipo: 'pdf_exportado', mes: '2026-10' }, cabecalho: '1' });
+  });
+
+  it('recurso pdf desligado: sem botão e nenhuma chamada a /pdf', async () => {
+    api();
+    vi.mocked(recursos.ligado).mockImplementation((nome) => nome !== 'pdf');
+    montar();
+    await screen.findAllByRole('rowheader');
+    expect(screen.queryByRole('button', { name: 'Exportar PDF' })).not.toBeInTheDocument();
+    expect(pedidosPdf).toEqual([]);
+  });
+
+  it('axe: sem violações com a faixa de erro', async () => {
+    api({ pdf: () => new HttpResponse(null, { status: 500 }) });
+    montar();
+    await userEvent.click((await screen.findAllByRole('button', { name: 'Exportar PDF' }))[0]!);
+    await screen.findByRole('alert');
+    expect(await violacoes(document.body)).toEqual([]);
+  });
+
+  it('axe: sem violações com a faixa "PDF baixado."', async () => {
+    api();
+    entregarPdf.mockResolvedValue('baixado');
+    montar();
+    await waitFor(() => expect(pedidosPdf).toHaveLength(1));
+    await userEvent.click((await screen.findAllByRole('button', { name: 'Exportar PDF' }))[0]!);
+    expect(await screen.findByRole('status')).toHaveTextContent('PDF baixado.');
+    expect(await violacoes(document.body)).toEqual([]);
   });
 
   it('axe: sem violações com o D4 aberto', async () => {

@@ -351,6 +351,7 @@ Lista em ordem decrescente de data. Cada item mostra a data (dia da semana + dd/
   - cada linha tem o apelido e um **seletor de situação** (componente novo, **Seletor de situação**) com 4 opções de um toque: **Ausente · Presente · Lesionado · Expulso**;
   - cada opção mostra letra e texto curto (A/P/L/E).
 - **Barra de ação** (fixa): **"Salvar partida"**, com o resumo "(18 presentes)". No modo edição há também "Excluir partida" (secundária destrutiva, D2), e a linha "Última alteração: <nome>, dd/mm hh:mm" (RF-28).
+- **Depois de excluir:** volta a T10 no mês da partida excluída, com a faixa de sucesso "Partida de dd/mm excluída." (`role=status`).
 - **Data com partida já lançada:** aviso no campo ("Já existe uma partida em dd/mm/aaaa.") e botão "Editar a partida de dd/mm" (RF-27).
 - **Data inválida** (futura ou já lançada): a lista e as ações em massa não são mostradas, e "Salvar partida" fica desabilitado até a data ser corrigida.
 - **Lista no PC (≥ 1024 px):** duas colunas de jogadores.

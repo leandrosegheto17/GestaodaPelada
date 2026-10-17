@@ -9,6 +9,7 @@ import { createMemoryRouter, RouterProvider } from 'react-router';
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { violacoes } from '../../../test/apoio/axe';
 import { criarClienteConsultas } from '../../dados/consultas';
+import { estadoRetorno } from '../../dados/retorno';
 import { Component as PaginaPartidas } from './PaginaPartidas';
 
 const RESPOSTAS = join(import.meta.dirname, '../../../../../.md/mockup/respostas');
@@ -37,11 +38,11 @@ function api(partidas: (mes: string | null) => Response | Promise<Response>) {
 const porMes = (mes: string | null) =>
   HttpResponse.json(fixture(mes === '2026-07' ? 'partidas-2026-07.json' : 'partidas-2026-10.json'));
 
-function montar(rota = '/admin/g-quinta/partidas') {
+function montar(rota = '/admin/g-quinta/partidas', state?: unknown) {
   const cliente = criarClienteConsultas({ aoNaoAutenticado: () => undefined });
   const [pathname, busca] = rota.split('?');
   const roteador = createMemoryRouter([{ path: '/admin/:grupoId/partidas', Component: PaginaPartidas }], {
-    initialEntries: [{ pathname: pathname!, search: busca ? `?${busca}` : '' }],
+    initialEntries: [{ pathname: pathname!, search: busca ? `?${busca}` : '', state }],
   });
   const { container } = render(
     <QueryClientProvider client={cliente}>
@@ -113,6 +114,17 @@ describe('PaginaPartidas (T10)', () => {
     expect(container.querySelector('[aria-hidden="true"]')).toBeNull();
     act(() => vi.advanceTimersByTime(1));
     expect(container.querySelector('[aria-hidden="true"]')).not.toBeNull();
+  });
+
+  it('depois de excluir uma partida mostra a faixa com a data; sem estado, não mostra', async () => {
+    api(porMes);
+    const com = montar('/admin/g-quinta/partidas', estadoRetorno({ tipo: 'partida-excluida', data: '2026-10-15' }));
+    await screen.findByRole('list');
+    expect(screen.getByRole('status')).toHaveTextContent('Partida de 15/10 excluída.');
+    com.container.remove();
+    montar();
+    await screen.findByRole('list');
+    expect(screen.queryByText(/excluída/)).toBeNull();
   });
 
   it('sem violações do axe: sucesso, vazio e erro', async () => {

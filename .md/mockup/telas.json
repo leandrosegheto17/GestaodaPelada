@@ -112,7 +112,7 @@
     { "id": "T26", "nome": "Área do dono", "estado": "sucesso", "mockup": "telas/t26-dono--sucesso.html", "rota": "/dono", "viewports": ["pc", "celular"],
       "respostas": [ { "url": "**/api/dono/painel", "arquivo": "respostas/dono-painel.json" } ] },
     { "id": "T26", "nome": "Área do dono", "estado": "vazio", "mockup": "telas/t26-dono--vazio.html", "rota": "/dono", "viewports": ["pc", "celular"],
-      "respostas": [ { "url": "**/api/dono/painel", "arquivo": "respostas/dono-painel-vazio.json" } ] },
+      "respostas": [ { "url": "**/api/sessao/eu", "arquivo": "respostas/sessao-eu-dono-sem-grupos.json" }, { "url": "**/api/dono/painel", "arquivo": "respostas/dono-painel-vazio.json" } ] },
     { "id": "T27", "nome": "Novo grupo", "estado": "vazio", "mockup": "telas/t27-novo-grupo--vazio.html", "rota": "/dono/grupos/novo", "viewports": ["pc", "celular"] },
     { "id": "T28", "nome": "Grupo (visão do dono)", "estado": "sucesso", "mockup": "telas/t28-grupo-dono--sucesso.html", "rota": "/dono/grupos/g-quinta", "viewports": ["pc", "celular"],
       "respostas": [ { "url": "**/api/dono/grupos/g-quinta", "arquivo": "respostas/dono-grupo-quinta.json" } ] },

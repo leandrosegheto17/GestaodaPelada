@@ -91,6 +91,13 @@ describe('PaginaResultado (T13)', () => {
     expect(screen.getByRole('table', { name: 'Comparação entre os times' })).toBeInTheDocument();
     expect(screen.getByRole('region', { name: 'Time A' })).toBeInTheDocument();
     expect(screen.getByRole('region', { name: 'Time B' })).toBeInTheDocument();
+    const timeA = screen.getByRole('region', { name: 'Time A' });
+    const timeB = screen.getByRole('region', { name: 'Time B' });
+    expect(within(timeA).getAllByText('sai no intervalo')).toHaveLength(2);
+    expect(within(timeA).getByText(/Pedrão → Cabeça/)).toBeInTheDocument();
+    expect(within(timeB).getByText('só 1º tempo')).toBeInTheDocument();
+    expect(within(timeB).getByText('sem nota')).toBeInTheDocument();
+    expect(within(timeB).getByText(/Juninho → Vini/)).toBeInTheDocument();
     const naoEntra = screen.getByRole('region', { name: 'Não entra' });
     expect(within(naoEntra).getByRole('button', { name: /Serginho/ })).toBeInTheDocument();
     expect(within(naoEntra).getByText('Compareceram e recebem a pontuação de presença.')).toBeInTheDocument();

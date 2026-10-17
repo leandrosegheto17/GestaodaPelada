@@ -28,7 +28,7 @@
 .ajuda {
   font-size: var(--texto-sm);
   color: var(--cor-texto-sec);
-  margin: var(--esp-2) 0 0;
+  margin: 0;
 }
 .recolhivel {
   margin-top: var(--esp-4);

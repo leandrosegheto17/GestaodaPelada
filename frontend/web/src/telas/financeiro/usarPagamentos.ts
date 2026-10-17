@@ -8,12 +8,12 @@ import { mesNumerico } from '../../formatacao';
 type Pagamento = MesFinanceiro['pagamentos'][number];
 
 /**
- * Valor da entrada vinculada do jogador (a mensalidade pode ter mudado depois); sem ela, o da configuração.
+ * Valor da entrada vinculada do jogador (a mensalidade pode ter mudado depois); sem ela, null (nunca o valor da configuração).
  */
 function valorDaEntrada(dados: MesFinanceiro, apelido: string): number | null {
   const descricao = `Mensalidade ${apelido} ${mesNumerico(dados.mes)}`;
   const entrada = dados.lancamentos.find((l) => l.mensalidade && l.descricao === descricao);
-  return entrada?.valorCentavos ?? dados.config?.mensalidadeCentavos ?? null;
+  return entrada?.valorCentavos ?? null;
 }
 
 /**

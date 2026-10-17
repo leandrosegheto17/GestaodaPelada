@@ -2,6 +2,11 @@
   max-width: var(--largura-formulario);
   margin: 0 auto;
 }
+@media (min-width: 600px) {
+  .estreito {
+    max-width: calc(var(--largura-formulario) - 2 * var(--esp-6));
+  }
+}
 .formulario {
   display: grid;
   gap: var(--esp-4);

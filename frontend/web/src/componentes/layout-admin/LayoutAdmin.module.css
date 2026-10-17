@@ -1,13 +1,19 @@
 .conteudo {
   max-width: var(--largura-conteudo);
   margin: 0 auto;
-  padding: var(--esp-3) var(--esp-4) 112px;
+  /* Respiro do conteúdo em variáveis: telas de área cheia o anulam com margens derivadas delas. */
+  --respiro-topo: var(--esp-3);
+  --respiro-lado: var(--esp-4);
+  --respiro-base: 112px;
+  padding: var(--respiro-topo) var(--respiro-lado) var(--respiro-base);
 }
 .conteudo:focus {
   outline: none;
 }
 @media (min-width: 600px) {
   .conteudo {
-    padding: var(--esp-6) var(--esp-6) var(--esp-12);
+    --respiro-topo: var(--esp-6);
+    --respiro-lado: var(--esp-6);
+    --respiro-base: var(--esp-12);
   }
 }

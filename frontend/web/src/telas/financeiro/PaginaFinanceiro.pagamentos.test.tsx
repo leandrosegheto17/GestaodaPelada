@@ -14,6 +14,7 @@ import { Component as PaginaFinanceiro } from './PaginaFinanceiro';
 const RESPOSTAS = join(import.meta.dirname, '../../../../../.md/mockup/respostas');
 const base = JSON.parse(readFileSync(join(RESPOSTAS, 'financeiro-2026-10.json'), 'utf8')) as {
   pagamentos: { jogadorId: string; apelido: string; pagou: boolean }[];
+  lancamentos: unknown[];
   [chave: string]: unknown;
 };
 const comoJson = (valor: unknown): JsonBodyType => valor as JsonBodyType;
@@ -139,6 +140,22 @@ describe('PaginaFinanceiro: pagamentos (T22)', () => {
     expect(dialogo).toHaveTextContent('A entrada “Mensalidade Toninho 10/2026” (R$ 75,00) será removida do caixa.');
     expect(screen.getByRole('button', { name: 'Cancelar' })).toHaveFocus();
     expect(chamadas).toEqual([]);
+  });
+
+  it('desmarcar sem a entrada vinculada: desmarca direto, sem diálogo e sem usar o valor da configuração', async () => {
+    api(ok);
+    const semEntrada = comoJson({
+      ...base,
+      lancamentos: (base.lancamentos as { mensalidade: boolean; descricao: string }[]).filter(
+        (l) => !(l.mensalidade && l.descricao.includes('Toninho')),
+      ),
+    });
+    servidor.use(http.get('/api/grupos/g-quinta/financeiro/mes', () => HttpResponse.json(semEntrada)));
+    montar();
+    await userEvent.click(await interruptor('Toninho'));
+    await waitFor(() => expect(chamadas).toHaveLength(1));
+    expect(chamadas[0]?.metodo).toBe('DELETE');
+    expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
   });
 
   it('Cancelar e Esc: nada é enviado, o interruptor segue "Pagou" e o foco volta a ele', async () => {

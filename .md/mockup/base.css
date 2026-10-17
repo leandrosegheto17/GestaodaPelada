@@ -19,7 +19,7 @@ p{margin:0}
 .acima-4{margin-top:var(--esp-4)}
 .sem-topo{margin-top:0}
 .item--quebra{flex-wrap:wrap}
-.campo__entrada--nota{width:88px;flex-shrink:0}
+.campo__entrada.campo__entrada--nota{width:88px;flex:0 0 auto}
 .icone{flex-shrink:0}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 

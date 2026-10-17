@@ -9,6 +9,7 @@ import { createMemoryRouter, RouterProvider } from 'react-router';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { violacoes } from '../../../test/apoio/axe';
 import { criarClienteConsultas } from '../../dados/consultas';
+import { chavesDono } from '../../dados/dono/chaves';
 import { Component as NovoGrupo } from './NovoGrupo';
 
 const RESPOSTAS = join(import.meta.dirname, '../../../../../.md/mockup/respostas');
@@ -155,5 +156,75 @@ describe('NovoGrupo (T27)', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Criar grupo' }));
     expect(await screen.findByText('Não foi possível enviar. Verifique a conexão.')).toBeInTheDocument();
     expect(screen.getByLabelText('Nome do grupo')).toHaveValue('Racha de Sábado');
+  });
+
+  it('cada link do resumo foca o seu campo', async () => {
+    api(() => HttpResponse.json(fixture('erro-validacao-novo-grupo.json'), { status: 422 }));
+    montar();
+    await userEvent.click(await screen.findByRole('button', { name: 'Criar grupo' }));
+    await screen.findByText('Corrija 3 campos:');
+    for (const [link, campo] of [
+      ['Nome do grupo', 'Nome do grupo'],
+      ['Horário', 'Horário'],
+      ['E-mail do primeiro admin', 'E-mail'],
+    ] as const) {
+      await userEvent.click(screen.getByRole('link', { name: link }));
+      expect(screen.getByLabelText(campo)).toHaveFocus();
+    }
+  });
+
+  it('pendente mostra "Criando…" e o clique duplo envia um único POST', async () => {
+    let liberar: () => void = () => undefined;
+    const espera = new Promise<void>((r) => {
+      liberar = r;
+    });
+    api(async () => {
+      await espera;
+      return HttpResponse.json(fixture('dono-grupo-criado-vinculo.json'), { status: 201 });
+    });
+    const { roteador } = montar();
+    await preencher();
+    const botao = screen.getByRole('button', { name: 'Criar grupo' });
+    await userEvent.dblClick(botao);
+    expect(await screen.findByRole('button', { name: 'Criando…' })).toHaveAttribute('aria-busy', 'true');
+    await waitFor(() => expect(envios).toHaveLength(1));
+    liberar();
+    await waitFor(() => expect(roteador.state.location.pathname).toBe('/dono/grupos/g-sabado'));
+    expect(envios).toHaveLength(1);
+  });
+
+  it.each([
+    ['conta nova', 'dono-grupo-criado-novo-admin.json'],
+    ['vínculo', 'dono-grupo-criado-vinculo.json'],
+  ])('201 (%s) invalida o painel do dono', async (_nome, arquivo) => {
+    api(() => HttpResponse.json(fixture(arquivo), { status: 201 }));
+    const { cliente } = montar();
+    cliente.setQueryData(chavesDono.painel, fixture('dono-painel.json'));
+    expect(cliente.getQueryState(chavesDono.painel)?.isInvalidated).toBe(false);
+    await preencher();
+    await userEvent.click(screen.getByRole('button', { name: 'Criar grupo' }));
+    await waitFor(() => expect(cliente.getQueryState(chavesDono.painel)?.isInvalidated).toBe(true));
+  });
+
+  it('500 mostra a faixa de erro de envio e mantém os valores', async () => {
+    api(() => HttpResponse.json(fixture('erro-interno.json'), { status: 500 }));
+    montar();
+    await preencher();
+    await userEvent.click(screen.getByRole('button', { name: 'Criar grupo' }));
+    expect(await screen.findByText('Não foi possível enviar. Verifique a conexão.')).toBeInTheDocument();
+    expect(screen.getByLabelText('Nome do grupo')).toHaveValue('Racha de Sábado');
+    expect(screen.getByLabelText('Horário')).toHaveValue('16:00');
+    expect(screen.getByLabelText('E-mail')).toHaveValue('rodrigo@exemplo.com.br');
+    expect(screen.getByRole('button', { name: 'Criar grupo' })).toBeInTheDocument();
+  });
+
+  it('axe sem violação com o D1 aberto', async () => {
+    api(() => HttpResponse.json(fixture('dono-grupo-criado-novo-admin.json'), { status: 201 }));
+    const { container } = montar();
+    await preencher();
+    await userEvent.click(screen.getByRole('button', { name: 'Criar grupo' }));
+    const dialogo = await screen.findByRole('dialog', { name: 'Senha temporária de Rodrigo' });
+    expect(await violacoes(container)).toEqual([]);
+    expect(await violacoes(dialogo)).toEqual([]);
   });
 });

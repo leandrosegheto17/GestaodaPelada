@@ -121,10 +121,40 @@ describe('GrupoDono (T28): visão geral', () => {
     expect(await screen.findByText('Admin existente vinculado; senha mantida.')).toBeInTheDocument();
   });
 
-  it('404 volta para a área do dono; erro de rede mostra Tentar de novo', async () => {
+  it('sem estado de navegação, sem faixa', async () => {
+    api();
+    montar();
+    await screen.findByRole('heading', { level: 1, name: 'Pelada de Quinta' });
+    expect(screen.queryByText('Admin existente vinculado; senha mantida.')).toBeNull();
+    expect(screen.queryAllByRole('status').filter((e) => e.textContent !== '')).toHaveLength(0);
+  });
+
+  it('404 volta para a área do dono', async () => {
     api({ grupo: () => HttpResponse.json(fixture('erro-nao-encontrado.json'), { status: 404 }) });
     const { roteador } = montar();
     await waitFor(() => expect(roteador.state.location.pathname).toBe('/dono'));
+  });
+
+  it('erro de rede mostra Tentar de novo', async () => {
+    api({ grupo: () => HttpResponse.error() });
+    montar();
+    expect(await screen.findByRole('button', { name: 'Tentar de novo' }, { timeout: 5000 })).toBeInTheDocument();
+  });
+
+  it('arquivado: "Arquivado em 22/10/2026", axe limpo e sem texto de dados internos (RF-07)', async () => {
+    api({ grupo: () => HttpResponse.json(fixture('dono-grupo-firma-arquivado.json')) });
+    const { container } = montar();
+    expect(await screen.findByText('Arquivado em')).toBeInTheDocument();
+    expect(screen.getByText('22/10/2026')).toBeInTheDocument();
+    expect(await violacoes(container)).toEqual([]);
+    expect(container.textContent).not.toMatch(/jogadores|partidas|financeiro/i);
+  });
+
+  it('visão ativa não traz texto de jogadores, partidas ou financeiro (RF-07)', async () => {
+    api();
+    const { container } = montar();
+    await screen.findByRole('heading', { level: 1, name: 'Pelada de Quinta' });
+    expect(container.textContent).not.toMatch(/jogadores|partidas|financeiro/i);
   });
 });
 
@@ -141,6 +171,32 @@ describe('GrupoDono (T28): situação', () => {
       xPelada: '1',
       corpo: { situacaoComercial: 'trial', inicioTrial: '2026-10-22' },
     });
+  });
+
+  it('Ativo envia inicioTrial null', async () => {
+    api();
+    montar();
+    await userEvent.selectOptions(await screen.findByRole('combobox', { name: 'Situação comercial' }), 'ativo');
+    await userEvent.click(screen.getByRole('button', { name: 'Salvar situação' }));
+    expect(await screen.findByText('Situação salva.')).toBeInTheDocument();
+    expect(chamadas[0]).toMatchObject({ metodo: 'PATCH', corpo: { situacaoComercial: 'ativo', inicioTrial: null } });
+  });
+
+  it('422 da situação aparece como erro no campo', async () => {
+    api({
+      escrita: (metodo) =>
+        metodo === 'PATCH'
+          ? HttpResponse.json(
+              { erro: { codigo: 'validacao', mensagem: 'x', campos: { inicioTrial: 'Data inválida.' } } },
+              { status: 422 },
+            )
+          : undefined,
+    });
+    montar();
+    await userEvent.selectOptions(await screen.findByRole('combobox', { name: 'Situação comercial' }), 'trial');
+    await userEvent.type(screen.getByLabelText('Início do trial'), '2026-10-22');
+    await userEvent.click(screen.getByRole('button', { name: 'Salvar situação' }));
+    expect(await screen.findByText('Data inválida.')).toBeInTheDocument();
   });
 
   it('Trial sem data é recusado no cliente', async () => {
@@ -196,6 +252,27 @@ describe('GrupoDono (T28): senha e arquivamento', () => {
     expect(screen.getByRole('button', { name: 'Reativar grupo' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Arquivar grupo' })).toBeNull();
     expect(screen.queryByRole('combobox', { name: 'Situação comercial' })).toBeNull();
+  });
+
+  it('Reativar mostra "Grupo reativado."', async () => {
+    api({ grupo: () => HttpResponse.json(fixture('dono-grupo-firma-arquivado.json')) });
+    montar();
+    await userEvent.click(await screen.findByRole('button', { name: 'Reativar grupo' }));
+    expect(await screen.findByText('Grupo reativado.')).toBeInTheDocument();
+    expect(chamadas[0]).toMatchObject({ metodo: 'POST', caminho: '/api/dono/grupos/g-quinta/reativar' });
+  });
+
+  it('D1 aberto e D2 aberto sem violação de acessibilidade', async () => {
+    api();
+    montar();
+    await userEvent.click(await screen.findByRole('button', { name: 'Redefinir senha' }));
+    const d1 = await screen.findByRole('dialog', { name: /Senha temporária/ });
+    expect(await violacoes(d1)).toEqual([]);
+    await userEvent.click(within(d1).getByRole('button', { name: 'Já copiei' }));
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+    await userEvent.click(screen.getByRole('button', { name: 'Arquivar grupo' }));
+    const d2 = await screen.findByRole('alertdialog');
+    expect(await violacoes(d2)).toEqual([]);
   });
 
   it('422 do arquivamento aparece dentro do diálogo', async () => {

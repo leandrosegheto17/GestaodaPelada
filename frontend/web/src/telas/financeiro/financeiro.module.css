@@ -4,7 +4,7 @@
 }
 /* A mensagem ocupa a área toda: anula o respiro que o layout do admin dá ao conteúdo. */
 .semAcesso {
-  margin: calc(-1 * var(--esp-3)) calc(-1 * var(--esp-4)) -112px;
+  margin: calc(-1 * var(--respiro-topo)) calc(-1 * var(--respiro-lado)) calc(-1 * var(--respiro-base));
 }
 .ferramentas {
   display: flex;
@@ -135,8 +135,8 @@
   margin: 0;
 }
 @media (min-width: 600px) {
-  .semAcesso {
-    margin: calc(-1 * var(--esp-6)) calc(-1 * var(--esp-6)) calc(-1 * var(--esp-12));
+  .estreito {
+    max-width: calc(var(--largura-formulario) - 2 * var(--esp-6));
   }
 }
 @media (min-width: 1024px) {
