@@ -257,3 +257,12 @@ APROVADA; 0 críticos, 0 novos não críticos (RTP-0048 já aberta); escritas vi
 
 ## TP-0202 — DevSecOps — 2026-10-17
 APROVADA — entrada validada pelo schema do contrato, PUT com X-Pelada, 403 garantido por exigirFinanceiro na API, sem armazenamento local; 16/16 testes; 0 achados.
+
+## TP-0122 — DevSecOps — 2026-10-17
+APROVADA; 0 achados; PUT/DELETE via escrever com X-Pelada, D2 antes de excluir, retorno por state validado (sem open redirect), só data em URL (revisão de diff, sem ferramenta).
+
+## TP-0176 — DevSecOps — 2026-10-17
+APROVADA — 0 achados; diff só de exibição, G-05 e G-17 conferidos, sem dependência nova; grep de sinks/armazenamento limpo.
+
+## TP-0184 — DevSecOps — 2026-10-17
+OK; 0 críticos, 0 novos não críticos; evento pdf_exportado só {tipo,mes} com X-Pelada, blob/URL revogada, audit --prod limpo.
