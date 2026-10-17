@@ -1,0 +1,181 @@
+{
+  "direcao": "resposta",
+  "esquema": {
+    "additionalProperties": false,
+    "properties": {
+      "config": {
+        "anyOf": [
+          {
+            "additionalProperties": false,
+            "properties": {
+              "dataSaldoInicial": {
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+                "type": "string"
+              },
+              "mensalidadeCentavos": {
+                "anyOf": [
+                  {
+                    "maximum": 9007199254740991,
+                    "minimum": -9007199254740991,
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "saldoInicialCentavos": {
+                "maximum": 9007199254740991,
+                "minimum": -9007199254740991,
+                "type": "integer"
+              }
+            },
+            "required": ["mensalidadeCentavos", "saldoInicialCentavos", "dataSaldoInicial"],
+            "type": "object"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "hoje": {
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+        "type": "string"
+      },
+      "lancamentos": {
+        "items": {
+          "additionalProperties": false,
+          "properties": {
+            "data": {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "type": "string"
+            },
+            "descricao": {
+              "type": "string"
+            },
+            "id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "mensalidade": {
+              "type": "boolean"
+            },
+            "tipo": {
+              "enum": ["entrada", "saida"],
+              "type": "string"
+            },
+            "valorCentavos": {
+              "maximum": 9007199254740991,
+              "minimum": -9007199254740991,
+              "type": "integer"
+            }
+          },
+          "required": ["id", "tipo", "data", "descricao", "valorCentavos", "mensalidade"],
+          "type": "object"
+        },
+        "type": "array"
+      },
+      "mes": {
+        "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+        "type": "string"
+      },
+      "navegacao": {
+        "additionalProperties": false,
+        "properties": {
+          "mesAnterior": {
+            "anyOf": [
+              {
+                "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "mesSeguinte": {
+            "anyOf": [
+              {
+                "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": ["mesAnterior", "mesSeguinte"],
+        "type": "object"
+      },
+      "pagamentos": {
+        "items": {
+          "additionalProperties": false,
+          "properties": {
+            "apelido": {
+              "type": "string"
+            },
+            "jogadorId": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "pagou": {
+              "type": "boolean"
+            }
+          },
+          "required": ["jogadorId", "apelido", "pagou"],
+          "type": "object"
+        },
+        "type": "array"
+      },
+      "resumoMes": {
+        "anyOf": [
+          {
+            "additionalProperties": false,
+            "properties": {
+              "entradasCentavos": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "naoPagaram": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "resultadoCentavos": {
+                "maximum": 9007199254740991,
+                "minimum": -9007199254740991,
+                "type": "integer"
+              },
+              "saidasCentavos": {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              }
+            },
+            "required": ["entradasCentavos", "saidasCentavos", "resultadoCentavos", "naoPagaram"],
+            "type": "object"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "saldoAtualCentavos": {
+        "anyOf": [
+          {
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      }
+    },
+    "required": ["mes", "hoje", "navegacao", "config", "saldoAtualCentavos", "resumoMes", "pagamentos", "lancamentos"],
+    "type": "object"
+  }
+}

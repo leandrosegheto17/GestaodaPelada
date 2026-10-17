@@ -1,0 +1,31 @@
+{
+  "direcao": "entrada",
+  "esquema": {
+    "additionalProperties": false,
+    "properties": {
+      "dataSaldoInicial": {
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+        "type": "string"
+      },
+      "mensalidadeCentavos": {
+        "anyOf": [
+          {
+            "maximum": 99999999,
+            "minimum": 1,
+            "type": "integer"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "saldoInicialCentavos": {
+        "maximum": 99999999,
+        "minimum": -99999999,
+        "type": "integer"
+      }
+    },
+    "required": ["mensalidadeCentavos", "saldoInicialCentavos", "dataSaldoInicial"],
+    "type": "object"
+  }
+}

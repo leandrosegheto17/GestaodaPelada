@@ -10,6 +10,7 @@ export * from './grupo.js';
 export * from './admins.js';
 export * from './dono.js';
 export * from './elenco.js';
+export * from './financeiro.js';
 export * from './habilidades.js';
 export * from './pesos.js';
 export * from './partidas.js';

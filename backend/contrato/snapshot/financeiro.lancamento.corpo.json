@@ -1,0 +1,28 @@
+{
+  "direcao": "entrada",
+  "esquema": {
+    "additionalProperties": false,
+    "properties": {
+      "data": {
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+        "type": "string"
+      },
+      "descricao": {
+        "maxLength": 80,
+        "minLength": 1,
+        "type": "string"
+      },
+      "tipo": {
+        "enum": ["entrada", "saida"],
+        "type": "string"
+      },
+      "valorCentavos": {
+        "maximum": 99999999,
+        "minimum": 1,
+        "type": "integer"
+      }
+    },
+    "required": ["tipo", "data", "descricao", "valorCentavos"],
+    "type": "object"
+  }
+}
