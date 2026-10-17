@@ -449,3 +449,33 @@ APROVADA; 0 críticos, 0 não críticos; 40 testes (ranking/prioridade/pdf) e ts
 
 ## TP-0179 — QA — 2026-10-17
 APROVADA — colunas/ptsInicial/ptsFinal conferem com aceite e mockup, 27 testes passando; 0 críticos, 1 não crítico (RTP-0058: testes de mockup/troca de pesos); decisão pendente: mês >12 partidas (ADR-008 x aceite "até 12").
+
+## RTP-0058 — QA — 2026-10-17
+APROVADA; 32 testes passando, aceite (mockup, troca de pesos, 14 partidas = comportamento atual) coberto; 0 achados.
+
+## RTP-0059 — QA — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; teste de 1 consulta por chamada passa (6/6) e falha sob mutação com 2 consultas.
+
+## RTP-0060 — QA — 2026-10-17
+APROVADA; teste de custo igual agora por contagem de crypt (6x8/8 sob carga, mutação de retorno antecipado falha como esperado); 0 críticos, 0 não críticos.
+
+## RTP-0061 — QA — 2026-10-17
+APROVADA — 86/86 testes, raiz real exit 0, 62/80 sondas novas barradas; 0 críticos, 3 médios (construtor com corpo, re-export de .test/.mts/.tsx, casts) na RTP-0064; Padrão repetido: G-03 por enumeração sintática (4ª vez).
+
+## TP-0029 — QA — 2026-10-17
+APROVADA — 12 testes passando (banco 55432 próprio), checar-grupo-id sai 0, aceite e isolamento por grupo confirmados; 0 críticos, 0 não críticos.
+
+## TP-0030 — QA — 2026-10-17
+APROVADA; 11/11 testes e checar-grupo-id (saída 0) passando, 0 achados críticos, 0 não críticos.
+
+## TP-0031 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (cookie duplicado não recusado, RTP-0063); 16 testes + checar-grupo-id exit 0 + sondas de cookie malformado/sem prefixo.
+
+## TP-0042 — QA — 2026-10-17
+APROVADA — 10/10 testes da migração do Elenco e checagem aditiva verdes; 0 achados.
+
+## TP-0045 — QA — 2026-10-17
+APROVADA — 13 testes verdes em banco próprio e checagem aditiva ok; CHECKs por tipo e ausência de dado pessoal confirmados; 0 achados.
+
+## TP-0160 — QA — 2026-10-17
+APROVADA; 13/13 testes e checagem aditiva verdes; 0 críticos, 1 baixo (datas literais no teste, RTP-0062).

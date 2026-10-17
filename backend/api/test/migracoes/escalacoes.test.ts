@@ -1,12 +1,23 @@
 import { describe, expect, it } from 'vitest';
 import { usarDb } from '../apoio/db-teste.js';
 import { usarFabrica } from '../apoio/fabrica.js';
+import { criarRelogio } from '../../src/infraestrutura/relogio/index.js';
+import { relogioFixo } from '../apoio/relogio.js';
 import { criarBase } from '../apoio/sql-dados.js';
 import { codigoDoErro, executarSql } from '../apoio/sql.js';
 
 const fabrica = usarFabrica();
 const abrir = usarDb(fabrica);
-const AGORA = '2026-10-16T12:00:00Z';
+const relogio = relogioFixo(criarRelogio().hoje());
+const AGORA = relogio.agoraIso();
+const diaSeguinte = (n: number): string => {
+  const d = new Date(AGORA);
+  d.setUTCDate(d.getUTCDate() + n);
+  return d.toISOString().slice(0, 10);
+};
+const DIA_1 = diaSeguinte(1);
+const DIA_2 = diaSeguinte(2);
+const DIA_3 = diaSeguinte(3);
 const SEM_ID = '00000000-0000-4000-8000-000000000000';
 
 interface Linha {
@@ -25,7 +36,7 @@ async function inserir(l: Linha): Promise<void> {
      VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7, $8)`,
     [
       l.grupoId,
-      l.data ?? '2026-10-22',
+      l.data ?? DIA_1,
       l.formato ?? 'dois_times',
       l.n ?? 7,
       l.k === undefined ? 2 : l.k,
@@ -48,9 +59,9 @@ describe('migração de escalações', () => {
   it('aceita os dois formatos; k nulo em dois times (ilimitado) é aceito', async () => {
     const base = await comLimpeza();
     const comum = { grupoId: base.grupo.id, confirmadaPor: base.contaId };
-    expect(await codigoDoErro(inserir({ ...comum, data: '2026-10-22' }))).toBeNull();
-    expect(await codigoDoErro(inserir({ ...comum, data: '2026-10-23', k: null }))).toBeNull();
-    expect(await codigoDoErro(inserir({ ...comum, data: '2026-10-24', formato: 'varios_times', k: null }))).toBeNull();
+    expect(await codigoDoErro(inserir({ ...comum, data: DIA_1 }))).toBeNull();
+    expect(await codigoDoErro(inserir({ ...comum, data: DIA_2, k: null }))).toBeNull();
+    expect(await codigoDoErro(inserir({ ...comum, data: DIA_3, formato: 'varios_times', k: null }))).toBeNull();
   });
 
   it('única por grupo e data; a mesma data em outro grupo é aceita', async () => {

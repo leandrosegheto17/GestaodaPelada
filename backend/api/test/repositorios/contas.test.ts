@@ -52,6 +52,13 @@ describe('repositório de contas', () => {
       });
     expect(await chamadasDeCrypt(conta.email)).toBe(1);
     expect(await chamadasDeCrypt('nao-existe@teste.invalid')).toBe(1);
+
+    const [linha] = await executarSql<{ senha_hash: string }>('SELECT senha_hash FROM contas WHERE id = $1', [
+      conta.id,
+    ]);
+    const custoDe = (hash: string | undefined) => /^\$2[aby]\$(\d{2})\$/.exec(hash ?? '')?.[1];
+    expect(custoDe(contas.HASH_FIXO)).toBe('12');
+    expect(custoDe(contas.HASH_FIXO)).toBe(custoDe(linha?.senha_hash));
   });
 
   it('cria com hash bcrypt de custo 12 e nunca expõe o hash', async () => {

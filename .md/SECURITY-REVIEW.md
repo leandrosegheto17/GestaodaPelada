@@ -443,3 +443,33 @@ APROVADA; 0 achados; função pura sem relógio/aleatoriedade/import externo/dup
 
 ## TP-0179 — DevSecOps — 2026-10-17
 APROVADA — função pura sem relógio/I/O, saída só com apelido/pontos (G-10), colunas limitadas a 12 e custo linear (G-12), 27 testes passando; 0 achados.
+
+## RTP-0058 — DevSecOps — 2026-10-17
+APROVADA; só testes, fixtures com apelidos fictícios e sem dado pessoal/segredo (grep 0), 0 achados.
+
+## RTP-0059 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; teste só lê a contagem de chamadas, sem vazar token/hash em log ou assert; 6/6 em banco próprio.
+
+## RTP-0060 — DevSecOps — 2026-10-17
+APROVADA — contagem de crypt determinística sem vazamento de senha/hash (8/8 em banco próprio); 0 críticos/altos, 1 baixo (custo do HASH_FIXO não afirmado) na RTP-0066.
+
+## RTP-0061 — DevSecOps — 2026-10-17
+APROVADA — raiz real exit 0, 3 sondas reexecutadas confirmam o relato da QA; 0 críticos/altos, 1 médio (contornos exóticos/adversariais, não exploráveis por código de boa-fé) coberto pela RTP-0064; nenhuma RTP nova.
+
+## TP-0029 — DevSecOps — 2026-10-17
+APROVADA — SQL parametrizado, filtro por grupoId em todas as funções, sem hash/dono nas leituras, trava FOR UPDATE lida (corrida real não executada); 12 testes e checar-grupo-id passam; 0 achados.
+
+## TP-0030 — DevSecOps — 2026-10-17
+APROVADA; 11/11 testes no banco próprio, upsert/índice parcial, auditoria só-insere e acesso só sob /api/dono conferidos; 0 críticos, 1 baixo (RTP-0065: filtro de chaves só por prefixo).
+
+## TP-0031 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 novos (cookie duplicado segue na RTP-0063, baixa); revisão do diff + 15 testes executados (atributos do cookie, hash, deslizamento, escopo), sem dependência alterada.
+
+## TP-0042 — DevSecOps — 2026-10-17
+APROVADA — isolamento por grupo (FK composta), minimização LGPD e aditividade conferidos; 10/10 testes e checagem aditiva executados; 0 achados.
+
+## TP-0045 — DevSecOps — 2026-10-17
+APROVADA — migração sem dado pessoal (7 colunas confirmadas no banco), dispositivo anônimo só em ranking_aberto por CHECK, 13 testes verdes em banco próprio; 0 achados.
+
+## TP-0160 — DevSecOps — 2026-10-17
+APROVADA; migração aditiva, FK/UNIQUE por grupo e auditoria ok, 13/13 testes e checagem aditiva verdes; 0 achados.

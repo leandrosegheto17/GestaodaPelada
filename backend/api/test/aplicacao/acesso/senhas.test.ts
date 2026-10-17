@@ -1,5 +1,5 @@
 import { randomBytes, randomUUID } from 'node:crypto';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { ContaNaoEncontrada, redefinirSenha } from '../../../src/aplicacao/acesso/senhas.js';
 import * as contas from '../../../src/infraestrutura/db/repositorios/contas.js';
 import * as pedidos from '../../../src/infraestrutura/db/repositorios/pedidos-reset.js';
@@ -71,5 +71,46 @@ describe('redefinirSenha', () => {
       ContaNaoEncontrada,
     );
     expect(await executarSql('SELECT 1 FROM auditoria WHERE entidade_id = $1', [inexistente])).toEqual([]);
+  });
+
+  it('falha na auditoria desfaz tudo: senha, sessões e pedido continuam', async () => {
+    const db = await abrir();
+    const conta = await criarConta(db, fabrica);
+    const tokenHash = new Uint8Array(randomBytes(32));
+    await sessoes.criar(db, { contaId: conta.id, tokenHash, escopo: 'completo', agora });
+    await criarPedido(db, fabrica, conta.id, agora);
+
+    // Autor inexistente viola a chave estrangeira da auditoria, depois de todo o resto.
+    await expect(redefinirSenha(db, conta.id, { tipo: 'conta', contaId: randomUUID() }, agora)).rejects.toThrow();
+
+    expect(await contas.verificarSenha(db, conta.email, conta.senha)).toEqual({
+      contaId: conta.id,
+      senhaTemporaria: false,
+    });
+    expect(await sessoes.buscarValidaEDeslizar(db, tokenHash, agora)).not.toBeNull();
+    expect((await pedidos.listarPendentes(db)).some((p) => p.contaId === conta.id)).toBe(true);
+  });
+
+  it('duas chamadas geram senhas diferentes e só a última vale; nada vai para o log', async () => {
+    const db = await abrir();
+    const conta = await criarConta(db, fabrica);
+    fabrica.registrar(async () => {
+      await executarSql("DELETE FROM auditoria WHERE entidade = 'conta' AND entidade_id = $1", [conta.id]);
+    });
+    const espioes = (['log', 'info', 'warn', 'error'] as const).map((m) =>
+      vi.spyOn(console, m).mockImplementation(() => undefined),
+    );
+    try {
+      const a = await redefinirSenha(db, conta.id, { tipo: 'infraestrutura' }, agora);
+      const b = await redefinirSenha(db, conta.id, { tipo: 'infraestrutura' }, agora);
+      expect(a.senhaTemporaria).not.toBe(b.senhaTemporaria);
+      expect(await contas.verificarSenha(db, conta.email, a.senhaTemporaria)).toBeNull();
+      expect(await contas.verificarSenha(db, conta.email, b.senhaTemporaria)).not.toBeNull();
+      const saida = JSON.stringify(espioes.flatMap((e) => e.mock.calls));
+      expect(saida).not.toContain(a.senhaTemporaria);
+      expect(saida).not.toContain(b.senhaTemporaria);
+    } finally {
+      for (const e of espioes) e.mockRestore();
+    }
   });
 });

@@ -1,6 +1,12 @@
 import { randomBytes } from 'node:crypto';
-import { describe, expect, it } from 'vitest';
-import { AdminJaVinculado, vincularOuCriarAdminEmTransacao } from '../../../src/aplicacao/acesso/admin-por-email.js';
+import { adminAdicionado } from '@pelada/contrato';
+import { describe, expect, it, vi } from 'vitest';
+import {
+  AdminJaVinculado,
+  vincularOuCriarAdmin,
+  vincularOuCriarAdminEmTransacao,
+} from '../../../src/aplicacao/acesso/admin-por-email.js';
+import { emTransacao } from '../../../src/infraestrutura/db/index.js';
 import { kyselyDe } from '../../../src/infraestrutura/db/cliente.js';
 import * as contas from '../../../src/infraestrutura/db/repositorios/contas.js';
 import * as vinculos from '../../../src/infraestrutura/db/repositorios/vinculos.js';
@@ -80,6 +86,63 @@ describe('vincularOuCriarAdmin', () => {
         agora,
       );
     await pedir();
+    const antes = await executarSql('SELECT 1 FROM auditoria WHERE entidade_id = $1', [existente.id]);
     await expect(pedir()).rejects.toBeInstanceOf(AdminJaVinculado);
+    const depois = await executarSql('SELECT 1 FROM auditoria WHERE entidade_id = $1', [existente.id]);
+    expect(depois).toHaveLength(antes.length);
+  });
+
+  it('falha ao criar o vínculo desfaz a conta nova', async () => {
+    const db = await abrir();
+    const dono = await criarConta(db, fabrica);
+    const email = emailNovo();
+    await expect(
+      vincularOuCriarAdminEmTransacao(
+        db,
+        '00000000-0000-4000-8000-000000000000',
+        { nome: 'Fantasma', email, acessaFinanceiro: false },
+        { tipo: 'conta', contaId: dono.id },
+        agora,
+      ),
+    ).rejects.toThrow();
+    expect(await contas.buscarPorEmail(db, email)).toBeNull();
+  });
+
+  it('o núcleo dentro de transação que lança depois não deixa nada', async () => {
+    const db = await abrir();
+    const dono = await criarConta(db, fabrica);
+    const grupo = await criarGrupo(db, fabrica, { criadoPor: dono.id });
+    const email = emailNovo();
+    await expect(
+      emTransacao(db, async (tx) => {
+        await vincularOuCriarAdmin(
+          tx,
+          grupo.id,
+          { nome: 'Desfeito', email, acessaFinanceiro: false },
+          { tipo: 'conta', contaId: dono.id },
+          agora,
+        );
+        throw new Error('falha depois');
+      }),
+    ).rejects.toThrow('falha depois');
+    expect(await contas.buscarPorEmail(db, email)).toBeNull();
+  });
+
+  it('retorno cumpre o contrato e a senha não vai para o console', async () => {
+    const db = await abrir();
+    const dono = await criarConta(db, fabrica);
+    const grupo = await criarGrupo(db, fabrica, { criadoPor: dono.id });
+    const espioes = (['log', 'info', 'warn', 'error', 'debug'] as const).map((m) => vi.spyOn(console, m));
+    const r = await vincularOuCriarAdminEmTransacao(
+      db,
+      grupo.id,
+      { nome: 'Contrato', email: emailNovo(), acessaFinanceiro: false },
+      { tipo: 'conta', contaId: dono.id },
+      agora,
+    );
+    fabrica.registrar(() => limparConta(r.contaId, db));
+    expect(adminAdicionado.safeParse(r).success).toBe(true);
+    for (const e of espioes) expect(e).not.toHaveBeenCalled();
+    vi.restoreAllMocks();
   });
 });

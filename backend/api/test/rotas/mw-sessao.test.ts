@@ -43,6 +43,19 @@ describe('middleware de sessão (workerd)', () => {
     expect(r.status).toBe(401);
   });
 
+  it.each([
+    ['válido+inválido', (v: string) => `${v}; __Host-sessao=xx`],
+    ['inválido+válido', (v: string) => `__Host-sessao=xx; ${v}`],
+    ['válido+válido', (v: string) => `${v}; ${v}`],
+  ])('cookie duplicado %s: 401', async (_nome, montar) => {
+    const db = await abrir();
+    const conta = await criarConta(db, fabrica);
+    const { cookie } = await entrarComo(db, fabrica, conta.id, { agora: t0 });
+    expect((await clienteEm(t0, cookie).get('/api/teste/eco-sessao')).status).toBe(200);
+    const r = await clienteEm(t0, montar(cookie)).get('/api/teste/eco-sessao');
+    expect(r.status).toBe(401);
+  });
+
   it('formato certo mas desconhecido: 401 e o cookie é limpo', async () => {
     const r = await clienteEm(t0, `__Host-sessao=${'a'.repeat(43)}`).get('/api/teste/eco-sessao');
     expect(r.status).toBe(401);

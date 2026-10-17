@@ -15,9 +15,11 @@ function listar(pasta) {
   return readdirSync(pasta, { withFileTypes: true }).flatMap((e) => {
     const caminho = join(pasta, e.name);
     if (e.isDirectory()) return listar(caminho);
-    return e.name.endsWith('.ts') && !e.name.endsWith('.test.ts') ? [caminho] : [];
+    return /\.(ts|tsx|mts|cts)$/.test(e.name) && !/\.test\.[a-z]+$/.test(e.name) ? [caminho] : [];
   });
 }
+const relPasta = (caminho) => relative(PASTA, caminho).replaceAll('\\', '/');
+const estaFora = (rel) => rel === '..' || rel.startsWith('../') || isAbsolute(rel);
 
 let excecoes;
 try {
@@ -33,6 +35,7 @@ const excecaoDe = (arquivo, funcao) => {
 };
 
 const arquivos = listar(PASTA);
+const avaliados = new Set(arquivos.map(relPasta));
 const programa = ts.createProgram(arquivos, {
   noEmit: true,
   target: ts.ScriptTarget.ES2022,
@@ -53,7 +56,7 @@ function funcaoDe(declaracao) {
     const inicial = exprSemAsserts(declaracao.initializer);
     if (ts.isArrowFunction(inicial) || ts.isFunctionExpression(inicial)) return inicial;
   }
-  if (ts.isExportAssignment(declaracao)) {
+  if (ts.isExportAssignment(declaracao) && !declaracao.isExportEquals) {
     const e = exprSemAsserts(declaracao.expression);
     if (ts.isArrowFunction(e) || ts.isFunctionExpression(e)) return e;
   }
@@ -73,7 +76,6 @@ const exprSemAsserts = (e) => {
   }
   return atual;
 };
-const ehCallable = (n) => ts.isArrowFunction(n) || ts.isFunctionExpression(n);
 
 const ehDadoLiteral = (e) =>
   ts.isLiteralExpression(e) ||
@@ -99,23 +101,78 @@ const ehTipoDado = (t) =>
     (ts.isArrayTypeNode(t) && ehTipoDado(t.elementType)));
 
 const ehObjetoDeDados = (e) =>
-  e.properties.every((p) => ts.isPropertyAssignment(p) && ts.isLiteralExpression(exprSemAsserts(p.initializer)));
+  e.properties.every(
+    (p) =>
+      ts.isPropertyAssignment(p) &&
+      !ts.isComputedPropertyName(p.name) &&
+      ts.isLiteralExpression(exprSemAsserts(p.initializer)),
+  );
+
+// Decisão pelo tipo: qualquer valor cujo tipo (em profundidade) tenha assinatura de chamada ou de
+// construção, ou seja any/unknown/object, é comportamento e exige grupoId ou exceção.
+function tipoInvocavel(tipo, local, vistos = new Set()) {
+  if (vistos.has(tipo)) return false;
+  vistos.add(tipo);
+  const F = ts.TypeFlags;
+  if (tipo.flags & (F.Any | F.Unknown | F.NonPrimitive | F.Instantiable)) return true;
+  if (tipo.isUnionOrIntersection()) return tipo.types.some((t) => tipoInvocavel(t, local, vistos));
+  if (!(tipo.flags & F.Object)) return false;
+  if (tipo.getCallSignatures().length || tipo.getConstructSignatures().length) return true;
+  if (tipo.objectFlags & ts.ObjectFlags.Reference) {
+    // O argumento extra do fim é o tipo `this` das classes/interfaces, não um tipo declarado.
+    const declarados = verificador.getTypeArguments(tipo).slice(0, tipo.target.typeParameters?.length ?? 0);
+    if (declarados.some((t) => tipoInvocavel(t, local, vistos))) return true;
+  }
+  const decls = tipo.symbol?.declarations ?? [];
+  if (decls.length > 0 && decls.every((x) => programa.isSourceFileDefaultLibrary(x.getSourceFile()))) return false;
+  return membrosInvocaveis(tipo, local, vistos);
+}
+function membrosInvocaveis(tipo, local, vistos, filtro = () => true) {
+  const daBiblioteca = (p) =>
+    (p.declarations ?? []).length > 0 &&
+    p.declarations.every((x) => programa.isSourceFileDefaultLibrary(x.getSourceFile()));
+  const propriedades = verificador.getPropertiesOfType(tipo).filter((p) => filtro(p) && !daBiblioteca(p));
+  return (
+    propriedades.some((p) => tipoInvocavel(verificador.getTypeOfSymbolAtLocation(p, local), local, vistos)) ||
+    verificador.getIndexInfosOfType(tipo).some((i) => tipoInvocavel(i.type, local, vistos))
+  );
+}
+const tipoDoNo = (no, local) => {
+  const simbolo = verificador.getSymbolAtLocation(no);
+  return simbolo ? verificador.getTypeOfSymbolAtLocation(simbolo, local) : verificador.getTypeAtLocation(no);
+};
 
 // Lista de permitidos: só passa sem análise parâmetro a parâmetro o que for comprovadamente dado
 // (literal, objeto só de literais, enum literal, classe sem herança nem função como membro).
 // Qualquer outra forma de declaração exportada falha fechado.
+const temDecorador = (n) => ts.canHaveDecorators(n) && (ts.getDecorators(n) ?? []).length > 0;
+const argumentoSimples = (a) => ts.isIdentifier(a) || ehDadoLiteral(exprSemAsserts(a));
+const ehSuperSimples = (s) =>
+  ts.isExpressionStatement(s) &&
+  ts.isCallExpression(s.expression) &&
+  s.expression.expression.kind === ts.SyntaxKind.SuperKeyword &&
+  s.expression.arguments.every(argumentoSimples);
+
+// Construtor aceito: só parâmetros identificadores (propriedade ou não) com padrão literal e corpo
+// vazio ou apenas `super(...)` com identificadores/literais.
+function construtorEhDado(m) {
+  const parametrosOk = m.parameters.every((p) => {
+    if (temDecorador(p) || !ts.isIdentifier(p.name)) return false;
+    const ehPropriedade = (ts.getModifiers(p) ?? []).length > 0;
+    if (p.initializer) return ehDadoLiteral(exprSemAsserts(p.initializer));
+    return !ehPropriedade || ehTipoDado(p.type);
+  });
+  return parametrosOk && (!m.body || m.body.statements.every(ehSuperSimples));
+}
+
 function membroDeClasseEhDado(m) {
-  if (ts.isSemicolonClassElement(m) || ts.isIndexSignatureDeclaration(m)) return true;
+  if (ts.isSemicolonClassElement(m)) return true;
+  if (temDecorador(m) || (m.name && ts.isComputedPropertyName(m.name))) return false;
+  if (ts.isIndexSignatureDeclaration(m)) return true;
   if (ts.isPropertyDeclaration(m)) {
     return m.initializer ? ehDadoLiteral(exprSemAsserts(m.initializer)) : ehTipoDado(m.type);
   }
-  if (ts.isConstructorDeclaration(m)) {
-    return m.parameters.every((p) => {
-      const ehPropriedade = ts.canHaveModifiers(p) && (ts.getModifiers(p) ?? []).length > 0;
-      if (!ehPropriedade) return true;
-      return p.initializer ? ehDadoLiteral(exprSemAsserts(p.initializer)) : ehTipoDado(p.type);
-    });
-  }
+  if (ts.isConstructorDeclaration(m)) return construtorEhDado(m);
   return false;
 }
 
@@ -130,10 +187,20 @@ function heranca(clausula) {
   return decls.length > 0 && decls.every((x) => programa.isSourceFileDefaultLibrary(x.getSourceFile()));
 }
 
-function declaracaoEhDado(d) {
-  if (ts.isClassDeclaration(d)) {
-    return (d.heritageClauses ?? []).every(heranca) && d.members.every(membroDeClasseEhDado);
+function classeEhDado(d) {
+  if (temDecorador(d) || !(d.heritageClauses ?? []).every(heranca) || !d.members.every(membroDeClasseEhDado)) {
+    return false;
   }
+  const simbolo = (d.name && verificador.getSymbolAtLocation(d.name)) || d.symbol;
+  if (!simbolo) return false;
+  const instancia = verificador.getDeclaredTypeOfSymbol(simbolo);
+  const estatico = verificador.getTypeOfSymbolAtLocation(simbolo, d);
+  const proprio = (p) => (p.declarations ?? []).some((x) => x.parent === d);
+  return !(instancia && tipoInvocavel(instancia, d)) && !membrosInvocaveis(estatico, d, new Set(), proprio);
+}
+
+function declaracaoEhDado(d) {
+  if (ts.isClassDeclaration(d)) return classeEhDado(d);
   if (ts.isEnumDeclaration(d)) {
     return d.members.every((m) => !m.initializer || ehDadoLiteral(exprSemAsserts(m.initializer)));
   }
@@ -141,13 +208,16 @@ function declaracaoEhDado(d) {
     const lista = d.parent;
     const somenteLeitura = ts.isVariableDeclarationList(lista) && (lista.flags & ts.NodeFlags.Const) !== 0;
     if (!d.initializer) return ehTipoDado(d.type) && ts.isIdentifier(d.name);
+    // `as`/`satisfies` só valem se o tipo resultante também for dado (verificado abaixo).
     if (!somenteLeitura || !ts.isIdentifier(d.name)) return false;
     const e = exprSemAsserts(d.initializer);
-    return ts.isObjectLiteralExpression(e) ? ehObjetoDeDados(e) : ehDadoLiteral(e);
+    const literal = ts.isObjectLiteralExpression(e) ? ehObjetoDeDados(e) : ehDadoLiteral(e);
+    return literal && !tipoInvocavel(tipoDoNo(d.name, d), d);
   }
-  if (ts.isExportAssignment(d)) {
+  if (ts.isExportAssignment(d) && !d.isExportEquals) {
     const e = exprSemAsserts(d.expression);
-    return ts.isObjectLiteralExpression(e) ? ehObjetoDeDados(e) : ehDadoLiteral(e);
+    const literal = ts.isObjectLiteralExpression(e) ? ehObjetoDeDados(e) : ehDadoLiteral(e);
+    return literal && !tipoInvocavel(verificador.getTypeAtLocation(d.expression), d);
   }
   return false;
 }
@@ -174,14 +244,21 @@ for (const caminho of arquivos) {
   if (!modulo) continue;
   const rel = relative(PASTA, caminho).replaceAll('\\', '/');
   for (const instrucao of fonte.statements) {
+    const equals = ts.isExportAssignment(instrucao) && instrucao.isExportEquals;
+    if (equals && !excecaoDe(rel, 'export=')) {
+      const { line } = fonte.getLineAndCharacterOfPosition(instrucao.getStart());
+      achados.push(`${rel}:${line + 1}: export =: ${MOTIVO_NAO_ANALISAVEL}`);
+    }
     if (!ts.isExportDeclaration(instrucao) || !instrucao.moduleSpecifier) continue;
     const alvo = ts.resolveModuleName(instrucao.moduleSpecifier.text, caminho, programa.getCompilerOptions(), ts.sys)
       .resolvedModule?.resolvedFileName;
-    const destino = alvo && relative(PASTA, alvo).replaceAll('\\', '/');
-    const dentro = destino && destino !== '..' && !destino.startsWith('../') && !isAbsolute(destino);
-    if (!dentro && !excecaoDe(rel, '*')) {
+    const destino = alvo && relPasta(alvo);
+    const dentro = destino && !estaFora(destino);
+    const naoAvaliado = dentro && !avaliados.has(destino);
+    if ((!dentro || naoAvaliado) && !excecaoDe(rel, '*')) {
       const { line } = fonte.getLineAndCharacterOfPosition(instrucao.getStart());
-      achados.push(`${rel}:${line + 1}: re-export de módulo fora da pasta: ${MOTIVO_NAO_ANALISAVEL}`);
+      const onde = naoAvaliado ? 'arquivo da pasta fora da avaliação' : 'módulo fora da pasta';
+      achados.push(`${rel}:${line + 1}: re-export de ${onde}: ${MOTIVO_NAO_ANALISAVEL}`);
     }
   }
   for (const exportado of verificador.getExportsOfModule(modulo)) {
@@ -194,9 +271,9 @@ for (const caminho of arquivos) {
       achados.push(`${rel}: ${exportado.name}: ${MOTIVO_NAO_ANALISAVEL}`);
     }
     for (const declaracao of real.declarations ?? []) {
-      const donoRel = relative(PASTA, declaracao.getSourceFile().fileName).replaceAll('\\', '/');
-      const foraDaPasta = donoRel === '..' || donoRel.startsWith('../') || isAbsolute(donoRel);
-      if (foraDaPasta || viaImportEquals) {
+      const donoRel = relPasta(declaracao.getSourceFile().fileName);
+      const naoAvaliado = !estaFora(donoRel) && !avaliados.has(donoRel);
+      if (estaFora(donoRel) || naoAvaliado || viaImportEquals) {
         if (!excecaoDe(rel, exportado.name)) {
           const origem = exportado.declarations?.[0] ?? declaracao;
           const { line } = origem.getSourceFile().getLineAndCharacterOfPosition(origem.getStart());

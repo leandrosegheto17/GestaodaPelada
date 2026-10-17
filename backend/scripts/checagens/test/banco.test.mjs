@@ -138,6 +138,19 @@ describe('checar-grupo-id', () => {
     "export { y } from '../fora';",
     "export * from '../fora';",
     "export * as ns from '../fora';",
+    'export class C { constructor(id: string) { fetch(id); } }',
+    'export class C extends Error { constructor(id: string) { super(id); fetch(id); } }',
+    'declare function d(...a: unknown[]): void; export class C { constructor(@d id: string) {} }',
+    'export class C { constructor(id = (globalThis as any).x()) {} }',
+    'export const f = null as unknown as (id: string) => Promise<void>;',
+    'export const f = [] as unknown as Array<(id: string) => void>;',
+    'export const f = {} as unknown as { q(id: string): Promise<void> };',
+    'export class C { f = "x" as unknown as (id: string) => void; }',
+    'export class C { constructor(public f = null as unknown as (id: string) => void) {} }',
+    'export const o = { a: "s" as unknown as (id: string) => void };',
+    'export class C { [k: string]: (id: string) => void; }',
+    'function f(id: string) { return id; } export = f;',
+    'const obj = { a: 1 }; export = obj;',
   ])('falha: %s', (corpo) => {
     expect(rodarRepo(repo(corpo)).status).toBe(1);
   });
@@ -186,6 +199,37 @@ describe('checar-grupo-id', () => {
       'export const o = { a: 1, b: "x" };',
       'export declare const s: string;',
       'export default { a: 1 };',
+    ]) {
+      expect(rodarRepo(repo(corpo)).status).toBe(0);
+    }
+  });
+
+  it.each([
+    ['x.test.ts', "export * from './x.test';"],
+    ['x.test.ts', "export { f } from './x.test';"],
+    ['x.test.ts', "export * as n from './x.test';"],
+    ['x.test.ts', "import * as n from './x.test'; export { n };"],
+    ['x.mts', "export * from './x.mts';"],
+    ['x.mts', "export { f } from './x.mts';"],
+    ['x.mts', "export * as n from './x.mts';"],
+    ['x.mts', "import * as n from './x.mts'; export { n };"],
+    ['x.tsx', "export * from './x.tsx';"],
+    ['x.tsx', "export { f } from './x.tsx';"],
+    ['x.tsx', "import * as n from './x.tsx'; export { n };"],
+  ])('falha: dono %s alcançado por export (%s)', (dono, linha) => {
+    const r = rodarRepo({
+      'partidas.ts': linha,
+      [dono]: 'export function f(id: string) { return id; }',
+    });
+    expect(r.status).toBe(1);
+  });
+
+  it('classe com construtor só de parâmetros-propriedade de dado e super de identificadores passa', () => {
+    for (const corpo of [
+      'export class C extends Error { constructor(readonly id: string) { super(id); } }',
+      'export class C extends Error { constructor(m: string) { super(m, undefined); } }',
+      'export class C { constructor(readonly id: string) { } }',
+      'export const k = { a: 1, b: "x" } as const;',
     ]) {
       expect(rodarRepo(repo(corpo)).status).toBe(0);
     }

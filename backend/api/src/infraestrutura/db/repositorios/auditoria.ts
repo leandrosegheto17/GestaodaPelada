@@ -5,7 +5,8 @@ export type AutorAuditoria = { tipo: 'conta'; contaId: string } | { tipo: 'infra
 /** Valores simples: o resumo é para pessoas lerem, nunca para guardar segredo. */
 export type ResumoAuditoria = Record<string, string | number | boolean | null>;
 
-const CHAVES_PROIBIDAS = /^(senha|token|hash|telefone)/i;
+/** O termo sensível é barrado em qualquer posição do nome (`novaSenha`, `resetToken`, `password_hash`). */
+const CHAVES_PROIBIDAS = /(senha|password|token|hash|telefone)/i;
 
 export interface EntradaAuditoria {
   autor: AutorAuditoria;

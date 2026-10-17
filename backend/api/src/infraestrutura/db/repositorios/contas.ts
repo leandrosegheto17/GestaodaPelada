@@ -5,7 +5,7 @@ import { kyselyDe, type ExecutorDb } from '../cliente.js';
  * Hash bcrypt fixo (custo 12, sem relação com nenhuma senha) usado quando o e-mail não existe:
  * o login gasta o mesmo tempo com ou sem conta (ADR-015).
  */
-const HASH_FIXO = '$2a$12$abcdefghijklmnopqrstuuABCDEFGHIJKLMNOPQRSTUVWXYZ01234';
+export const HASH_FIXO = '$2a$12$abcdefghijklmnopqrstuuABCDEFGHIJKLMNOPQRSTUVWXYZ01234';
 
 export interface Conta {
   id: string;

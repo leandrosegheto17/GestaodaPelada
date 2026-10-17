@@ -42,7 +42,18 @@ describe('repositório de auditoria', () => {
     ]);
   });
 
-  it.each(['senha', 'senhaNova', 'token', 'hash', 'telefone'])('recusa a chave %s no resumo', async (chave) => {
+  it.each([
+    'senha',
+    'senhaNova',
+    'novaSenha',
+    'token',
+    'resetToken',
+    'hash',
+    'password_hash',
+    'password',
+    'telefone',
+    'telefoneContato',
+  ])('recusa a chave %s no resumo', async (chave) => {
     const db = await abrir();
     await expect(
       auditoria.registrar(db, null, {
