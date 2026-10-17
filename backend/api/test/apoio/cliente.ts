@@ -10,6 +10,10 @@ export interface OpcoesCliente {
   cookie?: string;
   /** Limitadores de taxa; por padrão nenhum limita (os testes fazem muitas chamadas seguidas). */
   limitadores?: { entrar?: Limitador; publico?: Limitador };
+  /** Cabeçalhos extras em toda requisição (ex.: `CF-Connecting-IP`). */
+  cabecalhos?: Record<string, string>;
+  /** Substitui os bindings do worker (ex.: espiar o acesso ao Hyperdrive). */
+  env?: typeof env;
 }
 
 export interface RespostaTeste {
@@ -39,6 +43,7 @@ export function clienteTeste(opcoes: OpcoesCliente = {}) {
     const cabecalhos = new Headers();
     if (!opcoes.semCsrf) cabecalhos.set('X-Pelada', '1');
     if (opcoes.cookie) cabecalhos.set('Cookie', opcoes.cookie);
+    for (const [nome, valor] of Object.entries(opcoes.cabecalhos ?? {})) cabecalhos.set(nome, valor);
     if (corpo !== undefined) cabecalhos.set('Content-Type', 'application/json');
     const ctx = createExecutionContext();
     const pedido = new Request(`http://app.invalid${caminho}`, {
@@ -46,7 +51,7 @@ export function clienteTeste(opcoes: OpcoesCliente = {}) {
       headers: cabecalhos,
       ...(corpo !== undefined ? { body: JSON.stringify(corpo) } : {}),
     });
-    const resposta = await app.fetch(pedido, env, ctx);
+    const resposta = await app.fetch(pedido, opcoes.env ?? env, ctx);
     await waitOnExecutionContext(ctx);
     const texto = await resposta.text();
     return { status: resposta.status, headers: resposta.headers, corpo: lerJson(texto), texto };
