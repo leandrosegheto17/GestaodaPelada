@@ -680,3 +680,60 @@ APROVADA COM DÉBITO — sem segredo real, imagens/volumes sem privilégio extra
 
 ## TP-0169 — DevSecOps — 2026-10-17
 APROVADA; 0 críticos/0 não críticos; revisão de diff: só a data sai, consulta parametrizada e filtrada por grupo (G-03), isolamento coberto pelo teste do QA.
+
+## RTP-0071 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; refatoração sem mudança de superfície de segurança (erro não-23505 relançado, SQL parametrizado, sem dependência nova), verificado por leitura + grep.
+
+## RTP-0072 — DevSecOps — 2026-10-17
+APROVADA COM DÉBITO — janela fixa removida, checagem real exit 0, eslint limpo; 0 críticos, 1 baixo (`;` em literal/objeto pré-montado escapa a checagem) -> RTP-0104.
+
+## RTP-0075 — DevSecOps — 2026-10-17
+APROVADA em segurança; revisão do diff sem achados (SQL parametrizado, escopo por grupo_id, erro 23505 tratado de forma restrita); eslint limpo; 0 achados.
+
+## RTP-0076 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; escrita multi-passo de partidas só compila com Tx (lido + grep + tsc limpo), SQL parametrizado e escopado por grupo.
+
+## RTP-0077 — DevSecOps — 2026-10-17
+APROVADA — 0 achados; checagem real exit 0 e vitest 20/20 executados; só criarContaDono é exceção de escrita de e_dono em contas.ts.
+
+## RTP-0078 — DevSecOps — 2026-10-17
+APROVADA — só teste (plugin de contagem Kysely), sem dependência/segredo/dado pessoal (grep 0); 0 achados.
+
+## RTP-0080 — DevSecOps — 2026-10-17
+APROVADA, 0 críticos/0 não críticos; trava recusa host remoto antes de conectar (lido), gancho de falha forçada inofensivo, eslint 0.
+
+## RTP-0081 — DevSecOps — 2026-10-17
+APROVADA; só teste, sem segredo, dependência ou código de produção tocado; 0 achados.
+
+## RTP-0083 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; função destrutiva do seed bloqueada por lint em todos os blocos exceto backend/scripts (lido + eslint executado).
+
+## RTP-0084 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; ADR-004 efetivo sob concorrência (trava por e-mail + reserva antes do bcrypt), revisão do diff + eslint exit 0.
+
+## RTP-0085 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0105: corrida consulta/registro permite >5 tentativas em paralelo); bloqueio por conta, 429 sem revelar acerto e ausência de senha em log verificados por leitura + grep/eslint.
+
+## RTP-0086 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; G-08/G-09/G-11 conferidos por leitura, eslint e tsc limpos, sem dependência alterada.
+
+## RTP-0087 — DevSecOps — 2026-10-17
+APROVADA; 0 achados; só teste, sem dependência/segredo; isolamento do grupo B coberto; eslint exit 0.
+
+## RTP-0088 — DevSecOps — 2026-10-17
+APROVADA; só testes, sem segredo nem dado pessoal, caso G-03 de isolamento entre grupos presente; 0 críticos, 0 não críticos.
+
+## RTP-0089 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; G-03 confirmado por leitura (exigirDono -> 403 troca_de_senha_obrigatoria em /api/dono/*) e coberto pelo teste; sem segredo/PII real; sem mudança de dependência.
+
+## RTP-0090 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; somente teste, sem segredos nem mudança de dependência (grep e git diff executados).
+
+## RTP-0091 — DevSecOps — 2026-10-17
+APROVADA; só testes, sem segredos nem mudança de dependência, 0 achados (grep/git executados; vitest não rodado por restrição).
+
+## RTP-0092 — DevSecOps — 2026-10-17
+APROVADA; revisão de teste apenas (grep de segredos limpo, sem mudança de dependência); 0 críticos, 0 não críticos.
+
+## RTP-0095 — DevSecOps — 2026-10-17
+APROVADA — as 3 portas do compose publicadas só em 127.0.0.1 (compose config verificado); 0 achados; up --wait não executado.

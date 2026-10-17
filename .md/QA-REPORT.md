@@ -785,3 +785,12 @@ APROVADA — portas 127.0.0.1 nos 3 serviços (compose config verificado), READM
 
 ## TP-0081 — QA — 2026-10-17
 TP-0081 APROVADA; 6/6 testes da rota e caso POST do isolamento passam; 0 críticos, 1 não crítico (RTP-0100, lacunas de teste de concorrência/rollback do evento/422).
+
+## TP-0082 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0101: teste de 404 sem consulta ao banco); editar 9/9 e isolamento 70/70 isolado.
+
+## TP-0087 — QA — 2026-10-17
+TP-0087 APROVADA com 2 achados não críticos (teste de login não idempotente e lacunas do plano) em RTP-0103; wrangler 10/60 raiz e env.teste ok, 429 antes do banco, IP não gravado.
+
+## TP-0189 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (financeiro.ts 319 linhas -> RTP-0102); 24 testes de repositório + 5 de rota DELETE + checar-grupo-id verdes.
