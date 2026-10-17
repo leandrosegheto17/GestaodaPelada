@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -53,5 +53,22 @@ describe('visual.mjs', () => {
 
   it('--tela com id inválido sai com 2', () => {
     expect(comLista('', '--tela', 'T99').status).toBe(2);
+  });
+
+  it('dist/ ausente sai com 2 e orienta o build', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'telas-'));
+    try {
+      const config = JSON.parse(readFileSync(join(import.meta.dirname, '../../../.md/mockup/telas.json'), 'utf8'));
+      const arquivo = join(dir, 'lista.txt');
+      writeFileSync(arquivo, config.telas[0].id);
+      const r = spawnSync(process.execPath, [script], {
+        encoding: 'utf8',
+        env: { ...process.env, TELAS_ATIVAS_ARQUIVO: arquivo, DIST_DIR: join(dir, 'dist-inexistente') },
+      });
+      expect(r.status).toBe(2);
+      expect(r.stderr).toMatch(/dist\/ ausente/);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
   });
 });

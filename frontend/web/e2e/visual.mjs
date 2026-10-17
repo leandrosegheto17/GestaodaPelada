@@ -31,7 +31,7 @@ if (telas.length === 0) {
   console.log('Nenhuma tela ativa: nada a comparar.');
   process.exit(0);
 }
-if (!existsSync(join(PACOTE, 'dist'))) falhar('dist/ ausente: rode "pnpm --filter @pelada/web build" antes.');
+if (!existsSync(process.env.DIST_DIR ?? join(PACOTE, 'dist'))) falhar('dist/ ausente: rode "pnpm --filter @pelada/web build" antes.');
 
 const resultado = spawnSync(
   process.execPath,
