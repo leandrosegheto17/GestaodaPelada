@@ -1,9 +1,10 @@
 import { grupoDetalhe } from '@pelada/contrato';
 import { PESOS_PADRAO } from '@pelada/dominio';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { emTransacao } from '../../../src/infraestrutura/db/index.js';
 import * as escalacoes from '../../../src/infraestrutura/db/repositorios/escalacoes.js';
 import * as eventos from '../../../src/infraestrutura/db/repositorios/eventos.js';
+import * as financeiro from '../../../src/infraestrutura/db/repositorios/financeiro.js';
 import * as habilidades from '../../../src/infraestrutura/db/repositorios/habilidades.js';
 import * as jogadores from '../../../src/infraestrutura/db/repositorios/jogadores.js';
 import * as partidas from '../../../src/infraestrutura/db/repositorios/partidas.js';
@@ -81,7 +82,17 @@ describe('GET /api/grupos/:grupoId (workerd)', () => {
     await criarLancamento(db, g, cen.adminA.id, { tipo: 'saida', data: '2026-10-05', valorCentavos: 80_000 });
     await criarConfig(db, cen.grupoB.id, { saldoInicialCentavos: 999_999 });
     expect(await saldoDe(cen.adminA.cookie)).toBe(35_000 + 20_000 - 80_000);
-    expect(await saldoDe(cen.adminASemFinanceiro.cookie)).toBeNull();
+    const lerConfig = vi.spyOn(financeiro, 'lerConfig');
+    const totais = vi.spyOn(financeiro, 'totaisEntre');
+    try {
+      expect(await saldoDe(cen.adminASemFinanceiro.cookie)).toBeNull();
+      expect(lerConfig).not.toHaveBeenCalled();
+      expect(totais).not.toHaveBeenCalled();
+      expect(await saldoDe(cen.adminA.cookie)).toBe(35_000 + 20_000 - 80_000);
+      expect(lerConfig).toHaveBeenCalled();
+    } finally {
+      vi.restoreAllMocks();
+    }
   });
 
   it('numa sexta: sugerida é a quinta anterior e o próximo jogo é a quinta seguinte; sem partida na data, false', async () => {
