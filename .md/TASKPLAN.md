@@ -5,20 +5,20 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-16 21:58
+Atualizado: 2026-10-16 23:50
 
-Resumo: Não executada 177 · Executada (aguarda teste) 30 · Testada (aguarda segurança) 2 · total 209
+Resumo: Não executada 206 · Em execução 2 · Aprovada 2 · total 210
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
 | # | Tarefa | Agente | Plano | Título | Lote | Dep | Estado |
 |---|---|---|---|---|---|---|---|
-| 1 | TP-0001 | executor | ✔ | Monorepo pnpm com os 4 pacotes, TypeScript estrito, ESLint, Prettier, Vitest, READMEs e... | L01 | — | Testada (aguarda segurança) |
-| 2 | TP-0002 | executor | ✔ | Lint de fronteiras e checagens de código (IDs de tarefa, URLs absolutas) | L01 | TP-0001 | Testada (aguarda segurança) |
-| 3 | TP-0003 | executor | ✔ | CI base (ci.yml) | L01 | TP-0001, TP-0002 | Não executada |
+| 1 | TP-0001 | executor | ✔ | Monorepo pnpm com os 4 pacotes, TypeScript estrito, ESLint, Prettier, Vitest, READMEs e... | L01 | — | Aprovada |
+| 2 | TP-0002 | executor | ✔ | Lint de fronteiras e checagens de código (IDs de tarefa, URLs absolutas) | L01 | TP-0001 | Aprovada |
+| 3 | TP-0003 | executor | ✔ | CI base (ci.yml) | L01 | TP-0001, TP-0002 | Em execução |
 | 4 | TP-0004 | executor | ✔ | Auto-hospedar as fontes do mockup (pendência da UX-SPEC §0) | L01 | — | Não executada |
 | 5 | TP-0005 | executor | ✔ | Contrato base: erro padrão, enums, limites e tipos primitivos | L01 | TP-0001 | Não executada |
-| 6 | TP-0006 | executor | ✔ | Ícone do app no mockup (lacuna L-3), para aprovação do usuário | L01 | — | Não executada |
+| 6 | TP-0006 | executor | ✔ | Ícone do app no mockup (lacuna L-3), para aprovação do usuário | L01 | — | Em execução |
 | 7 | TP-0007 | executor | ✔ | dominio/datas: mês, navegação de mês e dias de jogo sugeridos | L02 | TP-0001 | Não executada |
 | 8 | TP-0008 | executor | ✔ | dominio/pontuacao: pontos de uma presença e acumulado | L02 | TP-0007 | Não executada |
 | 9 | TP-0009 | executor | ✔ | dominio/atividade: ativo numa data, falta e "–" | L02 | TP-0007 | Não executada |
@@ -26,8 +26,8 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 11 | TP-0011 | executor | ✔ | dominio/nivel: nível (RN-11) e idade (RN-12) | L02 | TP-0001 | Não executada |
 | 12 | TP-0012 | executor | ✔ | dominio/slug: link legível do grupo | L02 | TP-0001 | Não executada |
 | 13 | TP-0013 | executor | ✔ | Esqueleto da API Hono, configuração, relógio de São Paulo e wrangler.jsonc | L03 | TP-0001, TP-0005 | Não executada |
-| 14 | TP-0014 | executor | ✔ | Módulo de dados: cliente por requisição, Kysely interno e emTransacao | L03 | TP-0013 | Não executada |
-| 15 | TP-0015 | executor | ✔ | Runner de migrações migrar.ts com trava de host | L03 | TP-0001 | Não executada |
+| 14 | TP-0015 | executor | ✔ | Runner de migrações migrar.ts com trava de host | L03 | TP-0001 | Não executada |
+| 15 | TP-0014 | executor | ✔ | Módulo de dados: cliente por requisição, Kysely interno e emTransacao | L03 | TP-0013, TP-0015 | Não executada |
 | 16 | TP-0016 | executor | ✔ | Guardas do banco no CI: migração aditiva e grupoId nos repositórios | L03 | TP-0003, TP-0015 | Não executada |
 | 17 | TP-0017 | executor | ✔ | Suporte de testes da API (pool de Workers + Postgres) e job api no CI | L03 | TP-0003, TP-0013, TP-0014, TP-0015 | Não executada |
 | 18 | TP-0018 | executor | ✔ | Snapshot e checagem de compatibilidade do contrato | L04 | TP-0003, TP-0005 | Não executada |
@@ -58,7 +58,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 43 | TP-0043 | executor | ✔ | Migração de habilidades e notas | L09 | TP-0015, TP-0016, TP-0042 | Não executada |
 | 44 | TP-0044 | executor | ✔ | Migração de pesos, partidas e presenças | L09 | TP-0015, TP-0016, TP-0042 | Não executada |
 | 45 | TP-0045 | executor | ✔ | Migração de eventos de uso | L09 | TP-0015, TP-0016, TP-0026 | Não executada |
-| 46 | TP-0046 | executor | ✔ | Repositório de jogadores e períodos | L10 | TP-0014, TP-0016, TP-0017, TP-0042 | Não executada |
+| 46 | TP-0046 | executor | ✔ | Repositório de jogadores e períodos | L10 | TP-0014, TP-0016, TP-0017, TP-0042, TP-0043, TP-0044 | Não executada |
 | 47 | TP-0047 | executor | ✔ | Repositório de habilidades e notas | L10 | TP-0014, TP-0016, TP-0017, TP-0043 | Não executada |
 | 48 | TP-0048 | executor | ✔ | Repositório de pesos | L10 | TP-0014, TP-0016, TP-0017, TP-0044 | Não executada |
 | 49 | TP-0049 | executor | ✔ | Repositório de partidas e presenças | L10 | TP-0014, TP-0016, TP-0017, TP-0044 | Não executada |
@@ -66,15 +66,15 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 51 | TP-0051 | executor | ✔ | Script seed-local.ts com os dados do mockup | L10 | TP-0027, TP-0029, TP-0046, TP-0047, TP-0048, TP-0049 | Não executada |
 | 52 | TP-0052 | executor | ✔ | Extração aplicacao/elenco/ativos (ativos numa data e no mês) | L11 | TP-0009, TP-0046 | Não executada |
 | 53 | TP-0053 | executor | ✔ | Extração aplicacao/pontuacao/historico (histórico do grupo para o domínio) | L11 | TP-0010, TP-0046, TP-0048, TP-0049 | Não executada |
-| 54 | TP-0054 | executor | ✔ | Endpoint GET /api/dono/painel | L11 | TP-0022, TP-0029, TP-0030, TP-0032, TP-0033 | Não executada |
-| 55 | TP-0055 | executor | ✔ | Endpoint GET /api/dono/grupos/:id | L11 | TP-0013, TP-0022, TP-0029, TP-0032, TP-0033 | Não executada |
-| 56 | TP-0056 | executor | ✔ | Endpoint POST /api/dono/grupos (criar grupo e 1º admin) | L11 | TP-0012, TP-0014, TP-0022, TP-0029, TP-0030, TP-0032, TP-0033, TP-0038, TP-0047, TP-0048 | Não executada |
-| 57 | TP-0057 | executor | ✔ | Endpoint PATCH /api/dono/grupos/:id/situacao | L12 | TP-0022, TP-0029, TP-0032, TP-0033 | Não executada |
-| 58 | TP-0058 | executor | ✔ | Endpoints POST /api/dono/grupos/:id/arquivar e /reativar | L12 | TP-0022, TP-0029, TP-0030, TP-0032, TP-0033 | Não executada |
+| 54 | TP-0055 | executor | ✔ | Endpoint GET /api/dono/grupos/:id | L11 | TP-0013, TP-0022, TP-0029, TP-0032, TP-0033 | Não executada |
+| 55 | TP-0054 | executor | ✔ | Endpoint GET /api/dono/painel | L11 | TP-0022, TP-0029, TP-0030, TP-0032, TP-0033, TP-0055 | Não executada |
+| 56 | TP-0056 | executor | ✔ | Endpoint POST /api/dono/grupos (criar grupo e 1º admin) | L11 | TP-0012, TP-0014, TP-0022, TP-0029, TP-0030, TP-0032, TP-0033, TP-0038, TP-0047, TP-0048, TP-0055 | Não executada |
+| 57 | TP-0057 | executor | ✔ | Endpoint PATCH /api/dono/grupos/:id/situacao | L12 | TP-0022, TP-0029, TP-0032, TP-0033, TP-0055 | Não executada |
+| 58 | TP-0058 | executor | ✔ | Endpoints POST /api/dono/grupos/:id/arquivar e /reativar | L12 | TP-0022, TP-0029, TP-0030, TP-0032, TP-0033, TP-0055 | Não executada |
 | 59 | TP-0059 | executor | ✔ | Endpoint POST /api/dono/pedidos-reset/:id/resolver | L12 | TP-0022, TP-0030, TP-0032, TP-0033 | Não executada |
 | 60 | TP-0060 | executor | ✔ | Endpoint POST /api/dono/contas/:id/redefinir-senha | L12 | TP-0022, TP-0032, TP-0033, TP-0037 | Não executada |
 | 61 | TP-0061 | executor | ✔ | Endpoint GET /api/grupos/:g (grupo, permissões e resumo do início) | L13 | TP-0007, TP-0013, TP-0021, TP-0029, TP-0032, TP-0033, TP-0047, TP-0048, TP-0049, TP-0050, TP-0052 | Não executada |
-| 62 | TP-0062 | executor | ✔ | Endpoint PATCH /api/grupos/:g | L13 | TP-0021, TP-0029, TP-0032, TP-0033 | Não executada |
+| 62 | TP-0062 | executor | ✔ | Endpoint PATCH /api/grupos/:g | L13 | TP-0021, TP-0029, TP-0032, TP-0033, TP-0061 | Não executada |
 | 63 | TP-0063 | executor | ✔ | Endpoint GET /api/grupos/:g/admins | L14 | TP-0021, TP-0029, TP-0032, TP-0033 | Não executada |
 | 64 | TP-0064 | executor | ✔ | Endpoint POST /api/grupos/:g/admins | L14 | TP-0021, TP-0032, TP-0033, TP-0038 | Não executada |
 | 65 | TP-0065 | executor | ✔ | Endpoint DELETE /api/grupos/:g/admins/:contaId | L14 | TP-0014, TP-0021, TP-0029, TP-0030, TP-0032, TP-0033 | Não executada |
@@ -84,8 +84,8 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 69 | TP-0069 | executor | ✔ | Endpoint GET /api/grupos/:g/jogadores/:id | L15 | TP-0011, TP-0023, TP-0032, TP-0033, TP-0046, TP-0047 | Não executada |
 | 70 | TP-0070 | executor | ✔ | Endpoint POST /api/grupos/:g/jogadores | L15 | TP-0013, TP-0023, TP-0032, TP-0033, TP-0046 | Não executada |
 | 71 | TP-0071 | executor | ✔ | Endpoint PATCH /api/grupos/:g/jogadores/:id | L15 | TP-0009, TP-0023, TP-0032, TP-0033, TP-0046 | Não executada |
-| 72 | TP-0072 | executor | ✔ | Endpoint POST /api/grupos/:g/jogadores/:id/inativar | L16 | TP-0009, TP-0013, TP-0023, TP-0032, TP-0033, TP-0046 | Não executada |
-| 73 | TP-0073 | executor | ✔ | Endpoint POST /api/grupos/:g/jogadores/:id/reativar | L16 | TP-0009, TP-0013, TP-0023, TP-0032, TP-0033, TP-0046 | Não executada |
+| 72 | TP-0072 | executor | ✔ | Endpoint POST /api/grupos/:g/jogadores/:id/inativar | L16 | TP-0009, TP-0013, TP-0023, TP-0032, TP-0033, TP-0046, TP-0069 | Não executada |
+| 73 | TP-0073 | executor | ✔ | Endpoint POST /api/grupos/:g/jogadores/:id/reativar | L16 | TP-0009, TP-0013, TP-0023, TP-0032, TP-0033, TP-0046, TP-0069 | Não executada |
 | 74 | TP-0074 | executor | ✔ | Endpoint DELETE /api/grupos/:g/jogadores/:id | L16 | TP-0023, TP-0030, TP-0032, TP-0033, TP-0046 | Não executada |
 | 75 | TP-0075 | executor | ✔ | Endpoint GET /api/grupos/:g/pesos | L17 | TP-0024, TP-0032, TP-0033, TP-0048 | Não executada |
 | 76 | TP-0076 | executor | ✔ | Endpoint POST /api/grupos/:g/pesos | L17 | TP-0013, TP-0024, TP-0030, TP-0032, TP-0033, TP-0048 | Não executada |
@@ -93,8 +93,8 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 78 | TP-0078 | executor | ✔ | Endpoint GET /api/grupos/:g/partidas/nova?data= | L17 | TP-0007, TP-0013, TP-0024, TP-0029, TP-0032, TP-0033, TP-0049, TP-0052 | Não executada |
 | 79 | TP-0079 | executor | ✔ | Endpoint GET /api/grupos/:g/partidas/:data | L17 | TP-0024, TP-0032, TP-0033, TP-0049, TP-0052 | Não executada |
 | 80 | TP-0080 | executor | ✔ | Extração aplicacao/partidas/presencas (validação das marcações) | L18 | TP-0009, TP-0052 | Não executada |
-| 81 | TP-0081 | executor | ✔ | Endpoint POST /api/grupos/:g/partidas | L18 | TP-0013, TP-0014, TP-0024, TP-0030, TP-0032, TP-0033, TP-0049, TP-0050, TP-0080 | Não executada |
-| 82 | TP-0082 | executor | ✔ | Endpoint PUT /api/grupos/:g/partidas/:data | L18 | TP-0014, TP-0024, TP-0030, TP-0032, TP-0033, TP-0049, TP-0080 | Não executada |
+| 81 | TP-0081 | executor | ✔ | Endpoint POST /api/grupos/:g/partidas | L18 | TP-0013, TP-0014, TP-0024, TP-0030, TP-0032, TP-0033, TP-0049, TP-0050, TP-0079, TP-0080 | Não executada |
+| 82 | TP-0082 | executor | ✔ | Endpoint PUT /api/grupos/:g/partidas/:data | L18 | TP-0014, TP-0024, TP-0030, TP-0032, TP-0033, TP-0049, TP-0079, TP-0080 | Não executada |
 | 83 | TP-0083 | executor | ✔ | Endpoint DELETE /api/grupos/:g/partidas/:data | L18 | TP-0014, TP-0024, TP-0030, TP-0032, TP-0033, TP-0049 | Não executada |
 | 84 | TP-0084 | executor | ✔ | Endpoint GET /api/publico/:slug/ranking?mes= | L19 | TP-0010, TP-0013, TP-0020, TP-0029, TP-0033, TP-0053 | Não executada |
 | 85 | TP-0085 | executor | ✔ | Endpoint POST /api/publico/:slug/eventos | L19 | TP-0020, TP-0029, TP-0033, TP-0050 | Não executada |
@@ -148,14 +148,14 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 133 | TP-0133 | executor | ✔ | [U] Cloudflare: subdomínio, token e Hyperdrive (PI-2, PI-3) | L29 | TP-0013, TP-0132 | Não executada |
 | 134 | TP-0134 | executor | ✔ | [U] GitHub: secrets e environments (PI-4) | L29 | TP-0132, TP-0133 | Não executada |
 | 135 | SPK-0001 | coordenador | — | Spike S-01: transação interativa pg sobre o Hyperdrive | L29 | TP-0014, TP-0133 | Não executada |
-| 136 | TP-0135 | executor | ✔ | Workflow de deploy (deploy.yml) | L30 | TP-0003, TP-0013, TP-0015, TP-0133, TP-0134 | Não executada |
-| 137 | TP-0136 | executor | ✔ | Workflow de backup diário (backup.yml) | L30 | TP-0134 | Não executada |
+| 136 | TP-0136 | executor | ✔ | Workflow de backup diário (backup.yml) | L30 | TP-0134 | Não executada |
+| 137 | TP-0135 | executor | ✔ | Workflow de deploy (deploy.yml) | L30 | TP-0003, TP-0013, TP-0015, TP-0133, TP-0134, TP-0136 | Não executada |
 | 138 | TP-0137 | executor | ✔ | Runbook backend/DEPLOY.md e ensaio de restauração | L30 | TP-0041, TP-0135, TP-0136 | Não executada |
 | 139 | TP-0138 | executor | ✔ | E2E de integração do I1 (API real) | L30 | TP-0034, TP-0035, TP-0040, TP-0056, TP-0061, TP-0070, TP-0078, TP-0081, TP-0084, TP-0089, TP-0094, TP-0111, TP-0114, TP-0116, TP-0119, TP-0121, TP-0123, TP-0124, TP-0129, TP-0130 | Não executada |
 | 140 | TP-0139 | executor | ✔ | [U] Go-live do I1 | L30 | SPK-0001, TP-0036, TP-0039, TP-0041, TP-0054, TP-0055, TP-0057, TP-0058, TP-0059, TP-0060, TP-0062, TP-0063, TP-0064, TP-0065, TP-0066, TP-0067, TP-0068, TP-0069, TP-0071, TP-0072, TP-0073, TP-0074, TP-0075, TP-0076, TP-0077, TP-0079, TP-0082, TP-0083, TP-0085, TP-0086, TP-0087, TP-0090, TP-0109, TP-0112, TP-0113, TP-0115, TP-0117, TP-0118, TP-0120, TP-0122, TP-0125, TP-0126, TP-0127, TP-0128, TP-0131, TP-0135, TP-0137, TP-0138 | Não executada |
 | 141 | TP-0140 | executor | ✔ | [U] Play Console: app com.gestaodapelada.app (PI-5) | L31 | — | Não executada |
 | 142 | TP-0141 | executor | ✔ | /.well-known/assetlinks.json servido pelo Worker | L31 | TP-0088, TP-0140 | Não executada |
-| 143 | TP-0142 | executor | ✔ | Projeto TWA (Bubblewrap) em frontend/twa | L31 | TP-0006, TP-0108, TP-0139, TP-0140 | Não executada |
+| 143 | TP-0142 | executor | ✔ | Projeto TWA (Bubblewrap) em frontend/twa | L31 | TP-0006, TP-0108, TP-0139, TP-0140, TP-0141 | Não executada |
 | 144 | TP-0143 | executor | ✔ | [U] Teste fechado da Play (12 testadores, 14 dias) | L31 | TP-0139, TP-0141, TP-0142 | Não executada |
 | 145 | TP-0144 | executor | ✔ | [U] Publicação da TWA em produção | L31 | TP-0143 | Não executada |
 | 146 | TP-0145 | executor | ✔ | contrato/habilidades (catálogo e notas) | L32 | TP-0005, TP-0018 | Não executada |
@@ -180,7 +180,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 165 | TP-0164 | executor | ✔ | Extração aplicacao/simulador/entrada (aptos prontos para o domínio) | L35 | TP-0011, TP-0047, TP-0053, TP-0148 | Não executada |
 | 166 | TP-0165 | executor | ✔ | Endpoint POST /api/grupos/:g/simulador/sugerir | L35 | TP-0032, TP-0033, TP-0146, TP-0154, TP-0164 | Não executada |
 | 167 | TP-0166 | executor | ✔ | Endpoint POST /api/grupos/:g/simulador/avaliar | L36 | TP-0032, TP-0033, TP-0146, TP-0150, TP-0153, TP-0164 | Não executada |
-| 168 | TP-0167 | executor | ✔ | Endpoint POST /api/grupos/:g/escalacoes | L36 | TP-0014, TP-0032, TP-0033, TP-0050, TP-0146, TP-0161 | Não executada |
+| 168 | TP-0167 | executor | ✔ | Endpoint POST /api/grupos/:g/escalacoes | L36 | TP-0014, TP-0032, TP-0033, TP-0050, TP-0052, TP-0146, TP-0161 | Não executada |
 | 169 | TP-0168 | executor | ✔ | Pré-marcação pela escalação em GET .../partidas/nova | L36 | TP-0078, TP-0161 | Não executada |
 | 170 | TP-0169 | executor | ✔ | Resumo do início com a escalação confirmada | L36 | TP-0061, TP-0161 | Não executada |
 | 171 | SPK-0002 | coordenador | — | Spike S-02: CPU do sugerir no Worker publicado | L36 | TP-0135, TP-0165 | Não executada |
@@ -188,37 +188,38 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 173 | TP-0171 | executor | ✔ | Tela T16: seção de notas e nível | L37 | TP-0096, TP-0124, TP-0145 | Não executada |
 | 174 | TP-0172 | executor | ✔ | Tela T12: Simulador (entradas e prévia) | L37 | TP-0089, TP-0095, TP-0096, TP-0097, TP-0098, TP-0101, TP-0106, TP-0146 | Não executada |
 | 175 | TP-0173 | executor | ✔ | Cartão de time, tabela comparativa e lista de avisos | L37 | TP-0088, TP-0092, TP-0095, TP-0146 | Não executada |
-| 176 | TP-0174 | executor | ✔ | Ajuste manual do simulador: D3 e gancho de reavaliação | L37 | TP-0091, TP-0099, TP-0146 | Executada (aguarda teste) |
-| 177 | TP-0175 | executor | ✔ | Tela T13: resultado com 2 times | L38 | TP-0089, TP-0098, TP-0100, TP-0106, TP-0172, TP-0173, TP-0174 | Executada (aguarda teste) |
-| 178 | TP-0176 | executor | ✔ | Tela T14: resultado com 3 ou mais times | L38 | TP-0089, TP-0098, TP-0100, TP-0106, TP-0172, TP-0173, TP-0174 | Executada (aguarda teste) |
-| 179 | TP-0177 | executor | ✔ | E2E de integração do I2 (API real) | L38 | TP-0138, TP-0162, TP-0163, TP-0165, TP-0166, TP-0167, TP-0168, TP-0172, TP-0175 | Executada (aguarda teste) |
+| 176 | TP-0174 | executor | ✔ | Ajuste manual do simulador: D3 e gancho de reavaliação | L37 | TP-0091, TP-0099, TP-0146 | Não executada |
+| 177 | TP-0175 | executor | ✔ | Tela T13: resultado com 2 times | L38 | TP-0089, TP-0098, TP-0100, TP-0106, TP-0172, TP-0173, TP-0174 | Não executada |
+| 178 | TP-0176 | executor | ✔ | Tela T14: resultado com 3 ou mais times | L38 | TP-0089, TP-0098, TP-0100, TP-0106, TP-0172, TP-0173, TP-0174, TP-0175 | Não executada |
+| 179 | TP-0177 | executor | ✔ | E2E de integração do I2 (API real) | L38 | TP-0138, TP-0162, TP-0163, TP-0165, TP-0166, TP-0167, TP-0168, TP-0172, TP-0175 | Não executada |
 | 180 | TP-0178 | executor | ✔ | [U] Go-live do I2 | L38 | SPK-0002, TP-0139, TP-0155, TP-0156, TP-0157, TP-0158, TP-0159, TP-0169, TP-0170, TP-0171, TP-0176, TP-0177 | Não executada |
-| 181 | TP-0179 | executor | ✔ | dominio/pdf: colunas do PDF e PTS INICIAL antes da 1ª coluna | L39 | TP-0010 | Executada (aguarda teste) |
-| 182 | TP-0180 | executor | ✔ | contrato/pdf (estrito) | L39 | TP-0018, TP-0020 | Executada (aguarda teste) |
-| 183 | TP-0181 | executor | ✔ | Endpoint GET /api/publico/:slug/pdf?mes= | L39 | TP-0013, TP-0029, TP-0033, TP-0053, TP-0179, TP-0180 | Executada (aguarda teste) |
-| 184 | TP-0182 | executor | ✔ | Gerador de PDF: desenho da folha | L39 | TP-0004, TP-0088, TP-0092, TP-0093, TP-0180 | Executada (aguarda teste) |
-| 185 | TP-0183 | executor | ✔ | Gerador de PDF: uma página, legenda e rodapé | L39 | TP-0182 | Executada (aguarda teste) |
-| 186 | TP-0184 | executor | ✔ | T01: Exportar PDF (compartilhar ou baixar) | L39 | TP-0091, TP-0099, TP-0111, TP-0180, TP-0183 | Executada (aguarda teste) |
+| 181 | TP-0179 | executor | ✔ | dominio/pdf: colunas do PDF e PTS INICIAL antes da 1ª coluna | L39 | TP-0010 | Não executada |
+| 182 | TP-0180 | executor | ✔ | contrato/pdf (estrito) | L39 | TP-0018, TP-0020 | Não executada |
+| 183 | TP-0181 | executor | ✔ | Endpoint GET /api/publico/:slug/pdf?mes= | L39 | TP-0013, TP-0029, TP-0033, TP-0053, TP-0179, TP-0180 | Não executada |
+| 184 | TP-0182 | executor | ✔ | Gerador de PDF: desenho da folha | L39 | TP-0004, TP-0088, TP-0092, TP-0093, TP-0180 | Não executada |
+| 185 | TP-0183 | executor | ✔ | Gerador de PDF: uma página, legenda e rodapé | L39 | TP-0182 | Não executada |
+| 186 | TP-0184 | executor | ✔ | T01: Exportar PDF (compartilhar ou baixar) | L39 | TP-0091, TP-0099, TP-0111, TP-0180, TP-0183 | Não executada |
 | 187 | TP-0185 | executor | ✔ | [U] Go-live do I3 e início da janela de 8 semanas | L40 | TP-0178, TP-0181, TP-0184 | Não executada |
-| 188 | TP-0186 | executor | ✔ | contrato/financeiro | L41 | TP-0005, TP-0018 | Executada (aguarda teste) |
-| 189 | TP-0187 | executor | ✔ | dominio/caixa: saldos e entrada vinculada | L41 | TP-0007 | Executada (aguarda teste) |
-| 190 | TP-0188 | executor | ✔ | Migração do financeiro | L41 | TP-0015, TP-0016, TP-0042 | Executada (aguarda teste) |
-| 191 | TP-0189 | executor | ✔ | Repositório do financeiro (e histórico do jogador com pagamentos) | L41 | TP-0014, TP-0016, TP-0017, TP-0046, TP-0074, TP-0188 | Executada (aguarda teste) |
-| 192 | TP-0190 | executor | ✔ | Endpoint GET /api/grupos/:g/financeiro/mes?mes= | L42 | TP-0013, TP-0032, TP-0033, TP-0052, TP-0186, TP-0187, TP-0189 | Executada (aguarda teste) |
-| 193 | TP-0191 | executor | ✔ | Endpoint PUT /api/grupos/:g/financeiro/config | L42 | TP-0030, TP-0032, TP-0033, TP-0186, TP-0189 | Executada (aguarda teste) |
-| 194 | TP-0192 | executor | ✔ | Endpoint POST /api/grupos/:g/financeiro/pagamentos (marcar) | L42 | TP-0014, TP-0030, TP-0032, TP-0033, TP-0186, TP-0187, TP-0189 | Executada (aguarda teste) |
-| 195 | TP-0193 | executor | ✔ | Endpoint DELETE /api/grupos/:g/financeiro/pagamentos/:jogadorId/:mes (desmarcar) | L42 | TP-0014, TP-0030, TP-0032, TP-0033, TP-0186, TP-0189 | Executada (aguarda teste) |
-| 196 | TP-0194 | executor | ✔ | Resumo do início com o saldo atual | L42 | TP-0061, TP-0187, TP-0189 | Executada (aguarda teste) |
-| 197 | TP-0195 | executor | ✔ | Endpoint POST /api/grupos/:g/financeiro/lancamentos | L43 | TP-0030, TP-0032, TP-0033, TP-0186, TP-0189 | Executada (aguarda teste) |
-| 198 | TP-0196 | executor | ✔ | Endpoint GET /api/grupos/:g/financeiro/lancamentos/:id | L43 | TP-0032, TP-0033, TP-0186, TP-0189 | Executada (aguarda teste) |
-| 199 | TP-0197 | executor | ✔ | Endpoint PUT /api/grupos/:g/financeiro/lancamentos/:id | L43 | TP-0030, TP-0032, TP-0033, TP-0186, TP-0189 | Executada (aguarda teste) |
-| 200 | TP-0198 | executor | ✔ | Endpoint DELETE /api/grupos/:g/financeiro/lancamentos/:id | L43 | TP-0030, TP-0032, TP-0033, TP-0186, TP-0189 | Executada (aguarda teste) |
-| 201 | TP-0199 | executor | ✔ | Tela T22: Financeiro do mês | L44 | TP-0089, TP-0092, TP-0095, TP-0101, TP-0106, TP-0186 | Executada (aguarda teste) |
-| 202 | TP-0200 | executor | ✔ | Tela T22: marcar e desmarcar pagamento | L44 | TP-0097, TP-0100, TP-0199 | Executada (aguarda teste) |
-| 203 | TP-0201 | executor | ✔ | Tela T23: Lançamento | L44 | TP-0089, TP-0095, TP-0096, TP-0097, TP-0098, TP-0100, TP-0106, TP-0186 | Executada (aguarda teste) |
-| 204 | TP-0202 | executor | ✔ | Tela T24: Configuração do caixa | L44 | TP-0089, TP-0095, TP-0096, TP-0098, TP-0106, TP-0186 | Executada (aguarda teste) |
-| 205 | TP-0203 | executor | ✔ | Endpoint POST /api/sessao/aviso-privacidade | L45 | TP-0019, TP-0027, TP-0031, TP-0033 | Executada (aguarda teste) |
-| 206 | TP-0204 | executor | ✔ | Tela T07: Aviso de privacidade (página e diálogo do 1º acesso) | L45 | TP-0089, TP-0095, TP-0099, TP-0105, TP-0106 | Executada (aguarda teste) |
-| 207 | TP-0205 | executor | ✔ | E2E de integração do I4 (API real) | L45 | TP-0138, TP-0190, TP-0191, TP-0192, TP-0193, TP-0195, TP-0199, TP-0200, TP-0201, TP-0202 | Executada (aguarda teste) |
+| 188 | TP-0186 | executor | ✔ | contrato/financeiro | L41 | TP-0005, TP-0018 | Não executada |
+| 189 | TP-0187 | executor | ✔ | dominio/caixa: saldos e entrada vinculada | L41 | TP-0007 | Não executada |
+| 190 | TP-0188 | executor | ✔ | Migração do financeiro | L41 | TP-0015, TP-0016, TP-0042 | Não executada |
+| 191 | TP-0189 | executor | ✔ | Repositório do financeiro (e histórico do jogador com pagamentos) | L41 | TP-0014, TP-0016, TP-0017, TP-0046, TP-0074, TP-0188 | Não executada |
+| 192 | TP-0190 | executor | ✔ | Endpoint GET /api/grupos/:g/financeiro/mes?mes= | L42 | TP-0013, TP-0032, TP-0033, TP-0052, TP-0186, TP-0187, TP-0189 | Não executada |
+| 193 | TP-0191 | executor | ✔ | Endpoint PUT /api/grupos/:g/financeiro/config | L42 | TP-0030, TP-0032, TP-0033, TP-0186, TP-0189 | Não executada |
+| 194 | TP-0192 | executor | ✔ | Endpoint POST /api/grupos/:g/financeiro/pagamentos (marcar) | L42 | TP-0014, TP-0030, TP-0032, TP-0033, TP-0186, TP-0187, TP-0189 | Não executada |
+| 195 | TP-0193 | executor | ✔ | Endpoint DELETE /api/grupos/:g/financeiro/pagamentos/:jogadorId/:mes (desmarcar) | L42 | TP-0014, TP-0030, TP-0032, TP-0033, TP-0186, TP-0189 | Não executada |
+| 196 | TP-0194 | executor | ✔ | Resumo do início com o saldo atual | L42 | TP-0061, TP-0187, TP-0189 | Não executada |
+| 197 | TP-0195 | executor | ✔ | Endpoint POST /api/grupos/:g/financeiro/lancamentos | L43 | TP-0030, TP-0032, TP-0033, TP-0186, TP-0189 | Não executada |
+| 198 | TP-0196 | executor | ✔ | Endpoint GET /api/grupos/:g/financeiro/lancamentos/:id | L43 | TP-0032, TP-0033, TP-0186, TP-0189 | Não executada |
+| 199 | TP-0197 | executor | ✔ | Endpoint PUT /api/grupos/:g/financeiro/lancamentos/:id | L43 | TP-0030, TP-0032, TP-0033, TP-0186, TP-0189 | Não executada |
+| 200 | TP-0198 | executor | ✔ | Endpoint DELETE /api/grupos/:g/financeiro/lancamentos/:id | L43 | TP-0030, TP-0032, TP-0033, TP-0186, TP-0189 | Não executada |
+| 201 | TP-0199 | executor | ✔ | Tela T22: Financeiro do mês | L44 | TP-0089, TP-0092, TP-0095, TP-0101, TP-0106, TP-0186 | Não executada |
+| 202 | TP-0200 | executor | ✔ | Tela T22: marcar e desmarcar pagamento | L44 | TP-0097, TP-0100, TP-0199 | Não executada |
+| 203 | TP-0201 | executor | ✔ | Tela T23: Lançamento | L44 | TP-0089, TP-0095, TP-0096, TP-0097, TP-0098, TP-0100, TP-0106, TP-0186 | Não executada |
+| 204 | TP-0202 | executor | ✔ | Tela T24: Configuração do caixa | L44 | TP-0089, TP-0095, TP-0096, TP-0098, TP-0106, TP-0186, TP-0199 | Não executada |
+| 205 | TP-0203 | executor | ✔ | Endpoint POST /api/sessao/aviso-privacidade | L45 | TP-0019, TP-0027, TP-0031, TP-0033 | Não executada |
+| 206 | TP-0204 | executor | ✔ | Tela T07: Aviso de privacidade (página e diálogo do 1º acesso) | L45 | TP-0089, TP-0095, TP-0099, TP-0105, TP-0106 | Não executada |
+| 207 | TP-0205 | executor | ✔ | E2E de integração do I4 (API real) | L45 | TP-0138, TP-0190, TP-0191, TP-0192, TP-0193, TP-0195, TP-0199, TP-0200, TP-0201, TP-0202 | Não executada |
 | 208 | TP-0206 | executor | ✔ | [U] Go-live do I4 | L45 | TP-0185, TP-0194, TP-0196, TP-0197, TP-0198, TP-0203, TP-0204, TP-0205 | Não executada |
 | 209 | RTP-0001 | executor | ✔ | Lint: backend/scripts importando @pelada/api por alias fura a zona (e falta o teste do... | L01 | TP-0002 | Não executada |
+| 210 | RTP-0002 | executor | ✔ | Lint: aliases contornam Date.now() (G-06) e document.cookie (G-09) | L01 | TP-0002 | Não executada |
