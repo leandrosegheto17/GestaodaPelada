@@ -118,6 +118,8 @@ describe('PaginaJogador (T16): novo', () => {
     expect(screen.getByLabelText('Telefone (opcional)')).toHaveValue('(11) 98765-4321');
     await userEvent.click(screen.getByRole('button', { name: 'Salvar' }));
     await waitFor(() => expect(roteador.state.location.pathname).toBe(FICHA));
+    expect(await screen.findByText('Jogador salvo')).toBeInTheDocument();
+    expect(screen.getByText('Jogador salvo').closest('[role="status"]')).not.toBeNull();
     expect(chamadas[0]).toMatchObject({
       metodo: 'POST',
       xPelada: '1',

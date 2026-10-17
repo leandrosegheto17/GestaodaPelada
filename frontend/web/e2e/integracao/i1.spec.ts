@@ -77,6 +77,7 @@ test.describe.serial('I1: do grupo novo ao ranking público', () => {
       await page.getByLabel('Posição').selectOption('meio_campo');
       await page.getByRole('button', { name: 'Salvar' }).click();
       await expect(page.getByRole('heading', { level: 1, name: apelido })).toBeVisible();
+      await expect(page.getByRole('status').filter({ hasText: 'Jogador salvo' })).toBeVisible();
     }
     await page.goto(`/admin/${estado.grupoId}/jogadores`);
     for (const apelido of APELIDOS) await expect(page.getByRole('link', { name: new RegExp(apelido) })).toBeVisible();

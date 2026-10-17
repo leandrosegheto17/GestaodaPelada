@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Navigate, useNavigate, useParams } from 'react-router';
+import { Navigate, useLocation, useNavigate, useParams } from 'react-router';
 import { Botao } from '../../componentes/basicos/Botao';
 import { ErroRede } from '../../componentes/basicos/ErroRede';
 import { Esqueleto } from '../../componentes/basicos/Esqueleto';
@@ -30,6 +30,7 @@ import estilos from './jogador.module.css';
 export function Component() {
   const { grupoId = '', jogadorId } = useParams();
   const navegar = useNavigate();
+  const localizacao = useLocation();
   const base = `/admin/${encodeURIComponent(grupoId)}`;
   const novo = jogadorId === undefined;
 
@@ -43,7 +44,8 @@ export function Component() {
 
   const [errosDoServidor, setErrosDoServidor] = useState<ErrosDeCampos>({});
   const [semConexao, setSemConexao] = useState(false);
-  const [salvo, setSalvo] = useState(false);
+  const [salvoNaFicha, setSalvo] = useState(false);
+  const salvo = salvoNaFicha || (localizacao.state as { salvo?: boolean } | null)?.salvo === true;
   const [dialogo, setDialogo] = useState<'inativar' | 'excluir' | null>(null);
   const [recusadaPorHistorico, setRecusadaPorHistorico] = useState<string | null>(null);
   const [falhaNaSituacao, setFalhaNaSituacao] = useState(false);
