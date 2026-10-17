@@ -123,7 +123,7 @@
 | T01 | Ranking público | `/g/:slug?mes=AAAA-MM` (ex.: `/g/pelada-de-quinta`) | Todos, sem login | F1, F4 |
 | T02 | Sem grupo ("Peça o link") | `/` (sem grupo lembrado) | Todos | F1 |
 | T03 | Grupo indisponível | `/g/:slug` (grupo arquivado ou slug inexistente) | Todos | F1 |
-| T04 | Entrar (login) | `/entrar?area=admin\|financeiro&grupo=:slug` | Admin, dono | F2 |
+| T04 | Entrar (login) | `/entrar?destino=<caminho>` | Admin, dono | F2 |
 | T05 | Esqueci a senha | `/entrar/esqueci` | Qualquer pessoa | F2 |
 | T06 | Nova senha obrigatória | `/entrar/nova-senha` | Admin ou dono com senha temporária | F2, F6 |
 | T07 | Aviso de privacidade | `/privacidade` (e diálogo no 1º login) | Todos | RF-64 |
@@ -590,6 +590,7 @@ Abaixo do campo nome fica a ajuda ⓘ "O link do ranking será criado a partir d
 Padrões globais:
 - **Carregando:** esqueleto da estrutura da tela depois de 300 ms (antes disso, nada, para não piscar). Botões de envio ficam em "carregando", com o rótulo mantido para leitor de tela ("Salvando…").
 - **Erro de rede ou servidor em tela de dados:** faixa de erro "Não foi possível carregar. Verifique a conexão." com o botão "Tentar de novo". Nas telas administrativas, sem cache (RF-54).
+- **Erro de conexão ao enviar formulário (T04, T05, T06, T25):** faixa de erro (`role=alert`) "Não foi possível enviar. Verifique a conexão.", com os campos preservados.
 - **Erro de validação:** mensagem no campo, ligada ao campo (`aria-describedby`), e resumo no topo do formulário quando houver mais de um erro.
 - **Sessão expirada (401) em qualquer tela de admin:** redireciona para T04, mantendo o destino.
 - **Sucesso de escrita:** faixa de status por 4 s, ou navegação de volta com a faixa.
