@@ -16,11 +16,12 @@ const abrir = usarDbDoWorker(fabrica);
 const cliente = (cookie?: string, semCsrf = false) =>
   clienteTeste({ relogio: relogioFixo('2026-10-22'), semCsrf, ...(cookie ? { cookie } : {}) });
 
-async function cenario(comMensalidade: boolean | undefined = true) {
+/** `comMensalidade`: true (padrão) grava 7500, false grava config sem mensalidade, `null` não grava config. */
+async function cenario(comMensalidade: boolean | null = true) {
   const db = await abrir();
   const cen = await montarCenario(db, fabrica);
   const g = cen.grupoA.id;
-  if (comMensalidade !== undefined) await criarConfig(db, g, { mensalidadeCentavos: comMensalidade ? 7_500 : null });
+  if (comMensalidade !== null) await criarConfig(db, g, { mensalidadeCentavos: comMensalidade ? 7_500 : null });
   const ana = await criarJogador(db, g, cen.adminA.id, { apelido: 'Ana', dataEntrada: '2026-01-01' });
   return { db, cen, g, ana, url: `/api/grupos/${g}/financeiro/pagamentos` };
 }
@@ -52,7 +53,7 @@ describe('POST /api/grupos/:g/financeiro/pagamentos (workerd)', () => {
   });
 
   it('sem configuração financeira: só a marcação, nenhum lançamento', async () => {
-    const { db, cen, g, ana, url } = await cenario(undefined);
+    const { db, cen, g, ana, url } = await cenario(null);
     expect((await cliente(cen.adminA.cookie).post(url, { jogadorId: ana, mes: '2026-10' })).status).toBe(204);
     expect(await lancamentosDe(db, g)).toEqual([]);
   });
