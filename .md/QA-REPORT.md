@@ -59,3 +59,18 @@ APROVADA; 0 críticos, 0 não críticos; vitest src/rotulos 20/20 passando, mód
 
 ## TP-0095 — QA — 2026-10-17
 APROVADA; 0 críticos/0 não críticos; 26 testes vitest passando (axe, timers 300 ms, papéis da Faixa, ErroRede) e revisão do diff sem violação de convenção.
+
+## TP-0097 — QA — 2026-10-17
+APROVADA — 14/14 testes de escolhas passando (teclado, switch, alvo 44px, axe), 0 achados.
+
+## TP-0107 — QA — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; 21/21 testes de armazenamento passando, eslint/prettier limpos, plano de teste integralmente coberto.
+
+## TP-0151 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0011: contagem de substituições duplicada); 67 testes passando.
+
+## TP-0152 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0010: testes mais fracos que o plano); 65 testes passando, casos 22/4, 20/4, 9/4 e propriedades cobertos.
+
+## TP-0153 — QA — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; 14 testes passando, aceites (a)-(d) cobertos, incluindo exemplo literal do mockup.

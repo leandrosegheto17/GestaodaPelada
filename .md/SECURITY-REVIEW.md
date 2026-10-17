@@ -44,3 +44,18 @@ OK — revisão do diff sem achados (sem inline/terceiros, recursos falha fechad
 
 ## TP-0150 — DevSecOps — 2026-10-17
 APROVADA; 0 críticos, 0 não críticos novos; revisão do diff (função pura sem I/O, relógio, random ou import externo, divisões protegidas), sem dependência nova; nada executado neste chapéu.
+
+## TP-0014 — DevSecOps — 2026-10-17
+OK em segurança; 0 achados; G-02/G-16/G-21 conferidos por leitura do diff, sem estado global nem vazamento de conexão.
+
+## TP-0091 — DevSecOps — 2026-10-17
+OK — revisão do diff sem achados (X-Pelada em escritas, URL same-origin, erro fora do padrão não refletido, sem log de corpo); pnpm audit --prod limpo; 0 achados.
+
+## TP-0092 — DevSecOps — 2026-10-17
+OK — formatação sem superfície de ataque, entrada de moeda validada em BigInt/ASCII, 94 testes passando, 0 achados.
+
+## TP-0093 — DevSecOps — 2026-10-17
+OK; 0 achados; revisão do diff, só importa @pelada/contrato, sem dado pessoal nem superfície de segurança, sem dependência nova.
+
+## TP-0095 — DevSecOps — 2026-10-17
+OK; 0 achados; diff lido e grep executado sem dangerouslySetInnerHTML/style inline/cor literal, sem dependência nova.
