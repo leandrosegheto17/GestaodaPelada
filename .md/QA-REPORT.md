@@ -875,3 +875,6 @@ APROVADA — 0 achados; 46 testes e a checagem na raiz (527 arquivos) passam, ac
 
 ## TP-0133 — QA — 2026-10-17
 APROVADA — id do Hyperdrive pelada-prod gravado (cache off, host direto), sem segredos no repo; desvios (subdomínio prod-ljs, sem homologação) por decisão do usuário e tratados no BK-0009.
+
+## TP-0134 — QA — 2026-10-17
+APROVADA — 7 secrets (6 no repositório, NEON_URL_MIGRACAO_PROD no environment producao com aprovação manual e só main), sem valores no repo; sem teste/NEON_URL_MIGRACAO_TESTE por decisão do usuário (BK-0009).
