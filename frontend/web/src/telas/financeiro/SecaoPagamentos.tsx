@@ -1,5 +1,6 @@
 import type { MesFinanceiro } from '@pelada/contrato';
 import { useId } from 'react';
+import { EstadoVazio } from '../../componentes/basicos/EstadoVazio';
 import { Interruptor } from '../../componentes/escolhas/Interruptor';
 import { formatarMoeda } from '../../formatacao';
 import estilos from './financeiro.module.css';
@@ -24,7 +25,7 @@ export function SecaoPagamentos({ pagamentos, mensalidadeCentavos, aoMudar, ocup
         Pagamentos do mês{mensalidadeCentavos === null ? '' : ` · ${formatarMoeda(mensalidadeCentavos)}`}
       </h2>
       {pagamentos.length === 0 ? (
-        <p className={estilos.ajuda}>Nenhum jogador ativo neste mês.</p>
+        <EstadoVazio icone={null} texto="Nenhum jogador ativo neste mês." />
       ) : (
         <ul className={estilos.lista}>
           {pagamentos.map((p) => (

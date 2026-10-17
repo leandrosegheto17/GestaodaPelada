@@ -1,5 +1,5 @@
 .estreito {
-  max-width: var(--largura-formulario);
+  max-width: calc(var(--largura-formulario) - 2 * var(--esp-6));
   margin: 0 auto;
 }
 .formulario {
@@ -9,8 +9,15 @@
 .grupoBotoes {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
   gap: var(--esp-2);
+}
+.grupoBotoes > * {
+  flex: 1;
+}
+@media (min-width: 600px) {
+  .grupoBotoes > * {
+    flex: none;
+  }
 }
 .ajuda {
   font-size: var(--texto-sm);

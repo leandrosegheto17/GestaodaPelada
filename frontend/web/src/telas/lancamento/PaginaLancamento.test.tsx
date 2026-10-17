@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse, type JsonBodyType } from 'msw';
 import { setupServer } from 'msw/node';
@@ -137,6 +137,16 @@ describe('PaginaLancamento (T23): novo', () => {
     api(criado);
     montar(NOVO);
     await preencher(descricao, valor);
+    await userEvent.click(screen.getByRole('button', { name: 'Salvar' }));
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+    expect(envios).toEqual([]);
+  });
+
+  it('descrição com 81 caracteres (colada): erro e não envia', async () => {
+    api(criado);
+    montar(NOVO);
+    await preencher('', '10,00');
+    fireEvent.change(screen.getByLabelText('Descrição'), { target: { value: 'a'.repeat(81) } });
     await userEvent.click(screen.getByRole('button', { name: 'Salvar' }));
     expect(await screen.findByRole('alert')).toBeInTheDocument();
     expect(envios).toEqual([]);
@@ -289,7 +299,6 @@ describe('PaginaLancamento (T23): edição', () => {
     await screen.findByRole('radio', { name: 'Saída' });
     expect(await violacoes(container)).toEqual([]);
     await userEvent.click(screen.getByRole('button', { name: 'Excluir' }));
-    await screen.findByRole('alertdialog');
-    expect(await violacoes(document.body)).toEqual([]);
+    expect(await violacoes(await screen.findByRole('alertdialog'))).toEqual([]);
   });
 });

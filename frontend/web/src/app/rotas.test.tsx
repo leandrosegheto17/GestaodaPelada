@@ -28,3 +28,15 @@ describe('rotas do simulador', () => {
     expect(rotas).toContain('/admin/:grupoId/partidas');
   });
 });
+
+describe('rotas do financeiro', () => {
+  it('com o recurso ligado, o caixa do mês existe sob o grupo', async () => {
+    expect(await carregarRoteador('')).toContain('/admin/:grupoId/financeiro');
+  });
+
+  it('com o recurso desligado, a rota do caixa não é registrada', async () => {
+    const rotas = await carregarRoteador('financeiro');
+    expect(rotas).not.toContain('/admin/:grupoId/financeiro');
+    expect(rotas).toContain('/admin/:grupoId/partidas');
+  });
+});

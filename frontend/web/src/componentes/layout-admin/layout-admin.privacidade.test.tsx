@@ -52,7 +52,7 @@ function montar() {
     ],
     { initialEntries: ['/admin/g-quinta'] },
   );
-  render(
+  return render(
     <QueryClientProvider client={cliente}>
       <RouterProvider router={roteador} />
     </QueryClientProvider>,
@@ -75,11 +75,11 @@ describe('LayoutAdmin: aviso de privacidade no 1º acesso', () => {
       () => HttpResponse.error(),
     ]) {
       api('sessao-eu-primeiro-acesso.json', falha);
-      montar();
+      const { unmount } = montar();
       await userEvent.click(await screen.findByRole('button', { name: 'Entendi' }));
       expect(await screen.findByRole('alert')).toHaveTextContent('Não foi possível enviar. Verifique a conexão.');
       expect(screen.getByRole('dialog', { name: 'Privacidade' })).toBeInTheDocument();
-      document.body.innerHTML = '';
+      unmount();
     }
   });
 

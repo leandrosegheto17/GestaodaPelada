@@ -108,11 +108,6 @@ export function Component() {
           {falhaAoExcluir}
         </Faixa>
       ) : null}
-      {lancamento ? (
-        <p className={estilos.ajuda}>
-          Última alteração: {lancamento.alteradoPor}, {diaMesHora(lancamento.alteradoEm)}
-        </p>
-      ) : null}
       <FormularioLancamento
         key={lancamento ? lancamento.id : 'novo'}
         inicial={
@@ -130,6 +125,13 @@ export function Component() {
         enviando={criar.isPending || editar.isPending}
         semConexao={semConexao}
         aoSalvar={aoSalvar}
+        rodape={
+          lancamento ? (
+            <p className={estilos.ajuda}>
+              Última alteração: {lancamento.alteradoPor}, {diaMesHora(lancamento.alteradoEm)}
+            </p>
+          ) : null
+        }
         acoesExtras={
           lancamento ? (
             <Botao variante="textoDestrutivo" onClick={() => setExcluindo(true)}>

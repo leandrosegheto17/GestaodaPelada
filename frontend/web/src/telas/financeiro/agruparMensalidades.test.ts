@@ -24,7 +24,7 @@ const avulso = (id: string, data: string, tipo: 'entrada' | 'saida' = 'saida'): 
 describe('agruparMensalidades', () => {
   it('16 mensalidades viram uma linha com período e total, na posição da mais antiga', () => {
     const mensais = Array.from({ length: 16 }, (_, i) =>
-      mensalidade(`m${i}`, `2026-10-${String(15 - i).padStart(2, '0')}`),
+      mensalidade(`m${i}`, `2026-10-${String(Math.max(1, 15 - i)).padStart(2, '0')}`),
     );
     const lista = [avulso('bolas', '2026-10-20'), avulso('aluguel', '2026-10-16'), ...mensais];
     const itens = agruparMensalidades(lista, '2026-10');

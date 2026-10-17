@@ -1,5 +1,6 @@
 import { useId, useRef, type ReactNode, type RefObject } from 'react';
 import { createPortal } from 'react-dom';
+import { juntar } from '../basicos/juntar';
 import { usarFocoModal } from './usarFocoModal';
 import estilos from './Dialogo.module.css';
 
@@ -45,7 +46,7 @@ export function Dialogo({
     <div className={estilos.veu}>
       <section
         ref={refConteudo}
-        className={estilos.dialogo}
+        className={juntar(estilos.dialogo, 'dialogo')}
         role={destrutivo ? 'alertdialog' : 'dialog'}
         aria-modal="true"
         aria-labelledby={idTitulo}

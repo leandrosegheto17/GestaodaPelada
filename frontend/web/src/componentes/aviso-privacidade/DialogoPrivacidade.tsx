@@ -14,7 +14,17 @@ interface Props {
 /** Aviso de privacidade do 1º acesso do admin (RF-64). Só "Entendi" marca como visto; Esc não fecha. */
 export function DialogoPrivacidade({ aoEntender, enviando, erro }: Props) {
   return (
-    <Dialogo titulo="Privacidade" focoNoTitulo fecharComEsc={false} aoFechar={() => undefined}>
+    <Dialogo
+      titulo="Privacidade"
+      focoNoTitulo
+      fecharComEsc={false}
+      aoFechar={() => undefined}
+      acoes={
+        <Botao variante="principal" carregando={enviando} onClick={aoEntender}>
+          Entendi
+        </Botao>
+      }
+    >
       <p className={estilos.texto}>
         <strong>O que guardamos:</strong> dados de cadastro dos jogadores e dos admins, as partidas e contagens anônimas
         de uso.
@@ -29,11 +39,6 @@ export function DialogoPrivacidade({ aoEntender, enviando, erro }: Props) {
         Ler o aviso completo
       </BotaoLink>
       {erro ? <ErroEnvio /> : null}
-      <div>
-        <Botao variante="principal" carregando={enviando} onClick={aoEntender}>
-          Entendi
-        </Botao>
-      </div>
     </Dialogo>
   );
 }

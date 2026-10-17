@@ -24,6 +24,8 @@ interface Props {
   aoSalvar: (corpo: LancamentoCorpo) => void;
   /** Ações ao lado do "Salvar" (ex.: "Excluir" na edição). */
   acoesExtras?: ReactNode;
+  /** Texto depois dos campos (ex.: última alteração). */
+  rodape?: ReactNode;
 }
 
 const CAMPOS: { id: string; chave: string; rotulo: string }[] = [
@@ -43,6 +45,7 @@ export function FormularioLancamento({
   semConexao,
   aoSalvar,
   acoesExtras,
+  rodape,
 }: Props) {
   const [tipo, setTipo] = useState<TipoLancamento>(inicial?.tipo ?? 'entrada');
   const [data, setData] = useState(inicial?.data ?? hoje);
@@ -108,20 +111,21 @@ export function FormularioLancamento({
       />
       {erros.tipo ? <p role="alert">{erros.tipo}</p> : null}
       {semConexao ? <ErroEnvio /> : null}
-      {inicial ? (
-        <div className={estilos.grupoBotoes}>
+      {rodape}
+      <BarraAcao>
+        {acoesExtras ? (
+          <div className={estilos.grupoBotoes}>
+            <Botao type="submit" variante="principal" carregando={enviando}>
+              Salvar
+            </Botao>
+            {acoesExtras}
+          </div>
+        ) : (
           <Botao type="submit" variante="principal" carregando={enviando}>
             Salvar
           </Botao>
-          {acoesExtras}
-        </div>
-      ) : (
-        <BarraAcao>
-          <Botao type="submit" variante="principal" carregando={enviando}>
-            Salvar
-          </Botao>
-        </BarraAcao>
-      )}
+        )}
+      </BarraAcao>
     </form>
   );
 }

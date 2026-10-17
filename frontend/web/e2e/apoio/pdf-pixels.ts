@@ -33,7 +33,10 @@ export async function rasterizarPrimeiraPagina(page: Page, pdf: Buffer): Promise
       const canvas = document.createElement('canvas');
       canvas.width = Math.round(viewport.width);
       canvas.height = Math.round(viewport.height);
-      await pagina.render({ canvas, viewport }).promise;
+      // Contexto com alfa: o texto sai em tons de cinza, como no navegador (sem franjas coloridas de LCD).
+      const canvasContext = canvas.getContext('2d', { alpha: true });
+      if (!canvasContext) throw new Error('Sem contexto 2D.');
+      await pagina.render({ canvas, canvasContext, viewport }).promise;
       return canvas.toDataURL('image/png');
     },
     { base64: pdf.toString('base64'), escala: ESCALA_PT_PARA_PX },

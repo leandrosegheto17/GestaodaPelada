@@ -2,12 +2,16 @@
   max-width: var(--largura-formulario);
   margin: 0 auto;
 }
+/* A mensagem ocupa a área toda: anula o respiro que o layout do admin dá ao conteúdo. */
+.semAcesso {
+  margin: calc(-1 * var(--esp-3)) calc(-1 * var(--esp-4)) -112px;
+}
 .ferramentas {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--esp-3);
-  margin-bottom: var(--esp-3);
+  padding: 0 var(--esp-1);
 }
 .saldos {
   background: var(--cor-superficie);
@@ -48,10 +52,6 @@
 }
 .negativo {
   color: var(--cor-erro-texto);
-}
-.ladoALado {
-  display: grid;
-  gap: var(--esp-6);
 }
 .subtitulo {
   font-size: var(--texto-xl);
@@ -132,14 +132,18 @@
 .ajuda {
   font-size: var(--texto-sm);
   color: var(--cor-texto-sec);
-  margin: var(--esp-2) 0 0;
+  margin: 0;
+}
+@media (min-width: 600px) {
+  .semAcesso {
+    margin: calc(-1 * var(--esp-6)) calc(-1 * var(--esp-6)) calc(-1 * var(--esp-12));
+  }
 }
 @media (min-width: 1024px) {
   .ladoALado {
+    display: grid;
+    gap: var(--esp-6);
     grid-template-columns: 1fr 1fr;
     align-items: start;
-  }
-  .ladoALado .subtitulo {
-    margin-top: 0;
   }
 }

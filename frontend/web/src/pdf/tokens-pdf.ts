@@ -20,6 +20,8 @@ export interface TokensPdf {
     textoSecundario: Rgb;
     linha: Rgb;
     verde: Rgb;
+    sol: Rgb;
+    chuva: Rgb;
     presente: CoresSituacao;
     lesionado: CoresSituacao;
     expulso: CoresSituacao;
@@ -80,6 +82,8 @@ export function tokensPdf(css: string = tokensCss): TokensPdf {
       textoSecundario: cor('--cor-texto-sec'),
       linha: cor('--cor-linha'),
       verde: cor('--cor-verde'),
+      sol: cor('--cor-sol'),
+      chuva: cor('--cor-chuva'),
       presente: situacao('p'),
       lesionado: situacao('l'),
       expulso: situacao('e'),

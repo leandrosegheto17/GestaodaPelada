@@ -28,7 +28,7 @@ export function montarDocumento(doc: jsPDF, projecao: ProjecaoPdf, tokens: Token
   const fixa =
     MARGEM_PT +
     alturaDoCabecalho(tokens) +
-    medirTabela(area, projecao.colunas.length, tokens).alturaCabecalho +
+    medirTabela(area, projecao.colunas).alturaCabecalho +
     alturaDaLegenda(tokens, legenda.length) +
     alturaDoRodape(tokens) +
     MARGEM_INFERIOR_PT;

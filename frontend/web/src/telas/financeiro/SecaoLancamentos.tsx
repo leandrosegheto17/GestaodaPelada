@@ -1,6 +1,7 @@
 import type { MesFinanceiro } from '@pelada/contrato';
 import { useId, useState } from 'react';
 import { Link } from 'react-router';
+import { EstadoVazio } from '../../componentes/basicos/EstadoVazio';
 import { Icone } from '../../componentes/basicos/Icone';
 import { Selo } from '../../componentes/basicos/Selo';
 import { juntar } from '../../componentes/basicos/juntar';
@@ -58,7 +59,7 @@ export function SecaoLancamentos({ lancamentos, mes, base }: Props) {
         Lançamentos do mês
       </h2>
       {itens.length === 0 ? (
-        <p className={estilos.ajuda}>Nenhum lançamento neste mês.</p>
+        <EstadoVazio icone={null} texto="Nenhum lançamento neste mês." />
       ) : (
         <ul className={estilos.lista}>
           {itens.map((item) =>

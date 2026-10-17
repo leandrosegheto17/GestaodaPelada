@@ -45,11 +45,6 @@
 .linha .entrada {
   flex: 1;
 }
-.contador {
-  font-size: var(--texto-sm);
-  color: var(--cor-texto-sec);
-  text-align: right;
-}
 .numero {
   display: flex;
   align-items: center;

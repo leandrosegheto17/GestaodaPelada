@@ -25,6 +25,9 @@ async function abrirRanking(page: Page, estado: (typeof ESTADOS)[number]) {
   await page.goto(`/g/pelada-de-quinta?mes=${estado.mes}`);
 }
 
+// O PDF é rasterizado em tons de cinza; o mockup também, para o texto não diferir só pela suavização colorida.
+test.use({ launchOptions: { args: ['--disable-lcd-text'] } });
+
 for (const estado of ESTADOS) {
   test(`PDF do ranking (${estado.nome}) confere com o mockup P01`, async ({ page, context }) => {
     await abrirRanking(page, estado);
