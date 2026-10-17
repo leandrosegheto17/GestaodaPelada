@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-17 13:43
+Atualizado: 2026-10-17 14:19
 
-Resumo: Não executada 45 · Em execução 1 · Executada (aguarda teste) 18 · Testada (aguarda segurança) 11 · Aprovada 234 · Bloqueada 3 · total 312
+Resumo: Não executada 41 · Executada (aguarda teste) 6 · Em teste 3 · Testada (aguarda segurança) 29 · Aprovada 234 · Bloqueada 3 · total 316
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -96,13 +96,13 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 81 | TP-0078 | executor | ✔ | Endpoint GET /api/grupos/:g/partidas/nova?data= | L17 | TP-0007, TP-0013, TP-0024, TP-0029, TP-0032, TP-0033, TP-0049, TP-0052 | Aprovada |
 | 82 | TP-0079 | executor | ✔ | Endpoint GET /api/grupos/:g/partidas/:data | L17 | TP-0024, TP-0032, TP-0033, TP-0049, TP-0052 | Aprovada |
 | 83 | TP-0080 | executor | ✔ | Extração aplicacao/partidas/presencas (validação das marcações) | L18 | TP-0009, TP-0052 | Aprovada |
-| 84 | TP-0081 | executor | ✔ | Endpoint POST /api/grupos/:g/partidas | L18 | TP-0013, TP-0014, TP-0024, TP-0030, TP-0032, TP-0033, TP-0049, TP-0050, TP-0079, TP-0080 | Não executada |
-| 85 | TP-0082 | executor | ✔ | Endpoint PUT /api/grupos/:g/partidas/:data | L18 | TP-0014, TP-0024, TP-0030, TP-0032, TP-0033, TP-0049, TP-0079, TP-0080 | Não executada |
+| 84 | TP-0081 | executor | ✔ | Endpoint POST /api/grupos/:g/partidas | L18 | TP-0013, TP-0014, TP-0024, TP-0030, TP-0032, TP-0033, TP-0049, TP-0050, TP-0079, TP-0080 | Em teste |
+| 85 | TP-0082 | executor | ✔ | Endpoint PUT /api/grupos/:g/partidas/:data | L18 | TP-0014, TP-0024, TP-0030, TP-0032, TP-0033, TP-0049, TP-0079, TP-0080 | Em teste |
 | 86 | TP-0083 | executor | ✔ | Endpoint DELETE /api/grupos/:g/partidas/:data | L18 | TP-0014, TP-0024, TP-0030, TP-0032, TP-0033, TP-0049 | Aprovada |
 | 87 | TP-0084 | executor | ✔ | Endpoint GET /api/publico/:slug/ranking?mes= | L19 | TP-0010, TP-0013, TP-0020, TP-0029, TP-0033, TP-0053 | Aprovada |
 | 88 | TP-0085 | executor | ✔ | Endpoint POST /api/publico/:slug/eventos | L19 | TP-0020, TP-0029, TP-0033, TP-0050 | Aprovada |
 | 89 | TP-0086 | executor | ✔ | Endpoint GET /api/grupos/:g/uso | L19 | TP-0013, TP-0024, TP-0032, TP-0033, TP-0050 | Aprovada |
-| 90 | TP-0087 | executor | ✔ | Limite de taxa em /api/sessao/entrar e /api/publico/* | L19 | TP-0013, TP-0034, TP-0084 | Não executada |
+| 90 | TP-0087 | executor | ✔ | Limite de taxa em /api/sessao/entrar e /api/publico/* | L19 | TP-0013, TP-0034, TP-0084 | Executada (aguarda teste) |
 | 91 | TP-0088 | executor | ✔ | App web: Vite, React 19, Router, TanStack Query, tokens e fontes do mockup, recursos po... | L20 | TP-0001, TP-0004 | Aprovada |
 | 92 | TP-0089 | executor | ✔ | Base visual: Playwright, comparar-visual.mjs e job e2e | L20 | TP-0003, TP-0088 | Aprovada |
 | 93 | TP-0090 | executor | ✔ | Cabeçalhos de segurança dos arquivos estáticos (_headers) | L20 | TP-0013, TP-0088, TP-0089 | Aprovada |
@@ -209,7 +209,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 194 | TP-0186 | executor | ✔ | contrato/financeiro | L41 | TP-0005, TP-0018 | Aprovada |
 | 195 | TP-0187 | executor | ✔ | dominio/caixa: saldos e entrada vinculada | L41 | TP-0007 | Aprovada |
 | 196 | TP-0188 | executor | ✔ | Migração do financeiro | L41 | TP-0015, TP-0016, TP-0042 | Aprovada |
-| 197 | TP-0189 | executor | ✔ | Repositório do financeiro (e histórico do jogador com pagamentos) | L41 | TP-0014, TP-0016, TP-0017, TP-0046, TP-0074, TP-0188 | Em execução |
+| 197 | TP-0189 | executor | ✔ | Repositório do financeiro (e histórico do jogador com pagamentos) | L41 | TP-0014, TP-0016, TP-0017, TP-0046, TP-0074, TP-0188 | Executada (aguarda teste) |
 | 198 | TP-0190 | executor | ✔ | Endpoint GET /api/grupos/:g/financeiro/mes?mes= | L42 | TP-0013, TP-0032, TP-0033, TP-0052, TP-0186, TP-0187, TP-0189 | Não executada |
 | 199 | TP-0191 | executor | ✔ | Endpoint PUT /api/grupos/:g/financeiro/config | L42 | TP-0030, TP-0032, TP-0033, TP-0186, TP-0189 | Não executada |
 | 200 | TP-0192 | executor | ✔ | Endpoint POST /api/grupos/:g/financeiro/pagamentos (marcar) | L42 | TP-0014, TP-0030, TP-0032, TP-0033, TP-0186, TP-0187, TP-0189 | Não executada |
@@ -223,7 +223,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 208 | TP-0200 | executor | ✔ | Tela T22: marcar e desmarcar pagamento | L44 | TP-0097, TP-0100, TP-0199 | Aprovada |
 | 209 | TP-0201 | executor | ✔ | Tela T23: Lançamento | L44 | TP-0089, TP-0095, TP-0096, TP-0097, TP-0098, TP-0100, TP-0106, TP-0186, TP-0207 | Aprovada |
 | 210 | TP-0202 | executor | ✔ | Tela T24: Configuração do caixa | L44 | TP-0089, TP-0095, TP-0096, TP-0098, TP-0106, TP-0186, TP-0199, TP-0207 | Aprovada |
-| 211 | TP-0203 | executor | ✔ | Endpoint POST /api/sessao/aviso-privacidade | L45 | TP-0019, TP-0027, TP-0031, TP-0033 | Não executada |
+| 211 | TP-0203 | executor | ✔ | Endpoint POST /api/sessao/aviso-privacidade | L45 | TP-0019, TP-0027, TP-0031, TP-0033 | Executada (aguarda teste) |
 | 212 | TP-0204 | executor | ✔ | Tela T07: Aviso de privacidade (página e diálogo do 1º acesso) | L45 | TP-0089, TP-0095, TP-0099, TP-0105, TP-0106, TP-0207 | Aprovada |
 | 213 | TP-0205 | executor | ✔ | E2E de integração do I4 (API real) | L45 | TP-0138, TP-0190, TP-0191, TP-0192, TP-0193, TP-0195, TP-0199, TP-0200, TP-0201, TP-0202 | Não executada |
 | 214 | TP-0206 | executor | ✔ | [U] Go-live do I4 | L45 | TP-0185, TP-0194, TP-0196, TP-0197, TP-0198, TP-0203, TP-0204, TP-0205 | Não executada |
@@ -248,7 +248,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 233 | RTP-0013 | executor | ✔ | Foco preso: Shift+Tab a partir do título (focoNoTitulo) escapa do Dialogo | Refatoração Lote-L21 | TP-0099 | Aprovada |
 | 234 | RTP-0016 | executor | ✔ | ResumoErros: aplicar o estilo .resumo (CSS morto em Campo.module.css) | Refatoração Lote-L21 | TP-0096 | Aprovada |
 | 235 | RTP-0052 | executor | ✔ | ResumoErros: remover o ícone da faixa para igualar o mockup (T06 erro) | Refatoração Lote-L21 | RTP-0016 | Aprovada |
-| 236 | RTP-0095 | executor | ✔ | docker-compose: publicar portas só em 127.0.0.1 (Postgres com senha fictícia, wrangler... | L21 | TP-0094 | Não executada |
+| 236 | RTP-0095 | executor | ✔ | docker-compose: publicar portas só em 127.0.0.1 (Postgres com senha fictícia, wrangler... | L21 | TP-0094 | Em teste |
 | 237 | RTP-0018 | executor | ✔ | Testes faltantes da compatibilidade do contrato (eDono em resposta/QUEBRAS, enum de ent... | Refatoração Lote-L04 | TP-0018 | Aprovada |
 | 238 | RTP-0021 | executor | ✔ | RankingPublico: enderecoNovo obrigatório (url ou null) | Refatoração Lote-L04 | TP-0020 | Aprovada |
 | 239 | RTP-0020 | executor | ✔ | Teste D1: cobrir indexedDB.open, classe monoespaçada e ausência da senha após desmontar | Refatoração Lote-L22 | TP-0100 | Aprovada |
@@ -296,32 +296,36 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 281 | RTP-0063 | executor | ✔ | Cookie de sessão duplicado: recusar em vez de usar o primeiro | Refatoração Lote-L07 | TP-0031 | Aprovada |
 | 282 | RTP-0069 | executor | ✔ | Testes dos middlewares de grupo/dono: escopo troca_de_senha, /api/grupos//eco e arquivo... | Refatoração Lote-L07 | TP-0032 | Aprovada |
 | 283 | RTP-0074 | executor | ✔ | Suíte de isolamento: rota ALL visível e conferência de limpeza | L07 | TP-0033 | Aprovada |
-| 284 | RTP-0084 | executor | ✔ | Entrar: bloqueio por e-mail sem atomicidade entre consulta e registro de falha | Refatoração Lote-L07 | TP-0034 | Executada (aguarda teste) |
+| 284 | RTP-0084 | executor | ✔ | Entrar: bloqueio por e-mail sem atomicidade entre consulta e registro de falha | Refatoração Lote-L07 | TP-0034 | Testada (aguarda segurança) |
 | 285 | RTP-0067 | executor | ✔ | Eventos de uso: completar testes do plano (tipos fechados, colunas gravadas, N+1, fábrica) | Refatoração Lote-L10 | TP-0050 | Aprovada |
-| 286 | RTP-0071 | executor | ✔ | Habilidades: usar seViolarUnico de comum.ts | L10 | TP-0047 | Executada (aguarda teste) |
-| 287 | RTP-0075 | executor | ✔ | Repositório de partidas: relógio fixo, fábrica de partidas e seViolarUnico | L10 | TP-0049 | Executada (aguarda teste) |
-| 288 | RTP-0076 | executor | ✔ | Repositório de partidas: criar/substituir exigem Tx | L10 | TP-0049 | Executada (aguarda teste) |
-| 289 | RTP-0080 | executor | ✔ | Seed local: teste duplicado, rollback e trava positiva sem cobertura | L10 | TP-0051 | Executada (aguarda teste) |
-| 290 | RTP-0083 | executor | ✔ | Regra de lint: apagarDadosDoSeed só importável por backend/scripts | L10 | TP-0051 | Executada (aguarda teste) |
+| 286 | RTP-0071 | executor | ✔ | Habilidades: usar seViolarUnico de comum.ts | L10 | TP-0047 | Testada (aguarda segurança) |
+| 287 | RTP-0075 | executor | ✔ | Repositório de partidas: relógio fixo, fábrica de partidas e seViolarUnico | L10 | TP-0049 | Testada (aguarda segurança) |
+| 288 | RTP-0076 | executor | ✔ | Repositório de partidas: criar/substituir exigem Tx | L10 | TP-0049 | Testada (aguarda segurança) |
+| 289 | RTP-0080 | executor | ✔ | Seed local: teste duplicado, rollback e trava positiva sem cobertura | L10 | TP-0051 | Testada (aguarda segurança) |
+| 290 | RTP-0083 | executor | ✔ | Regra de lint: apagarDadosDoSeed só importável por backend/scripts | L10 | TP-0051 | Testada (aguarda segurança) |
 | 291 | RTP-0068 | executor | ✔ | Teste de admin-por-email: asserir auditoria admin_vinculado e e-mail com caixa/espaços | Refatoração Lote-L08 | TP-0038 | Aprovada |
-| 292 | RTP-0072 | executor | ✔ | Checagem de escrita de e_dono: janela de 300 caracteres deixa passar INSERT/values longos | Refatoração Lote-L08 | TP-0041 | Executada (aguarda teste) |
-| 293 | RTP-0077 | executor | ✔ | Checagem de escrita de e_dono: exceção cobre o arquivo contas.ts inteiro, não só criarC... | L08 | TP-0041 | Executada (aguarda teste) |
-| 294 | RTP-0085 | executor | ✔ | Trocar senha: limitar tentativas da senha atual no escopo completo | L08 | TP-0040 | Executada (aguarda teste) |
-| 295 | RTP-0070 | executor | ✔ | Teste de partidas: relógio fixo e casos faltantes do plano | Refatoração Lote-L09 | TP-0044 | Aprovada |
-| 296 | RTP-0078 | executor | ✔ | Asserção automática do limite de 4 consultas em carregarHistoricoGrupo | L11 | TP-0053 | Executada (aguarda teste) |
-| 297 | RTP-0086 | executor | ✔ | Completar testes do POST /api/dono/grupos conforme o plano (atomicidade por passo, corr... | Refatoração Lote-L11 | TP-0056 | Executada (aguarda teste) |
-| 298 | RTP-0089 | executor | ✔ | Teste do painel do dono: forma contra dono-painel*.json e 403 de troca_de_senha | L11 | TP-0054 | Executada (aguarda teste) |
-| 299 | RTP-0081 | executor | ✔ | Teste de ordem por nome em GET /api/grupos/:g/admins | Refatoração Lote-L14 | TP-0063 | Executada (aguarda teste) |
-| 300 | RTP-0082 | executor | ✔ | Testes de aplicação com db-worker rodam no projeto node do vitest | L15 | TP-0069 | Não executada |
-| 301 | RTP-0087 | executor | ✔ | Testes da rota GET /api/grupos/:g: cobrir sexta, saídas, mês/semana e grupo B | Refatoração Lote-L13 | TP-0061 | Executada (aguarda teste) |
-| 302 | RTP-0088 | executor | ✔ | Testes de partidas/nova: cobrir lacunas do plano da TP-0078 | Refatoração Lote-L17 | TP-0078 | Executada (aguarda teste) |
-| 303 | RTP-0091 | executor | ✔ | Remover teste duplicado de GET partidas (partidas/listar.test.ts) | L17 | TP-0077 | Executada (aguarda teste) |
-| 304 | RTP-0090 | executor | ✔ | Teste de reativar: acumulado mantido e ativosNaData | Refatoração Lote-L16 | TP-0073 | Executada (aguarda teste) |
-| 305 | RTP-0092 | executor | ✔ | Testes de inativar: cobrir bordas e efeito do plano do TP-0072 | Refatoração Lote-L16 | TP-0072 | Executada (aguarda teste) |
-| 306 | RTP-0093 | executor | ✔ | Testes de partida nova: inativado depois e 409 com escalação (TP-0168) | Refatoração Lote-L36 | TP-0168 | Não executada |
-| 307 | RTP-0097 | executor | ✔ | Unificar a enumeração de ids da composição (idsDaComposicao duplicada em 3 lugares) | L36 | TP-0167 | Não executada |
-| 308 | RTP-0094 | executor | ✔ | Testes do ranking público: cobrir o plano do TP-0084 em publico-ranking.test.ts | L19 | TP-0084 | Não executada |
-| 309 | BK-0003 | coordenador | ✔ | Exige push da branch ci-prova e PR real no remoto (ação manual/autorização do usuário); ro | — | — | Não executada |
-| 310 | RTP-0014 | executor | ✔ | Executar a prova do CI em PR real (ci-prova) | Refatoração Lote-L01 | BK-0003, TP-0003 | Bloqueada |
-| 311 | BK-0005 | coordenador | ✔ | Item (b) feito; item (a) exige PR real com job e2e verde (push/PR autorizado pelo usuário) | — | — | Não executada |
-| 312 | RTP-0017 | executor | ✔ | Provar job e2e verde em PR real e cobrir dist/ ausente em visual.mjs | Refatoração Lote-L20 | BK-0005, TP-0089 | Bloqueada |
+| 292 | RTP-0072 | executor | ✔ | Checagem de escrita de e_dono: janela de 300 caracteres deixa passar INSERT/values longos | Refatoração Lote-L08 | TP-0041 | Testada (aguarda segurança) |
+| 293 | RTP-0077 | executor | ✔ | Checagem de escrita de e_dono: exceção cobre o arquivo contas.ts inteiro, não só criarC... | L08 | TP-0041 | Testada (aguarda segurança) |
+| 294 | RTP-0085 | executor | ✔ | Trocar senha: limitar tentativas da senha atual no escopo completo | L08 | TP-0040 | Testada (aguarda segurança) |
+| 295 | RTP-0098 | executor | ✔ | Teste de trocar-senha: caso dos 5 erros estoura o timeout padrão de 5 s | L08 | RTP-0085 | Não executada |
+| 296 | RTP-0070 | executor | ✔ | Teste de partidas: relógio fixo e casos faltantes do plano | Refatoração Lote-L09 | TP-0044 | Aprovada |
+| 297 | RTP-0078 | executor | ✔ | Asserção automática do limite de 4 consultas em carregarHistoricoGrupo | L11 | TP-0053 | Testada (aguarda segurança) |
+| 298 | RTP-0086 | executor | ✔ | Completar testes do POST /api/dono/grupos conforme o plano (atomicidade por passo, corr... | Refatoração Lote-L11 | TP-0056 | Testada (aguarda segurança) |
+| 299 | RTP-0089 | executor | ✔ | Teste do painel do dono: forma contra dono-painel*.json e 403 de troca_de_senha | L11 | TP-0054 | Testada (aguarda segurança) |
+| 300 | RTP-0081 | executor | ✔ | Teste de ordem por nome em GET /api/grupos/:g/admins | Refatoração Lote-L14 | TP-0063 | Testada (aguarda segurança) |
+| 301 | RTP-0082 | executor | ✔ | Testes de aplicação com db-worker rodam no projeto node do vitest | L15 | TP-0069 | Executada (aguarda teste) |
+| 302 | RTP-0087 | executor | ✔ | Testes da rota GET /api/grupos/:g: cobrir sexta, saídas, mês/semana e grupo B | Refatoração Lote-L13 | TP-0061 | Testada (aguarda segurança) |
+| 303 | RTP-0099 | executor | ✔ | ler.test.ts: jogadoresEPartidas reutiliza o helper criarPartida | Refatoração Lote-L13 | RTP-0087 | Não executada |
+| 304 | RTP-0088 | executor | ✔ | Testes de partidas/nova: cobrir lacunas do plano da TP-0078 | Refatoração Lote-L17 | TP-0078 | Testada (aguarda segurança) |
+| 305 | RTP-0091 | executor | ✔ | Remover teste duplicado de GET partidas (partidas/listar.test.ts) | L17 | TP-0077 | Testada (aguarda segurança) |
+| 306 | RTP-0090 | executor | ✔ | Teste de reativar: acumulado mantido e ativosNaData | Refatoração Lote-L16 | TP-0073 | Testada (aguarda segurança) |
+| 307 | RTP-0092 | executor | ✔ | Testes de inativar: cobrir bordas e efeito do plano do TP-0072 | Refatoração Lote-L16 | TP-0072 | Testada (aguarda segurança) |
+| 308 | RTP-0093 | executor | ✔ | Testes de partida nova: inativado depois e 409 com escalação (TP-0168) | Refatoração Lote-L36 | TP-0168 | Executada (aguarda teste) |
+| 309 | RTP-0097 | executor | ✔ | Unificar a enumeração de ids da composição (idsDaComposicao duplicada em 3 lugares) | L36 | TP-0167 | Não executada |
+| 310 | RTP-0094 | executor | ✔ | Testes do ranking público: cobrir o plano do TP-0084 em publico-ranking.test.ts | L19 | TP-0084 | Executada (aguarda teste) |
+| 311 | RTP-0100 | executor | ✔ | Testes do POST partidas: concorrência, falha no evento e 422 de corpo | Refatoração Lote-L18 | TP-0081 | Não executada |
+| 312 | RTP-0101 | executor | ✔ | Teste do PUT partidas: 404 de :data malformada sem consulta ao banco | L18 | TP-0082 | Não executada |
+| 313 | BK-0003 | coordenador | ✔ | Exige push da branch ci-prova e PR real no remoto (ação manual/autorização do usuário); ro | — | — | Não executada |
+| 314 | RTP-0014 | executor | ✔ | Executar a prova do CI em PR real (ci-prova) | Refatoração Lote-L01 | BK-0003, TP-0003 | Bloqueada |
+| 315 | BK-0005 | coordenador | ✔ | Item (b) feito; item (a) exige PR real com job e2e verde (push/PR autorizado pelo usuário) | — | — | Não executada |
+| 316 | RTP-0017 | executor | ✔ | Provar job e2e verde em PR real e cobrir dist/ ausente em visual.mjs | Refatoração Lote-L20 | BK-0005, TP-0089 | Bloqueada |

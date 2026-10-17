@@ -725,3 +725,63 @@ APROVADA; 0 críticos, 1 não crítico (RTP-0096: lacunas de cobertura em pdf.te
 
 ## TP-0162 — QA — 2026-10-17
 APROVADA; 0 críticos, 0 novos não críticos; 10/10 testes da tarefa passam no projeto workers; falha no projeto node é a RTP-0082 já aberta.
+
+## RTP-0071 — QA — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; habilidades.ts usa seViolarUnico, emUso=0, 7/7 testes no Postgres 55432.
+
+## RTP-0072 — QA — 2026-10-17
+APROVADA — checagem usa início da instrução sem janela fixa; 20 testes e checagem real (525 arquivos, exit 0) verdes; 0 achados.
+
+## RTP-0075 — QA — 2026-10-17
+APROVADA; 7/7 testes do repositório de partidas passando, sem literais de data, fábrica e seViolarUnico conferidos; 0 achados.
+
+## RTP-0076 — QA — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; criar/substituir/excluir exigem Tx, repositorios/partidas 12/12 e tsc limpo (editar.test.ts oscila só por interferência de banco em paralelo).
+
+## RTP-0077 — QA — 2026-10-17
+APROVADA — 0 críticos/0 não críticos; vitest 20/20 e checagem real exit 0 (525 arquivos); só criarContaDono é exceção em contas.ts.
+
+## RTP-0078 — QA — 2026-10-17
+APROVADA — vitest pontuacao 5/5 passando; asserção de <= 4 consultas via plugin Kysely validada em execução real; 0 achados.
+
+## RTP-0080 — QA — 2026-10-17
+APROVADA, 0 críticos/0 não críticos; seed-local 11/11 passando, duplicata removida, rollback e trava positiva cobertos.
+
+## RTP-0081 — QA — 2026-10-17
+APROVADA; teste de ordenação por nome passa e cobre o aceite; 0 achados; suíte completa instável só por colisão do e-mail do dono com execuções paralelas no mesmo banco.
+
+## RTP-0083 — QA — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; eslint falha ao importar seed-local em backend/api/src e passa em backend/scripts.
+
+## RTP-0084 — QA — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; sessao-entrar.test.ts 14/14 com caso de 10 pedidos paralelos (5x401 + 5x429).
+
+## RTP-0085 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0098: teste dos 5 erros estoura timeout de 5 s; 17/17 com --testTimeout=60000); bloqueio por conta e 429 verificados.
+
+## RTP-0086 — QA — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; aplicação 9/9 e rotas 5/5 passando em rodada isolada, todos os itens do aceite cobertos; flakiness por `contas_email_unico` do e-mail fixo do dono com suítes paralelas (já em RTP-0008/0069), alheia à tarefa.
+
+## RTP-0087 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0099 helper duplicado); ler.test.ts 7/7 passando (falhas intermitentes só por interferência de banco compartilhado).
+
+## RTP-0088 — QA — 2026-10-17
+APROVADA; casos do aceite presentes e linhas.test.ts verde; nova-e-ler só falhou por colisão de e-mail fixo com sessões paralelas (sem falha de asserção); 0 críticos, 0 não críticos.
+
+## RTP-0089 — QA — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; 3 testes do painel (forma vs mockups e 403 troca_de_senha) passam; falhas intermitentes só por colisão de e-mail no banco compartilhado com RTP paralelas.
+
+## RTP-0090 — QA — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; teste "reativar mantém" passa 3/3 isolado (presença mantida, ativosNaData hoje inclui e hoje−1 exclui); falhas do arquivo inteiro são colisão de e-mail do dono no DB compartilhado.
+
+## RTP-0091 — QA — 2026-10-17
+APROVADA; duplicado removido, 1 arquivo de teste da rota, 0 achados; vitest instável por colisão de e-mail do dono com outras sessões em paralelo (ambiente).
+
+## RTP-0092 — QA — 2026-10-17
+APROVADA; 15/15 testes passando (após interferência de banco compartilhado em runs paralelos); 0 críticos, 0 não críticos.
+
+## RTP-0095 — QA — 2026-10-17
+APROVADA — portas 127.0.0.1 nos 3 serviços (compose config verificado), README atualizado; 0 achados; up --wait só validado por leitura.
+
+## TP-0081 — QA — 2026-10-17
+TP-0081 APROVADA; 6/6 testes da rota e caso POST do isolamento passam; 0 críticos, 1 não crítico (RTP-0100, lacunas de teste de concorrência/rollback do evento/422).
