@@ -120,6 +120,19 @@ describe('trocarSenha', () => {
 
     const depois = new Date(agora.getTime() + JANELA_TENTATIVAS + 1000);
     expect(await trocarSenha(db, sessao, { senhaAtual: conta.senha, novaSenha: NOVA }, depois)).toEqual({ tipo: 'ok' });
+  }, 30_000);
+
+  it('escopo completo: 10 pedidos paralelos com senha errada verificam no máximo 5; o resto é bloqueado', async () => {
+    const { conta, escopo, nova } = await cenario(false);
+    const atual = await nova();
+    const sessao = { contaId: conta.id, sessaoId: atual.id, escopo };
+    // Uma conexão por pedido, como em produção: a conexão de teste é única e não serializa transações.
+    const conexoes = await Promise.all(Array.from({ length: 10 }, () => abrir()));
+    const rs = await Promise.all(
+      conexoes.map((c) => trocarSenha(c, sessao, { senhaAtual: 'errada-errada', novaSenha: NOVA }, agora)),
+    );
+    expect(rs.filter((r) => r.tipo === 'recusada')).toHaveLength(LIMITE_FALHAS);
+    expect(rs.filter((r) => r.tipo === 'bloqueada')).toHaveLength(10 - LIMITE_FALHAS);
   });
 
   it('falha na auditoria desfaz tudo: senha, escopo, outras sessões e pedido continuam', async () => {

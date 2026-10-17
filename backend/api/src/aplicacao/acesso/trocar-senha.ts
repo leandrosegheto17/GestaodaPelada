@@ -41,15 +41,16 @@ export async function trocarSenha(
     }
   } else {
     const chave = chaveDeTentativas(sessao.contaId);
-    const bloqueio = await tentativas.consultarBloqueio(db, chave, agora);
-    if (bloqueio.liberaEm) return { tipo: 'bloqueada', liberaEm: bloqueio.liberaEm };
+    // A falha é gravada antes de conferir a senha (sob trava por conta); só some se a senha conferir.
+    const reserva = await emTransacao(db, (tx) => tentativas.reservarFalha(tx, chave, agora));
+    if ('liberaEm' in reserva) return { tipo: 'bloqueada', liberaEm: reserva.liberaEm };
     const atualConfere =
       entrada.senhaAtual !== undefined && (await contas.verificarSenha(db, conta.email, entrada.senhaAtual)) !== null;
-    if (!atualConfere) {
-      await tentativas.registrar(db, { email: chave, sucesso: false, agora });
-      return { tipo: 'recusada', campos: { senhaAtual: 'Senha atual incorreta.' } };
-    }
-    await tentativas.registrar(db, { email: chave, sucesso: true, agora });
+    if (!atualConfere) return { tipo: 'recusada', campos: { senhaAtual: 'Senha atual incorreta.' } };
+    await emTransacao(db, async (tx) => {
+      await tentativas.descartarFalha(tx, reserva.id);
+      await tentativas.registrar(tx, { email: chave, sucesso: true, agora });
+    });
   }
 
   await emTransacao(db, async (tx) => {
