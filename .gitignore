@@ -9,3 +9,6 @@ coverage
 test-results
 playwright-report
 frontend/web/e2e/resultado/
+
+.pnpm-store
+.tmp-out.txt
