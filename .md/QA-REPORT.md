@@ -29,3 +29,18 @@ APROVADA — previa.ts atende o aceite [PD]; 19 testes, tsc e prettier ok; 0 ach
 
 ## TP-0149 — QA — 2026-10-16
 APROVADA; 18/18 testes, tsc/eslint limpos, aceite RN-09A/I-32/P-28 coberto; 0 críticos, 0 não críticos.
+
+## TP-0008 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0005, teste duplicado em src/); 35 testes e tsc verdes, aceite [PD] cumprido.
+
+## TP-0009 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0007 teste duplicado em src/atividade); 27 testes verdes, tsc e eslint limpos.
+
+## TP-0013 — QA — 2026-10-17
+APROVADA — 39 testes verdes, tsc/eslint limpos, aceite cumprido (Hono, config, relógio SP, no-store, CSRF, erros padrão, wrangler.jsonc); 0 achados; wrangler dev manual não executado.
+
+## TP-0088 — QA — 2026-10-17
+APROVADA — 35 testes, build com chunks por rota, stylelint e tsc limpos, build falha com recurso inválido; 0 achados.
+
+## TP-0150 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0006: teste duplicado em src/, 3ª ocorrência; falta exemplo literal de 19 aptos); 27 testes e tsc verdes.
