@@ -76,6 +76,11 @@ describe('sw.ts', () => {
     expect(sw).toContain('statuses: [200]');
   });
 
+  it('o cache do ranking público expira por idade (7 dias) além de por quantidade', () => {
+    expect(sw).toContain('const RANKING_VALIDADE_SEGUNDOS = 7 * 24 * 60 * 60;');
+    expect(sw).toMatch(/new ExpirationPlugin\(\{\s*maxEntries: 50,\s*maxAgeSeconds: RANKING_VALIDADE_SEGUNDOS\s*\}\)/);
+  });
+
   it('não usa eval nem redireciona para o endereço novo', () => {
     expect(sw).not.toMatch(/\beval\(|new Function|location\.href\s*=|Response\.redirect/);
   });

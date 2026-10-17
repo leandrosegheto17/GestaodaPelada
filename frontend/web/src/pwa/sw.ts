@@ -11,6 +11,8 @@ declare const self: ServiceWorkerGlobalScope;
 
 const CACHE_SINAIS = 'pelada-sinais';
 const CHAVE_SINAL = '/__sinal/endereco-novo';
+/** Ranking de grupo depois arquivado ou tornado privado deixa de ser servido offline após este prazo. */
+const RANKING_VALIDADE_SEGUNDOS = 7 * 24 * 60 * 60;
 
 // Só o ranking público é cacheado (ADR-009): nenhuma outra rota /api/* tem estratégia, vai direto à rede.
 precacheAndRoute(self.__WB_MANIFEST);
@@ -51,7 +53,7 @@ registerRoute(
     networkTimeoutSeconds: 3,
     plugins: [
       new CacheableResponsePlugin({ statuses: [200] }),
-      new ExpirationPlugin({ maxEntries: 50 }),
+      new ExpirationPlugin({ maxEntries: 50, maxAgeSeconds: RANKING_VALIDADE_SEGUNDOS }),
       {
         // Resposta servida do cache (sem rede): marca para a tela mostrar "Sem conexão".
         cachedResponseWillBeUsed: async ({ cachedResponse }) => {
