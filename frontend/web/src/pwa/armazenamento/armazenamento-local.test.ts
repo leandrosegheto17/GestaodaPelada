@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { IDBFactory } from 'fake-indexeddb';
+import { IDBDatabase, IDBFactory } from 'fake-indexeddb';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   avisoInstalacaoFechado,
@@ -111,6 +111,16 @@ describe('falhas do IndexedDB caem no espelho', () => {
   it('open que lança', async () => {
     vi.spyOn(indexedDB, 'open').mockImplementation(() => {
       throw new Error('indisponível');
+    });
+    await lembrarGrupo('pelada-de-quinta');
+    expect(await grupoLembrado()).toBe('pelada-de-quinta');
+  });
+
+  it('open bloqueado', async () => {
+    vi.spyOn(indexedDB, 'open').mockImplementation(() => {
+      const pedido = {} as IDBOpenDBRequest;
+      queueMicrotask(() => (pedido.onblocked as () => void)?.());
+      return pedido;
     });
     await lembrarGrupo('pelada-de-quinta');
     expect(await grupoLembrado()).toBe('pelada-de-quinta');
