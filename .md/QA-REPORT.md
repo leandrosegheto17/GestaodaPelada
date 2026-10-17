@@ -182,3 +182,30 @@ APROVADA; 0 críticos, 1 não crítico (RTP-0026, CSS morto em Pagina.module.css
 
 ## TP-0182 — QA — 2026-10-17
 APROVADA — 26/26 testes, vite build ok, jspdf em chunk separado (fora do entry), vite.config só afeta o bloco de teste; 0 achados.
+
+## TP-0113 — QA — 2026-10-17
+APROVADA — 0 críticos/0 não críticos; 56 testes passando e T01 instalar-iphone celular 0,00% (todos os estados OK).
+
+## TP-0115 — QA — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; 7/7 testes e comparação visual T05 vazio 0,00% (pc e celular), sucesso conferido com o mockup.
+
+## TP-0116 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0031: falta teste de 72 caracteres); 51 testes passando, visual T06 vazio pc/celular 0,00%, PNGs abertos.
+
+## TP-0119 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0034: mockup sem-jogadores ainda "Nenhuma ainda"); 130 testes ok e CV T09 <=0.11%, sem regressão em T01/T10/T15 pela mudança de `.seta`.
+
+## TP-0120 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0029: mockup põe .barra-acao fora do main, T10 pc 1,48% só pelo botão); 101 testes ok, CV celular ≤ 0,07%.
+
+## TP-0123 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0030: mockup T15 com barra fora do main e sem seta; vazio-inativos/pc 1,52% é defeito do mockup); 184 testes ok, CV T15 e PADRAO lista dentro de 1% exceto esse caso.
+
+## TP-0124 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0033, mockup edicao sem ajuda do apelido); novo pc/celular 0,00%, edicao/sem-habilidades dependem de TP-0171; 2 falhas de SecaoNotas são do TP-0171.
+
+## TP-0125 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0032: axe erro/salvo, describedby da ajuda, teste de rótulos); 34 testes ok, CV T18 sucesso 0,00% pc/celular, erro e salvo conferidos à mão.
+
+## TP-0126 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0028: axe com diálogo aberto); 27 testes OK, visual T19 ≤ 0.51% e alturas iguais.
