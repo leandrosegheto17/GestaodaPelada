@@ -9,7 +9,8 @@ export type ResultadoInativar =
   | { tipo: 'ok'; jogador: JogadorDetalhe }
   | { tipo: 'nao_encontrado' }
   | { tipo: 'ja_inativo' }
-  | { tipo: 'saida_antes_da_entrada' };
+  | { tipo: 'saida_antes_da_entrada' }
+  | { tipo: 'presenca_desde_a_saida' };
 
 /**
  * Fecha o período aberto na data de saída: a partir dessa data o jogador sai das linhas do
@@ -28,6 +29,7 @@ export async function inativarJogador(
   if (aberto < 0) return { tipo: 'ja_inativo' };
   const fechado = jogador.periodos.map((p, i) => (i === aberto ? { ...p, fim: dataSaida } : p));
   if (!validarPeriodos(fechado).ok) return { tipo: 'saida_antes_da_entrada' };
+  if (await jogadores.temPresencaDesde(db, grupoId, jogadorId, dataSaida)) return { tipo: 'presenca_desde_a_saida' };
   try {
     const r = await jogadores.inativar(db, grupoId, jogadorId, dataSaida);
     if (r === 'sem_periodo_aberto') return { tipo: 'ja_inativo' };

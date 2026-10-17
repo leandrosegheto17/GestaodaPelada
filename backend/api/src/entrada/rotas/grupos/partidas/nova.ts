@@ -3,6 +3,7 @@ import { Hono } from 'hono';
 import { DataFutura, DataInvalida, PartidaJaExiste, prepararPartidaNova } from '../../../../aplicacao/partidas/nova.js';
 import type { AppEnv } from '../../../app.js';
 import { corpoErro, naoEncontrado } from '../../../erros.js';
+import { respostaPartidaDuplicada } from '../../../respostas-partida.js';
 
 /** `GET /api/grupos/:grupoId/partidas/nova?data=`: dados para lançar a partida (rota estática, antes de `:data`). */
 export const rotaPartidaNova = new Hono<AppEnv>().get('/api/grupos/:grupoId/partidas/nova', async (c) => {
@@ -18,14 +19,7 @@ export const rotaPartidaNova = new Hono<AppEnv>().get('/api/grupos/:grupoId/part
       return c.json(corpoErro(CODIGOS_ERRO.validacao, 'Corrija os campos indicados.', { data: mensagem }), 422);
     }
     if (erro instanceof PartidaJaExiste) {
-      const corpo = {
-        erro: {
-          codigo: CODIGOS_ERRO.partidaJaExiste,
-          mensagem: `Já existe uma partida em ${erro.data.split('-').reverse().join('/')}.`,
-          dataExistente: erro.data,
-        },
-      };
-      return c.json(corpo, 409);
+      return respostaPartidaDuplicada(c, erro.data);
     }
     throw erro;
   }

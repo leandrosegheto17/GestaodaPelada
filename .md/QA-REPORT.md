@@ -614,3 +614,12 @@ APROVADA — 0 críticos, 1 não crítico (RTP-0082: detalhe.test.ts não carreg
 
 ## TP-0070 — QA — 2026-10-17
 APROVADA; 0 críticos/0 não críticos; criar.test.ts (21) e test/isolamento (70) verdes, aceites de ano máximo, apelido sem caixa e período por data de entrada comprovados.
+
+## RTP-0006 — QA — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; vitest indicadores+elenco 28/28 verde, duplicado removido.
+
+## RTP-0007 — QA — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; vitest test/atividade 20 verdes, duplicado de src removido e casos exclusivos migrados.
+
+## RTP-0074 — QA — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; isolamento 70/70 passando, meta-teste de app.all e conferência de contagem de tabelas verificados.

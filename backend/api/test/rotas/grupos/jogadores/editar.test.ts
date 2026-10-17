@@ -1,0 +1,182 @@
+import { jogadorDetalhe } from '@pelada/contrato';
+import { PESOS_PADRAO, calcularRanking } from '@pelada/dominio';
+import { randomUUID } from 'node:crypto';
+import { describe, expect, it } from 'vitest';
+import { carregarHistoricoGrupo } from '../../../../src/aplicacao/pontuacao/historico.js';
+import { kyselyDe } from '../../../../src/infraestrutura/db/cliente.js';
+import { emTransacao, type Db } from '../../../../src/infraestrutura/db/index.js';
+import * as jogadores from '../../../../src/infraestrutura/db/repositorios/jogadores.js';
+import * as partidas from '../../../../src/infraestrutura/db/repositorios/partidas.js';
+import * as pesos from '../../../../src/infraestrutura/db/repositorios/pesos.js';
+import { montarCenario } from '../../../apoio/cenario-acesso.js';
+import { clienteTeste } from '../../../apoio/cliente.js';
+import { usarDbDoWorker } from '../../../apoio/db-worker.js';
+import { criarJogador } from '../../../apoio/fabricas/jogadores.js';
+import { usarFabrica } from '../../../apoio/fabrica.js';
+import { AGORA_TESTE, diaRelativo, HOJE_TESTE, relogioFixo } from '../../../apoio/relogio.js';
+
+const fabrica = usarFabrica();
+const abrir = usarDbDoWorker(fabrica);
+const ANO = Number(HOJE_TESTE.slice(0, 4));
+const cliente = (cookie: string, semCsrf = false) =>
+  clienteTeste({ relogio: relogioFixo(HOJE_TESTE), cookie, semCsrf });
+const url = (g: string, id: string) => `/api/grupos/${g}/jogadores/${id}`;
+const corpoBase = { apelido: 'Editado', anoNascimento: 1985, posicao: 'goleiro', telefone: null };
+const campos = (r: { corpo: unknown }) => (r.corpo as { erro: { campos: Record<string, string> } }).erro.campos;
+
+const periodosDe = async (db: Db, id: string) =>
+  (
+    await kyselyDe(db)
+      .selectFrom('periodos_ativos')
+      .select(['inicio', 'fim'])
+      .where('jogador_id', '=', id)
+      .orderBy('inicio')
+      .execute()
+  ).map((p) => ({ inicio: String(p.inicio), fim: p.fim === null ? null : String(p.fim) }));
+
+const criarPartida = (db: Db, g: string, autor: string, data: string, presentes: string[]) =>
+  emTransacao(db, (tx) =>
+    partidas.criar(tx, g, {
+      data,
+      choveu: false,
+      presencas: presentes.map((jogadorId) => ({ jogadorId, situacao: 'presente' as const })),
+      autor,
+      agora: AGORA_TESTE,
+    }),
+  );
+
+describe('PATCH /api/grupos/:g/jogadores/:id (editar, workerd)', () => {
+  it('edita os dados, valida o detalhe e limpa o telefone com null', async () => {
+    const db = await abrir();
+    const cen = await montarCenario(db, fabrica);
+    const g = cen.grupoA.id;
+    const id = await criarJogador(db, g, cen.adminA.id, { apelido: 'Antes' });
+    const comTel = await cliente(cen.adminA.cookie).patch(url(g, id), {
+      ...corpoBase,
+      telefone: '(11) 98765-4321',
+    });
+    expect(comTel.status).toBe(200);
+    expect(jogadorDetalhe.parse(comTel.corpo)).toMatchObject({
+      apelido: 'Editado',
+      posicao: 'goleiro',
+      anoNascimento: 1985,
+      telefone: '11987654321',
+    });
+    const limpo = await cliente(cen.adminA.cookie).patch(url(g, id), corpoBase);
+    expect(jogadorDetalhe.parse(limpo.corpo).telefone).toBeNull();
+  });
+
+  it('nova entrada move só o primeiro período; recusa posterior a presença ou ao fim do período', async () => {
+    const db = await abrir();
+    const cen = await montarCenario(db, fabrica);
+    const g = cen.grupoA.id;
+    const [e0, fim0, e1] = [diaRelativo(-60), diaRelativo(-40), diaRelativo(-20)];
+    const id = await criarJogador(db, g, cen.adminA.id, { apelido: 'Periodos', dataEntrada: e0 });
+    await emTransacao(db, async (tx) => {
+      await jogadores.inativar(tx, g, id, fim0);
+      await jogadores.reativar(tx, g, id, e1);
+    });
+    const patch = (dataEntrada: string) => cliente(cen.adminA.cookie).patch(url(g, id), { ...corpoBase, dataEntrada });
+
+    const antes = diaRelativo(-70);
+    expect((await patch(antes)).status).toBe(200);
+    expect(await periodosDe(db, id)).toEqual([
+      { inicio: antes, fim: fim0 },
+      { inicio: e1, fim: null },
+    ]);
+
+    const presenca = diaRelativo(-50);
+    await criarPartida(db, g, cen.adminA.id, presenca, [id]);
+    const depoisDaPresenca = await patch(diaRelativo(-49));
+    expect(depoisDaPresenca.status).toBe(422);
+    expect(Object.keys(campos(depoisDaPresenca))).toEqual(['dataEntrada']);
+    expect(depoisDaPresenca.texto).not.toContain(presenca);
+    const depoisDoFim = await patch(diaRelativo(-30));
+    expect(depoisDoFim.status).toBe(422);
+    expect(Object.keys(campos(depoisDoFim))).toEqual(['dataEntrada']);
+    expect((await periodosDe(db, id))[0]?.inicio).toBe(antes);
+
+    expect((await patch(presenca)).status).toBe(200);
+    expect((await periodosDe(db, id))[0]?.inicio).toBe(presenca);
+  });
+
+  it('nova entrada posterior sem presença antes move o período', async () => {
+    const db = await abrir();
+    const cen = await montarCenario(db, fabrica);
+    const g = cen.grupoA.id;
+    const id = await criarJogador(db, g, cen.adminA.id, { dataEntrada: diaRelativo(-60) });
+    const nova = diaRelativo(-10);
+    const r = await cliente(cen.adminA.cookie).patch(url(g, id), { ...corpoBase, dataEntrada: nova });
+    expect(r.status).toBe(200);
+    expect(jogadorDetalhe.parse(r.corpo).situacao).toEqual({ ativo: true, desde: nova });
+  });
+
+  it('apelido de outro jogador sem caixa dá 422 no campo; manter o próprio apelido dá 200', async () => {
+    const db = await abrir();
+    const cen = await montarCenario(db, fabrica);
+    const g = cen.grupoA.id;
+    await criarJogador(db, g, cen.adminA.id, { apelido: 'Existente' });
+    const id = await criarJogador(db, g, cen.adminA.id, { apelido: 'Proprio' });
+    const repetido = await cliente(cen.adminA.cookie).patch(url(g, id), { ...corpoBase, apelido: 'EXISTENTE' });
+    expect(repetido.status).toBe(422);
+    expect(Object.keys(campos(repetido))).toEqual(['apelido']);
+    expect((await cliente(cen.adminA.cookie).patch(url(g, id), { ...corpoBase, apelido: 'Proprio' })).status).toBe(200);
+  });
+
+  it('reflete no ranking: ano de nascimento desempata e entrada posterior troca falta por fora', async () => {
+    const db = await abrir();
+    const cen = await montarCenario(db, fabrica);
+    const g = cen.grupoA.id;
+    const dia = (n: number) => diaRelativo(n);
+    const ana = await criarJogador(db, g, cen.adminA.id, { apelido: 'Ana', ano: 1995, dataEntrada: dia(-30) });
+    const beto = await criarJogador(db, g, cen.adminA.id, { apelido: 'Beto', ano: 1990, dataEntrada: dia(-30) });
+    const caio = await criarJogador(db, g, cen.adminA.id, { apelido: 'Caio', ano: 1980, dataEntrada: dia(-30) });
+    await pesos.criarPadrao(db, g, {
+      pesos: PESOS_PADRAO,
+      vigenteDesde: dia(-60),
+      registradoPor: cen.adminA.id,
+      agora: AGORA_TESTE,
+    });
+    await criarPartida(db, g, cen.adminA.id, dia(-10), [ana, beto]);
+    const ranking = async () => {
+      const h = await carregarHistoricoGrupo(db, g, HOJE_TESTE);
+      return calcularRanking({ hoje: HOJE_TESTE, mes: dia(-10).slice(0, 7), ...h }).linhas;
+    };
+    const editar = (id: string, apelido: string, extra: object) =>
+      cliente(cen.adminA.cookie).patch(url(g, id), { ...corpoBase, apelido, ...extra });
+
+    const antes = await ranking();
+    expect(antes.map((l) => l.apelido)).toEqual(['Beto', 'Ana', 'Caio']);
+    expect(antes.find((l) => l.apelido === 'Caio')?.rodadas.map((r) => r.situacao)).toEqual(['falta']);
+
+    expect((await editar(ana, 'Ana', { anoNascimento: 1970 })).status).toBe(200);
+    expect((await ranking()).map((l) => l.apelido)).toEqual(['Ana', 'Beto', 'Caio']);
+
+    expect((await editar(caio, 'Caio', { anoNascimento: 1980, dataEntrada: dia(-8) })).status).toBe(200);
+    const depois = (await ranking()).find((l) => l.apelido === 'Caio');
+    expect(depois?.rodadas.map((r) => r.situacao)).toEqual(['fora']);
+  });
+
+  it('422 do contrato, 404 de outro grupo e malformado, 403 sem X-Pelada', async () => {
+    const db = await abrir();
+    const cen = await montarCenario(db, fabrica);
+    const g = cen.grupoA.id;
+    const id = await criarJogador(db, g, cen.adminA.id, { apelido: 'Contrato' });
+    const ano = await cliente(cen.adminA.cookie).patch(url(g, id), { ...corpoBase, anoNascimento: ANO - 5 });
+    expect(ano.status).toBe(422);
+    expect(Object.keys(campos(ano))).toContain('anoNascimento');
+    for (const extra of [{ nivel: 9 }, { grupoId: randomUUID() }, { id: randomUUID() }]) {
+      expect((await cliente(cen.adminA.cookie).patch(url(g, id), { ...corpoBase, ...extra })).status).toBe(422);
+    }
+    expect((await cliente(cen.adminB.cookie).patch(url(cen.grupoB.id, id), corpoBase)).status).toBe(404);
+    expect((await cliente(cen.adminB.cookie).patch(url(g, id), corpoBase)).status).toBe(404);
+    expect((await cliente(cen.adminA.cookie).patch(url(g, 'abc'), corpoBase)).status).toBe(404);
+    expect((await cliente(cen.adminA.cookie, true).patch(url(g, id), corpoBase)).status).toBe(403);
+    const intacto = await kyselyDe(db)
+      .selectFrom('jogadores')
+      .select('apelido')
+      .where('id', '=', id)
+      .executeTakeFirst();
+    expect(intacto?.apelido).toBe('Contrato');
+  });
+});

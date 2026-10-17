@@ -188,6 +188,29 @@ describe('GET /api/grupos/:g/partidas/:data (workerd)', () => {
     expect(editada.corpo).toMatchObject({ alteradaPor: 'Editor', alteradaEm: '2026-10-23T10:00:00.000Z' });
   });
 
+  it('jogador não ativo na data mas com presença gravada continua na lista; sem sessão: 401', async () => {
+    const db = await abrir();
+    const cen = await montarCenario(db, fabrica);
+    const g = cen.grupoA.id;
+    const a = await criarJogador(db, g, cen.adminA.id, { apelido: 'Ana', dataEntrada: '2026-01-01' });
+    const tardio = await criarJogador(db, g, cen.adminA.id, { apelido: 'Tardio', dataEntrada: '2026-10-20' });
+    await emTransacao(db, (tx) =>
+      partidas.criar(tx, g, {
+        data: '2026-10-15',
+        choveu: false,
+        presencas: [{ jogadorId: tardio, situacao: 'lesionado' }],
+        autor: cen.adminA.id,
+        agora: AGORA,
+      }),
+    );
+    const r = await cliente(cen.adminA.cookie).get(`/api/grupos/${g}/partidas/2026-10-15`);
+    expect(partidaDetalhe.parse(r.corpo).jogadores.map((j) => [j.id, j.situacao])).toEqual([
+      [a, 'ausente'],
+      [tardio, 'lesionado'],
+    ]);
+    expect((await clienteTeste({ relogio: relogioFixo('2026-10-22') }).get(`/api/grupos/${g}/partidas/2026-10-15`)).status).toBe(401);
+  });
+
   it('data sem partida, data impossível e outro grupo: 404; "nova" não cai aqui', async () => {
     const db = await abrir();
     const cen = await montarCenario(db, fabrica);

@@ -205,9 +205,26 @@ describe('POST /api/sessao/entrar (workerd)', () => {
     const espioes = (['log', 'info', 'warn', 'error', 'debug'] as const).map((m) =>
       vi.spyOn(console, m).mockImplementation(() => undefined),
     );
-    await clienteEm('2026-10-16').post('/api/sessao/entrar', { email: conta.email, senha: 'senha-no-log-proibida' });
-    await clienteEm('2026-10-16').post('/api/sessao/entrar', { email: conta.email, senha: conta.senha });
-    expect(JSON.stringify(espioes.flatMap((e) => e.mock.calls))).not.toContain('senha-no-log-proibida');
+    const errada = 'senha-no-log-proibida';
+    await clienteEm('2026-10-16').post('/api/sessao/entrar', { email: conta.email, senha: errada });
+    const sucesso = await clienteEm('2026-10-16', '12:01').post('/api/sessao/entrar', {
+      email: conta.email,
+      senha: conta.senha,
+    });
+    const token = cookieDaResposta(sucesso.headers).split('=')[1] ?? '';
+    expect(token.length).toBeGreaterThan(10);
+    for (let i = 2; i < 7; i++) {
+      await clienteEm('2026-10-16', `12:0${i}`).post('/api/sessao/entrar', { email: conta.email, senha: errada });
+    }
+    const bloqueado = await clienteEm('2026-10-16', '12:08').post('/api/sessao/entrar', {
+      email: conta.email,
+      senha: conta.senha,
+    });
+    expect(bloqueado.status).toBe(429);
+    const logs = JSON.stringify(espioes.flatMap((e) => e.mock.calls));
     espioes.forEach((e) => e.mockRestore());
+    expect(logs).not.toContain(errada);
+    expect(logs).not.toContain(conta.senha);
+    expect(logs).not.toContain(token);
   });
 });

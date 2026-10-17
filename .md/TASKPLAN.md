@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-17 12:38
+Atualizado: 2026-10-17 12:46
 
-Resumo: Não executada 87 · Em execução 1 · Executada (aguarda teste) 4 · Testada (aguarda segurança) 1 · Aprovada 204 · Bloqueada 3 · total 300
+Resumo: Não executada 72 · Em execução 1 · Executada (aguarda teste) 15 · Testada (aguarda segurança) 4 · Aprovada 205 · Bloqueada 3 · total 300
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -48,7 +48,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 33 | TP-0032 | executor | ✔ | Middlewares de grupo (vínculo, financeiro) e de dono | L07 | TP-0029, TP-0031 | Aprovada |
 | 34 | TP-0033 | executor | ✔ | Suíte de isolamento entre grupos (C11) | L07 | TP-0017, TP-0031, TP-0032 | Aprovada |
 | 35 | TP-0034 | executor | ✔ | Endpoint POST /api/sessao/entrar | L07 | TP-0019, TP-0027, TP-0028, TP-0031, TP-0033 | Aprovada |
-| 36 | RTP-0079 | executor | ✔ | Teste de log de sessao-entrar: cobrir senha correta e token | Refatoração Lote-L07 | TP-0034 | Não executada |
+| 36 | RTP-0079 | executor | ✔ | Teste de log de sessao-entrar: cobrir senha correta e token | Refatoração Lote-L07 | TP-0034 | Executada (aguarda teste) |
 | 37 | TP-0035 | executor | ✔ | Endpoint GET /api/sessao/eu | L07 | TP-0013, TP-0019, TP-0029, TP-0031, TP-0033 | Aprovada |
 | 38 | TP-0036 | executor | ✔ | Endpoint POST /api/sessao/sair | L07 | TP-0028, TP-0031, TP-0033 | Aprovada |
 | 39 | TP-0037 | executor | ✔ | Extração aplicacao/acesso/senhas (redefinir senha) | L08 | TP-0014, TP-0027, TP-0028, TP-0030 | Aprovada |
@@ -70,13 +70,13 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 55 | TP-0052 | executor | ✔ | Extração aplicacao/elenco/ativos (ativos numa data e no mês) | L11 | TP-0009, TP-0046 | Aprovada |
 | 56 | TP-0053 | executor | ✔ | Extração aplicacao/pontuacao/historico (histórico do grupo para o domínio) | L11 | TP-0010, TP-0046, TP-0048, TP-0049 | Aprovada |
 | 57 | TP-0055 | executor | ✔ | Endpoint GET /api/dono/grupos/:id | L11 | TP-0013, TP-0022, TP-0029, TP-0032, TP-0033 | Aprovada |
-| 58 | TP-0054 | executor | ✔ | Endpoint GET /api/dono/painel | L11 | TP-0022, TP-0029, TP-0030, TP-0032, TP-0033, TP-0055 | Não executada |
-| 59 | TP-0056 | executor | ✔ | Endpoint POST /api/dono/grupos (criar grupo e 1º admin) | L11 | TP-0012, TP-0014, TP-0022, TP-0029, TP-0030, TP-0032, TP-0033, TP-0038, TP-0047, TP-0048, TP-0055 | Não executada |
-| 60 | TP-0057 | executor | ✔ | Endpoint PATCH /api/dono/grupos/:id/situacao | L12 | TP-0022, TP-0029, TP-0032, TP-0033, TP-0055 | Não executada |
-| 61 | TP-0058 | executor | ✔ | Endpoints POST /api/dono/grupos/:id/arquivar e /reativar | L12 | TP-0022, TP-0029, TP-0030, TP-0032, TP-0033, TP-0055 | Não executada |
+| 58 | TP-0054 | executor | ✔ | Endpoint GET /api/dono/painel | L11 | TP-0022, TP-0029, TP-0030, TP-0032, TP-0033, TP-0055 | Executada (aguarda teste) |
+| 59 | TP-0056 | executor | ✔ | Endpoint POST /api/dono/grupos (criar grupo e 1º admin) | L11 | TP-0012, TP-0014, TP-0022, TP-0029, TP-0030, TP-0032, TP-0033, TP-0038, TP-0047, TP-0048, TP-0055 | Executada (aguarda teste) |
+| 60 | TP-0057 | executor | ✔ | Endpoint PATCH /api/dono/grupos/:id/situacao | L12 | TP-0022, TP-0029, TP-0032, TP-0033, TP-0055 | Executada (aguarda teste) |
+| 61 | TP-0058 | executor | ✔ | Endpoints POST /api/dono/grupos/:id/arquivar e /reativar | L12 | TP-0022, TP-0029, TP-0030, TP-0032, TP-0033, TP-0055 | Executada (aguarda teste) |
 | 62 | TP-0059 | executor | ✔ | Endpoint POST /api/dono/pedidos-reset/:id/resolver | L12 | TP-0022, TP-0030, TP-0032, TP-0033 | Aprovada |
 | 63 | TP-0060 | executor | ✔ | Endpoint POST /api/dono/contas/:id/redefinir-senha | L12 | TP-0022, TP-0032, TP-0033, TP-0037 | Aprovada |
-| 64 | TP-0061 | executor | ✔ | Endpoint GET /api/grupos/:g (grupo, permissões e resumo do início) | L13 | TP-0007, TP-0013, TP-0021, TP-0029, TP-0032, TP-0033, TP-0047, TP-0048, TP-0049, TP-0050, TP-0052 | Não executada |
+| 64 | TP-0061 | executor | ✔ | Endpoint GET /api/grupos/:g (grupo, permissões e resumo do início) | L13 | TP-0007, TP-0013, TP-0021, TP-0029, TP-0032, TP-0033, TP-0047, TP-0048, TP-0049, TP-0050, TP-0052 | Executada (aguarda teste) |
 | 65 | TP-0062 | executor | ✔ | Endpoint PATCH /api/grupos/:g | L13 | TP-0021, TP-0029, TP-0032, TP-0033, TP-0061 | Não executada |
 | 66 | TP-0063 | executor | ✔ | Endpoint GET /api/grupos/:g/admins | L14 | TP-0021, TP-0029, TP-0032, TP-0033 | Aprovada |
 | 67 | TP-0064 | executor | ✔ | Endpoint POST /api/grupos/:g/admins | L14 | TP-0021, TP-0032, TP-0033, TP-0038 | Aprovada |
@@ -85,16 +85,16 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 70 | TP-0067 | executor | ✔ | Endpoint PATCH /api/grupos/:g/admins/:contaId/financeiro | L14 | TP-0021, TP-0029, TP-0030, TP-0032, TP-0033 | Aprovada |
 | 71 | TP-0068 | executor | ✔ | Endpoint GET /api/grupos/:g/jogadores | L15 | TP-0009, TP-0011, TP-0013, TP-0023, TP-0032, TP-0033, TP-0046, TP-0047 | Aprovada |
 | 72 | TP-0069 | executor | ✔ | Endpoint GET /api/grupos/:g/jogadores/:id | L15 | TP-0011, TP-0023, TP-0032, TP-0033, TP-0046, TP-0047 | Aprovada |
-| 73 | TP-0070 | executor | ✔ | Endpoint POST /api/grupos/:g/jogadores | L15 | TP-0013, TP-0023, TP-0032, TP-0033, TP-0046 | Testada (aguarda segurança) |
-| 74 | TP-0071 | executor | ✔ | Endpoint PATCH /api/grupos/:g/jogadores/:id | L15 | TP-0009, TP-0023, TP-0032, TP-0033, TP-0046 | Não executada |
-| 75 | TP-0072 | executor | ✔ | Endpoint POST /api/grupos/:g/jogadores/:id/inativar | L16 | TP-0009, TP-0013, TP-0023, TP-0032, TP-0033, TP-0046, TP-0069 | Não executada |
-| 76 | TP-0073 | executor | ✔ | Endpoint POST /api/grupos/:g/jogadores/:id/reativar | L16 | TP-0009, TP-0013, TP-0023, TP-0032, TP-0033, TP-0046, TP-0069 | Não executada |
-| 77 | TP-0074 | executor | ✔ | Endpoint DELETE /api/grupos/:g/jogadores/:id | L16 | TP-0023, TP-0030, TP-0032, TP-0033, TP-0046 | Não executada |
-| 78 | TP-0075 | executor | ✔ | Endpoint GET /api/grupos/:g/pesos | L17 | TP-0024, TP-0032, TP-0033, TP-0048 | Não executada |
-| 79 | TP-0076 | executor | ✔ | Endpoint POST /api/grupos/:g/pesos | L17 | TP-0013, TP-0024, TP-0030, TP-0032, TP-0033, TP-0048 | Não executada |
-| 80 | TP-0077 | executor | ✔ | Endpoint GET /api/grupos/:g/partidas?mes= | L17 | TP-0007, TP-0013, TP-0024, TP-0032, TP-0033, TP-0049 | Não executada |
-| 81 | TP-0078 | executor | ✔ | Endpoint GET /api/grupos/:g/partidas/nova?data= | L17 | TP-0007, TP-0013, TP-0024, TP-0029, TP-0032, TP-0033, TP-0049, TP-0052 | Não executada |
-| 82 | TP-0079 | executor | ✔ | Endpoint GET /api/grupos/:g/partidas/:data | L17 | TP-0024, TP-0032, TP-0033, TP-0049, TP-0052 | Não executada |
+| 73 | TP-0070 | executor | ✔ | Endpoint POST /api/grupos/:g/jogadores | L15 | TP-0013, TP-0023, TP-0032, TP-0033, TP-0046 | Aprovada |
+| 74 | TP-0071 | executor | ✔ | Endpoint PATCH /api/grupos/:g/jogadores/:id | L15 | TP-0009, TP-0023, TP-0032, TP-0033, TP-0046 | Executada (aguarda teste) |
+| 75 | TP-0072 | executor | ✔ | Endpoint POST /api/grupos/:g/jogadores/:id/inativar | L16 | TP-0009, TP-0013, TP-0023, TP-0032, TP-0033, TP-0046, TP-0069 | Executada (aguarda teste) |
+| 76 | TP-0073 | executor | ✔ | Endpoint POST /api/grupos/:g/jogadores/:id/reativar | L16 | TP-0009, TP-0013, TP-0023, TP-0032, TP-0033, TP-0046, TP-0069 | Executada (aguarda teste) |
+| 77 | TP-0074 | executor | ✔ | Endpoint DELETE /api/grupos/:g/jogadores/:id | L16 | TP-0023, TP-0030, TP-0032, TP-0033, TP-0046 | Executada (aguarda teste) |
+| 78 | TP-0075 | executor | ✔ | Endpoint GET /api/grupos/:g/pesos | L17 | TP-0024, TP-0032, TP-0033, TP-0048 | Executada (aguarda teste) |
+| 79 | TP-0076 | executor | ✔ | Endpoint POST /api/grupos/:g/pesos | L17 | TP-0013, TP-0024, TP-0030, TP-0032, TP-0033, TP-0048 | Executada (aguarda teste) |
+| 80 | TP-0077 | executor | ✔ | Endpoint GET /api/grupos/:g/partidas?mes= | L17 | TP-0007, TP-0013, TP-0024, TP-0032, TP-0033, TP-0049 | Executada (aguarda teste) |
+| 81 | TP-0078 | executor | ✔ | Endpoint GET /api/grupos/:g/partidas/nova?data= | L17 | TP-0007, TP-0013, TP-0024, TP-0029, TP-0032, TP-0033, TP-0049, TP-0052 | Executada (aguarda teste) |
+| 82 | TP-0079 | executor | ✔ | Endpoint GET /api/grupos/:g/partidas/:data | L17 | TP-0024, TP-0032, TP-0033, TP-0049, TP-0052 | Executada (aguarda teste) |
 | 83 | TP-0080 | executor | ✔ | Extração aplicacao/partidas/presencas (validação das marcações) | L18 | TP-0009, TP-0052 | Não executada |
 | 84 | TP-0081 | executor | ✔ | Endpoint POST /api/grupos/:g/partidas | L18 | TP-0013, TP-0014, TP-0024, TP-0030, TP-0032, TP-0033, TP-0049, TP-0050, TP-0079, TP-0080 | Não executada |
 | 85 | TP-0082 | executor | ✔ | Endpoint PUT /api/grupos/:g/partidas/:data | L18 | TP-0014, TP-0024, TP-0030, TP-0032, TP-0033, TP-0049, TP-0079, TP-0080 | Não executada |
@@ -232,10 +232,10 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 217 | RTP-0015 | executor | ✔ | Fixar por SHA de commit as actions de terceiros dos workflows (gitleaks-action, pnpm/ac... | Refatoração Lote-L01 | TP-0003 | Aprovada |
 | 218 | RTP-0002 | executor | ✔ | Lint: aliases contornam Date.now() (G-06) e document.cookie (G-09) | L01 | TP-0002 | Aprovada |
 | 219 | RTP-0004 | executor | ✔ | Remover teste duplicado de slug em src/grupos | Refatoração Lote-L02 | TP-0012 | Aprovada |
-| 220 | RTP-0005 | executor | ✔ | Remover teste duplicado de pontuação em src/pontuacao | L02 | TP-0008 | Executada (aguarda teste) |
-| 221 | RTP-0007 | executor | ✔ | Remover teste duplicado de atividade em src/atividade | L02 | TP-0009 | Executada (aguarda teste) |
+| 220 | RTP-0005 | executor | ✔ | Remover teste duplicado de pontuação em src/pontuacao | L02 | TP-0008 | Testada (aguarda segurança) |
+| 221 | RTP-0007 | executor | ✔ | Remover teste duplicado de atividade em src/atividade | L02 | TP-0009 | Testada (aguarda segurança) |
 | 222 | BK-0004 | coordenador | ✔ | Falta apagar backend/dominio/src/simulador/indicadores.test.ts (rm negado pela permissão) | — | — | Em execução |
-| 223 | RTP-0006 | executor | ✔ | Remover teste duplicado de indicadores em src/simulador | Refatoração Lote-L33 | BK-0004, TP-0150 | Executada (aguarda teste) |
+| 223 | RTP-0006 | executor | ✔ | Remover teste duplicado de indicadores em src/simulador | Refatoração Lote-L33 | BK-0004, TP-0150 | Testada (aguarda segurança) |
 | 224 | RTP-0012 | executor | ✔ | distribuirVariosTimes: limitar o tamanho da entrada (orçamento de CPU) | Refatoração Lote-L33 | TP-0152 | Aprovada |
 | 225 | RTP-0008 | executor | ✔ | Atualizar sharp e undici transitivos do wrangler/miniflare (pnpm audit alto) | Refatoração Lote-L03 | TP-0013 | Aprovada |
 | 226 | RTP-0009 | executor | ✔ | Teste do módulo de dados: cobrir tipo público e pid fora da transação | Refatoração Lote-L03 | TP-0014 | Aprovada |
@@ -293,7 +293,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 278 | RTP-0062 | executor | ✔ | Teste de escalações: datas e momento derivados do relógio fixo | Refatoração Lote-L35 | TP-0160 | Aprovada |
 | 279 | RTP-0063 | executor | ✔ | Cookie de sessão duplicado: recusar em vez de usar o primeiro | Refatoração Lote-L07 | TP-0031 | Aprovada |
 | 280 | RTP-0069 | executor | ✔ | Testes dos middlewares de grupo/dono: escopo troca_de_senha, /api/grupos//eco e arquivo... | Refatoração Lote-L07 | TP-0032 | Aprovada |
-| 281 | RTP-0074 | executor | ✔ | Suíte de isolamento: rota ALL visível e conferência de limpeza | L07 | TP-0033 | Executada (aguarda teste) |
+| 281 | RTP-0074 | executor | ✔ | Suíte de isolamento: rota ALL visível e conferência de limpeza | L07 | TP-0033 | Testada (aguarda segurança) |
 | 282 | RTP-0084 | executor | ✔ | Entrar: bloqueio por e-mail sem atomicidade entre consulta e registro de falha | Refatoração Lote-L07 | TP-0034 | Não executada |
 | 283 | RTP-0067 | executor | ✔ | Eventos de uso: completar testes do plano (tipos fechados, colunas gravadas, N+1, fábrica) | Refatoração Lote-L10 | TP-0050 | Aprovada |
 | 284 | RTP-0071 | executor | ✔ | Habilidades: usar seViolarUnico de comum.ts | L10 | TP-0047 | Não executada |

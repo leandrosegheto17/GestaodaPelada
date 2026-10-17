@@ -8,6 +8,7 @@ import { montarCenario } from '../../apoio/cenario-acesso.js';
 import { clienteTeste } from '../../apoio/cliente.js';
 import { usarDbDoWorker } from '../../apoio/db-worker.js';
 import { usarFabrica } from '../../apoio/fabrica.js';
+import { vincularAdmin } from '../../apoio/fabricas/grupos.js';
 import { relogioFixo } from '../../apoio/relogio.js';
 
 const fabrica = usarFabrica();
@@ -44,6 +45,32 @@ describe('GET /api/dono/painel (workerd)', () => {
     expect(painel.dono.tambemAdmin).toBe(false);
     for (const proibida of PROIBIDAS) expect(chaves(r.corpo)).not.toContain(proibida);
     expect(r.headers.get('Cache-Control')).toBe('no-store');
+  });
+
+  it('pedido resolvido não aparece; dono admin de grupo ativo: tambemAdmin e arquivados por último', async () => {
+    const db = await abrir();
+    const cen = await montarCenario(db, fabrica);
+    await pedidos.registrarOuAtualizar(db, cen.adminB.id, AGORA);
+    await pedidos.registrarOuAtualizar(db, cen.adminA.id, AGORA);
+    await pedidos.resolverPorConta(db, cen.adminB.id, { resolvidoPor: cen.dono.id, agora: AGORA });
+    await vincularAdmin(db, cen.grupoB.id, cen.dono.id, { acessaFinanceiro: false });
+    await kyselyDe(db).updateTable('grupos').set({ arquivado_em: AGORA }).where('id', '=', cen.grupoA.id).execute();
+    fabrica.registrar(async () => {
+      await kyselyDe(db).deleteFrom('pedidos_reset').where('conta_id', 'in', [cen.adminA.id, cen.adminB.id]).execute();
+    });
+    const painel = painelDono.parse((await cliente(cen.dono.cookie).get('/api/dono/painel')).corpo);
+    expect(painel.pedidosReset.some((p) => p.contaId === cen.adminB.id)).toBe(false);
+    expect(painel.pedidosReset.some((p) => p.contaId === cen.adminA.id && p.grupos.includes('Grupo A'))).toBe(true);
+    expect(painel.dono.tambemAdmin).toBe(true);
+    const a = painel.grupos.find((g) => g.id === cen.grupoA.id);
+    expect(a?.arquivadoEm).toBe('2026-10-16');
+    expect(a?.admins).toEqual([...(a?.admins ?? [])].sort((x, y) => x.localeCompare(y, 'pt-BR')));
+    const primeiroArquivado = painel.grupos.findIndex((g) => g.arquivadoEm !== null);
+    expect(painel.grupos.slice(primeiroArquivado).every((g) => g.arquivadoEm !== null)).toBe(true);
+  });
+
+  it('forma vazia do mockup é aceita pelo contrato', () => {
+    expect(painelDono.parse({ pedidosReset: [], grupos: [], dono: { tambemAdmin: false } }).grupos).toEqual([]);
   });
 
   it('admin comum recebe 404; sem sessão, 401; sessão restrita, 403', async () => {

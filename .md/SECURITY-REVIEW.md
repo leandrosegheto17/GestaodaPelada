@@ -599,3 +599,6 @@ APROVADA — GET jogadores atrás de exigirVinculo, grupoId do vínculo, query s
 
 ## TP-0069 — DevSecOps — 2026-10-17
 APROVADA em segurança — 0 críticos, 0 não críticos; G-03 (grupoId do vínculo, 404 uniforme), uuid antes do banco, telefone fora de log e rota só de admin conferidos por leitura do diff.
+
+## TP-0070 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; revisão do diff confirma grupoId do vínculo, corpo strict, relógio injetado, sem log/eco de telefone (leitura; testes verdes reportados pelo QA).

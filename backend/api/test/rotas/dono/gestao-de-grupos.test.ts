@@ -5,6 +5,7 @@ import { kyselyDe } from '../../../src/infraestrutura/db/cliente.js';
 import { montarCenario } from '../../apoio/cenario-acesso.js';
 import { clienteTeste } from '../../apoio/cliente.js';
 import { usarDbDoWorker } from '../../apoio/db-worker.js';
+import { comEco } from '../../apoio/eco-rotas.js';
 import { usarFabrica } from '../../apoio/fabrica.js';
 import { relogioFixo } from '../../apoio/relogio.js';
 
@@ -52,6 +53,27 @@ describe('PATCH /api/dono/grupos/:id/situacao (workerd)', () => {
     expect((await cliente(cen.adminA.cookie).patch(`/api/dono/grupos/${cen.grupoA.id}/situacao`, corpo)).status).toBe(
       404,
     );
+  });
+
+  it('inadimplente e cancelado não mudam o acesso do admin nem os metadados; resposta sem cache', async () => {
+    const cen = await montarCenario(await abrir(), fabrica);
+    const url = `/api/dono/grupos/${cen.grupoA.id}/situacao`;
+    const antes = grupoDono.parse((await cliente(cen.dono.cookie).get(`/api/dono/grupos/${cen.grupoA.id}`)).corpo);
+    for (const situacaoComercial of ['inadimplente', 'cancelado']) {
+      const r = await cliente(cen.dono.cookie).patch(url, { situacaoComercial, inicioTrial: null });
+      expect(r.status).toBe(200);
+      expect(r.headers.get('cache-control')).toContain('no-store');
+      const semSessao = await clienteTeste({ relogio: relogioFixo('2026-10-16') }).patch(url, { situacaoComercial });
+      expect(semSessao.status).toBe(401);
+      const semCsrf = await clienteTeste({
+        relogio: relogioFixo('2026-10-16'),
+        cookie: cen.dono.cookie,
+        semCsrf: true,
+      }).patch(url, { situacaoComercial, inicioTrial: null });
+      expect(semCsrf.status).toBe(403);
+      expect({ ...grupoDono.parse(r.corpo), situacaoComercial: antes.situacaoComercial }).toEqual(antes);
+      expect((await comEco(cen.adminA.cookie).get(`/api/grupos/${cen.grupoA.id}/eco`)).status).toBe(200);
+    }
   });
 });
 

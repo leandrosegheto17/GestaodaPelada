@@ -113,6 +113,8 @@ export function jogadorCorpo(hoje: string) {
 
 export const inativarCorpoBase = z.strictObject({ dataSaida: data.optional() });
 
+export const reativarCorpo = z.strictObject({});
+
 export function inativarCorpo(hoje: string) {
   return z.strictObject({
     dataSaida: data.refine((d) => d <= hoje, 'A data não pode ser no futuro.').optional(),
