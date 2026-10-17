@@ -70,6 +70,10 @@ describe('vincularOuCriarAdmin', () => {
     expect(r).toEqual({ contaId: existente.id, nome: 'Já Existia', contaNova: false, senhaTemporaria: null });
     expect(await contas.verificarSenha(db, existente.email, existente.senha)).not.toBeNull();
     expect(await vinculos.buscar(db, grupo.id, existente.id)).not.toBeNull();
+    const auditoria = await executarSql<{ acao: string }>('SELECT acao FROM auditoria WHERE entidade_id = $1', [
+      existente.id,
+    ]);
+    expect(auditoria.map((l) => l.acao)).toEqual(['admin_vinculado']);
   });
 
   it('vínculo repetido vira AdminJaVinculado', async () => {
