@@ -5,7 +5,7 @@ import globals from 'globals';
 import { importX } from 'eslint-plugin-import-x';
 import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
 
-const PROIBIDAS_GLOBAL = [
+const PROIBIDAS_BASE = [
   'prisma',
   '@prisma/*',
   'drizzle-orm',
@@ -20,6 +20,9 @@ const PROIBIDAS_GLOBAL = [
   'axios',
   'tailwindcss',
 ];
+// Função destrutiva do seed: só backend/scripts pode importá-la (o bloco de scripts usa PROIBIDAS_BASE).
+const SEED_LOCAL = ['**/repositorios/seed-local', '**/repositorios/seed-local.*'];
+const PROIBIDAS_GLOBAL = [...PROIBIDAS_BASE, ...SEED_LOCAL];
 const BANCO = ['pg', 'pg/*', 'kysely', 'kysely/*'];
 const DOMINIO_PROIBIDAS = [
   'zod',
@@ -247,12 +250,12 @@ export default tseslint.config(
         'error',
         {
           patterns: [
-            ...restritos([...PROIBIDAS_GLOBAL, ...BANCO]).patterns,
+            ...restritos([...PROIBIDAS_BASE, ...BANCO]).patterns,
             { regex: ALIAS_API_PROIBIDO, message: MSG_ALIAS_API },
           ],
         },
       ],
-      'no-restricted-syntax': sintaxe(dinamicos([...PROIBIDAS_GLOBAL, ...BANCO]), semAsUnknownAs, [
+      'no-restricted-syntax': sintaxe(dinamicos([...PROIBIDAS_BASE, ...BANCO]), semAsUnknownAs, [
         { selector: `ImportExpression[source.value=/${ALIAS_API_PROIBIDO}/]`, message: MSG_ALIAS_API },
         {
           selector: `CallExpression[callee.name='require'][arguments.0.value=/${ALIAS_API_PROIBIDO}/]`,
