@@ -140,3 +140,21 @@ APROVADA; revisão do diff do contrato do simulador sem achados (strict, uuid, t
 
 ## TP-0186 — DevSecOps — 2026-10-17
 APROVADA; 0 críticos, 0 não críticos; entradas strict e em centavos inteiros limitados, 403 sem detalhe, 30 testes e snapshot compatível executados.
+
+## TP-0022 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; schemas do dono strict, sem dados de jogador/financeiro, senha só em primeiroAdmin/SenhaExibida, entradas sem slug/eDono/id; dono.test 24/24.
+
+## TP-0102 — DevSecOps — 2026-10-17
+OK; 0 críticos, 0 não críticos; diff só lê RankingPublico via import type, sem innerHTML nem cálculo no cliente, CSS só com tokens.
+
+## TP-0103 — DevSecOps — 2026-10-17
+OK; 0 achados; value dos rádios restrito à tupla do contrato, sem HTML bruto/rede/storage (grep executado), sem dependência nova.
+
+## TP-0105 — DevSecOps — 2026-10-17
+APROVADA; 0 achados; open redirect coberto por matriz adversarial (lerDestino), guarda sem vazamento em troca de senha, 41 testes executados verdes.
+
+## TP-0110 — DevSecOps — 2026-10-17
+APROVADA — slug/mês validados pelo contrato e codificados, T03 estática igual p/ arquivado/inexistente, sem XSS nem dado pessoal; 11 testes ok, 0 achados.
+
+## TP-0180 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; schema strict em todos os níveis sem dado pessoal (G-10), 25 testes executados verdes.
