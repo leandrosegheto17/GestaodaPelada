@@ -872,3 +872,6 @@ APROVADA — aceite atendido (i--/--i não escondem e_dono), 46 testes passando 
 
 ## RTP-0121 — QA — 2026-10-17
 APROVADA — 0 achados; 46 testes e a checagem na raiz (527 arquivos) passam, aceite coberto.
+
+## TP-0133 — QA — 2026-10-17
+APROVADA — id do Hyperdrive pelada-prod gravado (cache off, host direto), sem segredos no repo; desvios (subdomínio prod-ljs, sem homologação) por decisão do usuário e tratados no BK-0009.
