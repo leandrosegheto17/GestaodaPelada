@@ -18,6 +18,7 @@ describe('campos proibidos (G-10)', () => {
     anoNascimento: 1990,
     idade: 36,
     posicaoEmCampo: 'atacante',
+    posicaoJogador: 'atacante',
     notas: [8],
     nivel: 6.8,
     saldoCentavos: 100,
