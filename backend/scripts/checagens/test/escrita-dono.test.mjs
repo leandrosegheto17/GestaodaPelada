@@ -47,6 +47,9 @@ describe('checar-escrita-e-dono', () => {
     "const o = {};\no.eDono = !!x;\nawait db.insertInto('c').values(o).execute();",
     "const o = { e_dono: !!x };\nawait db.updateTable('c').set(o).execute();",
     "const o = { nome: 'x', eDono: a ? b : c };\nawait db.updateTable('c').set(o).execute();",
+    "await db.insertInto('c').values({ u: 'http://x', e_dono: true }).execute();",
+    "await db.insertInto('c').values({ u: 'a--b', e_dono: true }).execute();",
+    'await db.insertInto("c").values({ u: "http://x", eDono: true }).execute();',
   ])('falha: %s', (corpo) => {
     expect(rodar(repositorio(rota(corpo)))).toBe(1);
   });
@@ -62,6 +65,8 @@ describe('checar-escrita-e-dono', () => {
     'export const ehDono = (conta) => conta.e_dono == true;',
     'export const ler = (conta) => ({ eDono: conta.eDono, outro: 1 });',
     'if (conta.eDono === true) { x(); }',
+    "const u = 'http://x'; // db.insertInto('c').values({ e_dono: true })\nexport {};",
+    "const u = 'a--b'; -- values({ e_dono: true })\nexport {};",
   ])('passa: %s', (corpo) => {
     expect(rodar(repositorio(rota(corpo)))).toBe(0);
   });

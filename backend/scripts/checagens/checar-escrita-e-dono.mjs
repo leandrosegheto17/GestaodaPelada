@@ -21,11 +21,17 @@ const CHAVE_DE_OBJETO = new RegExp(String.raw`[{,]\s*['"\`]?e_?dono['"\`]?\s*:\s
 // Atribuição de membro (`o.e_dono = v`); `===`, `==` e `=>` são leitura.
 const ATRIBUICAO_DE_MEMBRO = /\.\s*e_?dono\s*=(?![=>])/i;
 
+// Uma única passada da esquerda para a direita: `//` e `--` dentro de literal de texto (URL, `a--b`) não
+// são comentário e não podem apagar o resto da linha. Aspas simples e duplas não atravessam linha.
+const COMENTARIO_OU_LITERAL =
+  /\/\*[\s\S]*?\*\/|\/\/[^\n]*|--[^\n]*|'(?:\\.|[^'\\\n])*'|"(?:\\.|[^"\\\n])*"|`(?:\\[\s\S]|[^`\\])*`/g;
+
 function semComentarios(texto) {
-  return texto
-    .replace(/\/\*[\s\S]*?\*\//g, (m) => m.replace(/[^\n]/g, ' '))
-    .replace(/(^|[^:])\/\/[^\n]*/g, '$1')
-    .replace(/--[^\n]*/g, '');
+  return texto.replace(COMENTARIO_OU_LITERAL, (m) => {
+    if (m.startsWith('/*')) return m.replace(/[^\n]/g, ' ');
+    if (m.startsWith('//') || m.startsWith('--')) return '';
+    return m;
+  });
 }
 
 const arquivos = arquivosVersionados(RAIZ, (c) => CODIGO.test(c) && !FORA.test(c));
