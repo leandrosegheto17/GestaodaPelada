@@ -77,7 +77,7 @@ describe('excluirLancamento', () => {
     const real = financeiro.buscarLancamento;
     const espiao = vi
       .spyOn(financeiro, 'buscarLancamento')
-      .mockImplementationOnce(async (...args) => ({ ...(await real(...args))!, mensalidade: null }));
+      .mockImplementationOnce(async (...args) => ({ ...(await real(...args))!, mensalidade: false }));
     expect(await excluirLancamento(db, grupo.id, id, ctx)).toEqual({ tipo: 'vinculado' });
     espiao.mockRestore();
     expect(await existe(id)).toBe(true);
