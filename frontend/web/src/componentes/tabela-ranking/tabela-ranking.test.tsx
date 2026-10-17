@@ -84,8 +84,8 @@ describe('TabelaRanking (mês sem partidas)', () => {
     const aviso = within(tabela).getByText('Nenhuma partida registrada neste mês');
     expect(aviso).toHaveAttribute('rowspan', String(ranking.linhas.length));
     expect(within(tabela).getAllByText('Nenhuma partida registrada neste mês')).toHaveLength(1);
-    expect(within(tabela).getByRole('columnheader', { name: /Pts inicial \(início de julho\)/ })).toBeInTheDocument();
-    expect(within(tabela).getByRole('columnheader', { name: /Pts final \(fim de julho\)/ })).toBeInTheDocument();
+    expect(within(tabela).getByRole('columnheader', { name: /Pts inicial\s*\(início de julho\)/ })).toBeInTheDocument();
+    expect(within(tabela).getByRole('columnheader', { name: /Pts final\s*\(fim de julho\)/ })).toBeInTheDocument();
   });
 
   it('sem violações do axe', async () => {
