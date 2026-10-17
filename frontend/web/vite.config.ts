@@ -1,4 +1,5 @@
 import react from '@vitejs/plugin-react';
+import { resolve } from 'node:path';
 import { loadEnv, type Plugin } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 import { defineConfig } from 'vitest/config';
@@ -22,6 +23,9 @@ export default defineConfig(({ mode }) => {
   const emTeste = Boolean(process.env.VITEST);
   return {
     plugins: [react(), corDoTema(), ...(emTeste ? [] : [VitePWA(criarOpcoesPwa())])],
+    resolve: emTeste
+      ? { alias: { 'virtual:pwa-register/react': resolve(import.meta.dirname, 'test/apoio/pwa-register-react.ts') } }
+      : {},
     build: { outDir: 'dist' },
     server: configuracaoServidor(process.env),
     test: {

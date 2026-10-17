@@ -28,10 +28,10 @@ test.describe('PWA', () => {
     page,
     context,
   }) => {
-    await page.route(RANKING, (rota) =>
+    await context.route(RANKING, (rota) =>
       rota.fulfill({ status: 200, contentType: 'application/json', body: corpo('publico-ranking-2026-10.json') }),
     );
-    await page.route('**/api/grupos/g-quinta', (rota) =>
+    await context.route('**/api/grupos/g-quinta', (rota) =>
       rota.fulfill({ status: 200, contentType: 'application/json', body: corpo('grupo-quinta.json') }),
     );
     await page.goto('/');
@@ -48,24 +48,27 @@ test.describe('PWA', () => {
     expect(await pedir('/api/publico/pelada-de-quinta/ranking?mes=2026-10')).toBe(200);
     expect(await pedir('/api/grupos/g-quinta')).toBe(200);
 
-    await page.unroute(RANKING);
-    await page.unroute('**/api/grupos/g-quinta');
+    await context.unroute(RANKING);
+    await context.unroute('**/api/grupos/g-quinta');
     await context.setOffline(true);
     expect(await pedir('/api/publico/pelada-de-quinta/ranking?mes=2026-10')).toBe(200);
     expect(await pedir('/api/grupos/g-quinta')).toBe(0);
   });
 
-  test('com enderecoNovo numa resposta, a navegação seguinte vai à rede', async ({ page }) => {
-    await page.route('**/api/sessao/eu', (rota) =>
+  test('com enderecoNovo numa resposta, a navegação seguinte vai à rede', async ({ page, context }) => {
+    await context.route('**/api/sessao/eu', (rota) =>
       rota.fulfill({ status: 200, contentType: 'application/json', body: corpo('sessao-eu-endereco-novo.json') }),
     );
     await page.goto('/');
     await page.evaluate(() => navigator.serviceWorker.ready.then(() => undefined));
     await page.reload();
     await page.evaluate(() => fetch('/api/sessao/eu').then(() => undefined));
+    await expect
+      .poll(() => page.evaluate(async () => (await caches.has('pelada-sinais')) && (await (await caches.open('pelada-sinais')).keys()).length))
+      .toBe(1);
     let documentosNaRede = 0;
-    await page.route('**/*', (rota) => {
-      if (rota.request().resourceType() === 'document') documentosNaRede += 1;
+    await context.route('**/*', (rota) => {
+      if (rota.request().url().endsWith('/g/pelada-de-quinta')) documentosNaRede += 1;
       return rota.continue();
     });
     await page.goto('/g/pelada-de-quinta');
