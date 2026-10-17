@@ -14,6 +14,16 @@ import { Component as PaginaSimulador } from './PaginaSimulador';
 const RESPOSTAS = join(import.meta.dirname, '../../../../../.md/mockup/respostas');
 const fixture = (nome: string): JsonBodyType => JSON.parse(readFileSync(join(RESPOSTAS, nome), 'utf8')) as JsonBodyType;
 
+/** Os ids do mockup (`j-alemao`) não são uuid; o contrato de entrada exige uuid, como a API real. */
+function comUuids(contexto: JsonBodyType): JsonBodyType {
+  const c = contexto as { jogadores: { id: string }[] };
+  const jogadores = c.jogadores.map((j, i) => ({
+    ...j,
+    id: `00000000-0000-4000-8000-${String(i + 1).padStart(12, '0')}`,
+  }));
+  return { ...c, jogadores } as JsonBodyType;
+}
+
 const servidor = setupServer();
 beforeAll(() => servidor.listen({ onUnhandledFrame: 'error' }));
 afterEach(() => servidor.resetHandlers());
@@ -35,7 +45,7 @@ function api({
   servidor.use(
     http.get('/api/grupos/g-quinta/simulador/contexto', ({ request }) => {
       consultasContexto.push(new URL(request.url).search);
-      return HttpResponse.json(fixture(contexto));
+      return HttpResponse.json(comUuids(fixture(contexto)));
     }),
     http.post('/api/grupos/g-quinta/simulador/previa', async ({ request }) => {
       const corpo = (await request.json()) as Previa['corpo'];

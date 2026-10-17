@@ -23,14 +23,14 @@ export function GruposDono({ grupos }: { grupos: readonly Grupo[] }) {
   const arquivados = grupos.filter((g) => g.arquivadoEm !== null);
   const itens = filtro === 'ativos' ? ativos : arquivados;
   return (
-    <section className={estilos.secao} aria-labelledby={id}>
+    <section className={`${estilos.secao} ${estilos.grupos}`} aria-labelledby={id}>
       <h2 id={id} className={estilos.subtitulo}>
         Grupos
       </h2>
       {grupos.length === 0 ? (
         <EstadoVazio
-          titulo="Nenhum grupo criado."
-          nivel={3}
+          icone={null}
+          texto="Nenhum grupo criado."
           acao={<BotaoLink to={caminhoNovoGrupo}>Novo grupo</BotaoLink>}
         />
       ) : (
@@ -44,30 +44,28 @@ export function GruposDono({ grupos }: { grupos: readonly Grupo[] }) {
               { valor: 'arquivados', rotulo: `Arquivados (${arquivados.length})` },
             ]}
           />
-          <div className={estilos.acima3}>
-            {itens.length === 0 ? (
-              <EstadoVazio titulo={filtro === 'ativos' ? 'Nenhum grupo ativo.' : 'Nenhum grupo arquivado.'} nivel={3} />
-            ) : (
-              <Lista>
-                {itens.map((grupo) => (
-                  <Item
-                    key={grupo.id}
-                    titulo={grupo.nome}
-                    meta={
-                      <>
-                        {diaEFrequencia(grupo)} {'·'} {grupo.horario} {'·'}{' '}
-                        {ROTULO_SITUACAO_COMERCIAL[grupo.situacaoComercial]}
-                        <br />
-                        Admins: {grupo.admins.join(', ')} {'·'} criado em {dataCompleta(grupo.criadoEm)}
-                      </>
-                    }
-                    selo={grupo.arquivadoEm ? <Selo>arquivado</Selo> : undefined}
-                    para={caminhoGrupoDono(grupo.id)}
-                  />
-                ))}
-              </Lista>
-            )}
-          </div>
+          {itens.length === 0 ? (
+            <EstadoVazio icone={null} texto={filtro === 'ativos' ? 'Nenhum grupo ativo.' : 'Nenhum grupo arquivado.'} />
+          ) : (
+            <Lista>
+              {itens.map((grupo) => (
+                <Item
+                  key={grupo.id}
+                  titulo={grupo.nome}
+                  meta={
+                    <>
+                      {diaEFrequencia(grupo)} {'·'} {grupo.horario} {'·'}{' '}
+                      {ROTULO_SITUACAO_COMERCIAL[grupo.situacaoComercial]}
+                      <br />
+                      Admins: {grupo.admins.join(', ')} {'·'} criado em {dataCompleta(grupo.criadoEm)}
+                    </>
+                  }
+                  selo={grupo.arquivadoEm ? <Selo>arquivado</Selo> : undefined}
+                  para={caminhoGrupoDono(grupo.id)}
+                />
+              ))}
+            </Lista>
+          )}
         </>
       )}
     </section>

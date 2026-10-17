@@ -210,8 +210,8 @@ describe('PaginaHabilidades (T17)', () => {
     expect(await violacoes(container)).toEqual([]);
 
     await userEvent.click(screen.getByRole('button', { name: 'Excluir Drible' }));
-    await screen.findByRole('alertdialog');
-    expect(await violacoes(document.body)).toEqual([]);
+    const dialogo = await screen.findByRole('alertdialog');
+    expect(await violacoes(dialogo)).toEqual([]);
   });
 
   it('axe: vazio e erro de nome', async () => {

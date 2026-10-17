@@ -12,8 +12,9 @@
 .secao .subtitulo {
   margin-top: 0;
 }
-.primeira .subtitulo {
-  margin-top: 0;
+/* T26: os títulos mantêm a margem do `.subtitulo` global (como no mockup). */
+.grupos .subtitulo {
+  margin-top: var(--esp-6);
 }
 .grupoBotoes {
   display: flex;

@@ -1,14 +1,16 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse, type JsonBodyType } from 'msw';
 import { setupServer } from 'msw/node';
 import { createMemoryRouter, RouterProvider } from 'react-router';
+import type { QueryClient } from '@tanstack/react-query';
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { violacoes } from '../../../test/apoio/axe';
 import { criarClienteConsultas } from '../../dados/consultas';
+import { chaveGrupo } from '../../dados/grupo';
 import { compartilharLink, copiarLink } from './compartilhar';
 import { Component as PaginaGrupo } from './PaginaGrupo';
 
@@ -39,8 +41,10 @@ function api(patch: () => Response = () => HttpResponse.json(fixture('grupo-quin
   );
 }
 
+let clienteAtual: QueryClient | undefined;
 function montar() {
   const cliente = criarClienteConsultas({ aoNaoAutenticado: () => undefined });
+  clienteAtual = cliente;
   const roteador = createMemoryRouter([{ path: '/admin/:grupoId/grupo', Component: PaginaGrupo }], {
     initialEntries: ['/admin/g-quinta/grupo'],
   });
@@ -86,13 +90,23 @@ describe('PaginaGrupo (T20): formulário', () => {
     await userEvent.selectOptions(screen.getByLabelText('Dia da semana'), 'sabado');
     await userEvent.click(screen.getByRole('radio', { name: 'Quinzenal' }));
     await userEvent.click(screen.getByRole('button', { name: 'Salvar' }));
-    expect(await screen.findByRole('status', {}, { timeout: 2000 })).toBeDefined();
     await waitFor(() => expect(envios).toHaveLength(1));
     expect(envios[0]).toEqual({
       corpo: { nome: 'Pelada de Sábado', diaSemana: 'sabado', frequencia: 'quinzenal', horario: '20:00' },
       xPelada: '1',
     });
     expect(await screen.findByText('Dados salvos.')).toBeInTheDocument();
+    expect(clienteAtual?.getQueryData(chaveGrupo('g-quinta'))).toMatchObject({ grupo: { nome: 'Pelada de Quinta' } });
+  });
+
+  it('horário 24:00 é recusado no cliente, sem PATCH', async () => {
+    api();
+    montar();
+    const horario = await screen.findByLabelText('Horário');
+    fireEvent.change(horario, { target: { value: '24:00' } });
+    await userEvent.click(screen.getByRole('button', { name: 'Salvar' }));
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+    expect(envios).toHaveLength(0);
   });
 
   it('422 do servidor mostra o erro no nome', async () => {
@@ -142,6 +156,45 @@ describe('PaginaGrupo (T20): link', () => {
     montar();
     await userEvent.click(await screen.findByRole('button', { name: 'Copiar link' }));
     expect(await screen.findByText('Não foi possível copiar. Selecione o link e copie.')).toBeInTheDocument();
+  });
+});
+
+describe('PaginaGrupo (T20): compartilhar e carregando', () => {
+  it('botão Compartilhar chama share; cancelar não mostra mensagem', async () => {
+    const share = vi.fn().mockRejectedValue(new DOMException('cancelou', 'AbortError'));
+    Object.defineProperty(navigator, 'share', { value: share, configurable: true });
+    api();
+    montar();
+    await userEvent.click(await screen.findByRole('button', { name: 'Compartilhar' }));
+    expect(share).toHaveBeenCalledWith({ title: 'Pelada de Quinta', url: URL_PUBLICA });
+    expect(screen.queryByText('Link copiado')).not.toBeInTheDocument();
+    expect(screen.queryByText(/Não foi possível copiar/)).not.toBeInTheDocument();
+  });
+
+  it('carregando: título já presente e esqueleto só após 300 ms; axe sem violação', async () => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    try {
+      servidor.use(http.get('/api/grupos/g-quinta', () => new Promise<Response>(() => undefined)));
+      const { container } = montar();
+      expect(screen.getByRole('heading', { name: 'Dados do grupo' })).toBeInTheDocument();
+      expect(container.querySelector('[aria-hidden="true"]')).toBeNull();
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(300);
+      });
+      expect(container.querySelector('[aria-hidden="true"]')).not.toBeNull();
+      vi.useRealTimers();
+      expect(await violacoes(container)).toEqual([]);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('axe sem violação com erro de validação do servidor', async () => {
+    api(() => HttpResponse.json(fixture('erro-validacao-grupo.json'), { status: 422 }));
+    const { container } = montar();
+    await userEvent.click(await screen.findByRole('button', { name: 'Salvar' }));
+    await screen.findByText('O nome precisa ter de 3 a 60 caracteres.');
+    expect(await violacoes(container)).toEqual([]);
   });
 });
 

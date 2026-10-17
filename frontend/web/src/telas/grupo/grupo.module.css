@@ -2,6 +2,11 @@
   max-width: var(--largura-formulario);
   margin: 0 auto;
 }
+@media (min-width: 600px) {
+  .estreito {
+    max-width: calc(var(--largura-formulario) - 2 * var(--esp-6));
+  }
+}
 .formulario {
   display: grid;
   gap: var(--esp-4);
@@ -21,7 +26,7 @@
   font-size: var(--texto-xl);
   text-transform: uppercase;
   letter-spacing: var(--espacamento-caixa-alta);
-  margin: 0 0 var(--esp-3);
+  margin: var(--esp-6) 0 var(--esp-3);
 }
 .paragrafo {
   margin: 0 0 var(--esp-3);
@@ -33,8 +38,10 @@
   gap: var(--esp-2);
 }
 .estado {
-  margin-top: var(--esp-2);
   font-size: var(--texto-sm);
+}
+.estado:not(:empty) {
+  margin-top: var(--esp-2);
 }
 .faixa {
   margin-bottom: var(--esp-3);

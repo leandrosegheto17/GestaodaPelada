@@ -35,7 +35,7 @@
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--cor-texto-sec);
-  margin: 0;
+  margin: var(--esp-3) 0 var(--esp-1);
 }
 @media (max-width: 599px) {
   .semanas {

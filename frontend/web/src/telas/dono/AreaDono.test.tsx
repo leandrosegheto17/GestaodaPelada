@@ -1,12 +1,12 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse, type JsonBodyType } from 'msw';
 import { setupServer } from 'msw/node';
 import { createMemoryRouter, RouterProvider } from 'react-router';
-import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { violacoes } from '../../../test/apoio/axe';
 import { criarClienteConsultas } from '../../dados/consultas';
 import { Component as AreaDono } from './AreaDono';
@@ -27,7 +27,7 @@ let chamadas: Chamada[] = [];
 let leituras = 0;
 
 interface Opcoes {
-  painel?: () => Response;
+  painel?: () => Response | Promise<Response>;
   escrita?: () => Response;
 }
 
@@ -105,12 +105,12 @@ describe('AreaDono (T26)', () => {
     api();
     const { cliente } = montar();
     const [primeiro] = await screen.findAllByRole('button', { name: 'Redefinir senha' });
+    const antes = leituras;
     await userEvent.click(primeiro!);
     const dialogo = await screen.findByRole('dialog', { name: 'Senha temporária de Marquinhos' });
     expect(dialogo).toHaveTextContent('Tb4kWm9sQr3x');
     expect(chamadas[0]).toEqual({ caminho: '/api/dono/contas/c-marquinhos/redefinir-senha', xPelada: '1' });
     expect(await violacoes(dialogo)).toEqual([]);
-    const antes = leituras;
     await userEvent.click(within(dialogo).getByRole('button', { name: 'Já copiei' }));
     await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
     expect(document.body).not.toHaveTextContent('Tb4kWm9sQr3x');
@@ -151,6 +151,22 @@ describe('AreaDono (T26)', () => {
     const antes = leituras;
     await userEvent.click(screen.getByRole('button', { name: 'Tentar de novo' }));
     await waitFor(() => expect(leituras).toBeGreaterThan(antes));
+  });
+
+  it('carregando: nada antes de 300 ms e esqueleto depois', async () => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    try {
+      api({ painel: () => new Promise<Response>(() => undefined) });
+      const { container } = montar();
+      expect(container.querySelector('[aria-busy="true"]')).not.toBeNull();
+      expect(container.querySelector('.esqueleto, [class*="esqueleto"]')).toBeNull();
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(350);
+      });
+      expect(container.querySelector('[class*="squeleto"]')).not.toBeNull();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it('sem violações do axe', async () => {

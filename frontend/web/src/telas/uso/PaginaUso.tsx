@@ -38,7 +38,7 @@ export function Component() {
       <Voltar para={`/admin/${encodeURIComponent(grupoId)}`} rotulo="Início" />
       <TituloPagina>Uso do app</TituloPagina>
       {uso.data.semanas.length === 0 ? (
-        <EstadoVazio titulo="Ainda não há uso registrado." />
+        <EstadoVazio icone={null} titulo="Ainda não há uso registrado." />
       ) : (
         <TabelaSemanas
           legenda="Uso por semana, mais recente primeiro"

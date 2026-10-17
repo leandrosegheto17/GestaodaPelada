@@ -99,7 +99,7 @@ export function ItemHabilidade({ grupoId, habilidade, posicao, aoExcluir }: Prop
       selo={salvo ? <SeloSalvo /> : null}
       acoes={
         <Botao variante="textoDestrutivo" onClick={aoExcluir}>
-          Excluir<span className="sr"> {habilidade.nome}</span>
+          Excluir <span className="sr">{habilidade.nome}</span>
         </Botao>
       }
     />

@@ -21,12 +21,12 @@ interface Props {
 export function PedidosSenha({ pedidos, aoRedefinir, aoResolver, ocupada }: Props) {
   const id = useId();
   return (
-    <section className={estilos.primeira} aria-labelledby={id}>
+    <section aria-labelledby={id}>
       <h2 id={id} className={estilos.subtitulo}>
         Pedidos de senha{pedidos.length > 0 ? ` (${pedidos.length})` : ''}
       </h2>
       {pedidos.length === 0 ? (
-        <EstadoVazio titulo="Nenhum pedido pendente." nivel={3} />
+        <EstadoVazio icone={null} texto="Nenhum pedido pendente." />
       ) : (
         <Lista>
           {pedidos.map((pedido) => (

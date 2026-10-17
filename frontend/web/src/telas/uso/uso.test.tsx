@@ -74,7 +74,13 @@ describe('PaginaUso (T21)', () => {
     const tabela = await screen.findByRole('table', { name: 'Uso por semana, mais recente primeiro' });
     expect(within(tabela).getAllByRole('columnheader')).toHaveLength(5);
     expect(within(tabela).getAllByRole('rowheader')).toHaveLength(4);
-    expect(screen.getAllByRole('heading', { level: 2 }).map((h) => h.textContent)).toContain('19/10 a 25/10');
+    const cartoes = screen.getAllByRole('heading', { level: 2, hidden: true });
+    expect(cartoes.map((h) => h.textContent)).toEqual(['19/10 a 25/10', '12/10 a 18/10', '05/10 a 11/10', '28/09 a 04/10']);
+    const primeiro = cartoes[0]?.closest('section') as HTMLElement;
+    const textos = Array.from(primeiro.querySelectorAll('dt, dd')).map((e) => e.textContent);
+    expect(textos).toEqual([
+      'Aparelhos', '9', 'PDFs', '0', 'Partidas (em até 48 h)', '0 (0)', 'Escalações / partidas', '1 / 0',
+    ]);
     expect(await violacoes(container)).toEqual([]);
   });
 
