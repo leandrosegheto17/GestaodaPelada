@@ -16,15 +16,18 @@ const LITERAL = /(['"`])(?:\\[\s\S]|(?!\1)[^\\])*\1/g;
 // `e_dono` como chave de objeto com valor literal ou variável (`{ e_dono: true`, `, 'eDono': v }`): objeto
 // montado antes de uma escrita. Projeção de leitura (`eDono: conta.eDono`, `z.boolean()`) não casa.
 // O valor também pode ser `!!x` ou um ternário `a ? b : c`.
-const VALOR_DE_CHAVE = String.raw`(?:true|false|[01]|!{1,2}\s*[A-Za-z_$][\w$.]*|[A-Za-z_$][\w$.]*\s*\?[^,}\n]*|[A-Za-z_$][\w$]*)`;
+const VALOR_DE_CHAVE = String.raw`(?:true|false|[01]|!{1,2}\s*[A-Za-z_$][\w$.]*|[A-Za-z_$][\w$.]*\s*\?[^,}\n]*|(?!z\.)[A-Za-z_$][\w$.]*\([^,}\n]*\)|[A-Za-z_$][\w$.]*\s*(?:\|\||&&)[^,}\n]+|[A-Za-z_$][\w$]*)`;
 const CHAVE_DE_OBJETO = new RegExp(String.raw`[{,]\s*['"\`]?e_?dono['"\`]?\s*:\s*${VALOR_DE_CHAVE}\s*(?=[,}\n]|$)`, 'i');
-// Atribuição de membro (`o.e_dono = v`); `===`, `==` e `=>` são leitura.
-const ATRIBUICAO_DE_MEMBRO = /\.\s*e_?dono\s*=(?![=>])/i;
+// Atribuição de membro (`o.e_dono = v`, `o["e_dono"] = v`, `o.eDono ||= v`, `o.eDono += v`); `===`, `==` e
+// `=>` são leitura.
+const ATRIBUICAO_DE_MEMBRO = /(?:\.\s*|\[\s*['"`])e_?dono(?:['"`]\s*\])?\s*(?:\|\||&&|\?\?|\*\*|[-+*/%])?=(?![=>])/i;
 
 // Uma única passada da esquerda para a direita: `//` e `--` dentro de literal de texto (URL, `a--b`) não
 // são comentário e não podem apagar o resto da linha. Aspas simples e duplas não atravessam linha.
+// `--` só é comentário SQL quando não cola num identificador/fecha-parêntese (`i--`) e é seguido de espaço
+// ou fim de linha (`--i` é decremento).
 const COMENTARIO_OU_LITERAL =
-  /\/\*[\s\S]*?\*\/|\/\/[^\n]*|--[^\n]*|'(?:\\.|[^'\\\n])*'|"(?:\\.|[^"\\\n])*"|`(?:\\[\s\S]|[^`\\])*`/g;
+  /\/\*[\s\S]*?\*\/|\/\/[^\n]*|(?<![\w$)\]])--(?=\s|$)[^\n]*|'(?:\\.|[^'\\\n])*'|"(?:\\.|[^"\\\n])*"|`(?:\\[\s\S]|[^`\\])*`/g;
 
 function semComentarios(texto) {
   return texto.replace(COMENTARIO_OU_LITERAL, (m) => {
@@ -47,7 +50,7 @@ for (const { caminho, texto } of arquivos) {
     const antes = limpo.slice(0, m.index);
     const trecho = antes.slice(Math.max(semPontoEmTexto.lastIndexOf(';', m.index), 0), m.index);
     const chaveDeObjeto = CHAVE_DE_OBJETO.test(antes.slice(-40) + limpo.slice(m.index, m.index + 40));
-    const atribuicao = ATRIBUICAO_DE_MEMBRO.test(limpo.slice(Math.max(m.index - 1, 0), m.index + 30));
+    const atribuicao = ATRIBUICAO_DE_MEMBRO.test(limpo.slice(Math.max(m.index - 4, 0), m.index + 30));
     if (ESCRITA.test(trecho) || chaveDeObjeto || atribuicao) {
       const linha = limpo.slice(0, m.index).split('\n').length;
       achados.push(`${caminho}:${linha}: escrita de e_dono fora de backend/scripts e das migrações`);
