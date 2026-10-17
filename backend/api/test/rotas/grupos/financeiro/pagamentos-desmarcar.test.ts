@@ -1,6 +1,8 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+import { desmarcarPagamento } from '../../../../src/aplicacao/financeiro/desmarcar-pagamento.js';
 import { kyselyDe } from '../../../../src/infraestrutura/db/cliente.js';
 import { emTransacao } from '../../../../src/infraestrutura/db/index.js';
+import * as auditoria from '../../../../src/infraestrutura/db/repositorios/auditoria.js';
 import * as financeiro from '../../../../src/infraestrutura/db/repositorios/financeiro.js';
 import { montarCenario } from '../../../apoio/cenario-acesso.js';
 import { clienteTeste } from '../../../apoio/cliente.js';
@@ -9,6 +11,11 @@ import { criarLancamento } from '../../../apoio/fabricas/financeiro.js';
 import { criarJogador } from '../../../apoio/fabricas/jogadores.js';
 import { usarFabrica } from '../../../apoio/fabrica.js';
 import { relogioFixo } from '../../../apoio/relogio.js';
+
+vi.mock('../../../../src/infraestrutura/db/repositorios/auditoria.js', async (original) => {
+  const real = await original<typeof import('../../../../src/infraestrutura/db/repositorios/auditoria.js')>();
+  return { ...real, registrar: vi.fn(real.registrar) };
+});
 
 const fabrica = usarFabrica();
 const abrir = usarDbDoWorker(fabrica);
@@ -97,6 +104,17 @@ describe('DELETE /api/grupos/:g/financeiro/pagamentos/:jogadorId/:mes (workerd)'
     expect((await c.delete(url('nao-e-uuid', '2026-10'))).status).toBe(404);
     const ruim = await c.delete(`/api/grupos/${g}/financeiro/pagamentos/${doB}/2026-13`);
     expect(ruim.status).toBe(422);
+  });
+
+  it('auditoria que lança desfaz tudo: marcação e lançamento continuam', async () => {
+    const { db, cen, g, ana, marcar } = await cenario();
+    await marcar(ana, '2026-10', true);
+    vi.mocked(auditoria.registrar).mockRejectedValueOnce(new Error('falha'));
+    await expect(
+      desmarcarPagamento(db, g, { jogadorId: ana, mes: '2026-10' }, { autorContaId: cen.adminA.id, agora: AGORA }),
+    ).rejects.toThrow('falha');
+    expect(await financeiro.pagamentosDoMes(db, g, '2026-10')).toHaveLength(1);
+    expect(await lancamentosDe(db, g)).toHaveLength(1);
   });
 
   it('sem X-Pelada 403; sem permissão do financeiro 403; outro grupo 404; sem sessão 401', async () => {

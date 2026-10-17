@@ -105,6 +105,69 @@ describe('POST /api/grupos/:g/partidas (workerd)', () => {
     expect(await banco.selectFrom('partidas').select('id').where('grupo_id', '=', g).execute()).toEqual([]);
     expect(await banco.selectFrom('presencas').select('partida_id').where('grupo_id', '=', g).execute()).toEqual([]);
   });
+
+  it('falha ao registrar o evento desfaz partida, presença e auditoria', async () => {
+    const { db, cen, g, a } = await base();
+    const { lancarPartida } = await import('../../../../src/aplicacao/partidas/lancar.js');
+    await expect(
+      lancarPartida(
+        db,
+        g,
+        { data: '2026-10-15', choveu: false, marcacoes: [{ jogadorId: a, situacao: 'presente' }] },
+        { autorContaId: cen.adminA.id, agora: new Date('2026-10-22T15:00:00Z'), hoje: '2026-10-22' },
+        {
+          registrarEvento: async () => {
+            throw new Error('falha no evento');
+          },
+          registrarAuditoria: async () => undefined,
+        },
+      ),
+    ).rejects.toThrow('falha no evento');
+    const banco = kyselyDe(db);
+    expect(await banco.selectFrom('partidas').select('id').where('grupo_id', '=', g).execute()).toEqual([]);
+    expect(await banco.selectFrom('presencas').select('partida_id').where('grupo_id', '=', g).execute()).toEqual([]);
+    expect(await banco.selectFrom('auditoria').select('id').where('grupo_id', '=', g).execute()).toEqual([]);
+  });
+
+  it('duas chamadas simultâneas na mesma data: um 201, um 409 e um único evento', async () => {
+    const { db, cen, g, a } = await base();
+    const corpo = { data: '2026-10-15', choveu: false, marcacoes: [{ jogadorId: a, situacao: 'presente' }] };
+    const url = `/api/grupos/${g}/partidas`;
+    const rs = await Promise.all([
+      cliente(cen.adminA.cookie).post(url, corpo),
+      cliente(cen.adminA.cookie).post(url, corpo),
+    ]);
+    expect(rs.map((r) => r.status).sort()).toEqual([201, 409]);
+    const banco = kyselyDe(db);
+    expect(await banco.selectFrom('partidas').select('id').where('grupo_id', '=', g).execute()).toHaveLength(1);
+    expect(await banco.selectFrom('eventos_uso').select('tipo').where('grupo_id', '=', g).execute()).toEqual([
+      { tipo: 'partida_lancada' },
+    ]);
+  });
+
+  it.each([
+    ['data inexistente', { data: '2026-02-30', choveu: false, marcacoes: [] }],
+    ['campo extra', { data: '2026-10-15', choveu: false, marcacoes: [], extra: 1 }],
+    ['choveu ausente', { data: '2026-10-15', marcacoes: [] }],
+  ])('corpo inválido (%s): 422 e nada gravado', async (_nome, corpo) => {
+    const { db, cen, g } = await base();
+    const r = await cliente(cen.adminA.cookie).post(`/api/grupos/${g}/partidas`, corpo);
+    expect(r.status).toBe(422);
+    expect(await kyselyDe(db).selectFrom('partidas').select('id').where('grupo_id', '=', g).execute()).toEqual([]);
+  });
+
+  it('jogadorId repetido nas marcações: 422', async () => {
+    const { cen, g, a } = await base();
+    const r = await cliente(cen.adminA.cookie).post(`/api/grupos/${g}/partidas`, {
+      data: '2026-10-15',
+      choveu: false,
+      marcacoes: [
+        { jogadorId: a, situacao: 'presente' },
+        { jogadorId: a, situacao: 'expulso' },
+      ],
+    });
+    expect(r.status).toBe(422);
+  });
 });
 
 describe('PUT /api/grupos/:g/partidas/:data (workerd)', () => {
