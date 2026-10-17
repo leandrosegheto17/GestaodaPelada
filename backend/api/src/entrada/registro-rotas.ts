@@ -44,6 +44,7 @@ import { rotaSimuladorPrevia } from './rotas/grupos/simulador/previa.js';
 import { rotaSimuladorSugerir } from './rotas/grupos/simulador/sugerir.js';
 import { rotaSimuladorAvaliar } from './rotas/grupos/simulador/avaliar.js';
 import { rotaEscalacaoConfirmar } from './rotas/grupos/escalacoes/confirmar.js';
+import { rotaFinanceiroMes } from './rotas/grupos/financeiro/mes.js';
 
 /** Todas as rotas de negócio. Cada rota nova entra aqui, depois dos middlewares do app (ADR-005). */
 export const ROTAS: readonly Hono<AppEnv>[] = [
@@ -96,4 +97,5 @@ export const ROTAS: readonly Hono<AppEnv>[] = [
   rotaSimuladorSugerir,
   rotaSimuladorAvaliar,
   rotaEscalacaoConfirmar,
+  rotaFinanceiroMes,
 ];

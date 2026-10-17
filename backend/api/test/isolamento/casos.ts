@@ -155,6 +155,7 @@ export const CASOS: Record<string, Caso> = {
       composicao: { times: [{ jogadores: ['00000000-0000-4000-8000-000000000001'] }] },
     },
   },
+  'GET /api/grupos/:grupoId/financeiro/mes': { tipo: 'financeiro' },
   'PUT /api/grupos/:grupoId/jogadores/:id/notas/:habilidadeId': {
     tipo: 'grupo',
     parametros: () => ({ habilidadeId: '00000000-0000-4000-8000-0000000000aa' }),
