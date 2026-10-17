@@ -86,3 +86,6 @@ APROVADA; 0 críticos/0 não críticos; 9 testes passando cobrindo todos os caso
 
 ## TP-0104 — QA — 2026-10-17
 APROVADA; 27/27 testes (plano coberto, matriz adversarial e axe ok); 0 achados críticos, 0 não críticos.
+
+## TP-0003 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0014: prova do CI em PR real pendente de push do usuário); actionlint/lint/typecheck/test:checagens/checagens de ID e URL = 0, format:check só por CRLF local do wrangler.jsonc.
