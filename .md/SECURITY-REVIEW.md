@@ -131,3 +131,12 @@ APROVADA; 0 achados de segurança (sem innerHTML/style/console, sem dependência
 
 ## TP-0017 — DevSecOps — 2026-10-17
 APROVADA - trava de host antes de escrita, banco de teste só local/descartável, sem credencial real, ouvinte de erro em cliente.ts restrito ao fechamento; 0 críticos, 0 não críticos (revisão de leitura, nada executado).
+
+## TP-0145 — DevSecOps — 2026-10-17
+OK; 0 achados; strict, limites de LIMITES e isolamento de publico conferidos no diff.
+
+## TP-0146 — DevSecOps — 2026-10-17
+APROVADA; revisão do diff do contrato do simulador sem achados (strict, uuid, tetos de 60 aptos/N/K, sem eDono/grupoId, fora do público); 0 críticos, 0 não críticos.
+
+## TP-0186 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; entradas strict e em centavos inteiros limitados, 403 sem detalhe, 30 testes e snapshot compatível executados.

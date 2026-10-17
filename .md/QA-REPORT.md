@@ -143,3 +143,21 @@ APROVADA; 31 testes e compatibilidade de snapshot verdes, 9 JSONs de respostas (
 
 ## TP-0186 — QA — 2026-10-17
 APROVADA; 0 críticos, 0 não críticos; 30 testes passando, snapshot compatível, tsc limpo.
+
+## TP-0022 — QA — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; dono.test 24/24, tsc e checar-compatibilidade verdes, RF-07 verificado por JSON Schema + strict.
+
+## TP-0102 — QA — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; 132 testes passando, ajuste de regex em teste não enfraquece a asserção.
+
+## TP-0103 — QA — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; 31 testes passando (seletor-situacao + rotulos), CSS conferido com o mockup.
+
+## TP-0105 — QA — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; 92 testes web verdes (guarda, destino, sessão) e tsc limpo.
+
+## TP-0110 — QA — 2026-10-17
+APROVADA — 41 testes ok, CV T03 0,00% em pc e celular, 0 achados.
+
+## TP-0180 — QA — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; 25 testes + compatibilidade de snapshot verdes, mockups e G-10 cobertos.
