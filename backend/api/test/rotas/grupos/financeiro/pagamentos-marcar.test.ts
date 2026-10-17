@@ -1,4 +1,5 @@
 import { erroPadrao } from '@pelada/contrato';
+import { sql } from 'kysely';
 import { describe, expect, it } from 'vitest';
 import { kyselyDe } from '../../../../src/infraestrutura/db/cliente.js';
 import * as financeiro from '../../../../src/infraestrutura/db/repositorios/financeiro.js';
@@ -78,6 +79,32 @@ describe('POST /api/grupos/:g/financeiro/pagamentos (workerd)', () => {
     ]);
     expect([a.status, b.status].sort()).toEqual([204, 409]);
     expect(await lancamentosDe(db, g)).toHaveLength(1);
+  });
+
+  it('falha na auditoria: nem a marcação nem a entrada ficam gravadas', async () => {
+    const { db, cen, g, ana, url } = await cenario();
+    const k = kyselyDe(db);
+    const nome = `falha_auditoria_${g.replaceAll('-', '')}`;
+    // Gatilho restrito ao grupo do teste: outros testes no mesmo banco não são afetados.
+    await sql
+      .raw(
+        `CREATE FUNCTION ${nome}() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'falha injetada'; END $$`,
+      )
+      .execute(k);
+    try {
+      await sql
+        .raw(
+          `CREATE TRIGGER ${nome} BEFORE INSERT ON auditoria FOR EACH ROW WHEN (NEW.grupo_id = '${g}') EXECUTE FUNCTION ${nome}()`,
+        )
+        .execute(k);
+      const r = await cliente(cen.adminA.cookie).post(url, { jogadorId: ana, mes: '2026-10' });
+      expect(r.status).toBe(500);
+    } finally {
+      await sql.raw(`DROP TRIGGER IF EXISTS ${nome} ON auditoria`).execute(k);
+      await sql.raw(`DROP FUNCTION IF EXISTS ${nome}()`).execute(k);
+    }
+    expect(await financeiro.pagamentosDoMes(db, g, '2026-10')).toEqual([]);
+    expect(await lancamentosDe(db, g)).toEqual([]);
   });
 
   it('jogador de outro grupo, inativo no mês, uuid malformado, mês futuro e campo extra: 422 sem gravar', async () => {
