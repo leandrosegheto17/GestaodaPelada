@@ -51,7 +51,7 @@ export function ConteudoRanking({ ranking, aoTrocarMes, atualizando = false, exp
             atualizando={atualizando}
           />
           <TabelaRanking ranking={ranking} />
-          <Legenda />
+          {ranking.partidas.length > 0 ? <Legenda /> : null}
         </>
       ) : (
         <EstadoVazio

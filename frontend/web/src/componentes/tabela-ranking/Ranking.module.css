@@ -103,7 +103,7 @@
   white-space: normal;
 }
 @media (min-width: 600px) {
-  .nome {
+  .ranking .nome {
     min-width: 200px;
     max-width: none;
   }

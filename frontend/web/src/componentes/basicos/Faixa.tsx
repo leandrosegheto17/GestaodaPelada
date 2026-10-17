@@ -25,7 +25,7 @@ export function Faixa({ tipo, topo, papel, children, acao, aoFechar, rotuloFecha
   const papelFinal = papel ?? (tipo === 'erro' ? 'alert' : 'status');
   return (
     <div
-      className={juntar(estilos.faixa, estilos[tipo], topo && estilos.topo)}
+      className={juntar(estilos.faixa, estilos[tipo], topo && estilos.topo, `faixa--${tipo}`)}
       role={papelFinal}
       aria-live={papelFinal === 'status' ? 'polite' : undefined}
     >
