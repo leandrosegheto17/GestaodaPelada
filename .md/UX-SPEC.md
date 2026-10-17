@@ -619,7 +619,7 @@ Padrões globais:
 | T20 | n/a: o grupo sempre tem dados | Esqueleto | Validação por campo | "Dados salvos"; "Link copiado" |
 | T21 | "Ainda não há uso registrado." | Esqueleto | Padrão global | Tabela ou cartões |
 | T22 | Caixa sem configuração: título "Caixa não configurado", "Configure o saldo inicial para começar." + Configurar caixa. Mês sem lançamentos: "Nenhum lançamento neste mês." Sem jogadores ativos no mês: "Nenhum jogador ativo neste mês." | Esqueleto | **Sem permissão (403):** título "Sem acesso", "Você não tem acesso ao financeiro deste grupo. Peça a um admin com acesso." + Voltar. Erro ao marcar pagamento: o interruptor volta ao estado anterior + faixa | Saldos atualizados |
-| T23 | Formulário vazio | "Salvando…" | Descrição vazia ou longa; valor ≤ 0 ou com mais de 2 casas | Volta a T22 |
+| T23 | Formulário vazio | "Salvando…" | Descrição vazia ou longa; valor ≤ 0 ou com mais de 2 casas ("Use no máximo 2 casas decimais."); valor acima do máximo ("O valor pode ser no máximo R$ 999.999,99.") | Volta a T22 |
 | T24 | Formulário vazio na 1ª vez | "Salvando…" | Validação | Volta a T22 |
 | T25 | Formulário vazio | "Salvando…" | Senha atual errada; nova fora de 8 a 72 caracteres; confirmação diferente | Faixa "Senha trocada…" |
 | T26 | Sem pedidos: "Nenhum pedido pendente." Sem grupos: "Nenhum grupo criado." + Novo grupo | Esqueleto | Padrão global | Listas |

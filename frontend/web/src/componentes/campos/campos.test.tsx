@@ -142,6 +142,7 @@ describe('CampoMoeda', () => {
     const aoMudar = vi.fn();
     render(<CampoMoeda rotulo="Valor" centavos={null} aoMudar={aoMudar} faixa={faixa} opcional={opcional} />);
     const entrada = screen.getByLabelText('Valor');
+    await userEvent.click(entrada);
     if (texto) await userEvent.type(entrada, texto);
     await userEvent.tab();
     return aoMudar;
@@ -158,7 +159,7 @@ describe('CampoMoeda', () => {
     ['0', 'maior que zero'],
     ['abc', 'Informe um valor em reais'],
     ['1,234', 'no máximo 2 casas'],
-    ['1.000.000,00', 'no máximo R$ 999.999,99'],
+    ['1.000.000,00', 'no máximo R\\$\\s999\\.999,99'],
     ['', 'Informe o valor'],
   ])('%j mostra erro', async (texto, trecho) => {
     await digitar(texto);
