@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-17 03:08
+Atualizado: 2026-10-17 03:24
 
-Resumo: Não executada 169 · Em execução 1 · Testada (aguarda segurança) 3 · Aprovada 76 · total 249
+Resumo: Não executada 162 · Em execução 1 · Executada (aguarda teste) 7 · Aprovada 79 · total 249
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -131,11 +131,11 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 116 | TP-0114 | executor | ✔ | Tela T04: Entrar | L25 | TP-0019, TP-0089, TP-0091, TP-0095, TP-0096, TP-0105, TP-0207 | Aprovada |
 | 117 | TP-0115 | executor | ✔ | Tela T05: Esqueci a senha | L25 | TP-0019, TP-0089, TP-0091, TP-0095, TP-0096, TP-0114, TP-0207 | Aprovada |
 | 118 | TP-0116 | executor | ✔ | Tela T06: Nova senha obrigatória | L25 | TP-0019, TP-0089, TP-0091, TP-0095, TP-0096, TP-0105, TP-0114, TP-0207 | Aprovada |
-| 119 | TP-0117 | executor | ✔ | Tela T25: Minha senha | L25 | TP-0019, TP-0089, TP-0091, TP-0095, TP-0096, TP-0105, TP-0106, TP-0114, TP-0116, TP-0207 | Não executada |
+| 119 | TP-0117 | executor | ✔ | Tela T25: Minha senha | L25 | TP-0019, TP-0089, TP-0091, TP-0095, TP-0096, TP-0105, TP-0106, TP-0114, TP-0116, TP-0207 | Executada (aguarda teste) |
 | 120 | TP-0118 | executor | ✔ | Tela T08: Escolher grupo | L25 | TP-0089, TP-0095, TP-0101, TP-0105, TP-0207 | Aprovada |
 | 121 | TP-0119 | executor | ✔ | Tela T09: Início do admin | L26 | TP-0021, TP-0089, TP-0092, TP-0095, TP-0101, TP-0106, TP-0111, TP-0207 | Aprovada |
 | 122 | TP-0120 | executor | ✔ | Tela T10: Partidas | L26 | TP-0024, TP-0089, TP-0092, TP-0095, TP-0101, TP-0106, TP-0207 | Aprovada |
-| 123 | TP-0121 | executor | ✔ | Tela T11: Lançar partida | L26 | TP-0024, TP-0089, TP-0095, TP-0096, TP-0097, TP-0098, TP-0103, TP-0106, TP-0119, TP-0207 | Não executada |
+| 123 | TP-0121 | executor | ✔ | Tela T11: Lançar partida | L26 | TP-0024, TP-0089, TP-0095, TP-0096, TP-0097, TP-0098, TP-0103, TP-0106, TP-0119, TP-0207 | Executada (aguarda teste) |
 | 124 | TP-0122 | executor | ✔ | Tela T11: editar e excluir partida | L26 | TP-0100, TP-0120, TP-0121 | Não executada |
 | 125 | TP-0123 | executor | ✔ | Tela T15: Jogadores | L27 | TP-0023, TP-0089, TP-0093, TP-0095, TP-0097, TP-0101, TP-0106, TP-0207 | Aprovada |
 | 126 | TP-0124 | executor | ✔ | Tela T16: Ficha do jogador (dados e situação) | L27 | TP-0023, TP-0089, TP-0093, TP-0095, TP-0096, TP-0099, TP-0100, TP-0106, TP-0207 | Aprovada |
@@ -144,8 +144,8 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 129 | TP-0127 | executor | ✔ | Tela T20: Dados do grupo e link | L27 | TP-0021, TP-0089, TP-0093, TP-0095, TP-0096, TP-0097, TP-0106, TP-0207 | Aprovada |
 | 130 | TP-0128 | executor | ✔ | Tela T21: Uso do app | L27 | TP-0024, TP-0089, TP-0095, TP-0101, TP-0106, TP-0207 | Aprovada |
 | 131 | TP-0129 | executor | ✔ | Tela T26: Área do dono | L28 | TP-0022, TP-0089, TP-0095, TP-0097, TP-0098, TP-0100, TP-0101, TP-0105, TP-0106, TP-0207 | Aprovada |
-| 132 | TP-0130 | executor | ✔ | Tela T27: Novo grupo | L28 | TP-0022, TP-0089, TP-0093, TP-0095, TP-0096, TP-0097, TP-0098, TP-0100, TP-0105, TP-0129, TP-0207 | Não executada |
-| 133 | TP-0131 | executor | ✔ | Tela T28: Grupo (visão do dono) | L28 | TP-0022, TP-0089, TP-0093, TP-0095, TP-0096, TP-0098, TP-0100, TP-0101, TP-0105, TP-0129, TP-0207 | Não executada |
+| 132 | TP-0130 | executor | ✔ | Tela T27: Novo grupo | L28 | TP-0022, TP-0089, TP-0093, TP-0095, TP-0096, TP-0097, TP-0098, TP-0100, TP-0105, TP-0129, TP-0207 | Executada (aguarda teste) |
+| 133 | TP-0131 | executor | ✔ | Tela T28: Grupo (visão do dono) | L28 | TP-0022, TP-0089, TP-0093, TP-0095, TP-0096, TP-0098, TP-0100, TP-0101, TP-0105, TP-0129, TP-0207 | Executada (aguarda teste) |
 | 134 | TP-0132 | executor | ✔ | [U] Neon: projeto novo em São Paulo (PI-1) — **tarefa manual do usuário** | L29 | — | Não executada |
 | 135 | TP-0133 | executor | ✔ | [U] Cloudflare: subdomínio, token e Hyperdrive (PI-2, PI-3) | L29 | TP-0013, TP-0132 | Não executada |
 | 136 | TP-0134 | executor | ✔ | [U] GitHub: secrets e environments (PI-4) | L29 | TP-0132, TP-0133 | Não executada |
@@ -187,11 +187,11 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 172 | TP-0169 | executor | ✔ | Resumo do início com a escalação confirmada | L36 | TP-0061, TP-0161 | Não executada |
 | 173 | SPK-0002 | coordenador | — | Spike S-02: CPU do sugerir no Worker publicado | L36 | TP-0135, TP-0165 | Não executada |
 | 174 | TP-0170 | executor | ✔ | Tela T17: Habilidades | L37 | TP-0089, TP-0095, TP-0096, TP-0100, TP-0101, TP-0106, TP-0145, TP-0207 | Aprovada |
-| 175 | TP-0171 | executor | ✔ | Tela T16: seção de notas e nível | L37 | TP-0096, TP-0124, TP-0145 | Não executada |
+| 175 | TP-0171 | executor | ✔ | Tela T16: seção de notas e nível | L37 | TP-0096, TP-0124, TP-0145 | Executada (aguarda teste) |
 | 176 | TP-0172 | executor | ✔ | Tela T12: Simulador (entradas e prévia) | L37 | TP-0089, TP-0095, TP-0096, TP-0097, TP-0098, TP-0101, TP-0106, TP-0146, TP-0207 | Aprovada |
 | 177 | TP-0173 | executor | ✔ | Cartão de time, tabela comparativa e lista de avisos | L37 | TP-0088, TP-0092, TP-0095, TP-0146 | Aprovada |
 | 178 | TP-0174 | executor | ✔ | Ajuste manual do simulador: D3 e gancho de reavaliação | L37 | TP-0091, TP-0099, TP-0146 | Aprovada |
-| 179 | TP-0175 | executor | ✔ | Tela T13: resultado com 2 times | L38 | TP-0089, TP-0098, TP-0100, TP-0106, TP-0172, TP-0173, TP-0174 | Não executada |
+| 179 | TP-0175 | executor | ✔ | Tela T13: resultado com 2 times | L38 | TP-0089, TP-0098, TP-0100, TP-0106, TP-0172, TP-0173, TP-0174 | Executada (aguarda teste) |
 | 180 | TP-0176 | executor | ✔ | Tela T14: resultado com 3 ou mais times | L38 | TP-0089, TP-0098, TP-0100, TP-0106, TP-0172, TP-0173, TP-0174, TP-0175 | Não executada |
 | 181 | TP-0177 | executor | ✔ | E2E de integração do I2 (API real) | L38 | TP-0138, TP-0162, TP-0163, TP-0165, TP-0166, TP-0167, TP-0168, TP-0172, TP-0175 | Não executada |
 | 182 | TP-0178 | executor | ✔ | [U] Go-live do I2 | L38 | SPK-0002, TP-0139, TP-0155, TP-0156, TP-0157, TP-0158, TP-0159, TP-0169, TP-0170, TP-0171, TP-0176, TP-0177 | Não executada |
@@ -200,7 +200,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 185 | TP-0181 | executor | ✔ | Endpoint GET /api/publico/:slug/pdf?mes= | L39 | TP-0013, TP-0029, TP-0033, TP-0053, TP-0179, TP-0180 | Não executada |
 | 186 | TP-0182 | executor | ✔ | Gerador de PDF: desenho da folha | L39 | TP-0004, TP-0088, TP-0092, TP-0093, TP-0180 | Aprovada |
 | 187 | BK-0002 | coordenador | ✔ | Comparação visual do PDF (P01) fica em 3,96% (sucesso) e 4,02% (mes-vazio) contra o limite | — | — | Aprovada |
-| 188 | TP-0183 | executor | ✔ | Gerador de PDF: uma página, legenda e rodapé | L39 | BK-0002, TP-0182 | Não executada |
+| 188 | TP-0183 | executor | ✔ | Gerador de PDF: uma página, legenda e rodapé | L39 | BK-0002, TP-0182 | Executada (aguarda teste) |
 | 189 | TP-0184 | executor | ✔ | T01: Exportar PDF (compartilhar ou baixar) | L39 | TP-0091, TP-0099, TP-0111, TP-0180, TP-0183 | Não executada |
 | 190 | TP-0185 | executor | ✔ | [U] Go-live do I3 e início da janela de 8 semanas | L40 | TP-0178, TP-0181, TP-0184 | Não executada |
 | 191 | TP-0186 | executor | ✔ | contrato/financeiro | L41 | TP-0005, TP-0018 | Aprovada |
@@ -216,12 +216,12 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 201 | TP-0196 | executor | ✔ | Endpoint GET /api/grupos/:g/financeiro/lancamentos/:id | L43 | TP-0032, TP-0033, TP-0186, TP-0189 | Não executada |
 | 202 | TP-0197 | executor | ✔ | Endpoint PUT /api/grupos/:g/financeiro/lancamentos/:id | L43 | TP-0030, TP-0032, TP-0033, TP-0186, TP-0189 | Não executada |
 | 203 | TP-0198 | executor | ✔ | Endpoint DELETE /api/grupos/:g/financeiro/lancamentos/:id | L43 | TP-0030, TP-0032, TP-0033, TP-0186, TP-0189 | Não executada |
-| 204 | TP-0199 | executor | ✔ | Tela T22: Financeiro do mês | L44 | TP-0089, TP-0092, TP-0095, TP-0101, TP-0106, TP-0186, TP-0207 | Testada (aguarda segurança) |
+| 204 | TP-0199 | executor | ✔ | Tela T22: Financeiro do mês | L44 | TP-0089, TP-0092, TP-0095, TP-0101, TP-0106, TP-0186, TP-0207 | Aprovada |
 | 205 | TP-0200 | executor | ✔ | Tela T22: marcar e desmarcar pagamento | L44 | TP-0097, TP-0100, TP-0199 | Não executada |
-| 206 | TP-0201 | executor | ✔ | Tela T23: Lançamento | L44 | TP-0089, TP-0095, TP-0096, TP-0097, TP-0098, TP-0100, TP-0106, TP-0186, TP-0207 | Testada (aguarda segurança) |
+| 206 | TP-0201 | executor | ✔ | Tela T23: Lançamento | L44 | TP-0089, TP-0095, TP-0096, TP-0097, TP-0098, TP-0100, TP-0106, TP-0186, TP-0207 | Aprovada |
 | 207 | TP-0202 | executor | ✔ | Tela T24: Configuração do caixa | L44 | TP-0089, TP-0095, TP-0096, TP-0098, TP-0106, TP-0186, TP-0199, TP-0207 | Não executada |
 | 208 | TP-0203 | executor | ✔ | Endpoint POST /api/sessao/aviso-privacidade | L45 | TP-0019, TP-0027, TP-0031, TP-0033 | Não executada |
-| 209 | TP-0204 | executor | ✔ | Tela T07: Aviso de privacidade (página e diálogo do 1º acesso) | L45 | TP-0089, TP-0095, TP-0099, TP-0105, TP-0106, TP-0207 | Testada (aguarda segurança) |
+| 209 | TP-0204 | executor | ✔ | Tela T07: Aviso de privacidade (página e diálogo do 1º acesso) | L45 | TP-0089, TP-0095, TP-0099, TP-0105, TP-0106, TP-0207 | Aprovada |
 | 210 | TP-0205 | executor | ✔ | E2E de integração do I4 (API real) | L45 | TP-0138, TP-0190, TP-0191, TP-0192, TP-0193, TP-0195, TP-0199, TP-0200, TP-0201, TP-0202 | Não executada |
 | 211 | TP-0206 | executor | ✔ | [U] Go-live do I4 | L45 | TP-0185, TP-0194, TP-0196, TP-0197, TP-0198, TP-0203, TP-0204, TP-0205 | Não executada |
 | 212 | RTP-0001 | executor | ✔ | Lint: backend/scripts importando @pelada/api por alias fura a zona (e falta o teste do... | L01 | TP-0002 | Não executada |

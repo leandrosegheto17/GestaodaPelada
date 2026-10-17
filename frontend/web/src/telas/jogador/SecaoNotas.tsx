@@ -23,7 +23,8 @@ interface Props {
  * (nada de média aqui). Falha ao gravar devolve o seletor ao valor salvo e avisa acima da lista.
  */
 export function SecaoNotas({ grupoId, jogador }: Props) {
-  const id = useId();
+  const idCampos = useId();
+  const idTitulo = 's-hab';
   const salvar = useSalvarNota(grupoId, jogador.id);
   const [pendentes, setPendentes] = useState<Record<string, number | null>>({});
   const [salvaAgora, setSalvaAgora] = useState<string | null>(null);
@@ -50,8 +51,8 @@ export function SecaoNotas({ grupoId, jogador }: Props) {
   };
 
   return (
-    <section className={estilos.secao} aria-labelledby={id}>
-      <h2 id={id} className={estilos.subtitulo}>
+    <section className={estilos.secao} aria-labelledby={idTitulo}>
+      <h2 id={idTitulo} className={estilos.subtitulo}>
         Habilidades e nível
       </h2>
       {jogador.semNota ? (
@@ -75,7 +76,7 @@ export function SecaoNotas({ grupoId, jogador }: Props) {
       ) : (
         <Lista>
           {jogador.notas.map((n) => {
-            const idCampo = `${id}-${n.habilidadeId}`;
+            const idCampo = `${idCampos}-${n.habilidadeId}`;
             return (
               <Item
                 key={n.habilidadeId}

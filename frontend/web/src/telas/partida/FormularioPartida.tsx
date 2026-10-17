@@ -129,7 +129,7 @@ export function FormularioPartida({
         {carregando ? <EsqueletoPartida data={data || undefined} /> : null}
         {comLista ? (
           <>
-            {aviso ? <div className={estilos.acima3}>{aviso}</div> : null}
+            {aviso}
             <ContagemFixa contagem={contagem} />
             <FerramentasLista
               busca={busca}
@@ -154,8 +154,9 @@ export function FormularioPartida({
           </>
         ) : null}
         {semAtivos ? (
-          <div className={estilos.acima4}>
+          <div className={estilos.acima4} role="status">
             <EstadoVazio
+              icone={null}
               titulo="Ninguém estava ativo nessa data."
               texto="Escolha outra data ou confira as datas de entrada dos jogadores."
             />

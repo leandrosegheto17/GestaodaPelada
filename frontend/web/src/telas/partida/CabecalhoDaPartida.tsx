@@ -46,8 +46,8 @@ export function CabecalhoDaPartida({
           erroComoAlerta
         />
         {dataExistente ? (
-          <div className={estilos.acima3}>
-            <BotaoLink to={rotaEditar(dataExistente)} variante="secundario">
+          <div className={estilos.acima1}>
+            <BotaoLink to={rotaEditar(dataExistente)} variante="secundario" bloco>
               Editar a partida de {diaMes(dataExistente)}
             </BotaoLink>
           </div>

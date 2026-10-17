@@ -12,6 +12,8 @@ export interface PropsDeEntrada {
 
 export interface PropsCampo {
   rotulo: string;
+  /** Rótulo só para leitor de tela, quando o título da seção já o mostra. */
+  rotuloOculto?: boolean;
   ajuda?: string;
   erro?: string | undefined;
   /** `true` quando o campo é validado sozinho (sem `ResumoErros`): o erro vira `role=alert`. */
@@ -26,7 +28,17 @@ export interface PropsCampo {
 }
 
 /** Moldura de qualquer campo: rótulo, ajuda e erro ligados à entrada por `aria-describedby`. */
-export function Campo({ rotulo, ajuda, erro, erroComoAlerta, id, classeEntrada, lado, children }: PropsCampo) {
+export function Campo({
+  rotulo,
+  rotuloOculto,
+  ajuda,
+  erro,
+  erroComoAlerta,
+  id,
+  classeEntrada,
+  lado,
+  children,
+}: PropsCampo) {
   const gerado = useId();
   const idEntrada = id ?? gerado;
   const idAjuda = `${idEntrada}-ajuda`;
@@ -40,7 +52,7 @@ export function Campo({ rotulo, ajuda, erro, erroComoAlerta, id, classeEntrada, 
   });
   return (
     <div className={juntar(estilos.campo, erro && estilos.comErro)}>
-      <label className={estilos.rotulo} htmlFor={idEntrada}>
+      <label className={rotuloOculto ? 'sr' : estilos.rotulo} htmlFor={idEntrada}>
         {rotulo}
       </label>
       {lado ? (

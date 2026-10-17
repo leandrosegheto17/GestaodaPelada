@@ -79,7 +79,7 @@
     { "id": "T16", "nome": "Ficha do jogador", "estado": "novo", "mockup": "telas/t16-jogador--novo.html", "rota": "/admin/g-quinta/jogadores/novo", "viewports": ["pc", "celular"] },
     { "id": "T16", "nome": "Ficha do jogador", "estado": "sem-habilidades", "mockup": "telas/t16-jogador--sem-habilidades.html", "rota": "/admin/g-quinta/jogadores/j-leo", "viewports": ["pc", "celular"],
       "respostas": [ { "url": "**/api/grupos/g-quinta/jogadores/j-leo", "arquivo": "respostas/jogador-sem-habilidades.json" }, { "url": "**/api/grupos/g-quinta/habilidades", "arquivo": "respostas/habilidades-vazio.json" } ],
-      "recorte": { "mockup": ".secao", "app": "#s-hab" } },
+      "recorte": { "mockup": ".secao", "app": "section[aria-labelledby=s-hab]" } },
     { "id": "T17", "nome": "Habilidades", "estado": "sucesso", "mockup": "telas/t17-habilidades--sucesso.html", "rota": "/admin/g-quinta/habilidades", "viewports": ["pc", "celular"],
       "respostas": [ { "url": "**/api/grupos/g-quinta/habilidades", "arquivo": "respostas/habilidades.json" } ] },
     { "id": "T17", "nome": "Habilidades", "estado": "vazio", "mockup": "telas/t17-habilidades--vazio.html", "rota": "/admin/g-quinta/habilidades", "viewports": ["pc", "celular"],

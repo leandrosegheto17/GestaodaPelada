@@ -9,13 +9,6 @@
   padding-top: var(--esp-4);
   border-top: 1px solid var(--cor-linha);
 }
-.secao .subtitulo {
-  margin-top: 0;
-}
-/* T26: os títulos mantêm a margem do `.subtitulo` global (como no mockup). */
-.grupos .subtitulo {
-  margin-top: var(--esp-6);
-}
 .grupoBotoes {
   display: flex;
   flex-wrap: wrap;
@@ -31,6 +24,11 @@
 .estreito {
   max-width: var(--largura-formulario);
   margin: 0 auto;
+}
+@media (min-width: 600px) {
+  .estreito {
+    max-width: calc(var(--largura-formulario) - 2 * var(--esp-6));
+  }
 }
 .formulario {
   display: grid;

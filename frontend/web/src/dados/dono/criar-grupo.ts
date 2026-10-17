@@ -19,6 +19,8 @@ export interface CorpoNovoGrupo {
 export function useCriarGrupo() {
   const cliente = useQueryClient();
   return useMutation({
+    // sem retenção no cache de mutações depois do reset(): a senha não pode ficar em memória
+    gcTime: 0,
     mutationFn: (corpo: CorpoNovoGrupo) => escrever('POST', '/dono/grupos', corpo, grupoCriado),
     onSuccess: () => cliente.invalidateQueries({ queryKey: chavesDono.todas }),
   });

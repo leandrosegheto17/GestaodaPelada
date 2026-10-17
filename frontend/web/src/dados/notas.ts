@@ -39,7 +39,7 @@ export function useSalvarNota(grupoId: string, jogadorId: string) {
         ficha ? aplicar(ficha, salva, ultimaDaHabilidade, ultimaDeTodas) : ficha,
       );
       await Promise.all([
-        cliente.invalidateQueries({ queryKey: chavesElenco.lista(grupoId) }),
+        cliente.invalidateQueries({ queryKey: chavesElenco.lista(grupoId), exact: true }),
         cliente.invalidateQueries({ queryKey: chaveSimulador(grupoId) }),
       ]);
     },

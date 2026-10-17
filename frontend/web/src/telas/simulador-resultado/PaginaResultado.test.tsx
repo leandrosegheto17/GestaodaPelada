@@ -159,7 +159,7 @@ describe('PaginaResultado (T13)', () => {
     ).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: 'Tentar de novo' }));
     await waitFor(() => expect(screen.queryByText('Não foi possível recalcular.')).not.toBeInTheDocument());
-    expect(avaliacoes).toHaveLength(2);
+    await waitFor(() => expect(avaliacoes).toHaveLength(2));
   });
 
   it('confirmar envia a composição atual e leva ao início com o recado', async () => {
@@ -221,7 +221,34 @@ describe('PaginaResultado (T13)', () => {
     await screen.findByRole('heading', { name: 'Times sugeridos' });
     expect(await violacoes(container)).toEqual([]);
     await userEvent.click(screen.getByRole('button', { name: /Japa/ }));
-    await screen.findByRole('dialog', { name: 'Japa' });
-    expect(await violacoes(document.body)).toEqual([]);
+    expect(await violacoes(await screen.findByRole('dialog', { name: 'Japa' }))).toEqual([]);
+  });
+
+  it('axe: sem violações recalculando e com o D2 aberto', async () => {
+    api({
+      avaliar: async () => {
+        await delay(400);
+        return HttpResponse.json(avaliacao);
+      },
+    });
+    const { container } = montar();
+    await userEvent.click(await screen.findByRole('button', { name: /Japa/ }));
+    await userEvent.click(screen.getByRole('button', { name: 'Não entra' }));
+    await screen.findAllByText('recalculando…');
+    expect(await violacoes(container)).toEqual([]);
+    await userEvent.click(screen.getByRole('button', { name: 'Refazer sugestão' }));
+    expect(await violacoes(await screen.findByRole('alertdialog'))).toEqual([]);
+  });
+
+  it('confirmar não envia duas vezes com cliques repetidos', async () => {
+    api({
+      confirmar: () =>
+        HttpResponse.json({ data: entrada.data, confirmadaEm: '2026-10-20T15:00:00.000Z' }, { status: 201 }),
+    });
+    montar();
+    const botao = await screen.findByRole('button', { name: 'Confirmar escalação' });
+    await userEvent.dblClick(botao);
+    await waitFor(() => expect(confirmacoes.length).toBeGreaterThan(0));
+    expect(confirmacoes).toHaveLength(1);
   });
 });

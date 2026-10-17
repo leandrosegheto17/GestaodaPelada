@@ -44,7 +44,7 @@ export function Component() {
   const resposta = consulta.data;
   const erroConsulta = consulta.error;
 
-  if (consulta.isError && erroDaData(erroConsulta) === undefined) {
+  if (consulta.isError && erroDaData(erroConsulta) === undefined && dataDuplicada(erroConsulta) === undefined) {
     return (
       <>
         <h1 className="sr">Lançar partida</h1>
@@ -55,10 +55,11 @@ export function Component() {
 
   // Erros da data vêm da consulta (data futura) ou do envio (422 de data, 409 de duplicada).
   const erroData = erroDaData(erroConsulta) ?? erroDaData(erroNoEnvio);
-  const dataExistente = dataDuplicada(erroNoEnvio) ?? (resposta?.jaExiste ? resposta.data : undefined);
+  const erroDuplicada = dataDuplicada(erroNoEnvio) ? erroNoEnvio : erroConsulta;
+  const dataExistente = dataDuplicada(erroDuplicada) ?? (resposta?.jaExiste ? resposta.data : undefined);
   const textoDuplicada = dataExistente
-    ? erroNoEnvio instanceof ErroApi && erroNoEnvio.status === 409
-      ? erroNoEnvio.message
+    ? erroDuplicada instanceof ErroApi && erroDuplicada.status === 409
+      ? erroDuplicada.message
       : `Já existe uma partida em ${dataExistente.split('-').reverse().join('/')}.`
     : undefined;
 

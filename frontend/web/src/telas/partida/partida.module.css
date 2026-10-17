@@ -9,6 +9,9 @@
   display: grid;
   gap: var(--esp-4);
 }
+.acima1 {
+  margin-top: var(--esp-1);
+}
 .acima3 {
   margin-top: var(--esp-3);
 }
@@ -21,6 +24,10 @@
   gap: var(--esp-2);
   align-items: center;
   margin: var(--esp-3) 0;
+}
+.ferramentas > :first-child {
+  flex: 1;
+  min-width: 180px;
 }
 .busca {
   width: 100%;

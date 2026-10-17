@@ -53,6 +53,7 @@ export function SituacaoComercial({ grupo, errosDoServidor, enviando, semConexao
       >
         <CampoSeletor
           rotulo="Situação comercial"
+          rotuloOculto
           ajuda="Não muda nada no app nesta fase."
           valor={situacao}
           aoMudar={setSituacao}

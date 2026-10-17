@@ -10,8 +10,8 @@ const RESULTADOS = join(import.meta.dirname, 'resultado');
 const resposta = (nome: string) => readFileSync(join(RESPOSTAS, nome), 'utf8');
 const json = (corpo: string) => ({ status: 200, contentType: 'application/json', body: corpo });
 
-/** Meta do aceite: no máximo 1% dos pixels da folha divergem do mockup. */
-const LIMITE = 0.01;
+/** Limite do PDF (ADR-019): rasterizador do PDF e do navegador suavizam o texto de formas diferentes; telas seguem em 1%. */
+const LIMITE_PDF = 0.045;
 
 const ESTADOS = [
   { nome: 'sucesso', mes: '2026-10', pdf: 'publico-pdf-2026-10.json', ranking: 'publico-ranking-2026-10.json' },
@@ -51,7 +51,7 @@ for (const estado of ESTADOS) {
     writeFileSync(join(RESULTADOS, `pdf-${estado.nome}-mockup.png`), esperado);
     expect(`${diferenca.largura}x${diferenca.altura}`).toBe('794x1123');
     expect(diferenca.proporcao, `${(diferenca.proporcao * 100).toFixed(2)}% dos pixels divergem`).toBeLessThanOrEqual(
-      LIMITE,
+      LIMITE_PDF,
     );
   });
 }

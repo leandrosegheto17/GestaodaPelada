@@ -23,7 +23,7 @@ export function GruposDono({ grupos }: { grupos: readonly Grupo[] }) {
   const arquivados = grupos.filter((g) => g.arquivadoEm !== null);
   const itens = filtro === 'ativos' ? ativos : arquivados;
   return (
-    <section className={`${estilos.secao} ${estilos.grupos}`} aria-labelledby={id}>
+    <section className={estilos.secao} aria-labelledby={id}>
       <h2 id={id} className={estilos.subtitulo}>
         Grupos
       </h2>

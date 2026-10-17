@@ -1,4 +1,4 @@
-import { FormaEsqueleto } from '../../componentes/basicos/Esqueleto';
+import { CartaoEsqueleto } from '../../componentes/cartao-time';
 import { TituloPagina } from '../../componentes/pagina/TituloPagina';
 import estilos from './resultado.module.css';
 
@@ -11,8 +11,8 @@ export function EsqueletoResultado() {
         Montando os times…
       </p>
       <div className={`${estilos.times} ${estilos.timesDois}`} aria-hidden="true">
-        <FormaEsqueleto variante="bloco" quantidade={3} />
-        <FormaEsqueleto variante="bloco" quantidade={3} />
+        <CartaoEsqueleto />
+        <CartaoEsqueleto variante="B" />
       </div>
     </div>
   );

@@ -92,7 +92,7 @@ describe('GrupoDono (T28): visão geral', () => {
     expect(screen.getByText('20:00')).toBeInTheDocument();
     expect(screen.getByText('05/02/2026')).toBeInTheDocument();
     expect(screen.getByText(URL_PUBLICA)).toBeInTheDocument();
-    expect(screen.getByLabelText('Situação comercial')).toHaveValue('uso_proprio');
+    expect(screen.getByRole('combobox', { name: 'Situação comercial' })).toHaveValue('uso_proprio');
     expect(screen.getByText('marquinhos@exemplo.com.br')).toBeInTheDocument();
     expect(document.querySelector('a[href^="/admin"]')).toBeNull();
     expect(await violacoes(container)).toEqual([]);
@@ -132,7 +132,7 @@ describe('GrupoDono (T28): situação', () => {
   it('Trial mostra a data e envia o início; Ativo envia null', async () => {
     api();
     montar();
-    await userEvent.selectOptions(await screen.findByLabelText('Situação comercial'), 'trial');
+    await userEvent.selectOptions(await screen.findByRole('combobox', { name: 'Situação comercial' }), 'trial');
     await userEvent.type(screen.getByLabelText('Início do trial'), '2026-10-22');
     await userEvent.click(screen.getByRole('button', { name: 'Salvar situação' }));
     expect(await screen.findByText('Situação salva.')).toBeInTheDocument();
@@ -146,7 +146,7 @@ describe('GrupoDono (T28): situação', () => {
   it('Trial sem data é recusado no cliente', async () => {
     api();
     montar();
-    await userEvent.selectOptions(await screen.findByLabelText('Situação comercial'), 'trial');
+    await userEvent.selectOptions(await screen.findByRole('combobox', { name: 'Situação comercial' }), 'trial');
     await userEvent.click(screen.getByRole('button', { name: 'Salvar situação' }));
     expect(await screen.findByText('Informe o início do trial.')).toBeInTheDocument();
     expect(chamadas).toHaveLength(0);
@@ -195,7 +195,7 @@ describe('GrupoDono (T28): senha e arquivamento', () => {
     expect(screen.getByText('Arquivado em')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Reativar grupo' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Arquivar grupo' })).toBeNull();
-    expect(screen.queryByLabelText('Situação comercial')).toBeNull();
+    expect(screen.queryByRole('combobox', { name: 'Situação comercial' })).toBeNull();
   });
 
   it('422 do arquivamento aparece dentro do diálogo', async () => {

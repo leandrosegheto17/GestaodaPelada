@@ -1,5 +1,5 @@
 .valor {
-  margin: 0 0 var(--esp-3);
+  margin: 0;
   font-family: var(--fonte-titulo);
   font-size: var(--texto-4xl);
   font-weight: var(--peso-extra);

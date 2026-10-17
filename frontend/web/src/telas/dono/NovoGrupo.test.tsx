@@ -100,14 +100,16 @@ describe('NovoGrupo (T27)', () => {
     await userEvent.click(within(dialogo).getByRole('button', { name: 'Já copiei' }));
     await waitFor(() => expect(roteador.state.location.pathname).toBe('/dono/grupos/g-sabado'));
     expect(document.body).not.toHaveTextContent('Pv8cNz5hKt2r');
-    expect(
-      JSON.stringify(
-        cliente
-          .getMutationCache()
-          .getAll()
-          .map((m) => m.state.data),
-      ),
-    ).not.toContain('senhaTemporaria');
+    await waitFor(() =>
+      expect(
+        JSON.stringify(
+          cliente
+            .getMutationCache()
+            .getAll()
+            .map((m) => m.state.data),
+        ),
+      ).not.toContain('senhaTemporaria'),
+    );
     expect(roteador.state.location.state).toBeNull();
   });
 
