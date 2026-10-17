@@ -21,6 +21,7 @@ export async function editarPartida(
   data: string,
   entrada: { choveu: boolean; marcacoes: readonly Marcacao[] },
   contexto: { autorContaId: string; agora: Date; hoje: string },
+  registrarAuditoria: typeof auditoria.registrar = auditoria.registrar,
 ): Promise<PartidaDetalhe> {
   await emTransacao(db, async (tx) => {
     const { linhas, contagem } = await prepararPresencas(tx, grupoId, data, entrada.marcacoes);
@@ -31,7 +32,7 @@ export async function editarPartida(
       agora: contexto.agora,
     });
     if (!alterada) throw new PartidaNaoEncontrada();
-    await auditoria.registrar(tx, grupoId, {
+    await registrarAuditoria(tx, grupoId, {
       autor: { tipo: 'conta', contaId: contexto.autorContaId },
       acao: 'partida_editada',
       entidade: 'partida',
