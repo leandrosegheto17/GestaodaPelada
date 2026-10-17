@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-17 19:34
+Atualizado: 2026-10-17 19:38
 
-Resumo: Não executada 30 · Em execução 13 · Executada (aguarda teste) 2 · Aprovada 288 · Bloqueada 5 · total 338
+Resumo: Não executada 24 · Em execução 14 · Executada (aguarda teste) 7 · Aprovada 288 · Bloqueada 5 · total 338
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -314,7 +314,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 299 | RTP-0104 | executor | ✔ | checar-escrita-e-dono: ';' dentro de string ou objeto pré-montado esconde a escrita de... | L08 | RTP-0072 | Aprovada |
 | 300 | RTP-0110 | executor | ✔ | checar-escrita-e-dono: atribuição o.e_dono = v e valor-expressão em chave de objeto esc... | Refatoração Lote-L08 | RTP-0104 | Aprovada |
 | 301 | RTP-0112 | executor | ✔ | checar-escrita-e-dono: '//' ou '--' dentro de literal de texto apaga o resto da linha e... | Refatoração Lote-L08 | RTP-0104 | Aprovada |
-| 302 | RTP-0121 | executor | ✔ | checar-escrita-e-dono: atribuição por colchete, composta (//=) e valor-expressão com ch... | Refatoração Lote-L08 | RTP-0110 | Não executada |
+| 302 | RTP-0121 | executor | ✔ | checar-escrita-e-dono: atribuição por colchete, composta (//=) e valor-expressão com ch... | Refatoração Lote-L08 | RTP-0110 | Executada (aguarda teste) |
 | 303 | RTP-0070 | executor | ✔ | Teste de partidas: relógio fixo e casos faltantes do plano | Refatoração Lote-L09 | TP-0044 | Aprovada |
 | 304 | RTP-0078 | executor | ✔ | Asserção automática do limite de 4 consultas em carregarHistoricoGrupo | L11 | TP-0053 | Aprovada |
 | 305 | RTP-0086 | executor | ✔ | Completar testes do POST /api/dono/grupos conforme o plano (atomicidade por passo, corr... | Refatoração Lote-L11 | TP-0056 | Aprovada |
@@ -338,13 +338,13 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 323 | RTP-0100 | executor | ✔ | Testes do POST partidas: concorrência, falha no evento e 422 de corpo | Refatoração Lote-L18 | TP-0081 | Em execução |
 | 324 | RTP-0101 | executor | ✔ | Teste do PUT partidas: 404 de :data malformada sem consulta ao banco | L18 | TP-0082 | Aprovada |
 | 325 | RTP-0107 | executor | ✔ | sw.ts: validade máxima (maxAgeSeconds) no cache do ranking público | L23 | TP-0108 | Aprovada |
-| 326 | RTP-0116 | executor | ✔ | Teste de ícones PWA falha: public/icones diferem do mockup byte a byte | Refatoração Lote-L23 | TP-0108 | Não executada |
+| 326 | RTP-0116 | executor | ✔ | Teste de ícones PWA falha: public/icones diferem do mockup byte a byte | Refatoração Lote-L23 | TP-0108 | Em execução |
 | 327 | RTP-0113 | executor | ✔ | Alinhar o nome do branch de produção do Neon (production) em deploy.yml, SDD e tarefas... | Refatoração Lote-L29 | TP-0132 | Em execução |
 | 328 | RTP-0115 | executor | ✔ | Ignorar .pnpm-store/ e .tmp-out.txt no .gitignore | Refatoração Lote-L29 | TP-0132 | Aprovada |
-| 329 | RTP-0117 | executor | ✔ | Faixa 'Jogador salvo' não aparece após cadastrar jogador (state não lido) | Refatoração Lote-L30 | TP-0124 | Não executada |
-| 330 | RTP-0118 | executor | ✔ | Trace do e2e de integração guarda a senha temporária (resposta de POST /api/dono/grupos) | Refatoração Lote-L30 | TP-0138 | Não executada |
-| 331 | RTP-0119 | executor | ✔ | docker-compose repete o e-mail real do dono em literal | Refatoração Lote-L30 | TP-0138 | Não executada |
-| 332 | RTP-0120 | executor | ✔ | checar-escrita-e-dono: '--' de código (i--) é tratado como comentário SQL e esconde e_dono | Refatoração Lote-L30 | RTP-0112 | Não executada |
+| 329 | RTP-0117 | executor | ✔ | Faixa 'Jogador salvo' não aparece após cadastrar jogador (state não lido) | Refatoração Lote-L30 | TP-0124 | Executada (aguarda teste) |
+| 330 | RTP-0118 | executor | ✔ | Trace do e2e de integração guarda a senha temporária (resposta de POST /api/dono/grupos) | Refatoração Lote-L30 | TP-0138 | Executada (aguarda teste) |
+| 331 | RTP-0119 | executor | ✔ | docker-compose repete o e-mail real do dono em literal | Refatoração Lote-L30 | TP-0138 | Executada (aguarda teste) |
+| 332 | RTP-0120 | executor | ✔ | checar-escrita-e-dono: '--' de código (i--) é tratado como comentário SQL e esconde e_dono | Refatoração Lote-L30 | RTP-0112 | Executada (aguarda teste) |
 | 333 | BK-0003 | coordenador | ✔ | Exige push da branch ci-prova e PR real no remoto (ação manual/autorização do usuário); ro | — | — | Não executada |
 | 334 | RTP-0014 | executor | ✔ | Executar a prova do CI em PR real (ci-prova) | Refatoração Lote-L01 | BK-0003, TP-0003 | Bloqueada |
 | 335 | BK-0005 | coordenador | ✔ | Item (b) feito; item (a) exige PR real com job e2e verde (push/PR autorizado pelo usuário) | — | — | Não executada |
