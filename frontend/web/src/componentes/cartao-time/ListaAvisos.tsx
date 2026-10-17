@@ -8,13 +8,15 @@ type Aviso = SugestaoDois['avisos'][number];
 export function ListaAvisos({ avisos }: { avisos: readonly Aviso[] }) {
   if (avisos.length === 0) return null;
   return (
-    <ul className={estilos.avisos} role="status">
-      {avisos.map((a) => (
-        <li key={`${a.tipo}-${a.texto}`}>
-          <Icone nome="atencao" tamanho={18} />
-          {a.texto}
-        </li>
-      ))}
-    </ul>
+    <div role="status">
+      <ul className={estilos.avisos}>
+        {avisos.map((a) => (
+          <li key={`${a.tipo}-${a.texto}`}>
+            <Icone nome="atencao" tamanho={18} />
+            {a.texto}
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
