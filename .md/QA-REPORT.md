@@ -692,3 +692,36 @@ APROVADA; 0 críticos, 1 não crítico (RTP-0093: faltam testes inativado-depois
 
 ## TP-0169 — QA — 2026-10-17
 APROVADA; 0 críticos/0 não críticos; ler+editar 19/19 verdes em Postgres próprio, escalação só na data do próximo jogo e isolada por grupo.
+
+## TP-0062 — QA — 2026-10-17
+APROVADA — 0 críticos, 0 não críticos; 82 testes (editar + isolamento) passando, tsc/eslint limpos, slug e histórico preservados.
+
+## TP-0108 — QA — 2026-10-17
+APROVADA, 0 críticos/0 não críticos; vitest 73/73, build ok (155 precache, sem /api), Playwright 3/3; nome curto "Pelada" pendente de confirmação.
+
+## TP-0155 — QA — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; listar 3/3 + isolamento 73/73 verdes, eslint limpo.
+
+## TP-0156 — QA — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; 87 testes (aplicação, rota, isolamento) passando em banco próprio, 422 idêntico ao mockup, ESLint limpo.
+
+## TP-0157 — QA — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; 83 testes (rota, aplicação, isolamento) verdes, notas preservadas e isolamento por grupo comprovados.
+
+## TP-0158 — QA — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; 79 testes (aplicação+rota+isolamento) passando contra Postgres real.
+
+## TP-0159 — QA — 2026-10-17
+APROVADA — 86 testes verdes (unidade, rota, isolamento), lint/prettier/tsc limpos, 0 achados críticos, 0 não críticos.
+
+## TP-0163 — QA — 2026-10-17
+APROVADA, 0 achados; 91 testes passando (previa, descricao, rota, isolamento); textos fora do mockup aguardam confirmação do Coordenador.
+
+## TP-0167 — QA — 2026-10-17
+APROVADA — 85/85 testes verdes (inclui o caso de inativo corrigido), aceite atendido; 0 críticos, 1 não crítico (idsDaComposicao duplicada em 3 lugares) -> RTP-0097.
+
+## TP-0181 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0096: lacunas de cobertura em pdf.test.ts); 80 testes verdes (pdf, publico, isolamento).
+
+## TP-0162 — QA — 2026-10-17
+APROVADA; 0 críticos, 0 novos não críticos; 10/10 testes da tarefa passam no projeto workers; falha no projeto node é a RTP-0082 já aberta.

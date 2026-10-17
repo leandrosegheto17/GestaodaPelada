@@ -662,3 +662,21 @@ OK — GET partidas/:data isolado por grupo via vinculo, SQL parametrizado, `:da
 
 ## TP-0080 — DevSecOps — 2026-10-17
 APROVADA; revisão do diff sem achados (isolamento por grupo, erro sem oráculo, sem PII/SQL em aplicacao); testes não reexecutados, 0 críticos/0 não críticos.
+
+## TP-0083 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; revisão do diff confirma vínculo/isolamento, CSRF, `:data` validada antes do banco e auditoria transacional sem dado pessoal (execução apoiada nos testes do QA).
+
+## TP-0084 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 novos (teste dedicado segue em RTP-0094); revisão do diff, 404 uniforme, projeção estrita e sem enumeração além do risco T-13 aceito.
+
+## TP-0085 — DevSecOps — 2026-10-17
+APROVADA — revisão do diff: contrato estrito, mapeamento campo a campo, sem IP/UA, bodyLimit 1 KB antes do parse, 404 indistinto; 0 críticos, 0 não críticos (limite de taxa fica no TP-0087).
+
+## TP-0086 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; revisão do diff: vínculo antes da rota, consulta parametrizada por grupo, saída só com contagens e parse estrito (execução: testes do QA).
+
+## TP-0094 — DevSecOps — 2026-10-17
+APROVADA COM DÉBITO — sem segredo real, imagens/volumes sem privilégio extra; portas 5432/8787/5173 publicadas em 0.0.0.0 (RTP-0095, não crítico); nada executado em contêiner; 0 críticos, 1 não crítico.
+
+## TP-0169 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; revisão de diff: só a data sai, consulta parametrizada e filtrada por grupo (G-03), isolamento coberto pelo teste do QA.
