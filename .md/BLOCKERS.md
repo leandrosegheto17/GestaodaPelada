@@ -80,3 +80,12 @@
 - Impacto se não resolvido: —
 - Sugestão: Decidir se env.teste sai do wrangler.jsonc ou fica adormecido; revisar TP-0134 e TP-0135
 - Status: Em aberto
+
+## Bloqueio 010 — 2026-10-17 (BK-0010)
+- Reportado por: Executor
+- Escalado para: usuário
+- Artefato/trecho afetado: TP-0136
+- Descrição: Decidir a cifra do backup: o Coordenador mandou openssl aes-256-cbc/pbkdf2, mas o repo usa age e o classificador marcou a troca como enfraquecimento de segurança; edições do dump-cifrado revertidas (parciais quebravam o deploy.yml)
+- Impacto se não resolvido: —
+- Sugestão: Manter age (mais forte) e ajustar o texto da tarefa, ou liberar a troca para openssl
+- Status: Em aberto

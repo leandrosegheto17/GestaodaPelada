@@ -878,3 +878,9 @@ APROVADA — id do Hyperdrive pelada-prod gravado (cache off, host direto), sem 
 
 ## TP-0134 — QA — 2026-10-17
 APROVADA — 7 secrets (6 no repositório, NEON_URL_MIGRACAO_PROD no environment producao com aprovação manual e só main), sem valores no repo; sem teste/NEON_URL_MIGRACAO_TESTE por decisão do usuário (BK-0009).
+
+## RTP-0102 — QA — 2026-10-17
+APROVADA — financeiro.ts dividido (35/197/93 linhas), exportações e testes idênticos à base; 0 críticos, 2 não críticos preexistentes (RTP-0123 tsc excluir.test, RTP-0124 pagamentos-marcar:57).
+
+## RTP-0122 — QA — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; vitest 53 verdes, checagem real sai 0, sonda confirma bit a bit casa e leituras não.

@@ -860,3 +860,9 @@ OK — só o id do Hyperdrive muda; cache off, origem direta, plano Free, nenhum
 
 ## TP-0134 — DevSecOps — 2026-10-17
 OK — secrets só nos escopos certos, `producao` com aprovação manual e só `main`, GITHUB_TOKEN em read, nenhum `pull_request_target` nem segredo no repo; repositório público (backup cifrado baixável) é risco aceito pelo usuário.
+
+## RTP-0102 — DevSecOps — 2026-10-17
+APROVADA — 14/14 filtros de grupo_id preservados nas consultas movidas (leitura comparada a 3bfc2ece^; checar-grupo-id exit 0 registrado), 0 achados.
+
+## RTP-0122 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; só amplia detecção (LIDO), sonda da regex e checagem real com saída 0 em 532 arquivos (EXECUTADO).
