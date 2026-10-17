@@ -542,3 +542,60 @@ APROVADA — revisão do diff: isolamento por grupo_id, SQL parametrizado e joga
 
 ## TP-0006 — DevSecOps — 2026-10-17
 APROVADA — SVG/index sem script, foreignObject, href externo, fonte ou recurso de terceiro (CSP default-src 'self'), gerador sem shell/segredo/escrita fora de icones, sem marcador de conflito nem dependência nova; 0 críticos, 0 não críticos.
+
+## RTP-0067 — DevSecOps — 2026-10-17
+APROVADA - 0 críticos, 0 não críticos; só testes, tipo EventoDeUso fechado sem IP/nome confirmado por leitura e diretivas não vacuosas; sem PII, segredos nem mudança de dependência (revisão de leitura, nada executado).
+
+## RTP-0073 — DevSecOps — 2026-10-17
+APROVADA, 0 críticos/0 não críticos; temPresencaDesde parametrizada com filtro grupo_id (G-03) lida no diff, sem mudança de dependências.
+
+## TP-0034 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico novo (RTP-0084: bloqueio não atômico sob concorrência) + RTP-0079 já existente; diff lido, sem execução própria (usada a do QA).
+
+## TP-0035 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; revisão de leitura do diff: sem hash na saída, conta só da sessão, grupos só dos vínculos não arquivados, enderecoNovo da config, no-store global.
+
+## TP-0036 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; sessão removida no banco só do aparelho, CSRF e cookie conferidos por leitura do diff (nada executado nesta etapa).
+
+## TP-0039 — DevSecOps — 2026-10-17
+APROVADA — 0 críticos/0 não críticos; resposta idêntica nos 3 caminhos, upsert parametrizado só para não-dono, sem log/envio de e-mail; risco residual: sem limite de taxa até TP-0087.
+
+## TP-0040 — DevSecOps — 2026-10-17
+APROVADA — 0 críticos, 1 baixo (sem limite de tentativas da senha atual, RTP-0085); hash no Postgres, escopo restrito só nesta rota/eu/sair, transação com sessões encerradas e sem senha em log/auditoria (lido; execução vem do QA).
+
+## TP-0051 — DevSecOps — 2026-10-17
+APROVADA COM DÉBITO - seed travado em host local, sem segredos nem `DATABASE_URL` na saída, SQL só no repositório; 0 críticos, 1 não crítico (RTP-0083: falta a regra de lint prometida para `apagarDadosDoSeed`).
+
+## TP-0052 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; revisão do diff confirma consulta parametrizada filtrada por grupo_id, sem pg/kysely na aplicação e sem exposição nova de dado pessoal (nada executado por este chapéu).
+
+## TP-0053 — DevSecOps — 2026-10-17
+APROVADA em segurança; 0 críticos, 0 não críticos; leituras todas filtradas por grupo_id, adaptadores sem vazar telefone/nome, sem SQL fora de repositório (revisão de código, nada executado).
+
+## TP-0055 — DevSecOps — 2026-10-17
+APROVADA, 0 críticos/0 não críticos; só dono, uuid antes do banco, schema estrito sem acessaFinanceiro, URL só de URL_PUBLICA (revisão de diff, sem execução própria).
+
+## TP-0059 — DevSecOps — 2026-10-17
+APROVADA — revisão do diff: dono-only (404), uuid validado antes do banco, SQL parametrizado só no repositório, 204 sem dado; 0 críticos, 0 não críticos.
+
+## TP-0060 — DevSecOps — 2026-10-17
+APROVADA — 0 críticos, 0 não críticos; senha só na resposta no-store e fora de logs, conta do dono = 404 idêntico ao inexistente, sessões do alvo encerradas na transação, rota sob exigirDono (revisão de diff, sem execução própria).
+
+## TP-0063 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos novos; revisão do diff confirma escopo por vínculo, select sem hash, parse estrito e no-store (lido, não executado).
+
+## TP-0064 — DevSecOps — 2026-10-17
+APROVADA — RF-13/ADR-015 respeitados (sem financeiro, no-store, senha uma vez sem log, 404/403/422 ok), revisão de diff sem execução própria; 0 achados.
+
+## TP-0065 — DevSecOps — 2026-10-17
+APROVADA — transação com trava de grupo, G-03/RN-13/RNF-12 conferidos no diff, corte de acesso coberto por teste; 0 achados.
+
+## TP-0066 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; revisão do diff confirma escopo por grupo antes do caso de uso, dono e própria conta recusados, senha só na resposta com no-store (testes executados pelo QA, não por mim).
+
+## TP-0068 — DevSecOps — 2026-10-17
+APROVADA — GET jogadores atrás de exigirVinculo, grupoId do vínculo, query strict, resposta strict sem dado pessoal, sem import em publico, caso de isolamento presente; 0 críticos, 0 não críticos (revisão de diff, nada executado).
+
+## TP-0069 — DevSecOps — 2026-10-17
+APROVADA em segurança — 0 críticos, 0 não críticos; G-03 (grupoId do vínculo, 404 uniforme), uuid antes do banco, telefone fora de log e rota só de admin conferidos por leitura do diff.
