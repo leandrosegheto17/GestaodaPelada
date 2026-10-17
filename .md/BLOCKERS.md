@@ -53,3 +53,12 @@
 - Impacto se não resolvido: —
 - Sugestão: —
 - Status: Resolvido (2026-10-17): distribuirDoisTimes otimizado (ADR-017 passo 1); limiar de 4 ms mantido
+
+## Bloqueio 007 — 2026-10-17 (BK-0007)
+- Reportado por: Executor
+- Escalado para: usuário
+- Artefato/trecho afetado: RTP-0114
+- Descrição: Rotacionar senhas pelada_app/pelada_backup no console do Neon (ALTER ROLE nos branches production e teste) e atualizar secrets NEON_URL_*, antes do TP-0133
+- Impacto se não resolvido: —
+- Sugestão: —
+- Status: Em aberto
