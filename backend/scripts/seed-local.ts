@@ -1,7 +1,6 @@
 import { HABILIDADES_INICIAIS, PESOS_PADRAO, diaDaSemana, somarDias, type DiaDaSemana } from '@pelada/dominio';
 import { criarDb, emTransacao, fecharDb, type Tx } from '../api/src/infraestrutura/db/index.ts';
 import * as contas from '../api/src/infraestrutura/db/repositorios/contas.ts';
-import * as eventos from '../api/src/infraestrutura/db/repositorios/eventos.ts';
 import * as grupos from '../api/src/infraestrutura/db/repositorios/grupos.ts';
 import * as habilidades from '../api/src/infraestrutura/db/repositorios/habilidades.ts';
 import * as jogadores from '../api/src/infraestrutura/db/repositorios/jogadores.ts';
@@ -33,15 +32,15 @@ import {
 
 /**
  * Dados fictícios para o ambiente local: 2 grupos, 5 contas, jogadores com notas e 3 meses de
- * partidas, relativos ao "hoje" de São Paulo. Idempotente: apaga e recria só o que é do seed.
+ * partidas, nas datas fixas do mockup (até `HOJE_DO_SEED`). Idempotente: apaga e recria só o que é do seed.
  * Só roda em host local (a trava recusa qualquer outro, mesmo com --alvo).
  */
 const DIA_QUINTA: DiaDaSemana = 4;
 const DIA_DOMINGO: DiaDaSemana = 0;
 
-function hojeEmSaoPaulo(): string {
-  return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(new Date());
-}
+/** "Hoje" do mockup: o seed é determinístico e igual aos dados de resposta do mockup. */
+const HOJE_DO_SEED = '2026-10-22';
+const MOMENTO_DO_SEED = new Date('2026-10-22T15:00:00Z');
 
 /** Datas de jogo do dia da semana nos últimos ~3 meses até `hoje` (inclusive), da mais antiga à mais nova. */
 function datasDeJogo(hoje: string, dia: DiaDaSemana, passoSemanas: number): string[] {
@@ -172,13 +171,6 @@ async function semear(tx: Tx, hoje: string, agora: Date): Promise<Record<string,
   const presencas = await criarPartidas(tx, quinta.id, datasQuinta, idsQuinta, dono, agora);
   await criarPartidas(tx, domingo.id, datasDomingo, idsDomingo, dono, agora);
 
-  const ultimaQuinta = datasQuinta[datasQuinta.length - 1] ?? hoje;
-  for (let i = 0; i < 9; i++) {
-    const dispositivoId = `00000000-0000-4000-8000-${String(i).padStart(12, '0')}`;
-    await eventos.registrar(tx, quinta.id, { tipo: 'ranking_aberto', dispositivoId, momento: agora });
-  }
-  await eventos.registrar(tx, quinta.id, { tipo: 'escalacao_confirmada', dataPartida: ultimaQuinta, momento: agora });
-
   return {
     contas: 5,
     grupos: 2,
@@ -195,7 +187,7 @@ async function principal(): Promise<void> {
   const promessas: Promise<unknown>[] = [];
   const db = criarDb({ connectionString: url as string }, { waitUntil: (p) => void promessas.push(p) });
   try {
-    const resumo = await emTransacao(db, (tx) => semear(tx, hojeEmSaoPaulo(), new Date()));
+    const resumo = await emTransacao(db, (tx) => semear(tx, HOJE_DO_SEED, MOMENTO_DO_SEED));
     console.log('Seed local concluído:', JSON.stringify(resumo));
     console.log(`Contas de teste (senha ${SENHA_DE_TESTE}): ${EMAILS_DO_SEED.join(', ')}`);
     console.log(`Rodrigo tem senha temporária: ${SENHA_TEMPORARIA_DE_TESTE}`);

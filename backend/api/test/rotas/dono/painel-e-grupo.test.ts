@@ -1,6 +1,7 @@
 import { grupoDono, painelDono } from '@pelada/contrato';
 import { randomUUID } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
+import { carregarGrupoDono } from '../../../src/aplicacao/dono/grupo-dono.js';
 import { kyselyDe } from '../../../src/infraestrutura/db/cliente.js';
 import * as pedidos from '../../../src/infraestrutura/db/repositorios/pedidos-reset.js';
 import { montarCenario } from '../../apoio/cenario-acesso.js';
@@ -72,5 +73,18 @@ describe('GET /api/dono/grupos/:id (workerd)', () => {
     expect(arquivado.corpo).toMatchObject({ arquivadoEm: '2026-10-16' });
     expect((await cliente(cen.dono.cookie).get(`/api/dono/grupos/${randomUUID()}`)).status).toBe(404);
     expect((await cliente(cen.dono.cookie).get('/api/dono/grupos/abc')).status).toBe(404);
+  });
+
+  it('admin comum recebe 404 e sem sessão 401', async () => {
+    const cen = await montarCenario(await abrir(), fabrica);
+    expect((await cliente(cen.adminA.cookie).get(`/api/dono/grupos/${cen.grupoA.id}`)).status).toBe(404);
+    expect((await cliente().get(`/api/dono/grupos/${cen.grupoA.id}`)).status).toBe(401);
+  });
+
+  it('o link público acompanha a base configurada', async () => {
+    const db = await abrir();
+    const cen = await montarCenario(db, fabrica);
+    const g = await carregarGrupoDono(db, 'https://outra.exemplo.com/', cen.grupoA.id);
+    expect(g?.urlPublica).toBe(`https://outra.exemplo.com/g/${cen.grupoA.slug}`);
   });
 });

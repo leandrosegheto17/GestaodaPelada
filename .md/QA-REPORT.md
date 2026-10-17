@@ -548,3 +548,9 @@ APROVADA — pesos.test.ts 6/6 com banco real, checar-grupo-id ok, diff conforme
 
 ## TP-0049 — QA — 2026-10-17
 APROVADA — 7/7 testes passando (banco próprio), checar-grupo-id limpo, critério de aceite coberto; 0 críticos, 3 não críticos (datas literais, seViolarUnico, fábrica de partidas) em RTP-0075.
+
+## TP-0006 — QA — 2026-10-17
+APROVADA — árvore sem marcadores de conflito, gerador código 0, IHDR 192/512/512/180, prévia renderizada (claro, escuro, circle(40%)) sem corte, contraste >= 5,41:1, aprovação do usuário registrada; 0 críticos, 1 não crítico (texto "Aguardando aprovação" desatualizado na prévia).
+
+## RTP-0067 — QA — 2026-10-17
+APROVADA (rodada 2) - 0 críticos, 0 não críticos; QA-1 resolvido: `M` declarado, remover as 4 diretivas gera exatamente 4 erros tsc reais (ip, nome, ranking_aberto sem dispositivoId, dispositivoId fora de ranking_aberto); 12/12 testes passando.

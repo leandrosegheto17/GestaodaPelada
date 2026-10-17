@@ -2,6 +2,7 @@ import type { EscopoSessao } from '@pelada/contrato';
 import { emTransacao, type Db } from '../../infraestrutura/db/index.js';
 import * as auditoria from '../../infraestrutura/db/repositorios/auditoria.js';
 import * as contas from '../../infraestrutura/db/repositorios/contas.js';
+import * as pedidos from '../../infraestrutura/db/repositorios/pedidos-reset.js';
 import * as sessoes from '../../infraestrutura/db/repositorios/sessoes.js';
 
 export interface SessaoQueTroca {
@@ -40,6 +41,8 @@ export async function trocarSenha(
     await contas.trocarSenha(tx, sessao.contaId, entrada.novaSenha, { temporaria: false });
     await sessoes.trocarEscopo(tx, sessao.sessaoId, 'completo');
     await sessoes.encerrarTodasDaConta(tx, sessao.contaId, { exceto: sessao.sessaoId });
+    // ADR-004 §6: o pedido de reset se resolve quando a senha é redefinida por qualquer meio.
+    await pedidos.resolverPorConta(tx, sessao.contaId, { resolvidoPor: sessao.contaId, agora });
     await auditoria.registrar(tx, null, {
       autor: { tipo: 'conta', contaId: sessao.contaId },
       acao: 'senha_trocada',

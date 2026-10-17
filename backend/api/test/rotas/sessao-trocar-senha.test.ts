@@ -91,6 +91,41 @@ describe('POST /api/sessao/trocar-senha (workerd)', () => {
     expect(r.status).toBe(422);
   });
 
+  it.each([
+    ['8 caracteres', 'a1b2c3d4'],
+    ['72 caracteres', 'a'.repeat(72)],
+  ])('limite válido: %s → 204', async (_nome, senha) => {
+    const db = await abrir();
+    const conta = await criarConta(db, fabrica, { temporaria: true });
+    fabrica.registrar(async () => {
+      await kyselyDe(db).deleteFrom('auditoria').where('entidade_id', '=', conta.id).execute();
+    });
+    const { cookie } = await entrarComo(db, fabrica, conta.id, { escopo: 'troca_de_senha', agora: t0 });
+    const r = await cliente(cookie).post('/api/sessao/trocar-senha', { novaSenha: senha, confirmacao: senha });
+    expect(r.status).toBe(204);
+    expect(r.headers.get('cache-control')).toBe('no-store');
+  });
+
+  it('com 3 sessões, só a atual sobrevive; sem X-Pelada: 403', async () => {
+    const db = await abrir();
+    const conta = await criarConta(db, fabrica);
+    fabrica.registrar(async () => {
+      await kyselyDe(db).deleteFrom('auditoria').where('entidade_id', '=', conta.id).execute();
+    });
+    const [a, b, c] = [
+      await entrarComo(db, fabrica, conta.id, { agora: t0 }),
+      await entrarComo(db, fabrica, conta.id, { agora: t0 }),
+      await entrarComo(db, fabrica, conta.id, { agora: t0 }),
+    ];
+    const corpo = { senhaAtual: conta.senha, novaSenha: NOVA, confirmacao: NOVA };
+    const semCsrf = clienteTeste({ relogio: relogioFixo('2026-10-16'), cookie: a.cookie, semCsrf: true });
+    expect((await semCsrf.post('/api/sessao/trocar-senha', corpo)).status).toBe(403);
+    expect((await cliente(a.cookie).post('/api/sessao/trocar-senha', corpo)).status).toBe(204);
+    expect((await cliente(a.cookie).get('/api/sessao/eu')).status).toBe(200);
+    expect((await cliente(b.cookie).get('/api/sessao/eu')).status).toBe(401);
+    expect((await cliente(c.cookie).get('/api/sessao/eu')).status).toBe(401);
+  });
+
   it('sem sessão: 401; nenhum log contém a senha', async () => {
     const db = await abrir();
     const conta = await criarConta(db, fabrica, { temporaria: true });
@@ -104,6 +139,10 @@ describe('POST /api/sessao/trocar-senha (workerd)', () => {
       vi.spyOn(console, m).mockImplementation(() => undefined),
     );
     const { cookie } = await entrarComo(db, fabrica, conta.id, { escopo: 'troca_de_senha', agora: t0 });
+    await cliente(cookie).post('/api/sessao/trocar-senha', {
+      novaSenha: 'senha-que-nao-pode-vazar',
+      confirmacao: 'senha-que-nao-pode-vazar-x',
+    });
     await cliente(cookie).post('/api/sessao/trocar-senha', {
       novaSenha: 'senha-que-nao-pode-vazar',
       confirmacao: 'senha-que-nao-pode-vazar',

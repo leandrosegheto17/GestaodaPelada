@@ -66,6 +66,19 @@ describe('POST /api/sessao/esqueci-senha (workerd)', () => {
     expect(r.status).toBe(422);
   });
 
+  it('e-mail malformado indica campos.email; corpo não JSON indica campos.corpo', async () => {
+    const malformado = await clienteEm('2026-10-16').post('/api/sessao/esqueci-senha', { email: 'sem-arroba' });
+    expect(malformado.corpo).toMatchObject({ erro: { campos: { email: expect.any(String) } } });
+    const semCorpo = await clienteEm('2026-10-16').post('/api/sessao/esqueci-senha');
+    expect(semCorpo.status).toBe(422);
+    expect(semCorpo.corpo).toMatchObject({ erro: { campos: { corpo: expect.any(String) } } });
+  });
+
+  it('corpo acima do limite: 413', async () => {
+    const r = await clienteEm('2026-10-16').post('/api/sessao/esqueci-senha', { email: 'a'.repeat(200_000) });
+    expect(r.status).toBe(413);
+  });
+
   it('sem X-Pelada: 403; com no-store', async () => {
     expect(
       (await clienteEm('2026-10-16', '12:00', true).post('/api/sessao/esqueci-senha', { email: 'a@b.com' })).status,

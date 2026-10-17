@@ -1,5 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { ordenarAtivosNaData, ordenarAtivosNoMes } from '../../../src/aplicacao/elenco/ativos.js';
+import {
+  ativosNaData,
+  ativosNoMes,
+  ordenarAtivosNaData,
+  ordenarAtivosNoMes,
+} from '../../../src/aplicacao/elenco/ativos.js';
+import { montarCenario } from '../../apoio/cenario-acesso.js';
+import { usarDb } from '../../apoio/db-teste.js';
+import { usarFabrica } from '../../apoio/fabrica.js';
+import { criarJogador } from '../../apoio/fabricas/jogadores.js';
+import { diaRelativo } from '../../apoio/relogio.js';
 
 const jogador = (id: string, apelido: string, periodos: { inicio: string; fim: string | null }[]) => ({
   id,
@@ -34,5 +44,21 @@ describe('jogadores ativos', () => {
     const original = [entrouNoMeio, saiuNoMeio];
     ordenarAtivosNaData(original, '2026-10-16');
     expect(original.map((j) => j.id)).toEqual(['1', '2']);
+  });
+});
+
+describe('ativosNaData e ativosNoMes (banco)', () => {
+  const fabrica = usarFabrica();
+  const abrir = usarDb(fabrica);
+
+  it('só devolve jogadores do grupo pedido, por apelido', async () => {
+    const db = await abrir();
+    const cen = await montarCenario(db, fabrica);
+    const dia = diaRelativo(0);
+    await criarJogador(db, cen.grupoA.id, cen.adminA.id, { apelido: 'Zeca', dataEntrada: diaRelativo(-10) });
+    await criarJogador(db, cen.grupoA.id, cen.adminA.id, { apelido: 'álvaro', dataEntrada: diaRelativo(-10) });
+    await criarJogador(db, cen.grupoB.id, cen.adminB.id, { apelido: 'Outro', dataEntrada: diaRelativo(-10) });
+    expect((await ativosNaData(db, cen.grupoA.id, dia)).map((j) => j.apelido)).toEqual(['álvaro', 'Zeca']);
+    expect((await ativosNoMes(db, cen.grupoA.id, dia.slice(0, 7))).map((j) => j.apelido)).toEqual(['álvaro', 'Zeca']);
   });
 });

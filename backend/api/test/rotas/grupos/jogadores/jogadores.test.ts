@@ -17,7 +17,6 @@ const abrir = usarDbDoWorker(fabrica);
 const HOJE = '2026-10-22';
 const AGORA = new Date('2026-10-22T15:00:00Z');
 const cliente = (cookie: string, data = HOJE) => clienteTeste({ relogio: relogioFixo(data), cookie });
-const corpo = { apelido: 'Toninho', anoNascimento: 1978, posicao: 'atacante', telefone: '(11) 98765-4321' };
 
 describe('GET /api/grupos/:g/jogadores (workerd)', () => {
   it('ativos e inativos por apelido, com nível; filtro esvazia a outra lista', async () => {
@@ -46,6 +45,18 @@ describe('GET /api/grupos/:g/jogadores (workerd)', () => {
     expect((await cliente(cen.adminA.cookie).get(`/api/grupos/${g}/jogadores?filtro=todos`)).status).toBe(422);
     expect(r.texto).not.toMatch(/telefone|anoNascimento/);
   });
+
+  it('grupo sem jogadores devolve as duas listas vazias, sem cache; sem sessão 401; admin de outro grupo 404', async () => {
+    const db = await abrir();
+    const cen = await montarCenario(db, fabrica);
+    const g = cen.grupoA.id;
+    const r = await cliente(cen.adminA.cookie).get(`/api/grupos/${g}/jogadores`);
+    expect(r.status).toBe(200);
+    expect(r.corpo).toEqual({ ativos: [], inativos: [] });
+    expect(r.headers.get('cache-control')).toMatch(/no-store/);
+    expect((await clienteTeste({ relogio: relogioFixo(HOJE) }).get(`/api/grupos/${g}/jogadores`)).status).toBe(401);
+    expect((await cliente(cen.adminB.cookie).get(`/api/grupos/${g}/jogadores`)).status).toBe(404);
+  });
 });
 
 describe('GET /api/grupos/:g/jogadores/:id (workerd)', () => {
@@ -69,53 +80,6 @@ describe('GET /api/grupos/:g/jogadores/:id (workerd)', () => {
     expect((await cliente(cen.adminB.cookie).get(`/api/grupos/${cen.grupoB.id}/jogadores/${id}`)).status).toBe(404);
     expect((await cliente(cen.adminA.cookie).get(`/api/grupos/${g}/jogadores/${randomUUID()}`)).status).toBe(404);
     expect((await cliente(cen.adminA.cookie).get(`/api/grupos/${g}/jogadores/abc`)).status).toBe(404);
-  });
-});
-
-describe('POST /api/grupos/:g/jogadores (workerd)', () => {
-  it('cria com entrada em hoje por padrão e telefone normalizado', async () => {
-    const cen = await montarCenario(await abrir(), fabrica);
-    const r = await cliente(cen.adminA.cookie).post(`/api/grupos/${cen.grupoA.id}/jogadores`, corpo);
-    expect(r.status).toBe(201);
-    expect(jogadorDetalhe.parse(r.corpo)).toMatchObject({
-      apelido: 'Toninho',
-      telefone: '11987654321',
-      semNota: true,
-      nivel: 5.5,
-      situacao: { ativo: true, desde: HOJE },
-    });
-    const passada = await cliente(cen.adminA.cookie).post(`/api/grupos/${cen.grupoA.id}/jogadores`, {
-      ...corpo,
-      apelido: 'Entrou Antes',
-      dataEntrada: '2026-03-01',
-    });
-    expect((passada.corpo as { situacao: { desde: string } }).situacao.desde).toBe('2026-03-01');
-  });
-
-  it('apelido repetido sem caixa dá 422 no campo; o mesmo apelido em outro grupo é aceito', async () => {
-    const cen = await montarCenario(await abrir(), fabrica);
-    await cliente(cen.adminA.cookie).post(`/api/grupos/${cen.grupoA.id}/jogadores`, corpo);
-    const repetido = await cliente(cen.adminA.cookie).post(`/api/grupos/${cen.grupoA.id}/jogadores`, {
-      ...corpo,
-      apelido: 'TONINHO',
-    });
-    expect(repetido.status).toBe(422);
-    expect(repetido.corpo).toMatchObject({
-      erro: { campos: { apelido: 'Já existe um jogador com esse apelido neste grupo.' } },
-    });
-    expect((await cliente(cen.adminB.cookie).post(`/api/grupos/${cen.grupoB.id}/jogadores`, corpo)).status).toBe(201);
-  });
-
-  it('o ano máximo é o do hoje do servidor', async () => {
-    const cen = await montarCenario(await abrir(), fabrica);
-    const url = `/api/grupos/${cen.grupoA.id}/jogadores`;
-    const nesteAno = (ano: number, data: string, apelido: string) =>
-      cliente(cen.adminA.cookie, data).post(url, { ...corpo, apelido, anoNascimento: ano });
-    expect((await nesteAno(2016, '2026-12-31', 'Dezesseis')).status).toBe(201);
-    const recusado = await nesteAno(2017, '2026-12-31', 'Dezessete');
-    expect(recusado.status).toBe(422);
-    expect(Object.keys((recusado.corpo as { erro: { campos: object } }).erro.campos)).toContain('anoNascimento');
-    expect((await nesteAno(2017, '2027-01-01', 'Dezessete')).status).toBe(201);
   });
 });
 

@@ -1,3 +1,5 @@
+import { compararApelido, compararApelidoBase } from '../elenco/apelido.js';
+
 export interface Rankeavel {
   id: string;
   apelido: string;
@@ -10,8 +12,6 @@ export interface Colocado<T extends Rankeavel> {
   /** Colocação: empatados nos três critérios repetem o número e o seguinte pula (1, 1, 3). */
   posicao: number;
 }
-
-const collator = new Intl.Collator('pt-BR', { sensitivity: 'base' });
 
 /**
  * Ordem do ranking (RN-05): acumulado até a referência (maior primeiro), ano de nascimento
@@ -28,9 +28,9 @@ export function ordenarPorRanking<T extends Rankeavel>(
   const comparar = (a: (typeof itens)[number], b: (typeof itens)[number]): number =>
     b.acumulado - a.acumulado ||
     a.jogador.anoNascimento - b.jogador.anoNascimento ||
-    collator.compare(a.jogador.apelido, b.jogador.apelido);
+    compararApelidoBase(a.jogador.apelido, b.jogador.apelido);
 
-  itens.sort((a, b) => comparar(a, b) || (a.jogador.id < b.jogador.id ? -1 : a.jogador.id > b.jogador.id ? 1 : 0));
+  itens.sort((a, b) => comparar(a, b) || compararApelido(a.jogador, b.jogador));
 
   const colocados: Colocado<T>[] = [];
   itens.forEach((item, indice) => {

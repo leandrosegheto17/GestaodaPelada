@@ -12,18 +12,21 @@ import { usarDb } from '../apoio/db-teste.js';
 import { criarJogador } from '../apoio/fabricas/jogadores.js';
 import { usarFabrica } from '../apoio/fabrica.js';
 import { criarBase } from '../apoio/sql-dados.js';
+import { AGORA_TESTE, diaRelativo } from '../apoio/relogio.js';
 import { executarSql } from '../apoio/sql.js';
 
 const fabrica = usarFabrica();
 const abrir = usarDb(fabrica);
-const AGORA = new Date('2026-10-16T12:00:00Z');
+const AGORA = AGORA_TESTE;
+const d = diaRelativo;
+const ENTRADA = d(-250);
 
 const dados = (apelido: string) => ({
   apelido,
   anoNascimento: 1980,
   posicao: 'atacante',
   telefone: null,
-  dataEntrada: '2026-02-05',
+  dataEntrada: ENTRADA,
   autor: '',
   agora: AGORA,
 });
@@ -37,7 +40,7 @@ describe('repositório de jogadores', () => {
     );
     expect(await jogadores.buscar(db, base.grupo.id, id)).toMatchObject({
       apelido: 'Toninho',
-      periodos: [{ inicio: '2026-02-05', fim: null }],
+      periodos: [{ inicio: ENTRADA, fim: null }],
     });
     await expect(
       emTransacao(db, (tx) => jogadores.criar(tx, base.grupo.id, { ...dados('TONINHO'), autor: base.contaId })),
@@ -59,9 +62,9 @@ describe('repositório de jogadores', () => {
   it('editar muda os dados e move só o primeiro período; data depois do fim é PeriodoInvalido', async () => {
     const db = await abrir();
     const base = await criarBase(db, fabrica);
-    const id = await criarJogador(db, base.grupo.id, base.contaId, { dataEntrada: '2026-02-05' });
-    await jogadores.inativar(db, base.grupo.id, id, '2026-03-01');
-    await jogadores.reativar(db, base.grupo.id, id, '2026-04-01');
+    const id = await criarJogador(db, base.grupo.id, base.contaId, { dataEntrada: ENTRADA });
+    await jogadores.inativar(db, base.grupo.id, id, d(-200));
+    await jogadores.reativar(db, base.grupo.id, id, d(-150));
     const novo = {
       apelido: 'Novo Nome',
       anoNascimento: 1981,
@@ -72,14 +75,14 @@ describe('repositório de jogadores', () => {
     };
     const editar = (grupoId: string, extra: { dataEntrada?: string } = {}) =>
       emTransacao(db, (tx) => jogadores.editar(tx, grupoId, id, { ...novo, ...extra }));
-    expect(await editar(base.grupo.id, { dataEntrada: '2026-02-10' })).toBe(true);
+    expect(await editar(base.grupo.id, { dataEntrada: d(-245) })).toBe(true);
     const j = await jogadores.buscar(db, base.grupo.id, id);
     expect(j).toMatchObject({ apelido: 'Novo Nome', posicao: 'goleiro', telefone: '11987654321' });
     expect(j?.periodos).toEqual([
-      { inicio: '2026-02-10', fim: '2026-03-01' },
-      { inicio: '2026-04-01', fim: null },
+      { inicio: d(-245), fim: d(-200) },
+      { inicio: d(-150), fim: null },
     ]);
-    await expect(editar(base.grupo.id, { dataEntrada: '2026-03-02' })).rejects.toBeInstanceOf(PeriodoInvalido);
+    await expect(editar(base.grupo.id, { dataEntrada: d(-199) })).rejects.toBeInstanceOf(PeriodoInvalido);
     expect(await editar(base.outroGrupo.id)).toBe(false);
     expect((await jogadores.buscar(db, base.grupo.id, id))?.apelido).toBe('Novo Nome');
   });
@@ -88,10 +91,10 @@ describe('repositório de jogadores', () => {
     const db = await abrir();
     const base = await criarBase(db, fabrica);
     const id = await criarJogador(db, base.grupo.id, base.contaId);
-    expect(await jogadores.inativar(db, base.outroGrupo.id, id, '2026-06-01')).toBe('sem_periodo_aberto');
+    expect(await jogadores.inativar(db, base.outroGrupo.id, id, d(-100))).toBe('sem_periodo_aberto');
     expect(await emTransacao(db, (tx) => jogadores.excluir(tx, base.outroGrupo.id, id))).toBe(false);
     expect(await jogadores.temHistorico(db, base.outroGrupo.id, id)).toBe(false);
-    expect((await jogadores.buscar(db, base.grupo.id, id))?.periodos).toEqual([{ inicio: '2026-01-01', fim: null }]);
+    expect((await jogadores.buscar(db, base.grupo.id, id))?.periodos).toEqual([{ inicio: d(-300), fim: null }]);
     // @ts-expect-error criar exige Tx
     void jogadores.criar(db, base.grupo.id, { ...dados('SemTx'), autor: base.contaId }).catch(() => undefined);
   });
@@ -100,9 +103,9 @@ describe('repositório de jogadores', () => {
     const db = await abrir();
     const base = await criarBase(db, fabrica);
     for (const apelido of ['Um', 'Dois', 'Tres']) {
-      const id = await criarJogador(db, base.grupo.id, base.contaId, { apelido, dataEntrada: '2026-01-01' });
-      await jogadores.inativar(db, base.grupo.id, id, '2026-02-01');
-      await jogadores.reativar(db, base.grupo.id, id, '2026-03-01');
+      const id = await criarJogador(db, base.grupo.id, base.contaId, { apelido, dataEntrada: d(-300) });
+      await jogadores.inativar(db, base.grupo.id, id, d(-250));
+      await jogadores.reativar(db, base.grupo.id, id, d(-200));
     }
     const espiao = vi.spyOn(kyselyDe(db).getExecutor(), 'executeQuery');
     const lista = await jogadores.listar(db, base.grupo.id);
@@ -115,15 +118,15 @@ describe('repositório de jogadores', () => {
   it('inativar fecha o aberto; de novo não há período aberto; reativar abre outro e não aceita já ativo', async () => {
     const db = await abrir();
     const base = await criarBase(db, fabrica);
-    const id = await criarJogador(db, base.grupo.id, base.contaId, { dataEntrada: '2026-02-05' });
-    expect(await jogadores.inativar(db, base.grupo.id, id, '2026-03-01')).toBe('ok');
-    expect(await jogadores.inativar(db, base.grupo.id, id, '2026-03-02')).toBe('sem_periodo_aberto');
-    expect(await jogadores.reativar(db, base.grupo.id, id, '2026-02-20')).toBeNull();
-    expect(await jogadores.reativar(db, base.grupo.id, id, '2026-04-01')).toBeTypeOf('string');
-    await expect(jogadores.reativar(db, base.grupo.id, id, '2026-05-01')).rejects.toBeInstanceOf(JaAtivo);
+    const id = await criarJogador(db, base.grupo.id, base.contaId, { dataEntrada: ENTRADA });
+    expect(await jogadores.inativar(db, base.grupo.id, id, d(-200))).toBe('ok');
+    expect(await jogadores.inativar(db, base.grupo.id, id, d(-199))).toBe('sem_periodo_aberto');
+    expect(await jogadores.reativar(db, base.grupo.id, id, d(-220))).toBeNull();
+    expect(await jogadores.reativar(db, base.grupo.id, id, d(-150))).toBeTypeOf('string');
+    await expect(jogadores.reativar(db, base.grupo.id, id, d(-100))).rejects.toBeInstanceOf(JaAtivo);
     expect((await jogadores.buscar(db, base.grupo.id, id))?.periodos).toHaveLength(2);
-    await expect(jogadores.inativar(db, base.grupo.id, id, '2026-03-15')).rejects.toBeInstanceOf(PeriodoInvalido);
-    expect(await jogadores.reativar(db, base.outroGrupo.id, id, '2026-06-01')).toBeNull();
+    await expect(jogadores.inativar(db, base.grupo.id, id, d(-185))).rejects.toBeInstanceOf(PeriodoInvalido);
+    expect(await jogadores.reativar(db, base.outroGrupo.id, id, d(-100))).toBeNull();
   });
 
   it('temHistorico (presença ou nota) e excluir', async () => {
@@ -150,20 +153,48 @@ describe('repositório de jogadores', () => {
     expect(await executarSql('SELECT 1 FROM periodos_ativos WHERE jogador_id = $1', [livre])).toEqual([]);
   });
 
+  async function presenca(grupoId: string, contaId: string, jogadorId: string, data: string) {
+    const partida = await executarSql<{ id: string }>(
+      `INSERT INTO partidas (grupo_id, data, criada_por, criada_em, alterada_por, alterada_em)
+       VALUES ($1, $4, $2, $3, $2, $3) RETURNING id`,
+      [grupoId, contaId, AGORA, data],
+    );
+    await executarSql(
+      "INSERT INTO presencas (partida_id, jogador_id, grupo_id, situacao) VALUES ($1, $2, $3, 'presente')",
+      [partida[0]?.id, jogadorId, grupoId],
+    );
+  }
+
+  it('temHistorico e excluir com presença (sem nota)', async () => {
+    const db = await abrir();
+    const base = await criarBase(db, fabrica);
+    const id = await criarJogador(db, base.grupo.id, base.contaId);
+    expect(await jogadores.temHistorico(db, base.grupo.id, id)).toBe(false);
+    await presenca(base.grupo.id, base.contaId, id, d(-100));
+    expect(await jogadores.temHistorico(db, base.grupo.id, id)).toBe(true);
+    await expect(emTransacao(db, (tx) => jogadores.excluir(tx, base.grupo.id, id))).rejects.toBeInstanceOf(
+      JogadorComHistorico,
+    );
+    expect(await jogadores.buscar(db, base.grupo.id, id)).not.toBeNull();
+  });
+
   it('temPresencaAntesDe', async () => {
     const db = await abrir();
     const base = await criarBase(db, fabrica);
     const id = await criarJogador(db, base.grupo.id, base.contaId);
-    const partida = await executarSql<{ id: string }>(
-      `INSERT INTO partidas (grupo_id, data, criada_por, criada_em, alterada_por, alterada_em)
-       VALUES ($1, '2026-03-05', $2, $3, $2, $3) RETURNING id`,
-      [base.grupo.id, base.contaId, AGORA],
-    );
-    await executarSql(
-      "INSERT INTO presencas (partida_id, jogador_id, grupo_id, situacao) VALUES ($1, $2, $3, 'presente')",
-      [partida[0]?.id, id, base.grupo.id],
-    );
-    expect(await jogadores.temPresencaAntesDe(db, base.grupo.id, id, '2026-03-06')).toBe(true);
-    expect(await jogadores.temPresencaAntesDe(db, base.grupo.id, id, '2026-03-05')).toBe(false);
+    await presenca(base.grupo.id, base.contaId, id, d(-100));
+    expect(await jogadores.temPresencaAntesDe(db, base.grupo.id, id, d(-99))).toBe(true);
+    expect(await jogadores.temPresencaAntesDe(db, base.grupo.id, id, d(-100))).toBe(false);
+  });
+
+  it('temPresencaDesde (limite inclusivo, respeita o grupo)', async () => {
+    const db = await abrir();
+    const base = await criarBase(db, fabrica);
+    const id = await criarJogador(db, base.grupo.id, base.contaId);
+    await presenca(base.grupo.id, base.contaId, id, d(-100));
+    expect(await jogadores.temPresencaDesde(db, base.grupo.id, id, d(-100))).toBe(true);
+    expect(await jogadores.temPresencaDesde(db, base.grupo.id, id, d(-101))).toBe(true);
+    expect(await jogadores.temPresencaDesde(db, base.grupo.id, id, d(-99))).toBe(false);
+    expect(await jogadores.temPresencaDesde(db, base.outroGrupo.id, id, d(-101))).toBe(false);
   });
 });

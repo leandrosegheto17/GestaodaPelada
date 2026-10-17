@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-17 12:09
+Atualizado: 2026-10-17 12:26
 
-Resumo: Não executada 103 · Executada (aguarda teste) 1 · Em teste 1 · Aprovada 183 · Bloqueada 4 · total 292
+Resumo: Não executada 80 · Em execução 2 · Executada (aguarda teste) 22 · Testada (aguarda segurança) 1 · Aprovada 184 · Bloqueada 3 · total 292
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -18,7 +18,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 3 | TP-0003 | executor | ✔ | CI base (ci.yml) | L01 | TP-0001, TP-0002 | Aprovada |
 | 4 | TP-0004 | executor | ✔ | Auto-hospedar as fontes do mockup (pendência da UX-SPEC §0) | L01 | — | Aprovada |
 | 5 | TP-0005 | executor | ✔ | Contrato base: erro padrão, enums, limites e tipos primitivos | L01 | TP-0001 | Aprovada |
-| 6 | TP-0006 | executor | ✔ | Ícone do app no mockup (lacuna L-3), para aprovação do usuário | L01 | — | Em teste |
+| 6 | TP-0006 | executor | ✔ | Ícone do app no mockup (lacuna L-3), para aprovação do usuário | L01 | — | Aprovada |
 | 7 | TP-0007 | executor | ✔ | dominio/datas: mês, navegação de mês e dias de jogo sugeridos | L02 | TP-0001 | Aprovada |
 | 8 | TP-0008 | executor | ✔ | dominio/pontuacao: pontos de uma presença e acumulado | L02 | TP-0007 | Aprovada |
 | 9 | TP-0009 | executor | ✔ | dominio/atividade: ativo numa data, falta e "–" | L02 | TP-0007 | Aprovada |
@@ -47,44 +47,44 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 32 | TP-0031 | executor | ✔ | Middleware de sessão e cookie __Host-sessao | L07 | TP-0013, TP-0027, TP-0028 | Aprovada |
 | 33 | TP-0032 | executor | ✔ | Middlewares de grupo (vínculo, financeiro) e de dono | L07 | TP-0029, TP-0031 | Aprovada |
 | 34 | TP-0033 | executor | ✔ | Suíte de isolamento entre grupos (C11) | L07 | TP-0017, TP-0031, TP-0032 | Aprovada |
-| 35 | TP-0034 | executor | ✔ | Endpoint POST /api/sessao/entrar | L07 | TP-0019, TP-0027, TP-0028, TP-0031, TP-0033 | Não executada |
-| 36 | TP-0035 | executor | ✔ | Endpoint GET /api/sessao/eu | L07 | TP-0013, TP-0019, TP-0029, TP-0031, TP-0033 | Não executada |
-| 37 | TP-0036 | executor | ✔ | Endpoint POST /api/sessao/sair | L07 | TP-0028, TP-0031, TP-0033 | Não executada |
+| 35 | TP-0034 | executor | ✔ | Endpoint POST /api/sessao/entrar | L07 | TP-0019, TP-0027, TP-0028, TP-0031, TP-0033 | Executada (aguarda teste) |
+| 36 | TP-0035 | executor | ✔ | Endpoint GET /api/sessao/eu | L07 | TP-0013, TP-0019, TP-0029, TP-0031, TP-0033 | Executada (aguarda teste) |
+| 37 | TP-0036 | executor | ✔ | Endpoint POST /api/sessao/sair | L07 | TP-0028, TP-0031, TP-0033 | Executada (aguarda teste) |
 | 38 | TP-0037 | executor | ✔ | Extração aplicacao/acesso/senhas (redefinir senha) | L08 | TP-0014, TP-0027, TP-0028, TP-0030 | Aprovada |
 | 39 | TP-0038 | executor | ✔ | Extração aplicacao/acesso/admin-por-email (criar conta ou vincular) | L08 | TP-0027, TP-0029, TP-0030 | Aprovada |
-| 40 | TP-0039 | executor | ✔ | Endpoint POST /api/sessao/esqueci-senha | L08 | TP-0019, TP-0027, TP-0030, TP-0033 | Não executada |
-| 41 | TP-0040 | executor | ✔ | Endpoint POST /api/sessao/trocar-senha | L08 | TP-0019, TP-0027, TP-0028, TP-0030, TP-0031, TP-0033 | Não executada |
+| 40 | TP-0039 | executor | ✔ | Endpoint POST /api/sessao/esqueci-senha | L08 | TP-0019, TP-0027, TP-0030, TP-0033 | Executada (aguarda teste) |
+| 41 | TP-0040 | executor | ✔ | Endpoint POST /api/sessao/trocar-senha | L08 | TP-0019, TP-0027, TP-0028, TP-0030, TP-0031, TP-0033 | Executada (aguarda teste) |
 | 42 | TP-0041 | executor | ✔ | Script backend/scripts/dono.ts (criar e redefinir-senha) | L08 | TP-0027, TP-0030, TP-0037 | Aprovada |
 | 43 | TP-0042 | executor | ✔ | Migração do Elenco (jogadores, períodos de atividade) | L09 | TP-0015, TP-0016, TP-0026 | Aprovada |
 | 44 | TP-0043 | executor | ✔ | Migração de habilidades e notas | L09 | TP-0015, TP-0016, TP-0042 | Aprovada |
 | 45 | TP-0044 | executor | ✔ | Migração de pesos, partidas e presenças | L09 | TP-0015, TP-0016, TP-0042 | Aprovada |
 | 46 | TP-0045 | executor | ✔ | Migração de eventos de uso | L09 | TP-0015, TP-0016, TP-0026 | Aprovada |
 | 47 | TP-0046 | executor | ✔ | Repositório de jogadores e períodos | L10 | TP-0014, TP-0016, TP-0017, TP-0042, TP-0043, TP-0044 | Aprovada |
-| 48 | RTP-0073 | executor | ✔ | Jogadores: temPresencaDesde e testes de presença/relógio | L10 | TP-0046 | Não executada |
+| 48 | RTP-0073 | executor | ✔ | Jogadores: temPresencaDesde e testes de presença/relógio | L10 | TP-0046 | Executada (aguarda teste) |
 | 49 | TP-0047 | executor | ✔ | Repositório de habilidades e notas | L10 | TP-0014, TP-0016, TP-0017, TP-0043 | Aprovada |
 | 50 | TP-0048 | executor | ✔ | Repositório de pesos | L10 | TP-0014, TP-0016, TP-0017, TP-0044 | Aprovada |
 | 51 | TP-0049 | executor | ✔ | Repositório de partidas e presenças | L10 | TP-0014, TP-0016, TP-0017, TP-0044 | Aprovada |
 | 52 | TP-0050 | executor | ✔ | Repositório de eventos de uso | L10 | TP-0014, TP-0016, TP-0017, TP-0045 | Aprovada |
-| 53 | TP-0051 | executor | ✔ | Script seed-local.ts com os dados do mockup | L10 | TP-0027, TP-0029, TP-0046, TP-0047, TP-0048, TP-0049 | Não executada |
-| 54 | TP-0052 | executor | ✔ | Extração aplicacao/elenco/ativos (ativos numa data e no mês) | L11 | TP-0009, TP-0046 | Não executada |
-| 55 | TP-0053 | executor | ✔ | Extração aplicacao/pontuacao/historico (histórico do grupo para o domínio) | L11 | TP-0010, TP-0046, TP-0048, TP-0049 | Não executada |
-| 56 | TP-0055 | executor | ✔ | Endpoint GET /api/dono/grupos/:id | L11 | TP-0013, TP-0022, TP-0029, TP-0032, TP-0033 | Não executada |
+| 53 | TP-0051 | executor | ✔ | Script seed-local.ts com os dados do mockup | L10 | TP-0027, TP-0029, TP-0046, TP-0047, TP-0048, TP-0049 | Executada (aguarda teste) |
+| 54 | TP-0052 | executor | ✔ | Extração aplicacao/elenco/ativos (ativos numa data e no mês) | L11 | TP-0009, TP-0046 | Executada (aguarda teste) |
+| 55 | TP-0053 | executor | ✔ | Extração aplicacao/pontuacao/historico (histórico do grupo para o domínio) | L11 | TP-0010, TP-0046, TP-0048, TP-0049 | Executada (aguarda teste) |
+| 56 | TP-0055 | executor | ✔ | Endpoint GET /api/dono/grupos/:id | L11 | TP-0013, TP-0022, TP-0029, TP-0032, TP-0033 | Executada (aguarda teste) |
 | 57 | TP-0054 | executor | ✔ | Endpoint GET /api/dono/painel | L11 | TP-0022, TP-0029, TP-0030, TP-0032, TP-0033, TP-0055 | Não executada |
 | 58 | TP-0056 | executor | ✔ | Endpoint POST /api/dono/grupos (criar grupo e 1º admin) | L11 | TP-0012, TP-0014, TP-0022, TP-0029, TP-0030, TP-0032, TP-0033, TP-0038, TP-0047, TP-0048, TP-0055 | Não executada |
 | 59 | TP-0057 | executor | ✔ | Endpoint PATCH /api/dono/grupos/:id/situacao | L12 | TP-0022, TP-0029, TP-0032, TP-0033, TP-0055 | Não executada |
 | 60 | TP-0058 | executor | ✔ | Endpoints POST /api/dono/grupos/:id/arquivar e /reativar | L12 | TP-0022, TP-0029, TP-0030, TP-0032, TP-0033, TP-0055 | Não executada |
-| 61 | TP-0059 | executor | ✔ | Endpoint POST /api/dono/pedidos-reset/:id/resolver | L12 | TP-0022, TP-0030, TP-0032, TP-0033 | Não executada |
-| 62 | TP-0060 | executor | ✔ | Endpoint POST /api/dono/contas/:id/redefinir-senha | L12 | TP-0022, TP-0032, TP-0033, TP-0037 | Não executada |
+| 61 | TP-0059 | executor | ✔ | Endpoint POST /api/dono/pedidos-reset/:id/resolver | L12 | TP-0022, TP-0030, TP-0032, TP-0033 | Executada (aguarda teste) |
+| 62 | TP-0060 | executor | ✔ | Endpoint POST /api/dono/contas/:id/redefinir-senha | L12 | TP-0022, TP-0032, TP-0033, TP-0037 | Executada (aguarda teste) |
 | 63 | TP-0061 | executor | ✔ | Endpoint GET /api/grupos/:g (grupo, permissões e resumo do início) | L13 | TP-0007, TP-0013, TP-0021, TP-0029, TP-0032, TP-0033, TP-0047, TP-0048, TP-0049, TP-0050, TP-0052 | Não executada |
 | 64 | TP-0062 | executor | ✔ | Endpoint PATCH /api/grupos/:g | L13 | TP-0021, TP-0029, TP-0032, TP-0033, TP-0061 | Não executada |
-| 65 | TP-0063 | executor | ✔ | Endpoint GET /api/grupos/:g/admins | L14 | TP-0021, TP-0029, TP-0032, TP-0033 | Não executada |
-| 66 | TP-0064 | executor | ✔ | Endpoint POST /api/grupos/:g/admins | L14 | TP-0021, TP-0032, TP-0033, TP-0038 | Não executada |
-| 67 | TP-0065 | executor | ✔ | Endpoint DELETE /api/grupos/:g/admins/:contaId | L14 | TP-0014, TP-0021, TP-0029, TP-0030, TP-0032, TP-0033 | Não executada |
-| 68 | TP-0066 | executor | ✔ | Endpoint POST /api/grupos/:g/admins/:contaId/redefinir-senha | L14 | TP-0021, TP-0032, TP-0033, TP-0037 | Não executada |
-| 69 | TP-0067 | executor | ✔ | Endpoint PATCH /api/grupos/:g/admins/:contaId/financeiro | L14 | TP-0021, TP-0029, TP-0030, TP-0032, TP-0033 | Não executada |
-| 70 | TP-0068 | executor | ✔ | Endpoint GET /api/grupos/:g/jogadores | L15 | TP-0009, TP-0011, TP-0013, TP-0023, TP-0032, TP-0033, TP-0046, TP-0047 | Não executada |
-| 71 | TP-0069 | executor | ✔ | Endpoint GET /api/grupos/:g/jogadores/:id | L15 | TP-0011, TP-0023, TP-0032, TP-0033, TP-0046, TP-0047 | Não executada |
-| 72 | TP-0070 | executor | ✔ | Endpoint POST /api/grupos/:g/jogadores | L15 | TP-0013, TP-0023, TP-0032, TP-0033, TP-0046 | Não executada |
+| 65 | TP-0063 | executor | ✔ | Endpoint GET /api/grupos/:g/admins | L14 | TP-0021, TP-0029, TP-0032, TP-0033 | Executada (aguarda teste) |
+| 66 | TP-0064 | executor | ✔ | Endpoint POST /api/grupos/:g/admins | L14 | TP-0021, TP-0032, TP-0033, TP-0038 | Executada (aguarda teste) |
+| 67 | TP-0065 | executor | ✔ | Endpoint DELETE /api/grupos/:g/admins/:contaId | L14 | TP-0014, TP-0021, TP-0029, TP-0030, TP-0032, TP-0033 | Executada (aguarda teste) |
+| 68 | TP-0066 | executor | ✔ | Endpoint POST /api/grupos/:g/admins/:contaId/redefinir-senha | L14 | TP-0021, TP-0032, TP-0033, TP-0037 | Executada (aguarda teste) |
+| 69 | TP-0067 | executor | ✔ | Endpoint PATCH /api/grupos/:g/admins/:contaId/financeiro | L14 | TP-0021, TP-0029, TP-0030, TP-0032, TP-0033 | Executada (aguarda teste) |
+| 70 | TP-0068 | executor | ✔ | Endpoint GET /api/grupos/:g/jogadores | L15 | TP-0009, TP-0011, TP-0013, TP-0023, TP-0032, TP-0033, TP-0046, TP-0047 | Executada (aguarda teste) |
+| 71 | TP-0069 | executor | ✔ | Endpoint GET /api/grupos/:g/jogadores/:id | L15 | TP-0011, TP-0023, TP-0032, TP-0033, TP-0046, TP-0047 | Executada (aguarda teste) |
+| 72 | TP-0070 | executor | ✔ | Endpoint POST /api/grupos/:g/jogadores | L15 | TP-0013, TP-0023, TP-0032, TP-0033, TP-0046 | Executada (aguarda teste) |
 | 73 | TP-0071 | executor | ✔ | Endpoint PATCH /api/grupos/:g/jogadores/:id | L15 | TP-0009, TP-0023, TP-0032, TP-0033, TP-0046 | Não executada |
 | 74 | TP-0072 | executor | ✔ | Endpoint POST /api/grupos/:g/jogadores/:id/inativar | L16 | TP-0009, TP-0013, TP-0023, TP-0032, TP-0033, TP-0046, TP-0069 | Não executada |
 | 75 | TP-0073 | executor | ✔ | Endpoint POST /api/grupos/:g/jogadores/:id/reativar | L16 | TP-0009, TP-0013, TP-0023, TP-0032, TP-0033, TP-0046, TP-0069 | Não executada |
@@ -231,77 +231,77 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 216 | RTP-0015 | executor | ✔ | Fixar por SHA de commit as actions de terceiros dos workflows (gitleaks-action, pnpm/ac... | Refatoração Lote-L01 | TP-0003 | Aprovada |
 | 217 | RTP-0002 | executor | ✔ | Lint: aliases contornam Date.now() (G-06) e document.cookie (G-09) | L01 | TP-0002 | Aprovada |
 | 218 | RTP-0004 | executor | ✔ | Remover teste duplicado de slug em src/grupos | Refatoração Lote-L02 | TP-0012 | Aprovada |
-| 219 | RTP-0005 | executor | — | Remover teste duplicado de pontuação em src/pontuacao | L02 | TP-0008 | Não executada |
-| 220 | RTP-0007 | executor | — | Remover teste duplicado de atividade em src/atividade | L02 | TP-0009 | Não executada |
-| 221 | RTP-0012 | executor | ✔ | distribuirVariosTimes: limitar o tamanho da entrada (orçamento de CPU) | Refatoração Lote-L33 | TP-0152 | Aprovada |
-| 222 | RTP-0008 | executor | ✔ | Atualizar sharp e undici transitivos do wrangler/miniflare (pnpm audit alto) | Refatoração Lote-L03 | TP-0013 | Aprovada |
-| 223 | RTP-0009 | executor | ✔ | Teste do módulo de dados: cobrir tipo público e pid fora da transação | Refatoração Lote-L03 | TP-0014 | Aprovada |
-| 224 | RTP-0019 | executor | ✔ | checar-grupo-id: cobrir exports que não são function/arrow direta (classe, objeto, funç... | Refatoração Lote-L03 | TP-0016 | Aprovada |
-| 225 | RTP-0057 | executor | ✔ | checar-grupo-id: cobrir alias, ternário, acesso a membro, namespace e arrow com satisfies | Refatoração Lote-L03 | RTP-0019 | Aprovada |
-| 226 | RTP-0061 | executor | ✔ | checar-grupo-id: fechar contornos restantes (propriedade estática arrow, let sem inicia... | Refatoração Lote-L03 | RTP-0057 | Aprovada |
-| 227 | RTP-0064 | executor | ✔ | checar-grupo-id: fechar construtor com corpo, arquivos fora da listagem e casts sobre dado | Refatoração Lote-L03 | RTP-0061 | Aprovada |
-| 228 | RTP-0010 | executor | ✔ | Testes de distribuicao-varios: prova de todos candidatos ao incompleto e chave com idade | Refatoração Lote-33 | TP-0152 | Aprovada |
-| 229 | RTP-0011 | executor | ✔ | distribuicao-dois: remover regra de saída duplicada (substituicoes) | Refatoração Lote-33 | TP-0151 | Aprovada |
-| 230 | RTP-0013 | executor | ✔ | Foco preso: Shift+Tab a partir do título (focoNoTitulo) escapa do Dialogo | Refatoração Lote-L21 | TP-0099 | Aprovada |
-| 231 | RTP-0016 | executor | ✔ | ResumoErros: aplicar o estilo .resumo (CSS morto em Campo.module.css) | Refatoração Lote-L21 | TP-0096 | Aprovada |
-| 232 | RTP-0052 | executor | ✔ | ResumoErros: remover o ícone da faixa para igualar o mockup (T06 erro) | Refatoração Lote-L21 | RTP-0016 | Aprovada |
-| 233 | RTP-0018 | executor | ✔ | Testes faltantes da compatibilidade do contrato (eDono em resposta/QUEBRAS, enum de ent... | Refatoração Lote-L04 | TP-0018 | Aprovada |
-| 234 | RTP-0021 | executor | ✔ | RankingPublico: enderecoNovo obrigatório (url ou null) | Refatoração Lote-L04 | TP-0020 | Aprovada |
-| 235 | RTP-0020 | executor | ✔ | Teste D1: cobrir indexedDB.open, classe monoespaçada e ausência da senha após desmontar | Refatoração Lote-L22 | TP-0100 | Aprovada |
-| 236 | RTP-0022 | executor | ✔ | ConteudoPagina: copiar .conteudo do mockup (largura-conteudo) em vez de reaproveitar o... | 25 | TP-0207 | Aprovada |
-| 237 | RTP-0026 | executor | ✔ | Pagina.module.css: regra @media de .conteudoEstreito anulada pela regra base | 25 | TP-0118 | Aprovada |
-| 238 | RTP-0023 | executor | ✔ | Mockup: avisos como div[role=status] com ul dentro (alinhar ao código de TP-0173) | Refatoração Lote-37 | TP-0173 | Aprovada |
-| 239 | RTP-0024 | executor | ✔ | useAjusteSimulador: reaproveitar usarValorAtrasado no debounce de 300 ms | Refatoração Lote-37 | TP-0174 | Aprovada |
-| 240 | RTP-0025 | executor | ✔ | useAjusteSimulador: corpo inválido não pode deixar Confirmar habilitado | Refatoração Lote-37 | TP-0174 | Aprovada |
-| 241 | RTP-0035 | executor | ✔ | T12 vazio: largura do cartão 560 px no app vs 512 px no mockup | Refatoração Lote-37 | TP-0172 | Aprovada |
-| 242 | RTP-0027 | executor | ✔ | Teste da Legenda oculta sem partidas (T01) | Refatoração Lote-24 | TP-0111 | Aprovada |
-| 243 | RTP-0028 | executor | ✔ | T19: teste axe com o diálogo D1/D2 aberto | Refatoração Lote-L27 | TP-0126 | Aprovada |
-| 244 | RTP-0030 | executor | ✔ | Mockup T15: barra-acao dentro do main e seta nos itens (alinhar ao app) | Refatoração Lote-L27 | TP-0123 | Aprovada |
-| 245 | RTP-0032 | executor | ✔ | T18: testes axe em erro/salvo, ajuda ligada e rótulos em src/rotulos | Refatoração Lote-L27 | TP-0125 | Aprovada |
-| 246 | RTP-0033 | executor | ✔ | Mockup T16 edicao: apelido sem ajuda 'De 2 a 30 caracteres' (alinhar ao novo e ao app) | Refatoração Lote-L27 | TP-0124 | Aprovada |
-| 247 | RTP-0036 | executor | ✔ | Mockup T20: URL do link estoura a janela de 390 px (adicionar overflow-wrap) | Refatoração Lote-L27 | TP-0127 | Aprovada |
-| 248 | RTP-0053 | executor | ✔ | Mockup T16 inativo: apelido sem ajuda 'De 2 a 30 caracteres' (alinhar ao novo e à edição) | L27 | RTP-0033 | Aprovada |
-| 249 | RTP-0029 | executor | ✔ | Mockup: .barra-acao dentro do main em T10, T13, T14, T15, T22 e T26 (como T11/T24) | Refatoração Lote-L26 | TP-0120 | Aprovada |
-| 250 | RTP-0034 | executor | ✔ | Mockup T09 sem-jogadores: meta de Partidas 'Nenhuma ainda' -> 'Nenhuma em outubro' | Refatoração Lote-L26 | TP-0119 | Aprovada |
-| 251 | RTP-0044 | executor | ✔ | Mockup: ícone de atenção no .campo__erro (como o app e base.css) | Refatoração Lote-L26 | TP-0121 | Aprovada |
-| 252 | RTP-0045 | executor | ✔ | T11: usar FerramentasLista compartilhado em vez do local telas/partida/FerramentasLista | Refatoração Lote-L26 | TP-0121 | Aprovada |
-| 253 | RTP-0046 | executor | ✔ | T11: validar o corpo com salvarPartidaCorpo antes de enviar o POST | Refatoração Lote-L26 | TP-0121 | Aprovada |
-| 254 | RTP-0031 | executor | ✔ | T06: teste de 72 caracteres envia (limite superior) | Refatoração Lote-L25 | TP-0116 | Aprovada |
-| 255 | RTP-0037 | executor | ✔ | Mockup T26: seta nos itens de grupo e sessão sem grupos no estado vazio | L28 | TP-0129 | Aprovada |
-| 256 | RTP-0039 | executor | ✔ | Harness T27: sessão de dono sem grupos no estado vazio | Refatoração Lote-L28 | RTP-0037 | Aprovada |
-| 257 | RTP-0042 | executor | ✔ | Testes da T27: Criando…/clique duplo, painel invalidado, 500, axe no D1 | Refatoração Lote-L28 | TP-0130 | Aprovada |
-| 258 | RTP-0038 | executor | ✔ | T22: largura do vazio-config e margens negativas do SemAcessoFinanceiro acopladas ao la... | Refatoração Lote-L44 | TP-0199 | Aprovada |
-| 259 | RTP-0047 | executor | ✔ | T24: largura do formulário 560 px no app vs 512 px no mockup (pc) | Refatoração Lote-L44 | TP-0202 | Aprovada |
-| 260 | RTP-0048 | executor | ✔ | T22: valor do D2 de desmarcar não pode cair em config.mensalidadeCentavos | L44 | TP-0200 | Aprovada |
-| 261 | RTP-0055 | executor | ✔ | T22: teste de desmarcar com mensalidade alterada depois (entrada ≠ config) | Refatoração Lote-L44 | RTP-0048 | Aprovada |
-| 262 | RTP-0040 | executor | ✔ | Mockup base.css: .campo__entrada--nota perde para .campo__entrada (selects de nota esti... | Refatoração Lote-L37 | TP-0171 | Aprovada |
-| 263 | RTP-0041 | executor | ✔ | T28: completar testes do plano (Ativo envia null, 422 da situação, reativar, rede, axe... | Refatoração Lote-28 | TP-0131 | Aprovada |
-| 264 | RTP-0043 | executor | ✔ | T13: teste de página cobrir selos e trocas do sucesso; ajuda do Não entra 8 px abaixo d... | L38 | TP-0175 | Aprovada |
-| 265 | RTP-0049 | executor | ✔ | T10: teste da faixa 'Partida de dd/mm excluída.' e UX-SPEC T11 (QA TP-0122) | Refatoração Lote-26 | TP-0122 | Aprovada |
-| 266 | RTP-0050 | executor | ✔ | T01 PDF: completar testes (troca de mês, POST pdf_exportado real, axe das faixas) | Refatoração Lote-L39 | TP-0184 | Aprovada |
-| 267 | RTP-0054 | executor | ✔ | Teste flaky 'toque antes da projeção chegar' (exportar-pdf) depende de delay de 150 ms | Refatoração Lote-L39 | RTP-0050 | Aprovada |
-| 268 | RTP-0058 | executor | ✔ | dominio/pdf: testes do plano que faltam (mockup, troca de pesos, mês com mais de 12) | Refatoração Lote-L39 | TP-0179 | Aprovada |
-| 269 | RTP-0051 | executor | ✔ | dominio/caixa: unificar testes duplicados | Refatoração Lote-L41 | TP-0187 | Aprovada |
-| 270 | RTP-0056 | executor | ✔ | Documentar no banco que auditoria.resumo nunca recebe senha/token | Refatoração Lote-L06 | TP-0025 | Aprovada |
-| 271 | RTP-0059 | executor | ✔ | sessoes: teste de uma consulta por chamada em buscarValidaEDeslizar | Refatoração Lote-L06 | TP-0028 | Aprovada |
-| 272 | RTP-0060 | executor | ✔ | Teste de custo igual (e-mail existente vs inexistente) robusto sob carga | Refatoração Lote-L06 | TP-0027 | Aprovada |
-| 273 | RTP-0065 | executor | ✔ | auditoria.registrar: recusar chaves sensíveis em qualquer posição do nome | Refatoração Lote-L06 | TP-0030 | Aprovada |
-| 274 | RTP-0066 | executor | ✔ | Teste anti-enumeração: provar também o custo bcrypt do hash fixo | Refatoração Lote-L06 | RTP-0060 | Aprovada |
-| 275 | RTP-0062 | executor | ✔ | Teste de escalações: datas e momento derivados do relógio fixo | Refatoração Lote-L35 | TP-0160 | Aprovada |
-| 276 | RTP-0063 | executor | ✔ | Cookie de sessão duplicado: recusar em vez de usar o primeiro | Refatoração Lote-L07 | TP-0031 | Aprovada |
-| 277 | RTP-0069 | executor | ✔ | Testes dos middlewares de grupo/dono: escopo troca_de_senha, /api/grupos//eco e arquivo... | Refatoração Lote-L07 | TP-0032 | Aprovada |
-| 278 | RTP-0074 | executor | ✔ | Suíte de isolamento: rota ALL visível e conferência de limpeza | L07 | TP-0033 | Não executada |
-| 279 | RTP-0067 | executor | ✔ | Eventos de uso: completar testes do plano (tipos fechados, colunas gravadas, N+1, fábrica) | Refatoração Lote-L10 | TP-0050 | Executada (aguarda teste) |
-| 280 | RTP-0071 | executor | ✔ | Habilidades: usar seViolarUnico de comum.ts | L10 | TP-0047 | Não executada |
-| 281 | RTP-0075 | executor | ✔ | Repositório de partidas: relógio fixo, fábrica de partidas e seViolarUnico | L10 | TP-0049 | Não executada |
-| 282 | RTP-0076 | executor | ✔ | Repositório de partidas: criar/substituir exigem Tx | L10 | TP-0049 | Não executada |
-| 283 | RTP-0068 | executor | ✔ | Teste de admin-por-email: asserir auditoria admin_vinculado e e-mail com caixa/espaços | Refatoração Lote-L08 | TP-0038 | Aprovada |
-| 284 | RTP-0072 | executor | ✔ | Checagem de escrita de e_dono: janela de 300 caracteres deixa passar INSERT/values longos | Refatoração Lote-L08 | TP-0041 | Não executada |
-| 285 | RTP-0077 | executor | ✔ | Checagem de escrita de e_dono: exceção cobre o arquivo contas.ts inteiro, não só criarC... | L08 | TP-0041 | Não executada |
-| 286 | RTP-0070 | executor | ✔ | Teste de partidas: relógio fixo e casos faltantes do plano | Refatoração Lote-L09 | TP-0044 | Aprovada |
-| 287 | BK-0003 | coordenador | ✔ | Exige push da branch ci-prova e PR real no remoto (ação manual/autorização do usuário); ro | — | — | Não executada |
-| 288 | RTP-0014 | executor | ✔ | Executar a prova do CI em PR real (ci-prova) | Refatoração Lote-L01 | BK-0003, TP-0003 | Bloqueada |
-| 289 | BK-0004 | coordenador | ✔ | Falta apagar backend/dominio/src/simulador/indicadores.test.ts (rm negado pela permissão) | — | — | Não executada |
-| 290 | RTP-0006 | executor | ✔ | Remover teste duplicado de indicadores em src/simulador | Refatoração Lote-L33 | BK-0004, TP-0150 | Bloqueada |
+| 219 | RTP-0005 | executor | ✔ | Remover teste duplicado de pontuação em src/pontuacao | L02 | TP-0008 | Executada (aguarda teste) |
+| 220 | RTP-0007 | executor | ✔ | Remover teste duplicado de atividade em src/atividade | L02 | TP-0009 | Em execução |
+| 221 | BK-0004 | coordenador | ✔ | Falta apagar backend/dominio/src/simulador/indicadores.test.ts (rm negado pela permissão) | — | — | Em execução |
+| 222 | RTP-0006 | executor | ✔ | Remover teste duplicado de indicadores em src/simulador | Refatoração Lote-L33 | BK-0004, TP-0150 | Executada (aguarda teste) |
+| 223 | RTP-0012 | executor | ✔ | distribuirVariosTimes: limitar o tamanho da entrada (orçamento de CPU) | Refatoração Lote-L33 | TP-0152 | Aprovada |
+| 224 | RTP-0008 | executor | ✔ | Atualizar sharp e undici transitivos do wrangler/miniflare (pnpm audit alto) | Refatoração Lote-L03 | TP-0013 | Aprovada |
+| 225 | RTP-0009 | executor | ✔ | Teste do módulo de dados: cobrir tipo público e pid fora da transação | Refatoração Lote-L03 | TP-0014 | Aprovada |
+| 226 | RTP-0019 | executor | ✔ | checar-grupo-id: cobrir exports que não são function/arrow direta (classe, objeto, funç... | Refatoração Lote-L03 | TP-0016 | Aprovada |
+| 227 | RTP-0057 | executor | ✔ | checar-grupo-id: cobrir alias, ternário, acesso a membro, namespace e arrow com satisfies | Refatoração Lote-L03 | RTP-0019 | Aprovada |
+| 228 | RTP-0061 | executor | ✔ | checar-grupo-id: fechar contornos restantes (propriedade estática arrow, let sem inicia... | Refatoração Lote-L03 | RTP-0057 | Aprovada |
+| 229 | RTP-0064 | executor | ✔ | checar-grupo-id: fechar construtor com corpo, arquivos fora da listagem e casts sobre dado | Refatoração Lote-L03 | RTP-0061 | Aprovada |
+| 230 | RTP-0010 | executor | ✔ | Testes de distribuicao-varios: prova de todos candidatos ao incompleto e chave com idade | Refatoração Lote-33 | TP-0152 | Aprovada |
+| 231 | RTP-0011 | executor | ✔ | distribuicao-dois: remover regra de saída duplicada (substituicoes) | Refatoração Lote-33 | TP-0151 | Aprovada |
+| 232 | RTP-0013 | executor | ✔ | Foco preso: Shift+Tab a partir do título (focoNoTitulo) escapa do Dialogo | Refatoração Lote-L21 | TP-0099 | Aprovada |
+| 233 | RTP-0016 | executor | ✔ | ResumoErros: aplicar o estilo .resumo (CSS morto em Campo.module.css) | Refatoração Lote-L21 | TP-0096 | Aprovada |
+| 234 | RTP-0052 | executor | ✔ | ResumoErros: remover o ícone da faixa para igualar o mockup (T06 erro) | Refatoração Lote-L21 | RTP-0016 | Aprovada |
+| 235 | RTP-0018 | executor | ✔ | Testes faltantes da compatibilidade do contrato (eDono em resposta/QUEBRAS, enum de ent... | Refatoração Lote-L04 | TP-0018 | Aprovada |
+| 236 | RTP-0021 | executor | ✔ | RankingPublico: enderecoNovo obrigatório (url ou null) | Refatoração Lote-L04 | TP-0020 | Aprovada |
+| 237 | RTP-0020 | executor | ✔ | Teste D1: cobrir indexedDB.open, classe monoespaçada e ausência da senha após desmontar | Refatoração Lote-L22 | TP-0100 | Aprovada |
+| 238 | RTP-0022 | executor | ✔ | ConteudoPagina: copiar .conteudo do mockup (largura-conteudo) em vez de reaproveitar o... | 25 | TP-0207 | Aprovada |
+| 239 | RTP-0026 | executor | ✔ | Pagina.module.css: regra @media de .conteudoEstreito anulada pela regra base | 25 | TP-0118 | Aprovada |
+| 240 | RTP-0023 | executor | ✔ | Mockup: avisos como div[role=status] com ul dentro (alinhar ao código de TP-0173) | Refatoração Lote-37 | TP-0173 | Aprovada |
+| 241 | RTP-0024 | executor | ✔ | useAjusteSimulador: reaproveitar usarValorAtrasado no debounce de 300 ms | Refatoração Lote-37 | TP-0174 | Aprovada |
+| 242 | RTP-0025 | executor | ✔ | useAjusteSimulador: corpo inválido não pode deixar Confirmar habilitado | Refatoração Lote-37 | TP-0174 | Aprovada |
+| 243 | RTP-0035 | executor | ✔ | T12 vazio: largura do cartão 560 px no app vs 512 px no mockup | Refatoração Lote-37 | TP-0172 | Aprovada |
+| 244 | RTP-0027 | executor | ✔ | Teste da Legenda oculta sem partidas (T01) | Refatoração Lote-24 | TP-0111 | Aprovada |
+| 245 | RTP-0028 | executor | ✔ | T19: teste axe com o diálogo D1/D2 aberto | Refatoração Lote-L27 | TP-0126 | Aprovada |
+| 246 | RTP-0030 | executor | ✔ | Mockup T15: barra-acao dentro do main e seta nos itens (alinhar ao app) | Refatoração Lote-L27 | TP-0123 | Aprovada |
+| 247 | RTP-0032 | executor | ✔ | T18: testes axe em erro/salvo, ajuda ligada e rótulos em src/rotulos | Refatoração Lote-L27 | TP-0125 | Aprovada |
+| 248 | RTP-0033 | executor | ✔ | Mockup T16 edicao: apelido sem ajuda 'De 2 a 30 caracteres' (alinhar ao novo e ao app) | Refatoração Lote-L27 | TP-0124 | Aprovada |
+| 249 | RTP-0036 | executor | ✔ | Mockup T20: URL do link estoura a janela de 390 px (adicionar overflow-wrap) | Refatoração Lote-L27 | TP-0127 | Aprovada |
+| 250 | RTP-0053 | executor | ✔ | Mockup T16 inativo: apelido sem ajuda 'De 2 a 30 caracteres' (alinhar ao novo e à edição) | L27 | RTP-0033 | Aprovada |
+| 251 | RTP-0029 | executor | ✔ | Mockup: .barra-acao dentro do main em T10, T13, T14, T15, T22 e T26 (como T11/T24) | Refatoração Lote-L26 | TP-0120 | Aprovada |
+| 252 | RTP-0034 | executor | ✔ | Mockup T09 sem-jogadores: meta de Partidas 'Nenhuma ainda' -> 'Nenhuma em outubro' | Refatoração Lote-L26 | TP-0119 | Aprovada |
+| 253 | RTP-0044 | executor | ✔ | Mockup: ícone de atenção no .campo__erro (como o app e base.css) | Refatoração Lote-L26 | TP-0121 | Aprovada |
+| 254 | RTP-0045 | executor | ✔ | T11: usar FerramentasLista compartilhado em vez do local telas/partida/FerramentasLista | Refatoração Lote-L26 | TP-0121 | Aprovada |
+| 255 | RTP-0046 | executor | ✔ | T11: validar o corpo com salvarPartidaCorpo antes de enviar o POST | Refatoração Lote-L26 | TP-0121 | Aprovada |
+| 256 | RTP-0031 | executor | ✔ | T06: teste de 72 caracteres envia (limite superior) | Refatoração Lote-L25 | TP-0116 | Aprovada |
+| 257 | RTP-0037 | executor | ✔ | Mockup T26: seta nos itens de grupo e sessão sem grupos no estado vazio | L28 | TP-0129 | Aprovada |
+| 258 | RTP-0039 | executor | ✔ | Harness T27: sessão de dono sem grupos no estado vazio | Refatoração Lote-L28 | RTP-0037 | Aprovada |
+| 259 | RTP-0042 | executor | ✔ | Testes da T27: Criando…/clique duplo, painel invalidado, 500, axe no D1 | Refatoração Lote-L28 | TP-0130 | Aprovada |
+| 260 | RTP-0038 | executor | ✔ | T22: largura do vazio-config e margens negativas do SemAcessoFinanceiro acopladas ao la... | Refatoração Lote-L44 | TP-0199 | Aprovada |
+| 261 | RTP-0047 | executor | ✔ | T24: largura do formulário 560 px no app vs 512 px no mockup (pc) | Refatoração Lote-L44 | TP-0202 | Aprovada |
+| 262 | RTP-0048 | executor | ✔ | T22: valor do D2 de desmarcar não pode cair em config.mensalidadeCentavos | L44 | TP-0200 | Aprovada |
+| 263 | RTP-0055 | executor | ✔ | T22: teste de desmarcar com mensalidade alterada depois (entrada ≠ config) | Refatoração Lote-L44 | RTP-0048 | Aprovada |
+| 264 | RTP-0040 | executor | ✔ | Mockup base.css: .campo__entrada--nota perde para .campo__entrada (selects de nota esti... | Refatoração Lote-L37 | TP-0171 | Aprovada |
+| 265 | RTP-0041 | executor | ✔ | T28: completar testes do plano (Ativo envia null, 422 da situação, reativar, rede, axe... | Refatoração Lote-28 | TP-0131 | Aprovada |
+| 266 | RTP-0043 | executor | ✔ | T13: teste de página cobrir selos e trocas do sucesso; ajuda do Não entra 8 px abaixo d... | L38 | TP-0175 | Aprovada |
+| 267 | RTP-0049 | executor | ✔ | T10: teste da faixa 'Partida de dd/mm excluída.' e UX-SPEC T11 (QA TP-0122) | Refatoração Lote-26 | TP-0122 | Aprovada |
+| 268 | RTP-0050 | executor | ✔ | T01 PDF: completar testes (troca de mês, POST pdf_exportado real, axe das faixas) | Refatoração Lote-L39 | TP-0184 | Aprovada |
+| 269 | RTP-0054 | executor | ✔ | Teste flaky 'toque antes da projeção chegar' (exportar-pdf) depende de delay de 150 ms | Refatoração Lote-L39 | RTP-0050 | Aprovada |
+| 270 | RTP-0058 | executor | ✔ | dominio/pdf: testes do plano que faltam (mockup, troca de pesos, mês com mais de 12) | Refatoração Lote-L39 | TP-0179 | Aprovada |
+| 271 | RTP-0051 | executor | ✔ | dominio/caixa: unificar testes duplicados | Refatoração Lote-L41 | TP-0187 | Aprovada |
+| 272 | RTP-0056 | executor | ✔ | Documentar no banco que auditoria.resumo nunca recebe senha/token | Refatoração Lote-L06 | TP-0025 | Aprovada |
+| 273 | RTP-0059 | executor | ✔ | sessoes: teste de uma consulta por chamada em buscarValidaEDeslizar | Refatoração Lote-L06 | TP-0028 | Aprovada |
+| 274 | RTP-0060 | executor | ✔ | Teste de custo igual (e-mail existente vs inexistente) robusto sob carga | Refatoração Lote-L06 | TP-0027 | Aprovada |
+| 275 | RTP-0065 | executor | ✔ | auditoria.registrar: recusar chaves sensíveis em qualquer posição do nome | Refatoração Lote-L06 | TP-0030 | Aprovada |
+| 276 | RTP-0066 | executor | ✔ | Teste anti-enumeração: provar também o custo bcrypt do hash fixo | Refatoração Lote-L06 | RTP-0060 | Aprovada |
+| 277 | RTP-0062 | executor | ✔ | Teste de escalações: datas e momento derivados do relógio fixo | Refatoração Lote-L35 | TP-0160 | Aprovada |
+| 278 | RTP-0063 | executor | ✔ | Cookie de sessão duplicado: recusar em vez de usar o primeiro | Refatoração Lote-L07 | TP-0031 | Aprovada |
+| 279 | RTP-0069 | executor | ✔ | Testes dos middlewares de grupo/dono: escopo troca_de_senha, /api/grupos//eco e arquivo... | Refatoração Lote-L07 | TP-0032 | Aprovada |
+| 280 | RTP-0074 | executor | ✔ | Suíte de isolamento: rota ALL visível e conferência de limpeza | L07 | TP-0033 | Não executada |
+| 281 | RTP-0067 | executor | ✔ | Eventos de uso: completar testes do plano (tipos fechados, colunas gravadas, N+1, fábrica) | Refatoração Lote-L10 | TP-0050 | Testada (aguarda segurança) |
+| 282 | RTP-0071 | executor | ✔ | Habilidades: usar seViolarUnico de comum.ts | L10 | TP-0047 | Não executada |
+| 283 | RTP-0075 | executor | ✔ | Repositório de partidas: relógio fixo, fábrica de partidas e seViolarUnico | L10 | TP-0049 | Não executada |
+| 284 | RTP-0076 | executor | ✔ | Repositório de partidas: criar/substituir exigem Tx | L10 | TP-0049 | Não executada |
+| 285 | RTP-0068 | executor | ✔ | Teste de admin-por-email: asserir auditoria admin_vinculado e e-mail com caixa/espaços | Refatoração Lote-L08 | TP-0038 | Aprovada |
+| 286 | RTP-0072 | executor | ✔ | Checagem de escrita de e_dono: janela de 300 caracteres deixa passar INSERT/values longos | Refatoração Lote-L08 | TP-0041 | Não executada |
+| 287 | RTP-0077 | executor | ✔ | Checagem de escrita de e_dono: exceção cobre o arquivo contas.ts inteiro, não só criarC... | L08 | TP-0041 | Não executada |
+| 288 | RTP-0070 | executor | ✔ | Teste de partidas: relógio fixo e casos faltantes do plano | Refatoração Lote-L09 | TP-0044 | Aprovada |
+| 289 | BK-0003 | coordenador | ✔ | Exige push da branch ci-prova e PR real no remoto (ação manual/autorização do usuário); ro | — | — | Não executada |
+| 290 | RTP-0014 | executor | ✔ | Executar a prova do CI em PR real (ci-prova) | Refatoração Lote-L01 | BK-0003, TP-0003 | Bloqueada |
 | 291 | BK-0005 | coordenador | ✔ | Item (b) feito; item (a) exige PR real com job e2e verde (push/PR autorizado pelo usuário) | — | — | Não executada |
 | 292 | RTP-0017 | executor | ✔ | Provar job e2e verde em PR real e cobrir dist/ ausente em visual.mjs | Refatoração Lote-L20 | BK-0005, TP-0089 | Bloqueada |

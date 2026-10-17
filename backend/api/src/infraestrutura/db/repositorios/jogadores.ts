@@ -240,6 +240,22 @@ export async function temHistorico(ex: ExecutorDb, grupoId: string, jogadorId: s
   return r.rows[0]?.existe ?? false;
 }
 
+/** Há presença em partida com data igual ou posterior à data dada? */
+export async function temPresencaDesde(
+  ex: ExecutorDb,
+  grupoId: string,
+  jogadorId: string,
+  data: string,
+): Promise<boolean> {
+  const r = await sql<{ existe: boolean }>`
+    SELECT EXISTS (
+      SELECT 1 FROM presencas pr JOIN partidas pa ON pa.id = pr.partida_id AND pa.grupo_id = pr.grupo_id
+      WHERE pr.grupo_id = ${grupoId} AND pr.jogador_id = ${jogadorId} AND pa.data >= ${data}::date
+    ) AS existe
+  `.execute(kyselyDe(ex));
+  return r.rows[0]?.existe ?? false;
+}
+
 /** Há presença anterior à data (usado ao mover a data de entrada)? */
 export async function temPresencaAntesDe(
   ex: ExecutorDb,

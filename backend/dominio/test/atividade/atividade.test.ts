@@ -14,6 +14,16 @@ describe('situacaoNaRodada', () => {
     expect(situacaoNaRodada(entrouNoMeio, '2026-10-15')).toBe('falta');
     expect(situacaoNaRodada(entrouNoMeio, '2026-10-15', 'lesionado')).toBe('lesionado');
   });
+  it.each([
+    ['2026-10-01', undefined, 'fora'],
+    ['2026-10-08', undefined, 'fora'],
+    ['2026-10-15', undefined, 'falta'],
+    ['2026-10-15', 'presente', 'presente'],
+    ['2026-10-15', 'lesionado', 'lesionado'],
+    ['2026-10-08', 'presente', 'fora'],
+  ] as const)('entrada no meio do mês: %s com %s -> %s', (data, situacao, esperado) => {
+    expect(situacaoNaRodada(entrouNoMeio, data, situacao)).toBe(esperado);
+  });
   it('inativação e reativação', () => {
     expect(situacaoNaRodada(inativadoEReativado, '2026-08-09')).toBe('falta');
     expect(situacaoNaRodada(inativadoEReativado, '2026-08-10')).toBe('fora');
@@ -28,6 +38,20 @@ describe('ativo no mês', () => {
     expect(ativoNoMes(inativadoEReativado, '2026-09')).toBe(true);
     expect(ativoNoMes([{ inicio: '2026-01-01', fim: '2026-08-01' }], '2026-08')).toBe(false);
     expect(ativoNoMes(entrouNoMeio, '2026-09')).toBe(false);
+  });
+  it.each([
+    ['2026-08-09', true],
+    ['2026-08-10', false],
+    ['2026-09-13', false],
+    ['2026-09-14', true],
+  ])('ativoEm com inativação e reativação em %s -> %s', (data, esperado) => {
+    expect(ativoEm(inativadoEReativado, data)).toBe(esperado);
+  });
+  it('ativoNoMes nas bordas do mês', () => {
+    expect(ativoNoMes([{ inicio: '2026-01-01', fim: '2026-08-10' }], '2026-09')).toBe(false);
+    expect(ativoNoMes([{ inicio: '2026-01-01', fim: '2026-09-01' }], '2026-09')).toBe(false);
+    expect(ativoNoMes([{ inicio: '2026-09-30', fim: null }], '2026-09')).toBe(true);
+    expect(ativoNoMes([{ inicio: '2026-10-01', fim: null }], '2026-09')).toBe(false);
   });
   it('filtra jogadores e preserva os campos', () => {
     const js = [
@@ -60,12 +84,27 @@ describe('validarPeriodos', () => {
         { inicio: '2026-01-01', fim: null },
         { inicio: '2026-02-01', fim: null },
       ]),
-    ).toMatchObject({ erro: 'mais-de-um-aberto' });
+    ).toMatchObject({ erro: 'mais-de-um-aberto', indice: 1 });
     expect(
       validarPeriodos([
         { inicio: '2026-03-01', fim: null },
         { inicio: '2026-01-01', fim: '2026-03-02' },
       ]),
     ).toMatchObject({ erro: 'sobreposicao', indice: 0 });
+  });
+  it('aberto seguido de outro período sobrepõe', () => {
+    expect(
+      validarPeriodos([
+        { inicio: '2026-01-01', fim: null },
+        { inicio: '2026-05-01', fim: '2026-06-01' },
+      ]),
+    ).toMatchObject({ ok: false, erro: 'sobreposicao' });
+  });
+  it('duplicados sobrepõem', () => {
+    const p = { inicio: '2026-01-01', fim: '2026-02-01' };
+    expect(validarPeriodos([p, p])).toMatchObject({ ok: false, erro: 'sobreposicao' });
+  });
+  it('desordenados válidos', () => {
+    expect(validarPeriodos([...inativadoEReativado].reverse())).toEqual({ ok: true });
   });
 });

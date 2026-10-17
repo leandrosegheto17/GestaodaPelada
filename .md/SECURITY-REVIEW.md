@@ -539,3 +539,6 @@ APROVADA — consultas parametrizadas e filtradas por grupo_id, RN-04 preservada
 
 ## TP-0049 — DevSecOps — 2026-10-17
 APROVADA — revisão do diff: isolamento por grupo_id, SQL parametrizado e jogador por JOIN conferidos (leitura; testes rodados pelo QA); 0 críticos, 1 não crítico (escrita aceita ExecutorDb em vez de Tx) em RTP-0076.
+
+## TP-0006 — DevSecOps — 2026-10-17
+APROVADA — SVG/index sem script, foreignObject, href externo, fonte ou recurso de terceiro (CSP default-src 'self'), gerador sem shell/segredo/escrita fora de icones, sem marcador de conflito nem dependência nova; 0 críticos, 0 não críticos.

@@ -34,7 +34,7 @@
 - Descrição: Falta apagar backend/dominio/src/simulador/indicadores.test.ts (rm negado pela permissão) e rodar vitest test/simulador/indicadores test/elenco; caso novo em test/simulador/indicadores.test.ts não verificado
 - Impacto se não resolvido: —
 - Sugestão: —
-- Status: Em aberto
+- Status: Resolvido (2026-10-17): pendência operacional feita: duplicado removido e vitest da RTP-0006 verde
 
 ## Bloqueio 005 — 2026-10-17 (BK-0005)
 - Reportado por: Executor

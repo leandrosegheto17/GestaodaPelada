@@ -5,7 +5,12 @@ export interface ComApelido {
   apelido: string;
 }
 
-/** Ordem alfabética sem acento nem caixa; o `id` desempata para a ordem ser sempre a mesma. */
+/** Ordem alfabética sem acento nem caixa; apelidos que só diferem por acento ou caixa dão 0. */
+export function compararApelidoBase(a: string, b: string): number {
+  return collator.compare(a, b);
+}
+
+/** Como `compararApelidoBase`, e o `id` desempata para a ordem ser sempre a mesma. */
 export function compararApelido(a: ComApelido, b: ComApelido): number {
-  return collator.compare(a.apelido, b.apelido) || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
+  return compararApelidoBase(a.apelido, b.apelido) || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
 }

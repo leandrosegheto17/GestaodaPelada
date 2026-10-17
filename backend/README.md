@@ -43,7 +43,7 @@ trava de host (`--alvo producao` para o banco remoto). Nenhuma rota escreve o pa
 ## Seed local
 
 `pnpm seed` (com `DATABASE_URL` apontando para o Postgres local) cria dados fictícios: os grupos
-"Pelada de Quinta" e "Racha de Domingo", 25 jogadores com notas e 3 meses de partidas relativos a hoje.
+"Pelada de Quinta" e "Racha de Domingo", 25 jogadores com notas e 3 meses de partidas em datas fixas (até 2026-10-22, como no mockup).
 É idempotente (apaga e recria só o que é do seed) e **só roda em host local**.
 
 | Conta                                                           | E-mail                      | Senha              |

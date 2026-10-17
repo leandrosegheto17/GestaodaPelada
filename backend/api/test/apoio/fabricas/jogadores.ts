@@ -1,6 +1,7 @@
 import { randomBytes } from 'node:crypto';
 import { emTransacao, type Db } from '../../../src/infraestrutura/db/index.js';
 import * as jogadores from '../../../src/infraestrutura/db/repositorios/jogadores.js';
+import { AGORA_TESTE, diaRelativo } from '../relogio.js';
 
 /**
  * Cria um jogador ativo pelo repositório. A limpeza fica por conta do grupo (a fábrica de grupo
@@ -18,9 +19,9 @@ export async function criarJogador(
       anoNascimento: opcoes.ano ?? 1990,
       posicao: opcoes.posicao ?? 'meio_campo',
       telefone: null,
-      dataEntrada: opcoes.dataEntrada ?? '2026-01-01',
+      dataEntrada: opcoes.dataEntrada ?? diaRelativo(-300),
       autor,
-      agora: opcoes.agora ?? new Date('2026-10-16T12:00:00Z'),
+      agora: opcoes.agora ?? AGORA_TESTE,
     }),
   );
 }

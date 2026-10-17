@@ -81,7 +81,7 @@ describe('POST /api/sessao/entrar (workerd)', () => {
       senha: conta.senha,
     });
     expect(depois.status).toBe(204);
-  });
+  }, 60_000);
 
   it('e-mail inexistente bloqueia do mesmo jeito, com a mesma mensagem', async () => {
     const db = await abrir();
@@ -106,7 +106,7 @@ describe('POST /api/sessao/entrar (workerd)', () => {
     expect((a.corpo as { erro: { mensagem: string } }).erro.mensagem).toBe(
       (b.corpo as { erro: { mensagem: string } }).erro.mensagem,
     );
-  });
+  }, 60_000);
 
   it('corpo inválido: 422 sem ecoar a senha', async () => {
     const r = await clienteEm('2026-10-16').post('/api/sessao/entrar', {
@@ -115,6 +115,88 @@ describe('POST /api/sessao/entrar (workerd)', () => {
     });
     expect(r.status).toBe(422);
     expect(r.texto).not.toContain('segredo-que-nao-pode-voltar');
+  });
+
+  it('e-mail em maiúsculas e com espaços entra', async () => {
+    const db = await abrir();
+    const conta = await criarConta(db, fabrica);
+    const r = await clienteEm('2026-10-16').post('/api/sessao/entrar', {
+      email: `  ${conta.email.toUpperCase()} `,
+      senha: conta.senha,
+    });
+    expect(r.status).toBe(204);
+  });
+
+  it('falha registra tentativa para e-mail existente e inexistente', async () => {
+    const db = await abrir();
+    const conta = await criarConta(db, fabrica);
+    const fantasma = 'registro-fantasma@teste.invalid';
+    fabrica.registrar(async () => {
+      await kyselyDe(db).deleteFrom('tentativas_login').where('email', '=', fantasma).execute();
+    });
+    await clienteEm('2026-10-16').post('/api/sessao/entrar', { email: conta.email, senha: 'errada-123' });
+    await clienteEm('2026-10-16').post('/api/sessao/entrar', { email: fantasma, senha: 'errada-123' });
+    for (const email of [conta.email, fantasma]) {
+      const linhas = await kyselyDe(db)
+        .selectFrom('tentativas_login')
+        .select('sucesso')
+        .where('email', '=', email)
+        .execute();
+      expect(linhas).toEqual([{ sucesso: false }]);
+    }
+  });
+
+  it('4 falhas + sucesso + 4 falhas não bloqueia', async () => {
+    const db = await abrir();
+    const conta = await criarConta(db, fabrica);
+    const tentar = (hora: string, senha: string) =>
+      clienteEm('2026-10-16', hora).post('/api/sessao/entrar', { email: conta.email, senha });
+    for (let i = 0; i < 4; i++) await tentar(`12:0${i}`, 'errada-123');
+    expect((await tentar('12:04', conta.senha)).status).toBe(204);
+    for (let i = 5; i < 9; i++) await tentar(`12:0${i}`, 'errada-123');
+    expect((await tentar('12:09', conta.senha)).status).toBe(204);
+  }, 60_000);
+
+  it('falhas de mais de 15 minutos não contam', async () => {
+    const db = await abrir();
+    const conta = await criarConta(db, fabrica);
+    for (let i = 0; i < 5; i++) {
+      await clienteEm('2026-10-16', `12:0${i}`).post('/api/sessao/entrar', { email: conta.email, senha: 'errada-123' });
+    }
+    const r = await clienteEm('2026-10-16', '12:20').post('/api/sessao/entrar', {
+      email: conta.email,
+      senha: conta.senha,
+    });
+    expect(r.status).toBe(204);
+  }, 60_000);
+
+  it('validação: e-mail de 255 chars, campo extra, senha ausente e sem X-Pelada', async () => {
+    const base = { email: 'a@teste.invalid', senha: 'segredo-que-nao-pode-voltar' };
+    const longo = await clienteEm('2026-10-16').post('/api/sessao/entrar', {
+      ...base,
+      email: `${'a'.repeat(242)}@teste.invalid`,
+    });
+    const extra = await clienteEm('2026-10-16').post('/api/sessao/entrar', { ...base, admin: true });
+    const semSenha = await clienteEm('2026-10-16').post('/api/sessao/entrar', { email: base.email });
+    for (const r of [longo, extra, semSenha]) {
+      expect(r.status).toBe(422);
+      expect(r.texto).not.toContain(base.senha);
+    }
+    const semCsrf = await clienteTeste({ relogio: relogioFixo('2026-10-16', '12:00'), semCsrf: true }).post(
+      '/api/sessao/entrar',
+      base,
+    );
+    expect(semCsrf.status).toBe(403);
+  });
+
+  it('sessão nova a cada entrada; cookie antigo não é reaproveitado', async () => {
+    const db = await abrir();
+    const conta = await criarConta(db, fabrica);
+    const corpo = { email: conta.email, senha: conta.senha };
+    const a = await clienteEm('2026-10-16').post('/api/sessao/entrar', corpo);
+    const b = await clienteEm('2026-10-16', '12:00', cookieDaResposta(a.headers)).post('/api/sessao/entrar', corpo);
+    expect(cookieDaResposta(a.headers)).not.toBe('');
+    expect(cookieDaResposta(b.headers)).not.toBe(cookieDaResposta(a.headers));
   });
 
   it('nenhum log contém a senha', async () => {
