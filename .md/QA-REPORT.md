@@ -209,3 +209,18 @@ APROVADA; 0 críticos, 1 não crítico (RTP-0032: axe erro/salvo, describedby da
 
 ## TP-0126 — QA — 2026-10-17
 APROVADA; 0 críticos, 1 não crítico (RTP-0028: axe com diálogo aberto); 27 testes OK, visual T19 ≤ 0.51% e alturas iguais.
+
+## TP-0127 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0036: mockup T20 estoura 390 px, app correto); 36 testes verdes, CV T20 pc 0,04%, PADRAO 0,53%/0,00%, celular T20 8,66% só pela largura do mockup.
+
+## TP-0128 — QA — 2026-10-17
+APROVADA, 0 críticos/0 não críticos; 14 testes ok e comparação visual T21 4/4 em 0,00%; CSS compartilhado só afeta TabelaSemanas (T21).
+
+## TP-0129 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0037: mockup T26 sem seta e sessão do harness no vazio; RTP-0029 cobre barra-acao); 30 testes ok, gcTime 0 confirmado, CV 1,40/2,81/3,79/7,26% explicada só por mockup/harness.
+
+## TP-0170 — QA — 2026-10-17
+APROVADA, 0 críticos/0 não críticos; 18 testes ok, axe nos 4 estados, visual T17 ≤ 0,61% com alturas iguais.
+
+## TP-0172 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0035: largura do cartão vazio 560 vs 512 px); 22/22 testes, visual vazio pc 0,41% e celular 0,00%.
