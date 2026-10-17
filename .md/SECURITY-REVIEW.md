@@ -179,3 +179,30 @@ APROVADA; 0 críticos, 0 não críticos; slug validado, destino por id da sessã
 
 ## TP-0182 — DevSecOps — 2026-10-17
 APROVADA — PDF desenha só campos do contrato, texto puro, fontes locais same-origin, jspdf dinâmico, pnpm audit --prod sem vulnerabilidades; 0 achados.
+
+## TP-0113 — DevSecOps — 2026-10-17
+APROVADA — 0 achados; UA lido só localmente, localStorage só com flag booleana não sensível, sem rede; 25 testes passando.
+
+## TP-0115 — DevSecOps — 2026-10-17
+OK; 0 críticos, 0 não críticos; RF-12 sem enumeração (200/422/429 mesmo DOM), sem dado pessoal em log/URL, 7/7 testes executados.
+
+## TP-0116 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos novos; senha só em estado, new-password, limites 8–72 do contrato, sem log/storage/URL, destino via lerDestino (grep executado).
+
+## TP-0119 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; saldo só com permissão no servidor (null sem acessaFinanceiro), grupoId encodado, `state`/`?negado` sem HTML, 27 testes ok.
+
+## TP-0120 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; mes validado e codificado, sem armazenamento local nem dado pessoal; 101 testes ok, grep de padrões inseguros limpo.
+
+## TP-0123 — DevSecOps — 2026-10-17
+APROVADA; 0 achados de segurança; apelido renderizado como texto, filtro por lista fechada, busca só local, lista sem ano de nascimento/telefone (minimização LGPD); 111 testes ok.
+
+## TP-0124 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; dado pessoal só em estado/cache em memória, X-Pelada nas escritas, D2 na exclusão, 409/422 como texto; 26 testes passam; sem dependência nova.
+
+## TP-0125 — DevSecOps — 2026-10-17
+OK; 0 achados de segurança; corpo só com 5 inteiros, X-Pelada via escrever, saída como texto, sem dependência nova; 34 testes ok.
+
+## TP-0126 — DevSecOps — 2026-10-17
+APROVADA em segurança; 0 críticos, 0 não críticos; senha temporária só no diálogo e descartada (reset + gcTime 0), escritas com X-Pelada, 13 testes OK.
