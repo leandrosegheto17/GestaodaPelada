@@ -164,3 +164,18 @@ APROVADA; 0 críticos, 0 não críticos; diff lido, grep de sinks (innerHTML/sty
 
 ## TP-0174 — DevSecOps — 2026-10-17
 APROVADA; 0 críticos, 1 baixo (RTP-0025: corpo inválido deixa Confirmar habilitado); cancelamento por AbortController e sem persistência/vazamento confirmados por leitura e grep.
+
+## TP-0106 — DevSecOps — 2026-10-17
+OK; 0 achados; atalhos só com handle (sem handle, sem botão/menu), nada de grupo/finanças exposto pelo layout, Sair com X-Pelada e cache limpo; layout-admin.test 12/12.
+
+## TP-0111 — DevSecOps — 2026-10-17
+OK; 0 críticos, 0 não críticos; sem XSS/innerHTML, só projeção pública (G-10), link de endereço novo falha fechado, cache revalidado pelo contrato, recursos desligados não renderizam; 64 testes passam.
+
+## TP-0114 — DevSecOps — 2026-10-17
+APROVADA — open redirect barrado por lerDestino/destinoAposEntrar, erro genérico 401/422, 429 com texto fixo, senha só em estado e sem storage/log/URL; 33 testes passando; 0 achados.
+
+## TP-0118 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; slug validado, destino por id da sessão, aviso sem nome de grupo (verificado por grep e 21 testes passando).
+
+## TP-0182 — DevSecOps — 2026-10-17
+APROVADA — PDF desenha só campos do contrato, texto puro, fontes locais same-origin, jspdf dinâmico, pnpm audit --prod sem vulnerabilidades; 0 achados.
