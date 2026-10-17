@@ -9,6 +9,7 @@ import * as partidas from '../../infraestrutura/db/repositorios/partidas.js';
 import * as pesos from '../../infraestrutura/db/repositorios/pesos.js';
 import * as vinculos from '../../infraestrutura/db/repositorios/vinculos.js';
 import { ativosNaData } from '../elenco/ativos.js';
+import { carregarSaldoAtual } from '../financeiro/saldo-atual.js';
 import { indiceDiaSemana } from './dia-semana.js';
 import { urlPublicaDoGrupo } from './url-publica.js';
 
@@ -22,8 +23,8 @@ export interface EntradaDetalhe {
 
 /**
  * Grupo com o resumo da tela inicial do admin. `escalacaoConfirmadaPara` é a data do próximo jogo
- * quando já há escalação confirmada para ela; `saldoAtualCentavos` fica nulo até o financeiro
- * preenchê-lo (um só lugar: o objeto `inicio` abaixo).
+ * quando já há escalação confirmada para ela; `saldoAtualCentavos` só vem para quem tem a permissão
+ * do financeiro (e quando o caixa está configurado). Um só lugar: o objeto `inicio` abaixo.
  */
 export async function carregarGrupoDetalhe(ex: ExecutorDb, e: EntradaDetalhe): Promise<GrupoDetalhe | null> {
   const grupo = await grupos.buscarPorId(ex, e.grupoId);
@@ -32,7 +33,7 @@ export async function carregarGrupoDetalhe(ex: ExecutorDb, e: EntradaDetalhe): P
   const sugerida = dataSugeridaPartida(e.hoje, dia);
   const proximo = proximoDiaDeJogo(e.hoje, dia);
 
-  const [naData, doMes, ativos, catalogo, vigente, admins, aparelhos, escalacao] = await Promise.all([
+  const [naData, doMes, ativos, catalogo, vigente, admins, aparelhos, escalacao, saldo] = await Promise.all([
     partidas.porData(ex, e.grupoId, sugerida),
     partidas.porMes(ex, e.grupoId, mesDe(e.hoje)),
     ativosNaData(ex, e.grupoId, e.hoje),
@@ -41,6 +42,8 @@ export async function carregarGrupoDetalhe(ex: ExecutorDb, e: EntradaDetalhe): P
     vinculos.contarAdmins(ex, e.grupoId),
     eventos.aparelhosDaSemana(ex, e.grupoId, e.hoje),
     escalacoes.porData(ex, e.grupoId, proximo),
+    // O saldo é dado do financeiro: sem a permissão, nem se consulta.
+    e.acessaFinanceiro ? carregarSaldoAtual(ex, e.grupoId, e.hoje) : Promise.resolve(null),
   ]);
 
   return grupoDetalhe.parse({
@@ -66,7 +69,7 @@ export async function carregarGrupoDetalhe(ex: ExecutorDb, e: EntradaDetalhe): P
       pesosVigentesDesde: vigente?.vigenteDesde ?? e.hoje,
       admins,
       aparelhosNaSemana: aparelhos,
-      saldoAtualCentavos: null,
+      saldoAtualCentavos: saldo,
     },
   });
 }

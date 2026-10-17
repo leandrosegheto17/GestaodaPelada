@@ -10,6 +10,7 @@ import * as pesos from '../../../src/infraestrutura/db/repositorios/pesos.js';
 import { montarCenario } from '../../apoio/cenario-acesso.js';
 import { clienteTeste } from '../../apoio/cliente.js';
 import { usarDbDoWorker } from '../../apoio/db-worker.js';
+import { criarConfig, criarLancamento } from '../../apoio/fabricas/financeiro.js';
 import { criarJogador } from '../../apoio/fabricas/jogadores.js';
 import { usarFabrica } from '../../apoio/fabrica.js';
 import { relogioFixo } from '../../apoio/relogio.js';
@@ -64,6 +65,22 @@ describe('GET /api/grupos/:grupoId (workerd)', () => {
     await escalacoes.confirmar(db, g, { ...base, data: HOJE, confirmadaPor: cen.adminA.id });
     expect(await ler(cen.adminA.cookie)).toBe(HOJE);
     expect(await ler(cen.adminASemFinanceiro.cookie)).toBe(HOJE);
+  });
+
+  it('saldoAtualCentavos: só para quem tem o financeiro; sem configuração é nulo; o caixa de outro grupo não entra', async () => {
+    const db = await abrir();
+    const cen = await montarCenario(db, fabrica);
+    const g = cen.grupoA.id;
+    const saldoDe = async (cookie: string) =>
+      grupoDetalhe.parse((await cliente(cookie).get(`/api/grupos/${g}`)).corpo).inicio.saldoAtualCentavos;
+
+    expect(await saldoDe(cen.adminA.cookie)).toBeNull();
+    await criarConfig(db, g, { saldoInicialCentavos: 35_000, dataSaldoInicial: '2026-02-05' });
+    await criarLancamento(db, g, cen.adminA.id, { tipo: 'entrada', data: '2026-10-01', valorCentavos: 20_000 });
+    await criarLancamento(db, g, cen.adminA.id, { tipo: 'saida', data: '2026-10-05', valorCentavos: 80_000 });
+    await criarConfig(db, cen.grupoB.id, { saldoInicialCentavos: 999_999 });
+    expect(await saldoDe(cen.adminA.cookie)).toBe(35_000 + 20_000 - 80_000);
+    expect(await saldoDe(cen.adminASemFinanceiro.cookie)).toBeNull();
   });
 
   it('sem financeiro: acessaFinanceiro false; admin de outro grupo: 404', async () => {
