@@ -251,3 +251,9 @@ APROVADA; 0 críticos, 0 não críticos; diff lido (state validado por schema, e
 
 ## TP-0183 — DevSecOps — 2026-10-17
 APROVADA - PDF só com campos de ProjecaoPdf (G-10), texto puro, fontes locais, jspdf dinâmico, pdfjs-dist só devDependency; pnpm audit --prod limpo; 0 achados.
+
+## TP-0200 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 novos não críticos (RTP-0048 já aberta); escritas via escrever/X-Pelada sem retry, rollback otimista e anti double-submit conferidos, 29 testes passando.
+
+## TP-0202 — DevSecOps — 2026-10-17
+APROVADA — entrada validada pelo schema do contrato, PUT com X-Pelada, 403 garantido por exigirFinanceiro na API, sem armazenamento local; 16/16 testes; 0 achados.

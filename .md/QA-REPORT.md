@@ -260,3 +260,12 @@ APROVADA; 0 críticos, 1 não crítico (RTP-0048: D2 com fallback na config); 29
 
 ## TP-0202 — QA — 2026-10-17
 APROVADA — 16/16 testes, celular 0,00%; pc 1,50% por largura 560 vs 512 px (RTP-0047, baixa; não é o caso do RTP-0029); estado erro conferido por leitura; 0 críticos, 1 não crítico.
+
+## TP-0122 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0049: teste da faixa na T10 e UX-SPEC); 46 testes ok, visual T11 edição 0,01%/0,11% mesma altura.
+
+## TP-0176 — QA — 2026-10-17
+APROVADA — 0 críticos, 0 não críticos; vitest 20/20, t14.spec 2/2 (vite próprio), comparação visual sucesso/mover pc+celular conferida; 2 testes corrigidos mantêm as asserções.
+
+## TP-0184 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0050, lacunas de teste); vitest 139/139 e visual T01 13/13 OK.
