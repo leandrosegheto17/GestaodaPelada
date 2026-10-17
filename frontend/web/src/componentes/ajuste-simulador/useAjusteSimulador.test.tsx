@@ -111,7 +111,8 @@ describe('useAjusteSimulador', () => {
       result.current.composicao.formato === 'dois_times' && result.current.composicao.times[1].titulares,
     ).toContain(japa);
     act(() => result.current.tentarDeNovo());
-    await waitFor(() => expect(result.current.erroRecalculo).toBeNull());
+    await waitFor(() => expect(result.current.podeConfirmar).toBe(true), { timeout: 1500 });
+    expect(result.current.erroRecalculo).toBeNull();
     expect(pedidos).toHaveLength(2);
     expect(pedidos[1]?.corpo).toEqual(pedidos[0]?.corpo);
     expect(result.current.podeConfirmar).toBe(true);

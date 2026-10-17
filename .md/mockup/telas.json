@@ -150,6 +150,7 @@
     { "id": "T13", "estado": "erro-recalcular", "mockup": "telas/t13-resultado-dois--erro-recalcular.html", "como": "mover com falha em simulador/avaliar" },
     { "id": "T13", "estado": "erro-confirmar", "mockup": "telas/t13-resultado-dois--erro-confirmar.html", "como": "confirmar com falha (vale também para T14)" },
     { "id": "T13", "estado": "mover", "mockup": "telas/t13-resultado-dois--mover.html", "como": "tocar em Japa (D3)" },
+    { "id": "T13", "estado": "trocar", "mockup": "telas/t13-resultado-dois--trocar.html", "como": "tocar em Trocar com… no D3 de Japa (vale também para T14)" },
     { "id": "T13", "estado": "refazer", "mockup": "telas/t13-resultado-dois--refazer.html", "como": "Refazer sugestão depois de ajuste (vale também para T14)" },
     { "id": "T14", "estado": "sucesso", "mockup": "telas/t14-resultado-varios--sucesso.html", "como": "Sugerir times no formato 3+ (respostas/simulador-sugestao-varios.json)" },
     { "id": "T14", "estado": "mover", "mockup": "telas/t14-resultado-varios--mover.html", "como": "tocar em Vini (D3)" },
