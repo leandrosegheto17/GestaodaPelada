@@ -764,3 +764,30 @@ APROVADA, 0 achados; rota sob vínculo/X-Pelada, corpo strict com teto 60 aptos 
 
 ## TP-0189 — DevSecOps — 2026-10-17
 APROVADA; 0 achados de segurança (isolamento por grupo em todas as consultas + FKs compostas, SQL parametrizado, somas com checagem de inteiro seguro, temHistorico/FK cobrindo pagamento); checar-grupo-id verde.
+
+## RTP-0082 — DevSecOps — 2026-10-17
+APROVADA — só troca de helper de teste com trava de host mantida; 0 achados de segurança (revisão de diff, nada executado).
+
+## RTP-0093 — DevSecOps — 2026-10-17
+APROVADA — 0 críticos, 0 não críticos; diff só de teste, sem segredo/PII; testes reforçam não vazamento de nome inativado (lido, nada executado).
+
+## RTP-0094 — DevSecOps — 2026-10-17
+APROVADA — mudança só de testes, sem segredo/PII, reforça 404 idêntico, no-store e campos proibidos no ranking público; 0 achados.
+
+## TP-0081 — DevSecOps — 2026-10-17
+TP-0081 APROVADA em segurança; revisão do código (isolamento por grupo, CSRF, data pelo relógio, transação única, sem dado pessoal em evento/auditoria) e checagens estáticas executadas OK; 0 achados novos (lacunas de teste já em RTP-0100).
+
+## TP-0082 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; PUT atrás de exigirVinculo/CSRF, filtro por grupo, autor/momento só de sessão/relógio, auditoria transacional; tsc limpo (testes lidos, não reexecutados).
+
+## TP-0108 — DevSecOps — 2026-10-17
+APROVADA COM DÉBITO, 0 críticos/1 não crítico (RTP-0107: cache do ranking sem maxAgeSeconds); só ranking público em cache (200), sem redirecionamento no SW, sem eval, pnpm audit limpo.
+
+## TP-0167 — DevSecOps — 2026-10-17
+APROVADA COM DÉBITO — revisão do diff (grupo/autor só do vínculo/sessão, strict, ids contra elenco do grupo, evento sem dado pessoal, transação única); 0 críticos, 1 não crítico (id repetido na composição não recusado) -> RTP-0108.
+
+## TP-0181 — DevSecOps — 2026-10-17
+APROVADA; 0 achados de segurança (projeção estrita, 404 uniforme, entrada validada, tsc limpo); revisão de diff, sem teste ativo.
+
+## TP-0203 — DevSecOps — 2026-10-17
+APROVADA — aviso-privacidade sem IDOR (conta da sessão), sessão completa, CSRF e corpo strict ok, só grava instante (LGPD); tsc limpo; 0 achados.

@@ -7,7 +7,7 @@ dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuá
 
 Atualizado: 2026-10-17 14:43
 
-Resumo: Não executada 48 · Testada (aguarda segurança) 3 · Em validação de segurança 16 · Aprovada 253 · Bloqueada 3 · total 323
+Resumo: Não executada 49 · Em validação de segurança 16 · Aprovada 256 · Bloqueada 3 · total 324
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -316,7 +316,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 301 | RTP-0086 | executor | ✔ | Completar testes do POST /api/dono/grupos conforme o plano (atomicidade por passo, corr... | Refatoração Lote-L11 | TP-0056 | Aprovada |
 | 302 | RTP-0089 | executor | ✔ | Teste do painel do dono: forma contra dono-painel*.json e 403 de troca_de_senha | L11 | TP-0054 | Aprovada |
 | 303 | RTP-0081 | executor | ✔ | Teste de ordem por nome em GET /api/grupos/:g/admins | Refatoração Lote-L14 | TP-0063 | Aprovada |
-| 304 | RTP-0082 | executor | ✔ | Testes de aplicação com db-worker rodam no projeto node do vitest | L15 | TP-0069 | Testada (aguarda segurança) |
+| 304 | RTP-0082 | executor | ✔ | Testes de aplicação com db-worker rodam no projeto node do vitest | L15 | TP-0069 | Aprovada |
 | 305 | RTP-0106 | executor | ✔ | montarCenario usa e-mail de dono fixo: testes de aplicação colidem em contas_email_unic... | Refatoração Lote-L15 | RTP-0082 | Não executada |
 | 306 | RTP-0087 | executor | ✔ | Testes da rota GET /api/grupos/:g: cobrir sexta, saídas, mês/semana e grupo B | Refatoração Lote-L13 | TP-0061 | Aprovada |
 | 307 | RTP-0099 | executor | ✔ | ler.test.ts: jogadoresEPartidas reutiliza o helper criarPartida | Refatoração Lote-L13 | RTP-0087 | Não executada |
@@ -324,15 +324,16 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 309 | RTP-0091 | executor | ✔ | Remover teste duplicado de GET partidas (partidas/listar.test.ts) | L17 | TP-0077 | Aprovada |
 | 310 | RTP-0090 | executor | ✔ | Teste de reativar: acumulado mantido e ativosNaData | Refatoração Lote-L16 | TP-0073 | Aprovada |
 | 311 | RTP-0092 | executor | ✔ | Testes de inativar: cobrir bordas e efeito do plano do TP-0072 | Refatoração Lote-L16 | TP-0072 | Aprovada |
-| 312 | RTP-0093 | executor | ✔ | Testes de partida nova: inativado depois e 409 com escalação (TP-0168) | Refatoração Lote-L36 | TP-0168 | Testada (aguarda segurança) |
+| 312 | RTP-0093 | executor | ✔ | Testes de partida nova: inativado depois e 409 com escalação (TP-0168) | Refatoração Lote-L36 | TP-0168 | Aprovada |
 | 313 | RTP-0097 | executor | ✔ | Unificar a enumeração de ids da composição (idsDaComposicao duplicada em 3 lugares) | L36 | TP-0167 | Não executada |
-| 314 | RTP-0108 | executor | — | Confirmar escalação: recusar id repetido na composição (422) | Refatoração Lote-L36 | TP-0167 | Não executada |
-| 315 | RTP-0094 | executor | ✔ | Testes do ranking público: cobrir o plano do TP-0084 em publico-ranking.test.ts | L19 | TP-0084 | Testada (aguarda segurança) |
+| 314 | RTP-0108 | executor | ✔ | Confirmar escalação: recusar id repetido na composição (422) | Refatoração Lote-L36 | TP-0167 | Não executada |
+| 315 | RTP-0094 | executor | ✔ | Testes do ranking público: cobrir o plano do TP-0084 em publico-ranking.test.ts | L19 | TP-0084 | Aprovada |
 | 316 | RTP-0103 | executor | ✔ | limite-taxa.test: idempotência do login e lacunas do plano (IP distinto, no-store, POST... | Refatoração Lote-L19 | TP-0087 | Não executada |
-| 317 | RTP-0100 | executor | ✔ | Testes do POST partidas: concorrência, falha no evento e 422 de corpo | Refatoração Lote-L18 | TP-0081 | Não executada |
-| 318 | RTP-0101 | executor | ✔ | Teste do PUT partidas: 404 de :data malformada sem consulta ao banco | L18 | TP-0082 | Não executada |
-| 319 | RTP-0107 | executor | — | sw.ts: validade máxima (maxAgeSeconds) no cache do ranking público | L23 | TP-0108 | Não executada |
-| 320 | BK-0003 | coordenador | ✔ | Exige push da branch ci-prova e PR real no remoto (ação manual/autorização do usuário); ro | — | — | Não executada |
-| 321 | RTP-0014 | executor | ✔ | Executar a prova do CI em PR real (ci-prova) | Refatoração Lote-L01 | BK-0003, TP-0003 | Bloqueada |
-| 322 | BK-0005 | coordenador | ✔ | Item (b) feito; item (a) exige PR real com job e2e verde (push/PR autorizado pelo usuário) | — | — | Não executada |
-| 323 | RTP-0017 | executor | ✔ | Provar job e2e verde em PR real e cobrir dist/ ausente em visual.mjs | Refatoração Lote-L20 | BK-0005, TP-0089 | Bloqueada |
+| 317 | RTP-0109 | executor | ✔ | Limitador de taxa: binding ausente em produção desliga o limite sem aviso | Refatoração Lote-L19 | TP-0087 | Não executada |
+| 318 | RTP-0100 | executor | ✔ | Testes do POST partidas: concorrência, falha no evento e 422 de corpo | Refatoração Lote-L18 | TP-0081 | Não executada |
+| 319 | RTP-0101 | executor | ✔ | Teste do PUT partidas: 404 de :data malformada sem consulta ao banco | L18 | TP-0082 | Não executada |
+| 320 | RTP-0107 | executor | ✔ | sw.ts: validade máxima (maxAgeSeconds) no cache do ranking público | L23 | TP-0108 | Não executada |
+| 321 | BK-0003 | coordenador | ✔ | Exige push da branch ci-prova e PR real no remoto (ação manual/autorização do usuário); ro | — | — | Não executada |
+| 322 | RTP-0014 | executor | ✔ | Executar a prova do CI em PR real (ci-prova) | Refatoração Lote-L01 | BK-0003, TP-0003 | Bloqueada |
+| 323 | BK-0005 | coordenador | ✔ | Item (b) feito; item (a) exige PR real com job e2e verde (push/PR autorizado pelo usuário) | — | — | Não executada |
+| 324 | RTP-0017 | executor | ✔ | Provar job e2e verde em PR real e cobrir dist/ ausente em visual.mjs | Refatoração Lote-L20 | BK-0005, TP-0089 | Bloqueada |
