@@ -31,3 +31,7 @@
 .mensagem .texto {
   margin-bottom: var(--esp-6);
 }
+/* No mockup o ícone é filho direto do flex (sem a folga de linha de um svg inline). */
+.mensagem .icone {
+  display: flex;
+}
