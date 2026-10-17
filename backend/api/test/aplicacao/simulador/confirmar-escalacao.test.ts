@@ -1,6 +1,6 @@
 import { idsDaComposicao, type EscalacaoCorpo } from '@pelada/contrato';
 import { describe, expect, it } from 'vitest';
-import { confirmarEscalacao } from '../../../src/aplicacao/simulador/confirmar-escalacao.js';
+import { confirmarEscalacao, MSG_COMPOSICAO_REPETIDA } from '../../../src/aplicacao/simulador/confirmar-escalacao.js';
 import { kyselyDe } from '../../../src/infraestrutura/db/cliente.js';
 import * as escalacoes from '../../../src/infraestrutura/db/repositorios/escalacoes.js';
 import { usarDb } from '../../apoio/db-teste.js';
@@ -108,6 +108,30 @@ describe('confirmarEscalacao', () => {
       agora: AGORA,
     });
     expect(antes.ok).toBe(false);
+    expect(await escalacoes.porData(db, g, D1)).toBeNull();
+    expect(await eventosDa(db, g)).toEqual([]);
+  });
+
+  it('id repetido no mesmo time, entre times ou em naoEntra: erro em composicao e nada gravado', async () => {
+    const { db, base, g, a, b } = await cenario();
+    const dois = (t1: string[], t2: string[], naoEntra: string[]): EscalacaoCorpo => ({
+      formato: 'dois_times',
+      data: D1,
+      n: 2,
+      k: 'ilimitado',
+      composicao: {
+        times: [
+          { titulares: t1.map((id) => ({ id, so1oTempo: false })), entramNo2oTempo: [] },
+          { titulares: t2.map((id) => ({ id, so1oTempo: false })), entramNo2oTempo: [] },
+        ],
+        naoEntra,
+      },
+    });
+    const corpos = [varios(D1, [a, a]), dois([a, a], [b], []), dois([a], [a, b], []), dois([a], [b], [a])];
+    for (const corpo of corpos) {
+      const r = await confirmarEscalacao(db, g, corpo, { contaId: base.contaId, agora: AGORA });
+      expect(r).toEqual({ ok: false, campos: { composicao: MSG_COMPOSICAO_REPETIDA } });
+    }
     expect(await escalacoes.porData(db, g, D1)).toBeNull();
     expect(await eventosDa(db, g)).toEqual([]);
   });

@@ -54,21 +54,32 @@ const avaliarVarios = entradaVarios.extend({ composicao: composicaoVarios }).sup
 export const avaliarCorpo = z.discriminatedUnion('formato', [avaliarDois, avaliarVarios]);
 export type AvaliarCorpo = z.infer<typeof avaliarCorpo>;
 
-/** Corpo de confirmar a escalação: a composição que vai para a data. */
+function recusarRepetidos(corpo: Escalada, contexto: z.RefinementCtx): void {
+  const ids = idsDaComposicao(corpo);
+  if (new Set(ids).size !== ids.length) {
+    contexto.addIssue({ code: 'custom', path: ['composicao'], message: 'Há jogador repetido na composição.' });
+  }
+}
+
+/** Corpo de confirmar a escalação: a composição que vai para a data, sem jogador repetido. */
 export const escalacaoCorpo = z.discriminatedUnion('formato', [
-  z.strictObject({
-    formato: z.literal('dois_times'),
-    data,
-    n: entradaDois.shape.n,
-    k: kValor,
-    composicao: composicaoDois,
-  }),
-  z.strictObject({
-    formato: z.literal('varios_times'),
-    data,
-    n: entradaVarios.shape.n,
-    composicao: composicaoVarios,
-  }),
+  z
+    .strictObject({
+      formato: z.literal('dois_times'),
+      data,
+      n: entradaDois.shape.n,
+      k: kValor,
+      composicao: composicaoDois,
+    })
+    .superRefine(recusarRepetidos),
+  z
+    .strictObject({
+      formato: z.literal('varios_times'),
+      data,
+      n: entradaVarios.shape.n,
+      composicao: composicaoVarios,
+    })
+    .superRefine(recusarRepetidos),
 ]);
 export type EscalacaoCorpo = z.infer<typeof escalacaoCorpo>;
 

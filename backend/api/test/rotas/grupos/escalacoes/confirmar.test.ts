@@ -84,12 +84,30 @@ describe('POST /api/grupos/:g/escalacoes (workerd)', () => {
     expect((await cliente(cen.adminA.cookie).post(url, corpo)).status).toBe(422);
   });
 
-  it('id repetido na composição → 422 em composicao e nada gravado', async () => {
-    const { db, cen, a, url } = await cenario();
-    const r = await cliente(cen.adminA.cookie).post(url, varios(D1, [a, a]));
-    expect(r.status).toBe(422);
-    expect(Object.keys((r.corpo as { erro: { campos: object } }).erro.campos)).toEqual(['composicao']);
+  it('id repetido no mesmo time, entre times ou em naoEntra → 422 em composicao e nada gravado', async () => {
+    const { db, cen, a, b, url } = await cenario();
+    const dois = (t1: string[], t2: string[], naoEntra: string[]) => ({
+      formato: 'dois_times',
+      data: D1,
+      n: 2,
+      k: 'ilimitado',
+      composicao: {
+        times: [
+          { titulares: t1.map((id) => ({ id, so1oTempo: false })), entramNo2oTempo: [] },
+          { titulares: t2.map((id) => ({ id, so1oTempo: false })), entramNo2oTempo: [] },
+        ],
+        naoEntra,
+      },
+    });
+    const corpos = [varios(D1, [a, a]), dois([a, a], [b], []), dois([a], [a, b], []), dois([a], [b], [a])];
+    for (const corpo of corpos) {
+      const r = await cliente(cen.adminA.cookie).post(url, corpo);
+      expect(r.status).toBe(422);
+      expect(Object.keys((r.corpo as { erro: { campos: object } }).erro.campos)).toEqual(['composicao']);
+    }
     expect(await escalacoes.porData(db, cen.grupoA.id, D1)).toBeNull();
+    const eventos = await kyselyDe(db).selectFrom('eventos_uso').select('tipo').where('grupo_id', '=', cen.grupoA.id).execute();
+    expect(eventos).toEqual([]);
   });
 
   it('jogador de outro grupo → 422 em composicao e nada gravado; a escalação de B não é tocada', async () => {
