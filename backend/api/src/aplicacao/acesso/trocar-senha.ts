@@ -13,9 +13,7 @@ export interface SessaoQueTroca {
 }
 
 export type ResultadoTrocaDeSenha =
-  | { tipo: 'ok' }
-  | { tipo: 'recusada'; campos: Record<string, string> }
-  | { tipo: 'bloqueada'; liberaEm: Date };
+  { tipo: 'ok' } | { tipo: 'recusada'; campos: Record<string, string> } | { tipo: 'bloqueada'; liberaEm: Date };
 
 /** Chave do contador de erros da senha atual: por conta, separada do contador de login do e-mail. */
 function chaveDeTentativas(contaId: string): string {

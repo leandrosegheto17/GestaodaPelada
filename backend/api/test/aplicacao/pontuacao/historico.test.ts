@@ -2,6 +2,7 @@ import { PESOS_PADRAO, calcularRanking } from '@pelada/dominio';
 import type { KyselyPlugin } from 'kysely';
 import { describe, expect, it } from 'vitest';
 import { carregarHistoricoGrupo } from '../../../src/aplicacao/pontuacao/historico.js';
+import { embrulhar, kyselyDe } from '../../../src/infraestrutura/db/cliente.js';
 import { emTransacao } from '../../../src/infraestrutura/db/index.js';
 import * as partidas from '../../../src/infraestrutura/db/repositorios/partidas.js';
 import * as pesos from '../../../src/infraestrutura/db/repositorios/pesos.js';
@@ -63,7 +64,11 @@ describe('carregarHistoricoGrupo', () => {
     await nova(base.outroGrupo.id, '2026-10-01', alheio);
 
     const contador = contarConsultas();
-    const historico = await carregarHistoricoGrupo(db.withPlugin(contador.plugin), base.grupo.id, '2026-10-08');
+    const historico = await carregarHistoricoGrupo(
+      embrulhar(kyselyDe(db).withPlugin(contador.plugin), false),
+      base.grupo.id,
+      '2026-10-08',
+    );
     expect(contador.total()).toBeGreaterThan(0);
     expect(contador.total()).toBeLessThanOrEqual(4);
     expect(historico.partidas.map((p) => p.data)).toEqual(['2026-10-01', '2026-10-08']);

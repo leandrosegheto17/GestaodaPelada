@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-17 13:16
+Atualizado: 2026-10-17 13:30
 
-Resumo: Não executada 40 · Em execução 30 · Executada (aguarda teste) 7 · Testada (aguarda segurança) 1 · Aprovada 226 · Bloqueada 3 · total 307
+Resumo: Não executada 42 · Em execução 19 · Executada (aguarda teste) 11 · Testada (aguarda segurança) 7 · Aprovada 227 · Bloqueada 3 · total 309
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -77,7 +77,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 62 | TP-0059 | executor | ✔ | Endpoint POST /api/dono/pedidos-reset/:id/resolver | L12 | TP-0022, TP-0030, TP-0032, TP-0033 | Aprovada |
 | 63 | TP-0060 | executor | ✔ | Endpoint POST /api/dono/contas/:id/redefinir-senha | L12 | TP-0022, TP-0032, TP-0033, TP-0037 | Aprovada |
 | 64 | TP-0061 | executor | ✔ | Endpoint GET /api/grupos/:g (grupo, permissões e resumo do início) | L13 | TP-0007, TP-0013, TP-0021, TP-0029, TP-0032, TP-0033, TP-0047, TP-0048, TP-0049, TP-0050, TP-0052 | Aprovada |
-| 65 | TP-0062 | executor | ✔ | Endpoint PATCH /api/grupos/:g | L13 | TP-0021, TP-0029, TP-0032, TP-0033, TP-0061 | Em execução |
+| 65 | TP-0062 | executor | ✔ | Endpoint PATCH /api/grupos/:g | L13 | TP-0021, TP-0029, TP-0032, TP-0033, TP-0061 | Executada (aguarda teste) |
 | 66 | TP-0063 | executor | ✔ | Endpoint GET /api/grupos/:g/admins | L14 | TP-0021, TP-0029, TP-0032, TP-0033 | Aprovada |
 | 67 | TP-0064 | executor | ✔ | Endpoint POST /api/grupos/:g/admins | L14 | TP-0021, TP-0032, TP-0033, TP-0038 | Aprovada |
 | 68 | TP-0065 | executor | ✔ | Endpoint DELETE /api/grupos/:g/admins/:contaId | L14 | TP-0014, TP-0021, TP-0029, TP-0030, TP-0032, TP-0033 | Aprovada |
@@ -95,13 +95,13 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 80 | TP-0077 | executor | ✔ | Endpoint GET /api/grupos/:g/partidas?mes= | L17 | TP-0007, TP-0013, TP-0024, TP-0032, TP-0033, TP-0049 | Aprovada |
 | 81 | TP-0078 | executor | ✔ | Endpoint GET /api/grupos/:g/partidas/nova?data= | L17 | TP-0007, TP-0013, TP-0024, TP-0029, TP-0032, TP-0033, TP-0049, TP-0052 | Aprovada |
 | 82 | TP-0079 | executor | ✔ | Endpoint GET /api/grupos/:g/partidas/:data | L17 | TP-0024, TP-0032, TP-0033, TP-0049, TP-0052 | Aprovada |
-| 83 | TP-0080 | executor | ✔ | Extração aplicacao/partidas/presencas (validação das marcações) | L18 | TP-0009, TP-0052 | Testada (aguarda segurança) |
+| 83 | TP-0080 | executor | ✔ | Extração aplicacao/partidas/presencas (validação das marcações) | L18 | TP-0009, TP-0052 | Aprovada |
 | 84 | TP-0081 | executor | ✔ | Endpoint POST /api/grupos/:g/partidas | L18 | TP-0013, TP-0014, TP-0024, TP-0030, TP-0032, TP-0033, TP-0049, TP-0050, TP-0079, TP-0080 | Não executada |
 | 85 | TP-0082 | executor | ✔ | Endpoint PUT /api/grupos/:g/partidas/:data | L18 | TP-0014, TP-0024, TP-0030, TP-0032, TP-0033, TP-0049, TP-0079, TP-0080 | Não executada |
-| 86 | TP-0083 | executor | ✔ | Endpoint DELETE /api/grupos/:g/partidas/:data | L18 | TP-0014, TP-0024, TP-0030, TP-0032, TP-0033, TP-0049 | Executada (aguarda teste) |
-| 87 | TP-0084 | executor | ✔ | Endpoint GET /api/publico/:slug/ranking?mes= | L19 | TP-0010, TP-0013, TP-0020, TP-0029, TP-0033, TP-0053 | Executada (aguarda teste) |
-| 88 | TP-0085 | executor | ✔ | Endpoint POST /api/publico/:slug/eventos | L19 | TP-0020, TP-0029, TP-0033, TP-0050 | Executada (aguarda teste) |
-| 89 | TP-0086 | executor | ✔ | Endpoint GET /api/grupos/:g/uso | L19 | TP-0013, TP-0024, TP-0032, TP-0033, TP-0050 | Executada (aguarda teste) |
+| 86 | TP-0083 | executor | ✔ | Endpoint DELETE /api/grupos/:g/partidas/:data | L18 | TP-0014, TP-0024, TP-0030, TP-0032, TP-0033, TP-0049 | Testada (aguarda segurança) |
+| 87 | TP-0084 | executor | ✔ | Endpoint GET /api/publico/:slug/ranking?mes= | L19 | TP-0010, TP-0013, TP-0020, TP-0029, TP-0033, TP-0053 | Testada (aguarda segurança) |
+| 88 | TP-0085 | executor | ✔ | Endpoint POST /api/publico/:slug/eventos | L19 | TP-0020, TP-0029, TP-0033, TP-0050 | Testada (aguarda segurança) |
+| 89 | TP-0086 | executor | ✔ | Endpoint GET /api/grupos/:g/uso | L19 | TP-0013, TP-0024, TP-0032, TP-0033, TP-0050 | Testada (aguarda segurança) |
 | 90 | TP-0087 | executor | ✔ | Limite de taxa em /api/sessao/entrar e /api/publico/* | L19 | TP-0013, TP-0034, TP-0084 | Não executada |
 | 91 | TP-0088 | executor | ✔ | App web: Vite, React 19, Router, TanStack Query, tokens e fontes do mockup, recursos po... | L20 | TP-0001, TP-0004 | Aprovada |
 | 92 | TP-0089 | executor | ✔ | Base visual: Playwright, comparar-visual.mjs e job e2e | L20 | TP-0003, TP-0088 | Aprovada |
@@ -109,7 +109,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 94 | TP-0091 | executor | ✔ | Cliente da API no web (src/dados) | L20 | TP-0005, TP-0088 | Aprovada |
 | 95 | TP-0092 | executor | ✔ | Formatação pt-BR (src/formatacao) | L20 | TP-0005, TP-0088 | Aprovada |
 | 96 | TP-0093 | executor | ✔ | Rótulos dos enums (src/rotulos) | L20 | TP-0005, TP-0088 | Aprovada |
-| 97 | TP-0094 | executor | ✔ | docker-compose.yml (db, backend, frontend) | L21 | TP-0013, TP-0015, TP-0051, TP-0088 | Executada (aguarda teste) |
+| 97 | TP-0094 | executor | ✔ | docker-compose.yml (db, backend, frontend) | L21 | TP-0013, TP-0015, TP-0051, TP-0088 | Testada (aguarda segurança) |
 | 98 | TP-0095 | executor | ✔ | Componentes básicos: Botão, Selo, Faixa, Esqueleto, Estado vazio, Tela de mensagem, Err... | L21 | TP-0088 | Aprovada |
 | 99 | TP-0096 | executor | ✔ | Campos de formulário e resumo de erros | L21 | TP-0088, TP-0092, TP-0095 | Aprovada |
 | 100 | TP-0097 | executor | ✔ | Controle segmentado, Interruptor e Caixa de seleção | L21 | TP-0088 | Aprovada |
@@ -123,7 +123,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 108 | TP-0105 | executor | ✔ | Sessão no web e guarda de rotas | L23 | TP-0019, TP-0091 | Aprovada |
 | 109 | TP-0106 | executor | ✔ | Layout do admin (barra, grupo ativo, menu da conta) | L23 | TP-0021, TP-0088, TP-0091, TP-0098, TP-0099, TP-0104, TP-0105 | Aprovada |
 | 110 | TP-0107 | executor | ✔ | Armazenamento local (grupo lembrado, id anônimo, último ranking) | L23 | TP-0088 | Aprovada |
-| 111 | TP-0108 | executor | ✔ | PWA: manifesto, service worker e atualização | L23 | TP-0006, TP-0088 | Em execução |
+| 111 | TP-0108 | executor | ✔ | PWA: manifesto, service worker e atualização | L23 | TP-0006, TP-0088 | Executada (aguarda teste) |
 | 112 | TP-0109 | executor | ✔ | Tela T00/T02: entrada do app e "Abra o link do seu grupo" | L24 | TP-0088, TP-0089, TP-0095, TP-0107 | Aprovada |
 | 113 | TP-0110 | executor | ✔ | Tela T03 e roteamento de /g/:slug | L24 | TP-0020, TP-0089, TP-0091, TP-0095, TP-0107 | Aprovada |
 | 114 | TP-0111 | executor | ✔ | Tela T01: ranking público (rede) | L24 | TP-0020, TP-0088, TP-0089, TP-0091, TP-0095, TP-0098, TP-0101, TP-0102, TP-0104, TP-0110 | Aprovada |
@@ -173,21 +173,21 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 158 | TP-0153 | executor | ✔ | dominio/simulador/avisos (RF-47) | L33 | TP-0147, TP-0150 | Aprovada |
 | 159 | BK-0006 | coordenador | ✔ | Orçamento de CPU de sugerir estourado (2 times de 11, 30 aptos: mediana 3,9-4,8 ms vs limi | — | — | Aprovada |
 | 160 | TP-0154 | executor | ✔ | dominio/simulador/sugerir e teste de orçamento de CPU no CI | L33 | BK-0006, TP-0003, TP-0148, TP-0149, TP-0150, TP-0151, TP-0152, TP-0153 | Bloqueada |
-| 161 | TP-0155 | executor | ✔ | Endpoint GET /api/grupos/:g/habilidades | L34 | TP-0032, TP-0033, TP-0047, TP-0145 | Em execução |
-| 162 | TP-0156 | executor | ✔ | Endpoint POST /api/grupos/:g/habilidades | L34 | TP-0032, TP-0033, TP-0047, TP-0145 | Em execução |
-| 163 | TP-0157 | executor | ✔ | Endpoint PATCH /api/grupos/:g/habilidades/:id | L34 | TP-0032, TP-0033, TP-0047, TP-0145 | Em execução |
-| 164 | TP-0158 | executor | ✔ | Endpoint DELETE /api/grupos/:g/habilidades/:id | L34 | TP-0014, TP-0030, TP-0032, TP-0033, TP-0047, TP-0145 | Em execução |
-| 165 | TP-0159 | executor | ✔ | Endpoint PUT /api/grupos/:g/jogadores/:id/notas/:habilidadeId | L34 | TP-0011, TP-0023, TP-0032, TP-0033, TP-0046, TP-0047, TP-0145 | Em execução |
+| 161 | TP-0155 | executor | ✔ | Endpoint GET /api/grupos/:g/habilidades | L34 | TP-0032, TP-0033, TP-0047, TP-0145 | Executada (aguarda teste) |
+| 162 | TP-0156 | executor | ✔ | Endpoint POST /api/grupos/:g/habilidades | L34 | TP-0032, TP-0033, TP-0047, TP-0145 | Executada (aguarda teste) |
+| 163 | TP-0157 | executor | ✔ | Endpoint PATCH /api/grupos/:g/habilidades/:id | L34 | TP-0032, TP-0033, TP-0047, TP-0145 | Executada (aguarda teste) |
+| 164 | TP-0158 | executor | ✔ | Endpoint DELETE /api/grupos/:g/habilidades/:id | L34 | TP-0014, TP-0030, TP-0032, TP-0033, TP-0047, TP-0145 | Executada (aguarda teste) |
+| 165 | TP-0159 | executor | ✔ | Endpoint PUT /api/grupos/:g/jogadores/:id/notas/:habilidadeId | L34 | TP-0011, TP-0023, TP-0032, TP-0033, TP-0046, TP-0047, TP-0145 | Executada (aguarda teste) |
 | 166 | TP-0160 | executor | ✔ | Migração de escalações | L35 | TP-0015, TP-0016, TP-0026 | Aprovada |
 | 167 | TP-0161 | executor | ✔ | Repositório de escalações | L35 | TP-0014, TP-0016, TP-0017, TP-0160 | Aprovada |
-| 168 | TP-0162 | executor | ✔ | Endpoint GET /api/grupos/:g/simulador/contexto?data= | L35 | TP-0007, TP-0011, TP-0013, TP-0029, TP-0032, TP-0033, TP-0047, TP-0052, TP-0146 | Em execução |
-| 169 | TP-0163 | executor | ✔ | Endpoint POST /api/grupos/:g/simulador/previa | L35 | TP-0032, TP-0033, TP-0146, TP-0147 | Em execução |
+| 168 | TP-0162 | executor | ✔ | Endpoint GET /api/grupos/:g/simulador/contexto?data= | L35 | TP-0007, TP-0011, TP-0013, TP-0029, TP-0032, TP-0033, TP-0047, TP-0052, TP-0146 | Executada (aguarda teste) |
+| 169 | TP-0163 | executor | ✔ | Endpoint POST /api/grupos/:g/simulador/previa | L35 | TP-0032, TP-0033, TP-0146, TP-0147 | Executada (aguarda teste) |
 | 170 | TP-0164 | executor | ✔ | Extração aplicacao/simulador/entrada (aptos prontos para o domínio) | L35 | TP-0011, TP-0047, TP-0053, TP-0148, TP-0154 | Não executada |
 | 171 | TP-0165 | executor | ✔ | Endpoint POST /api/grupos/:g/simulador/sugerir | L35 | TP-0032, TP-0033, TP-0146, TP-0154, TP-0163, TP-0164 | Não executada |
 | 172 | TP-0166 | executor | ✔ | Endpoint POST /api/grupos/:g/simulador/avaliar | L36 | TP-0032, TP-0033, TP-0146, TP-0150, TP-0153, TP-0164 | Não executada |
-| 173 | TP-0167 | executor | ✔ | Endpoint POST /api/grupos/:g/escalacoes | L36 | TP-0014, TP-0032, TP-0033, TP-0050, TP-0052, TP-0146, TP-0161 | Em execução |
-| 174 | TP-0168 | executor | ✔ | Pré-marcação pela escalação em GET .../partidas/nova | L36 | TP-0078, TP-0161 | Executada (aguarda teste) |
-| 175 | TP-0169 | executor | ✔ | Resumo do início com a escalação confirmada | L36 | TP-0061, TP-0161 | Executada (aguarda teste) |
+| 173 | TP-0167 | executor | ✔ | Endpoint POST /api/grupos/:g/escalacoes | L36 | TP-0014, TP-0032, TP-0033, TP-0050, TP-0052, TP-0146, TP-0161 | Executada (aguarda teste) |
+| 174 | TP-0168 | executor | ✔ | Pré-marcação pela escalação em GET .../partidas/nova | L36 | TP-0078, TP-0161 | Testada (aguarda segurança) |
+| 175 | TP-0169 | executor | ✔ | Resumo do início com a escalação confirmada | L36 | TP-0061, TP-0161 | Testada (aguarda segurança) |
 | 176 | SPK-0002 | coordenador | — | Spike S-02: CPU do sugerir no Worker publicado | L36 | TP-0135, TP-0165 | Não executada |
 | 177 | TP-0170 | executor | ✔ | Tela T17: Habilidades | L37 | TP-0089, TP-0095, TP-0096, TP-0100, TP-0101, TP-0106, TP-0145, TP-0207 | Aprovada |
 | 178 | TP-0171 | executor | ✔ | Tela T16: seção de notas e nível | L37 | TP-0096, TP-0124, TP-0145 | Aprovada |
@@ -200,7 +200,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 185 | TP-0178 | executor | ✔ | [U] Go-live do I2 | L38 | SPK-0002, TP-0139, TP-0155, TP-0156, TP-0157, TP-0158, TP-0159, TP-0169, TP-0170, TP-0171, TP-0176, TP-0177 | Não executada |
 | 186 | TP-0179 | executor | ✔ | dominio/pdf: colunas do PDF e PTS INICIAL antes da 1ª coluna | L39 | TP-0010 | Aprovada |
 | 187 | TP-0180 | executor | ✔ | contrato/pdf (estrito) | L39 | TP-0018, TP-0020 | Aprovada |
-| 188 | TP-0181 | executor | ✔ | Endpoint GET /api/publico/:slug/pdf?mes= | L39 | TP-0013, TP-0029, TP-0033, TP-0053, TP-0179, TP-0180 | Em execução |
+| 188 | TP-0181 | executor | ✔ | Endpoint GET /api/publico/:slug/pdf?mes= | L39 | TP-0013, TP-0029, TP-0033, TP-0053, TP-0179, TP-0180 | Executada (aguarda teste) |
 | 189 | TP-0182 | executor | ✔ | Gerador de PDF: desenho da folha | L39 | TP-0004, TP-0088, TP-0092, TP-0093, TP-0180 | Aprovada |
 | 190 | BK-0002 | coordenador | ✔ | Comparação visual do PDF (P01) fica em 3,96% (sucesso) e 4,02% (mes-vazio) contra o limite | — | — | Aprovada |
 | 191 | TP-0183 | executor | ✔ | Gerador de PDF: uma página, legenda e rodapé | L39 | BK-0002, TP-0182 | Aprovada |
@@ -316,7 +316,9 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 301 | RTP-0091 | executor | ✔ | Remover teste duplicado de GET partidas (partidas/listar.test.ts) | L17 | TP-0077 | Em execução |
 | 302 | RTP-0090 | executor | ✔ | Teste de reativar: acumulado mantido e ativosNaData | Refatoração Lote-L16 | TP-0073 | Em execução |
 | 303 | RTP-0092 | executor | ✔ | Testes de inativar: cobrir bordas e efeito do plano do TP-0072 | Refatoração Lote-L16 | TP-0072 | Em execução |
-| 304 | BK-0003 | coordenador | ✔ | Exige push da branch ci-prova e PR real no remoto (ação manual/autorização do usuário); ro | — | — | Não executada |
-| 305 | RTP-0014 | executor | ✔ | Executar a prova do CI em PR real (ci-prova) | Refatoração Lote-L01 | BK-0003, TP-0003 | Bloqueada |
-| 306 | BK-0005 | coordenador | ✔ | Item (b) feito; item (a) exige PR real com job e2e verde (push/PR autorizado pelo usuário) | — | — | Não executada |
-| 307 | RTP-0017 | executor | ✔ | Provar job e2e verde em PR real e cobrir dist/ ausente em visual.mjs | Refatoração Lote-L20 | BK-0005, TP-0089 | Bloqueada |
+| 304 | RTP-0093 | executor | ✔ | Testes de partida nova: inativado depois e 409 com escalação (TP-0168) | Refatoração Lote-L36 | TP-0168 | Não executada |
+| 305 | RTP-0094 | executor | ✔ | Testes do ranking público: cobrir o plano do TP-0084 em publico-ranking.test.ts | L19 | TP-0084 | Não executada |
+| 306 | BK-0003 | coordenador | ✔ | Exige push da branch ci-prova e PR real no remoto (ação manual/autorização do usuário); ro | — | — | Não executada |
+| 307 | RTP-0014 | executor | ✔ | Executar a prova do CI em PR real (ci-prova) | Refatoração Lote-L01 | BK-0003, TP-0003 | Bloqueada |
+| 308 | BK-0005 | coordenador | ✔ | Item (b) feito; item (a) exige PR real com job e2e verde (push/PR autorizado pelo usuário) | — | — | Não executada |
+| 309 | RTP-0017 | executor | ✔ | Provar job e2e verde em PR real e cobrir dist/ ausente em visual.mjs | Refatoração Lote-L20 | BK-0005, TP-0089 | Bloqueada |

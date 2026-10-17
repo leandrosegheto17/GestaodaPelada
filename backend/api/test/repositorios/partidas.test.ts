@@ -118,7 +118,7 @@ describe('repositório de partidas', () => {
     expect(p?.presencas).toEqual([{ jogadorId: b, situacao: 'lesionado' }]);
     expect(
       await emTransacao(db, (tx) =>
-        partidas.substituir(tx, base.grupo.id, '2026-01-01', {
+        partidas.substituir(tx, base.grupo.id, AMANHA, {
           choveu: false,
           presencas: [],
           autor: outro.id,
@@ -131,64 +131,49 @@ describe('repositório de partidas', () => {
   it('excluir e mesDaPrimeiraPartida', async () => {
     const { db, base, a } = await cenario();
     expect(await partidas.mesDaPrimeiraPartida(db, base.grupo.id)).toBeNull();
-    for (const data of ['2026-08-06', '2026-09-03']) {
-      await emTransacao(db, (tx) =>
-        partidas.criar(tx, base.grupo.id, {
-          data,
-          choveu: false,
-          presencas: [{ jogadorId: a, situacao: 'presente' }],
-          autor: base.contaId,
-          agora: AGORA,
-        }),
-      );
+    const primeira = diaRelativo(-70);
+    const segunda = diaRelativo(-40);
+    for (const data of [primeira, segunda]) {
+      await criarPartida(db, base.grupo.id, data, base.contaId, {
+        presencas: [{ jogadorId: a, situacao: 'presente' }],
+      });
     }
-    expect(await partidas.mesDaPrimeiraPartida(db, base.grupo.id)).toBe('2026-08');
-    expect(await emTransacao(db, (tx) => partidas.excluir(tx, base.grupo.id, '2026-08-06'))).toBe(true);
-    expect(await emTransacao(db, (tx) => partidas.excluir(tx, base.grupo.id, '2026-08-06'))).toBe(false);
-    expect(await partidas.mesDaPrimeiraPartida(db, base.grupo.id)).toBe('2026-09');
-    expect((await partidas.historicoAte(db, base.grupo.id, '2026-12-31')).presencas).toHaveLength(1);
+    expect(await partidas.mesDaPrimeiraPartida(db, base.grupo.id)).toBe(primeira.slice(0, 7));
+    expect(await emTransacao(db, (tx) => partidas.excluir(tx, base.grupo.id, primeira))).toBe(true);
+    expect(await emTransacao(db, (tx) => partidas.excluir(tx, base.grupo.id, primeira))).toBe(false);
+    expect(await partidas.mesDaPrimeiraPartida(db, base.grupo.id)).toBe(segunda.slice(0, 7));
+    expect((await partidas.historicoAte(db, base.grupo.id, HOJE)).presencas).toHaveLength(1);
   });
 
   it('historicoAte não faz uma consulta por partida', async () => {
     const { db, base, a, b, c } = await cenario();
     const d = await criarJogador(db, base.grupo.id, base.contaId);
-    for (let dia = 1; dia <= 5; dia++) {
-      await emTransacao(db, (tx) =>
-        partidas.criar(tx, base.grupo.id, {
-          data: `2026-10-0${dia}`,
-          choveu: false,
-          presencas: [a, b, c, d].map((jogadorId) => ({ jogadorId, situacao: 'presente' as const })),
-          autor: base.contaId,
-          agora: AGORA,
-        }),
-      );
+    const datas = [0, 1, 2, 3, 4].map((n) => diaRelativo(n - 10));
+    for (const data of datas) {
+      await criarPartida(db, base.grupo.id, data, base.contaId, {
+        presencas: [a, b, c, d].map((jogadorId) => ({ jogadorId, situacao: 'presente' as const })),
+      });
     }
     const espiao = vi.spyOn(kyselyDe(db).getExecutor(), 'executeQuery');
-    const h = await partidas.historicoAte(db, base.grupo.id, '2026-10-05');
+    const h = await partidas.historicoAte(db, base.grupo.id, datas[4]!);
     expect(espiao.mock.calls.length).toBeLessThanOrEqual(2);
     espiao.mockRestore();
     expect(h.partidas).toHaveLength(5);
     expect(h.presencas).toHaveLength(20);
-    expect((await partidas.historicoAte(db, base.grupo.id, '2026-10-03')).partidas).toHaveLength(3);
+    expect((await partidas.historicoAte(db, base.grupo.id, datas[2]!)).partidas).toHaveLength(3);
   });
 
   it('isolamento: o grupo A não lê, altera nem apaga a partida do grupo B', async () => {
     const { db, base } = await cenario();
     const dB = await criarJogador(db, base.outroGrupo.id, base.contaId);
-    await emTransacao(db, (tx) =>
-      partidas.criar(tx, base.outroGrupo.id, {
-        data: '2026-10-15',
-        choveu: false,
-        presencas: [{ jogadorId: dB, situacao: 'presente' }],
-        autor: base.contaId,
-        agora: AGORA,
-      }),
-    );
-    expect(await partidas.porData(db, base.grupo.id, '2026-10-15')).toBeNull();
-    expect(await partidas.porMes(db, base.grupo.id, '2026-10')).toEqual([]);
+    await criarPartida(db, base.outroGrupo.id, HOJE, base.contaId, {
+      presencas: [{ jogadorId: dB, situacao: 'presente' }],
+    });
+    expect(await partidas.porData(db, base.grupo.id, HOJE)).toBeNull();
+    expect(await partidas.porMes(db, base.grupo.id, MES)).toEqual([]);
     expect(
       await emTransacao(db, (tx) =>
-        partidas.substituir(tx, base.grupo.id, '2026-10-15', {
+        partidas.substituir(tx, base.grupo.id, HOJE, {
           choveu: true,
           presencas: [],
           autor: base.contaId,
@@ -196,9 +181,9 @@ describe('repositório de partidas', () => {
         }),
       ),
     ).toBe(false);
-    expect(await emTransacao(db, (tx) => partidas.excluir(tx, base.grupo.id, '2026-10-15'))).toBe(false);
-    expect((await partidas.historicoAte(db, base.grupo.id, '2026-12-31')).presencas).toEqual([]);
-    const intacta = await partidas.porData(db, base.outroGrupo.id, '2026-10-15');
+    expect(await emTransacao(db, (tx) => partidas.excluir(tx, base.grupo.id, HOJE))).toBe(false);
+    expect((await partidas.historicoAte(db, base.grupo.id, HOJE)).presencas).toEqual([]);
+    const intacta = await partidas.porData(db, base.outroGrupo.id, HOJE);
     expect(intacta).toMatchObject({ choveu: false });
     expect(intacta?.presencas).toHaveLength(1);
   });

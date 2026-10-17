@@ -1,11 +1,11 @@
-import { emTransacao, type ExecutorDb } from '../../../src/infraestrutura/db/index.js';
+import { emTransacao, type Db } from '../../../src/infraestrutura/db/index.js';
 import * as partidas from '../../../src/infraestrutura/db/repositorios/partidas.js';
 import type { DadosDaPartida } from '../../../src/infraestrutura/db/repositorios/partidas.js';
 import { AGORA_TESTE } from '../relogio.js';
 
 /** Grava uma partida pelo repositório (numa transação) e devolve o id. */
 export async function criarPartida(
-  db: ExecutorDb,
+  db: Db,
   grupoId: string,
   data: string,
   autor: string,

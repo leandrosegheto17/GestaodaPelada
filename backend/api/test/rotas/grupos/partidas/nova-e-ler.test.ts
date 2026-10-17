@@ -254,7 +254,9 @@ describe('GET /api/grupos/:g/partidas/:data (workerd)', () => {
       [a, 'ausente'],
       [tardio, 'lesionado'],
     ]);
-    expect((await clienteTeste({ relogio: relogioFixo('2026-10-22') }).get(`/api/grupos/${g}/partidas/2026-10-15`)).status).toBe(401);
+    expect(
+      (await clienteTeste({ relogio: relogioFixo('2026-10-22') }).get(`/api/grupos/${g}/partidas/2026-10-15`)).status,
+    ).toBe(401);
   });
 
   it('data sem partida, data impossível e outro grupo: 404; "nova" não cai aqui', async () => {

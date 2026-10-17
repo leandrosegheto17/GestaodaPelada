@@ -671,3 +671,24 @@ APROVADA — GET partidas/:data cumpre o aceite (presenças, última alteração
 
 ## TP-0080 — QA — 2026-10-17
 APROVADA; 5/5 testes (puros e com banco, inclusive outro grupo e Tx), 0 achados críticos/não críticos, lint/prettier limpos.
+
+## TP-0083 — QA — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; 77 testes (excluir + isolamento) verdes, cobrindo transação, rollback, auditoria, 404s, 401/403 e isolamento.
+
+## TP-0084 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (cobertura de teste do plano reduzida → RTP-0094); comportamento verificado por teste temporário e 76 testes passando.
+
+## TP-0085 — QA — 2026-10-17
+APROVADA — 77 testes verdes (rota + isolamento), aceite (tipos fechados, 413 > 1 KB, sem IP/UA/nome, 204) coberto; 0 críticos, 0 não críticos.
+
+## TP-0086 — QA — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; 74 testes (uso + isolamento) passando, aceite e formas de uso.json/uso-vazio.json conferidos.
+
+## TP-0094 — QA — 2026-10-17
+APROVADA — compose config OK, 3 testes do proxy passando, diff conforme aceite/convenções; `up` ponta a ponta não executado (ambiente compartilhado), limitação registrada; 0 críticos, 0 não críticos.
+
+## TP-0168 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0093: faltam testes inativado-depois e 409 com escalação); nova-e-ler.test.ts verde; falha em confirmar-escalacao.test.ts é de outra tarefa.
+
+## TP-0169 — QA — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; ler+editar 19/19 verdes em Postgres próprio, escalação só na data do próximo jogo e isolada por grupo.

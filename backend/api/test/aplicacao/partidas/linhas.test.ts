@@ -19,7 +19,10 @@ describe('montarLinhas', () => {
   });
 
   it('lista vazia gera lista vazia e não altera a entrada', () => {
-    const entrada = [{ id: '1', apelido: 'B' }, { id: '2', apelido: 'A' }];
+    const entrada = [
+      { id: '1', apelido: 'B' },
+      { id: '2', apelido: 'A' },
+    ];
     expect(montarLinhas([], new Map())).toEqual([]);
     montarLinhas(entrada, new Map());
     expect(entrada.map((j) => j.id)).toEqual(['1', '2']);

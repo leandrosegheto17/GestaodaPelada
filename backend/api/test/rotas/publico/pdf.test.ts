@@ -109,6 +109,12 @@ describe('GET /api/publico/:slug/pdf (workerd)', () => {
   it('sem nenhuma partida, só o mês de hoje existe e as colunas ficam vazias', async () => {
     const db = await abrir();
     const cen = await montarCenario(db, fabrica);
+    await pesos.criarPadrao(db, cen.grupoA.id, {
+      pesos: PESOS_PADRAO,
+      vigenteDesde: '2026-01-01',
+      registradoPor: cen.adminA.id,
+      agora: AGORA,
+    });
     const r = await anonimo().get(`/api/publico/${cen.grupoA.slug}/pdf`);
     expect(r.status).toBe(200);
     expect(projecaoPdf.parse(r.corpo)).toMatchObject({ colunas: [], semPartidasNoMes: true });
@@ -151,12 +157,12 @@ describe('GET /api/publico/:slug/pdf (workerd)', () => {
     expect(pdf.colunas.length).toBeLessThanOrEqual(12);
   });
 
-  it('o link acompanha URL_PUBLICA, sem barra dupla', async () => {
+  it('o link acompanha URL_PUBLICA, uma barra só', async () => {
     const cen = await grupoComHistorico(await abrir());
     const ctx = createExecutionContext();
     const resp = await anonimo().app.fetch(
       new Request(`http://app.invalid/api/publico/${cen.grupoA.slug}/pdf`),
-      { ...env, URL_PUBLICA: 'https://outra.exemplo.com/' },
+      { ...env, URL_PUBLICA: 'https://outra.exemplo.com' },
       ctx,
     );
     await waitOnExecutionContext(ctx);
@@ -169,12 +175,19 @@ describe('GET /api/publico/:slug/pdf (workerd)', () => {
       const r = await anonimo().get(`/api/publico/${cen.grupoA.slug}/pdf?mes=${mes}`);
       expect(r.status).toBe(422);
       expect(JSON.stringify(r.corpo)).toContain('mes');
-      expect((r.corpo as { campos?: Record<string, unknown> }).campos).toHaveProperty('mes');
+      expect((r.corpo as { erro?: { campos?: Record<string, unknown> } }).erro?.campos).toHaveProperty('mes');
     }
   });
 
   it('slug malformado não consulta o banco', async () => {
-    const intocavel = new Proxy({}, { get: () => { throw new Error('consultou'); } });
+    const intocavel = new Proxy(
+      {},
+      {
+        get: () => {
+          throw new Error('consultou');
+        },
+      },
+    );
     expect(await buscarGrupoPublico(intocavel as never, 'Maiuscula!')).toBeNull();
   });
 

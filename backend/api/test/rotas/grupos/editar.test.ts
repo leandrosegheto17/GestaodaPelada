@@ -4,6 +4,7 @@ import { PESOS_PADRAO } from '@pelada/dominio';
 import { describe, expect, it } from 'vitest';
 import { criarApp } from '../../../src/entrada/app.js';
 import { kyselyDe } from '../../../src/infraestrutura/db/cliente.js';
+import { emTransacao } from '../../../src/infraestrutura/db/index.js';
 import * as partidas from '../../../src/infraestrutura/db/repositorios/partidas.js';
 import * as pesos from '../../../src/infraestrutura/db/repositorios/pesos.js';
 import { montarCenario } from '../../apoio/cenario-acesso.js';
@@ -64,7 +65,9 @@ describe('PATCH /api/grupos/:grupoId (workerd)', () => {
     const db = await abrir();
     const cen = await montarCenario(db, fabrica);
     const g = cen.grupoA.id;
-    await partidas.criar(db, g, { data: '2026-10-15', choveu: true, presencas: [], autor: cen.adminA.id, agora: AGORA });
+    await emTransacao(db, (tx) =>
+      partidas.criar(tx, g, { data: '2026-10-15', choveu: true, presencas: [], autor: cen.adminA.id, agora: AGORA }),
+    );
     await pesos.criarPadrao(db, g, {
       pesos: PESOS_PADRAO,
       vigenteDesde: '2026-02-05',

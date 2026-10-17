@@ -102,7 +102,11 @@ describe('confirmarEscalacao', () => {
       });
       expect(r.ok).toBe(false);
     }
-    const antes = await confirmarEscalacao(db, g, varios(DPASSADA, [a]), { contaId: base.contaId, agora: AGORA });
+    const recente = await criarJogador(db, g, base.contaId, { dataEntrada: diaRelativo(-10) });
+    const antes = await confirmarEscalacao(db, g, varios(DPASSADA, [a, recente]), {
+      contaId: base.contaId,
+      agora: AGORA,
+    });
     expect(antes.ok).toBe(false);
     expect(await escalacoes.porData(db, g, D1)).toBeNull();
     expect(await eventosDa(db, g)).toEqual([]);

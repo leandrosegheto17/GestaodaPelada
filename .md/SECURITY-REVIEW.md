@@ -659,3 +659,6 @@ APROVADA — isolamento por vínculo, data validada no servidor antes do banco, 
 
 ## TP-0079 — DevSecOps — 2026-10-17
 OK — GET partidas/:data isolado por grupo via vinculo, SQL parametrizado, `:data` validada antes do banco, resposta sem e-mail; 0 achados (revisão de diff, sem ferramenta executada).
+
+## TP-0080 — DevSecOps — 2026-10-17
+APROVADA; revisão do diff sem achados (isolamento por grupo, erro sem oráculo, sem PII/SQL em aplicacao); testes não reexecutados, 0 críticos/0 não críticos.

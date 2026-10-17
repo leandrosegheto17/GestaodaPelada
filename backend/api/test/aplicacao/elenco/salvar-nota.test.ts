@@ -3,14 +3,14 @@ import { salvarNota } from '../../../src/aplicacao/elenco/salvar-nota.js';
 import * as jogadores from '../../../src/infraestrutura/db/repositorios/jogadores.js';
 import * as habilidades from '../../../src/infraestrutura/db/repositorios/habilidades.js';
 import { montarCenario } from '../../apoio/cenario-acesso.js';
-import { usarDbDoWorker } from '../../apoio/db-worker.js';
+import { usarDb } from '../../apoio/db-teste.js';
 import { criarJogador } from '../../apoio/fabricas/jogadores.js';
 import { usarFabrica } from '../../apoio/fabrica.js';
 
 const fabrica = usarFabrica();
-const abrir = usarDbDoWorker(fabrica);
+const abrir = usarDb(fabrica);
 
-describe('salvarNota (workerd)', () => {
+describe('salvarNota', () => {
   it('troca uma nota e devolve o nível recalculado pela regra do domínio', async () => {
     const db = await abrir();
     const cen = await montarCenario(db, fabrica);

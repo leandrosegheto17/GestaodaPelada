@@ -66,6 +66,8 @@ describe('POST /api/grupos/:g/simulador/previa (workerd)', () => {
     const cen = await montarCenario(db, fabrica);
     const r = await cliente(cen.adminA.cookie).post(`/api/grupos/${cen.grupoA.id}/simulador/previa`, corpo);
     expect(r.status).toBe(422);
+    const campos = (r.corpo as { erro: { campos: object } }).erro.campos;
+    expect(Object.keys(campos).length).toBeGreaterThan(0);
   });
 
   it('sem X-Pelada 403; sem sessão 401; admin de outro grupo e id malformado 404', async () => {

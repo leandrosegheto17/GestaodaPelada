@@ -140,7 +140,7 @@ describe('criarGrupo', () => {
          (SELECT count(*)::int FROM contas WHERE email = $2) AS contas,
          (SELECT count(*)::int FROM vinculos_admin v JOIN grupos g ON g.id = v.grupo_id WHERE g.nome = $1) AS vinculos,
          (SELECT count(*)::int FROM auditoria a WHERE a.grupo_id IN (SELECT id FROM grupos WHERE nome = $1)
-            OR a.entidade_id IN (SELECT id FROM contas WHERE email = $2)) AS auditoria`,
+            OR a.entidade_id IN (SELECT id::text FROM contas WHERE email = $2)) AS auditoria`,
       [e.corpo.nome, e.corpo.adminEmail],
     );
     return c;
@@ -208,9 +208,10 @@ describe('criarGrupo', () => {
         vigente_desde: e.hoje,
       },
     ]);
-    const conta = await executarSql<{ senha_temporaria: boolean }>('SELECT senha_temporaria FROM contas WHERE id = $1', [
-      r.primeiroAdmin.contaId,
-    ]);
+    const conta = await executarSql<{ senha_temporaria: boolean }>(
+      'SELECT senha_temporaria FROM contas WHERE id = $1',
+      [r.primeiroAdmin.contaId],
+    );
     expect(conta).toEqual([{ senha_temporaria: true }]);
   });
 });

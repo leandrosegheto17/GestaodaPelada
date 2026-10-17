@@ -149,7 +149,13 @@ describe('GET /api/grupos/:grupoId (workerd)', () => {
   });
 });
 
-async function criarPartida(db: Awaited<ReturnType<typeof abrir>>, grupoId: string, autor: string, data: string, jogadorId: string) {
+async function criarPartida(
+  db: Awaited<ReturnType<typeof abrir>>,
+  grupoId: string,
+  autor: string,
+  data: string,
+  jogadorId: string,
+) {
   await emTransacao(db, (tx) =>
     partidas.criar(tx, grupoId, {
       data,

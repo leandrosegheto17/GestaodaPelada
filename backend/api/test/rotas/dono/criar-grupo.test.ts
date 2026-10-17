@@ -7,7 +7,6 @@ import { clienteTeste } from '../../apoio/cliente.js';
 import { usarDbDoWorker } from '../../apoio/db-worker.js';
 import { usarFabrica } from '../../apoio/fabrica.js';
 import { relogioFixo } from '../../apoio/relogio.js';
-import { executarSql } from '../../apoio/sql.js';
 import modeloNovoAdmin from '../../../../../.md/mockup/respostas/dono-grupo-criado-novo-admin.json';
 import modeloVinculo from '../../../../../.md/mockup/respostas/dono-grupo-criado-vinculo.json';
 
@@ -24,6 +23,9 @@ const corpoValido = (nome: string) => ({
   adminNome: 'Rodrigo',
   adminEmail: `rodrigo-${unico()}@teste.invalid`,
 });
+
+const gruposComNome = (db: Awaited<ReturnType<typeof abrir>>, nome: string) =>
+  kyselyDe(db).selectFrom('grupos').select('id').where('nome', '=', nome).execute();
 
 /** Caminho de cada chave com o tipo do valor (arrays fundidos em `[]`). */
 function formaDe(no: unknown, caminho = '', mapa: Record<string, string> = {}): Record<string, string> {
@@ -98,17 +100,19 @@ describe('POST /api/dono/grupos (workerd)', () => {
   });
 
   it('422 com slug e eDono extras (campos estritos); nada é criado', async () => {
-    const cen = await montarCenario(await abrir(), fabrica);
+    const db = await abrir();
+    const cen = await montarCenario(db, fabrica);
     const nome = `Extra ${unico()}`;
     for (const extra of [{ slug: 'meu-slug' }, { eDono: true }]) {
       const r = await cliente(cen.dono.cookie).post('/api/dono/grupos', { ...corpoValido(nome), ...extra });
       expect(r.status).toBe(422);
     }
-    expect(await executarSql('SELECT 1 FROM grupos WHERE nome = $1', [nome])).toEqual([]);
+    expect(await gruposComNome(db, nome)).toEqual([]);
   });
 
   it('sem X-Pelada: 403; sem sessão: 401', async () => {
-    const cen = await montarCenario(await abrir(), fabrica);
+    const db = await abrir();
+    const cen = await montarCenario(db, fabrica);
     const nome = `Sem Acesso ${unico()}`;
     const semCsrf = await clienteTeste({
       relogio: relogioFixo('2026-10-16'),
@@ -121,14 +125,16 @@ describe('POST /api/dono/grupos (workerd)', () => {
       corpoValido(nome),
     );
     expect(semSessao.status).toBe(401);
-    expect(await executarSql('SELECT 1 FROM grupos WHERE nome = $1', [nome])).toEqual([]);
+    expect(await gruposComNome(db, nome)).toEqual([]);
   });
 
   it('forma igual a dono-grupo-criado-*.json; vínculo existente mantém o hash da senha', async () => {
     const db = await abrir();
     const cen = await montarCenario(db, fabrica);
     const nome = `Forma ${unico()}`;
-    const hashAntes = await executarSql('SELECT senha_hash FROM contas WHERE id = $1', [cen.adminB.id]);
+    const hashDe = async () =>
+      await kyselyDe(db).selectFrom('contas').select('senha_hash').where('id', '=', cen.adminB.id).execute();
+    const hashAntes = await hashDe();
     const novo = await cliente(cen.dono.cookie).post('/api/dono/grupos', corpoValido(nome));
     const vinculo = await cliente(cen.dono.cookie).post('/api/dono/grupos', {
       ...corpoValido(`${nome} Dois`),
@@ -149,7 +155,12 @@ describe('POST /api/dono/grupos (workerd)', () => {
     });
     expect(formaDe(novo.corpo)).toEqual(formaDe(modeloNovoAdmin));
     expect(formaDe(vinculo.corpo)).toEqual(formaDe(modeloVinculo));
-    expect(await executarSql('SELECT senha_hash FROM contas WHERE id = $1', [cen.adminB.id])).toEqual(hashAntes);
-    expect(await executarSql('SELECT 1 FROM vinculos_admin WHERE grupo_id = $1', [criados[1]!.grupo.id])).toHaveLength(1);
+    expect(await hashDe()).toEqual(hashAntes);
+    const vinculos = await kyselyDe(db)
+      .selectFrom('vinculos_admin')
+      .select('conta_id')
+      .where('grupo_id', '=', criados[1]!.grupo.id)
+      .execute();
+    expect(vinculos).toEqual([{ conta_id: cen.adminB.id }]);
   });
 });
