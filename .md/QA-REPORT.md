@@ -821,3 +821,6 @@ APROVADA; 0 críticos/0 não críticos; 18 testes passando, caso de 10 pedidos p
 
 ## RTP-0106 — QA — 2026-10-17
 APROVADA; 0 críticos, 1 não crítico (RTP-0111, montarCenario 2x no mesmo teste); elenco+simulador/contexto x3 verdes (40 testes) e isolamento (70) verde, sem contas_email_unico em paralelo.
+
+## TP-0132 — QA — 2026-10-17
+APROVADA — 0 críticos, 1 não crítico (branch Neon é `production`, não `main`: deploy.yml/SDD/TP-0133/TP-0135 → RTP-0113); evidência manual do usuário conferida contra o aceite, nenhum segredo no repositório, não reexecutável pelo QA.
