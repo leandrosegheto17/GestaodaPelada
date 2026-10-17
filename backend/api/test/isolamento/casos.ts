@@ -169,6 +169,10 @@ export const CASOS: Record<string, Caso> = {
     corpo: { tipo: 'saida', data: '2026-10-05', descricao: 'Bolas novas', valorCentavos: 10000 },
   },
   'GET /api/grupos/:grupoId/financeiro/lancamentos/:id': { tipo: 'financeiro' },
+  'PUT /api/grupos/:grupoId/financeiro/lancamentos/:id': {
+    tipo: 'financeiro',
+    corpo: { tipo: 'saida', data: '2026-10-05', descricao: 'Bolas novas', valorCentavos: 10000 },
+  },
   'PUT /api/grupos/:grupoId/financeiro/config': {
     tipo: 'financeiro',
     corpo: { mensalidadeCentavos: 7500, saldoInicialCentavos: 35000, dataSaldoInicial: '2026-02-05' },
