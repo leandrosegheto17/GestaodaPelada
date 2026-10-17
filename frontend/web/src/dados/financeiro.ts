@@ -1,4 +1,9 @@
-import { type MarcarPagamentoCorpo, mesFinanceiro } from '@pelada/contrato';
+import {
+  type ConfigFinanceiraCorpo,
+  configFinanceira,
+  type MarcarPagamentoCorpo,
+  mesFinanceiro,
+} from '@pelada/contrato';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { escrever, ler, semCorpo } from './cliente';
 import { chaveGrupo } from './grupo';
@@ -60,5 +65,15 @@ export function useDesmarcarPagamento(grupoId: string) {
         semCorpo,
       ),
     onSettled: refazer,
+  });
+}
+
+/** Grava a configuração do caixa; os saldos mudam, então o financeiro e o resumo do grupo são refeitos. */
+export function useSalvarConfig(grupoId: string) {
+  const refazer = useRefazerFinanceiro(grupoId);
+  return useMutation({
+    mutationFn: (corpo: ConfigFinanceiraCorpo) =>
+      escrever('PUT', `${caminhoFinanceiro(grupoId)}/config`, corpo, configFinanceira),
+    onSuccess: refazer,
   });
 }

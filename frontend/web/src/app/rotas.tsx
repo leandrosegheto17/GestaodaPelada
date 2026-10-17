@@ -53,6 +53,7 @@ export const roteador = createBrowserRouter([
           ...(recursos.ligado('financeiro')
             ? [
                 { path: 'financeiro', lazy: () => import('../telas/financeiro/PaginaFinanceiro') },
+                { path: 'financeiro/config', lazy: () => import('../telas/config-caixa/PaginaConfigCaixa') },
                 { path: 'financeiro/lancamentos/novo', lazy: () => import('../telas/lancamento/PaginaLancamento') },
                 {
                   path: 'financeiro/lancamentos/:lancamentoId',

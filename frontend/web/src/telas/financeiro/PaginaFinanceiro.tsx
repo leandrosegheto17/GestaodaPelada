@@ -7,7 +7,6 @@ import { ErroRede } from '../../componentes/basicos/ErroRede';
 import { Esqueleto } from '../../componentes/basicos/Esqueleto';
 import { EstadoVazio } from '../../componentes/basicos/EstadoVazio';
 import { Faixa } from '../../componentes/basicos/Faixa';
-import { TelaMensagem } from '../../componentes/basicos/TelaMensagem';
 import { Voltar } from '../../componentes/basicos/Voltar';
 import { DialogoConfirmacao } from '../../componentes/dialogos-padrao';
 import { NavegadorMes } from '../../componentes/listas/NavegadorMes';
@@ -18,6 +17,7 @@ import { mesPorExtenso } from '../../formatacao';
 import { CartaoSaldos } from './CartaoSaldos';
 import { SecaoLancamentos } from './SecaoLancamentos';
 import { SecaoPagamentos } from './SecaoPagamentos';
+import { SemAcessoFinanceiro } from './SemAcessoFinanceiro';
 import { usarPagamentos } from './usarPagamentos';
 import estilos from './financeiro.module.css';
 
@@ -44,22 +44,7 @@ export function Component() {
   }, [mesValido, definirParametros]);
 
   if (financeiro.error instanceof ErroApi && financeiro.error.status === 403) {
-    return (
-      <>
-        <title>Financeiro: sem acesso</title>
-        <TelaMensagem
-          icone="cadeado"
-          titulo="Sem acesso"
-          texto="Você não tem acesso ao financeiro deste grupo. Peça a um admin com acesso."
-          alerta
-          acao={
-            <BotaoLink to={base} variante="secundario">
-              Voltar
-            </BotaoLink>
-          }
-        />
-      </>
-    );
+    return <SemAcessoFinanceiro base={base} />;
   }
   if (financeiro.isError) {
     return (

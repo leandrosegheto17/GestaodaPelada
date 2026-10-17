@@ -1,0 +1,17 @@
+.estreito {
+  max-width: var(--largura-formulario);
+  margin: 0 auto;
+}
+.formulario {
+  display: grid;
+  gap: var(--esp-4);
+}
+.duasColunas {
+  display: grid;
+  gap: var(--esp-4);
+}
+@media (min-width: 600px) {
+  .duasColunas {
+    grid-template-columns: 1fr 1fr;
+  }
+}
