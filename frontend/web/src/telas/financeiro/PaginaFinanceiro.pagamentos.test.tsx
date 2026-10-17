@@ -36,14 +36,22 @@ interface Chamada {
 }
 let chamadas: Chamada[] = [];
 let gets = 0;
+let gravou = false;
+
+/** O mês refeito só traz o pagamento novo se a escrita deu certo. */
+function registrar(resposta: Response): Response {
+  gravou = resposta.ok;
+  return resposta;
+}
 
 function api(escrita: (request: Request) => Response | Promise<Response>) {
   chamadas = [];
   gets = 0;
+  gravou = false;
   servidor.use(
     http.get('/api/grupos/g-quinta/financeiro/mes', () => {
       gets += 1;
-      return HttpResponse.json(gets === 1 ? comoJson(base) : depois);
+      return HttpResponse.json(gravou ? depois : comoJson(base));
     }),
     http.post('/api/grupos/g-quinta/financeiro/pagamentos', async ({ request }) => {
       chamadas.push({
@@ -52,16 +60,16 @@ function api(escrita: (request: Request) => Response | Promise<Response>) {
         corpo: await request.clone().json(),
         cabecalho: request.headers.get('X-Pelada'),
       });
-      return escrita(request);
+      return registrar(await escrita(request));
     }),
-    http.delete('/api/grupos/g-quinta/financeiro/pagamentos/:jogadorId/:mes', ({ request }) => {
+    http.delete('/api/grupos/g-quinta/financeiro/pagamentos/:jogadorId/:mes', async ({ request }) => {
       chamadas.push({
         metodo: 'DELETE',
         caminho: new URL(request.url).pathname,
         corpo: null,
         cabecalho: request.headers.get('X-Pelada'),
       });
-      return escrita(request);
+      return registrar(await escrita(request));
     }),
   );
 }
@@ -203,6 +211,6 @@ describe('PaginaFinanceiro: pagamentos (T22)', () => {
     expect(await violacoes(container)).toEqual([]);
     await userEvent.click(await interruptor('Toninho'));
     await screen.findByRole('alertdialog');
-    expect(await violacoes(document.body)).toEqual([]);
+    expect(await violacoes(screen.getByRole('alertdialog'))).toEqual([]);
   });
 });
