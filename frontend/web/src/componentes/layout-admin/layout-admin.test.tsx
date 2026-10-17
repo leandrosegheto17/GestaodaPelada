@@ -41,14 +41,14 @@ function responder(sessao: JsonBodyType, grupo: JsonBodyType | 404 = fixture('gr
   );
 }
 
-function montar() {
+function montar(semAtalhos = false) {
   const cliente = criarClienteConsultas({ aoNaoAutenticado: () => undefined });
   const roteador = createMemoryRouter(
     [
       {
         path: '/admin/:grupoId',
         element: <LayoutAdmin />,
-        children: [{ index: true, element: <p>Início do admin</p> }],
+        children: [{ index: true, handle: { atalhos: !semAtalhos }, element: <p>Início do admin</p> }],
       },
       { path: '/admin', element: <p>Lista de grupos</p> },
       { path: '/conta/senha', element: <p>Minha senha</p> },
@@ -72,6 +72,15 @@ describe('LayoutAdmin', () => {
     expect(screen.getByRole('link', { name: 'Trocar grupo' })).toHaveAttribute('href', '/admin');
     expect(screen.getByRole('link', { name: 'Ver ranking' })).toHaveAttribute('href', '/g/pelada-de-quinta');
     expect(screen.getByText('Início do admin')).toBeInTheDocument();
+  });
+
+  it('rota sem handle de atalhos: barra só com nome e Trocar grupo', async () => {
+    responder(fixture('sessao-eu-admin.json'));
+    montar(true);
+    expect(await screen.findByText('Pelada de Quinta')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Trocar grupo' })).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Ver ranking' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Menu da conta' })).not.toBeInTheDocument();
   });
 
   it('com um só grupo, não há Trocar grupo', async () => {

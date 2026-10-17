@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
-import { Outlet, useLocation, useNavigate, useParams } from 'react-router';
+import { Outlet, useLocation, useMatches, useNavigate, useParams } from 'react-router';
 import { recursos } from '../../config/recursos';
 import { chaveSessao, useMarcarAvisoVisto, useSessao } from '../../dados/sessao';
 import { ErroApi } from '../../dados/erros';
@@ -19,6 +19,8 @@ export function LayoutAdmin() {
   const navegar = useNavigate();
   const cliente = useQueryClient();
   const sessao = useSessao();
+  // Só as telas que declaram `handle: { atalhos: true }` mostram "Ver ranking" e o menu da conta.
+  const comAtalhos = useMatches().some((m) => (m.handle as { atalhos?: boolean } | undefined)?.atalhos === true);
   const grupo = useGrupo(grupoId);
   const [menuAberto, setMenuAberto] = useState(false);
   const marcarAviso = useMarcarAvisoVisto();
@@ -42,11 +44,12 @@ export function LayoutAdmin() {
     <>
       <PularConteudo />
       <BarraAdmin
-        {...(dadosGrupo ? { nomeGrupo: dadosGrupo.nome, destinoRanking: `/g/${dadosGrupo.slug}` } : {})}
+        {...(dadosGrupo ? { nomeGrupo: dadosGrupo.nome } : {})}
+        {...(comAtalhos && dadosGrupo ? { destinoRanking: `/g/${dadosGrupo.slug}` } : {})}
         {...(!dadosGrupo && nomeProvisorio ? { nomeGrupo: nomeProvisorio } : {})}
         {...(dadosSessao && dadosSessao.grupos.length > 1 ? { destinoTrocarGrupo: '/admin' } : {})}
         menuAberto={menuAberto}
-        aoAbrirMenu={() => setMenuAberto(true)}
+        {...(comAtalhos ? { aoAbrirMenu: () => setMenuAberto(true) } : {})}
       />
       <AvisoEnderecoNovo enderecoNovo={dadosSessao?.enderecoNovo} />
       <main id="conteudo" tabIndex={-1} className={estilos.conteudo}>

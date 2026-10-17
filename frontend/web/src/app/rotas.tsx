@@ -42,7 +42,7 @@ export const roteador = createBrowserRouter([
         path: '/admin/:grupoId',
         Component: LayoutAdmin,
         children: [
-          { index: true, lazy: () => import('../telas/inicio/PaginaInicio') },
+          { index: true, handle: { atalhos: true }, lazy: () => import('../telas/inicio/PaginaInicio') },
           { path: 'uso', lazy: () => import('../telas/uso/PaginaUso') },
           { path: 'grupo', lazy: () => import('../telas/grupo/PaginaGrupo') },
           { path: 'admins', lazy: () => import('../telas/admins/PaginaAdmins') },
@@ -52,7 +52,7 @@ export const roteador = createBrowserRouter([
           { path: 'jogadores', lazy: () => import('../telas/jogadores/PaginaJogadores') },
           { path: 'partidas/nova', lazy: () => import('../telas/partida/PaginaNovaPartida') },
           { path: 'partidas/:data', lazy: () => import('../telas/partida/PaginaEditarPartida') },
-          { path: 'partidas', lazy: () => import('../telas/partidas/PaginaPartidas') },
+          { path: 'partidas', handle: { atalhos: true }, lazy: () => import('../telas/partidas/PaginaPartidas') },
           ...(recursos.ligado('financeiro')
             ? [
                 { path: 'financeiro', lazy: () => import('../telas/financeiro/PaginaFinanceiro') },
