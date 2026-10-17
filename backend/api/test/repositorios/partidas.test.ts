@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+import { kyselyDe } from '../../src/infraestrutura/db/cliente.js';
 import { emTransacao } from '../../src/infraestrutura/db/index.js';
 import * as partidas from '../../src/infraestrutura/db/repositorios/partidas.js';
 import { JogadorForaDoGrupo, PartidaDuplicada } from '../../src/infraestrutura/db/repositorios/partidas.js';
@@ -143,5 +144,59 @@ describe('repositório de partidas', () => {
     expect(await emTransacao(db, (tx) => partidas.excluir(tx, base.grupo.id, '2026-08-06'))).toBe(false);
     expect(await partidas.mesDaPrimeiraPartida(db, base.grupo.id)).toBe('2026-09');
     expect((await partidas.historicoAte(db, base.grupo.id, '2026-12-31')).presencas).toHaveLength(1);
+  });
+
+  it('historicoAte não faz uma consulta por partida', async () => {
+    const { db, base, a, b, c } = await cenario();
+    const d = await criarJogador(db, base.grupo.id, base.contaId);
+    for (let dia = 1; dia <= 5; dia++) {
+      await emTransacao(db, (tx) =>
+        partidas.criar(tx, base.grupo.id, {
+          data: `2026-10-0${dia}`,
+          choveu: false,
+          presencas: [a, b, c, d].map((jogadorId) => ({ jogadorId, situacao: 'presente' as const })),
+          autor: base.contaId,
+          agora: AGORA,
+        }),
+      );
+    }
+    const espiao = vi.spyOn(kyselyDe(db).getExecutor(), 'executeQuery');
+    const h = await partidas.historicoAte(db, base.grupo.id, '2026-10-05');
+    expect(espiao.mock.calls.length).toBeLessThanOrEqual(2);
+    espiao.mockRestore();
+    expect(h.partidas).toHaveLength(5);
+    expect(h.presencas).toHaveLength(20);
+    expect((await partidas.historicoAte(db, base.grupo.id, '2026-10-03')).partidas).toHaveLength(3);
+  });
+
+  it('isolamento: o grupo A não lê, altera nem apaga a partida do grupo B', async () => {
+    const { db, base } = await cenario();
+    const dB = await criarJogador(db, base.outroGrupo.id, base.contaId);
+    await emTransacao(db, (tx) =>
+      partidas.criar(tx, base.outroGrupo.id, {
+        data: '2026-10-15',
+        choveu: false,
+        presencas: [{ jogadorId: dB, situacao: 'presente' }],
+        autor: base.contaId,
+        agora: AGORA,
+      }),
+    );
+    expect(await partidas.porData(db, base.grupo.id, '2026-10-15')).toBeNull();
+    expect(await partidas.porMes(db, base.grupo.id, '2026-10')).toEqual([]);
+    expect(
+      await emTransacao(db, (tx) =>
+        partidas.substituir(tx, base.grupo.id, '2026-10-15', {
+          choveu: true,
+          presencas: [],
+          autor: base.contaId,
+          agora: MAIS_TARDE,
+        }),
+      ),
+    ).toBe(false);
+    expect(await emTransacao(db, (tx) => partidas.excluir(tx, base.grupo.id, '2026-10-15'))).toBe(false);
+    expect((await partidas.historicoAte(db, base.grupo.id, '2026-12-31')).presencas).toEqual([]);
+    const intacta = await partidas.porData(db, base.outroGrupo.id, '2026-10-15');
+    expect(intacta).toMatchObject({ choveu: false });
+    expect(intacta?.presencas).toHaveLength(1);
   });
 });
