@@ -11,6 +11,8 @@ export default defineConfig({
   expect: { timeout: 15_000 },
   workers: 1,
   reporter: [['list']],
-  use: { baseURL: 'http://localhost:5173', trace: 'retain-on-failure' },
+  // Sem trace, screenshot nem vídeo: o corpo de `POST /api/dono/grupos`, a tela da senha
+  // temporária e os `fill` do login a carregariam em claro para o artefato do CI.
+  use: { baseURL: 'http://localhost:5173', trace: 'off', screenshot: 'off', video: 'off' },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
 });
