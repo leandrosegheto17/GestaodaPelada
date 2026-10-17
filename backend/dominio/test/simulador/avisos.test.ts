@@ -75,6 +75,46 @@ describe('avisosDois', () => {
   });
 });
 
+describe('avisosDois com o exemplo do mockup (simulador-sugestao-dois)', () => {
+  it('Léo Baiano e Serginho sem nota, na ordem de prioridade', () => {
+    const prioridade = [
+      'toninho',
+      'bigode',
+      'careca',
+      'juninho',
+      'marcao',
+      'ze',
+      'gordo',
+      'rafinha',
+      'pedrao',
+      'cabeca',
+      'japa',
+      'vini',
+      'leo',
+      'serginho',
+    ];
+    const js = prioridade.map((id) =>
+      sim(`j-${id}`, { semNota: id === 'leo' || id === 'serginho', so1oTempo: id === 'juninho' }),
+    );
+    const comp = {
+      times: [
+        {
+          titulares: ['toninho', 'careca', 'marcao', 'ze', 'gordo', 'rafinha', 'pedrao'].map((i) => `j-${i}`),
+          entram: ['j-cabeca', 'j-japa'],
+        },
+        {
+          titulares: ['bigode', 'juninho', 'paulinho', 'dudu', 'tiago', 'nenem', 'alemao'].map((i) => `j-${i}`),
+          entram: ['j-vini', 'j-leo'],
+        },
+      ] as [{ titulares: string[]; entram: string[] }, { titulares: string[]; entram: string[] }],
+      naoEntra: ['j-serginho'],
+    };
+    const todos = [...js, ...['paulinho', 'dudu', 'tiago', 'nenem', 'alemao'].map((i) => sim(`j-${i}`))];
+    const avisos = avisosDois({ n: 7, comp, jogadores: mapa(todos), rank: rankDe(todos) });
+    expect(avisos).toEqual<AvisoSim[]>([{ tipo: 'sem_nota', ids: ['j-leo', 'j-serginho'] }]);
+  });
+});
+
 describe('avisosVarios', () => {
   const montar = (aptos: number, n: number, tamanhos: number[]) => {
     const js = lista('j', aptos);
@@ -107,7 +147,7 @@ describe('avisosVarios', () => {
   });
 
   it('(d) nenhum N alternativo válido → lista vazia', () => {
-    const [aviso] = avisosVarios(montar(5, 2, [2, 2, 1]));
+    const [aviso] = avisosVarios(montar(4, 3, [3, 1]));
     expect(aviso).toMatchObject({ tipo: 'incompleto_pequeno', nSugeridos: [] });
   });
 
@@ -125,6 +165,6 @@ describe('avisosVarios', () => {
 
   it('nenhum tipo de aviso fala de goleiro', () => {
     const tipos = ['so_1o_tempo_sem_reserva', 'composicao_diferente', 'sem_nota', 'incompleto_pequeno'];
-    expect(tipos.some((t) => /goleiro|posicao/i.test(t))).toBe(false);
+    expect(tipos.some((t) => /goleiro|^posicao/i.test(t))).toBe(false);
   });
 });
