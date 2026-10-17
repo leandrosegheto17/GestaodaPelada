@@ -857,3 +857,6 @@ APROVADA — 0 críticos, 1 não crítico (RTP-0122: `|=`/`&=`/`^=`/`>>=` escapa
 
 ## TP-0133 — DevSecOps — 2026-10-17
 OK — só o id do Hyperdrive muda; cache off, origem direta, plano Free, nenhum segredo no repositório; recomendado limpar o histórico do PowerShell onde o token foi digitado.
+
+## TP-0134 — DevSecOps — 2026-10-17
+OK — secrets só nos escopos certos, `producao` com aprovação manual e só `main`, GITHUB_TOKEN em read, nenhum `pull_request_target` nem segredo no repo; repositório público (backup cifrado baixável) é risco aceito pelo usuário.
