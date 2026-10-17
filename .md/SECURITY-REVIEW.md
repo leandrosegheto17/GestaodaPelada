@@ -737,3 +737,30 @@ APROVADA; revisão de teste apenas (grep de segredos limpo, sem mudança de depe
 
 ## RTP-0095 — DevSecOps — 2026-10-17
 APROVADA — as 3 portas do compose publicadas só em 127.0.0.1 (compose config verificado); 0 achados; up --wait não executado.
+
+## TP-0062 — DevSecOps — 2026-10-17
+APROVADA — 0 críticos, 0 não críticos; vínculo/grupoId do middleware, UPDATE parametrizado só nos 4 campos, strictObject recusa slug, CSRF global; revisão de diff, testes não reexecutados.
+
+## TP-0155 — DevSecOps — 2026-10-17
+APROVADA; 0 achados; revisão do diff confirma exigirVinculo, grupoId do vínculo, Kysely parametrizado, resposta só id/nome e caso de isolamento.
+
+## TP-0156 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; grupoId só do vínculo, corpo strict, SQL parametrizado, 422 sem vazamento; revisão de diff + ESLint limpo.
+
+## TP-0157 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; UPDATE com grupo_id, uuid/strict antes do banco, 404 uniforme e vínculo/X-Pelada via middleware conferidos por leitura do diff.
+
+## TP-0158 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; G-03/RNF-12/CSRF/uuid conferidos por leitura do diff, escopo por grupo_id e auditoria transacional só com nome.
+
+## TP-0159 — DevSecOps — 2026-10-17
+APROVADA — isolamento por grupo em 3 camadas (serviço, SQL, vínculo), ids uuid e corpo strict antes do banco, SQL parametrizado; 0 críticos, 0 não críticos; revisão de diff, sem comando executado.
+
+## TP-0162 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; revisão do diff confirma escopo por grupo via vínculo, validação do contrato e projeção mínima (lido, sem execução nova).
+
+## TP-0163 — DevSecOps — 2026-10-17
+APROVADA, 0 achados; rota sob vínculo/X-Pelada, corpo strict com teto 60 aptos e 16 KB, sem banco nem dado pessoal (revisão de leitura).
+
+## TP-0189 — DevSecOps — 2026-10-17
+APROVADA; 0 achados de segurança (isolamento por grupo em todas as consultas + FKs compostas, SQL parametrizado, somas com checagem de inteiro seguro, temHistorico/FK cobrindo pagamento); checar-grupo-id verde.

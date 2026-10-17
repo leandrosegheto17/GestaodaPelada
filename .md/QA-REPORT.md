@@ -794,3 +794,15 @@ TP-0087 APROVADA com 2 achados não críticos (teste de login não idempotente e
 
 ## TP-0189 — QA — 2026-10-17
 APROVADA; 0 críticos, 1 não crítico (financeiro.ts 319 linhas -> RTP-0102); 24 testes de repositório + 5 de rota DELETE + checar-grupo-id verdes.
+
+## RTP-0082 — QA — 2026-10-17
+APROVADA — 0 críticos, 1 não crítico (RTP-0106: e-mail de dono fixo em montarCenario causa colisão contas_email_unico em paralelo); arquivos carregam e passam isoladamente (5/5 e 6/6).
+
+## RTP-0093 — QA — 2026-10-17
+APROVADA — 0 críticos, 0 não críticos; nova-e-ler 13/13 em reexecução (inativado some da lista e 409 cobertos); falhas intermitentes só por contas_email_unico compartilhado.
+
+## RTP-0094 — QA — 2026-10-17
+APROVADA — publico-ranking (7) e publico.test (3) passam isolados; falha em rodada conjunta foi interferencia do banco compartilhado; 0 achados.
+
+## TP-0203 — QA — 2026-10-17
+APROVADA — aviso-privacidade (204, idempotente, strict, sessão completa) com 76 testes de rota/isolamento verdes; 0 achados.
