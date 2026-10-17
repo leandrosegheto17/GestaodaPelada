@@ -812,3 +812,33 @@ APROVADA; 0 críticos, 0 não críticos; só código de teste (lock advisory com
 
 ## TP-0132 — DevSecOps — 2026-10-17
 APROVADA — 0 críticos, 2 não críticos (baixa: senhas dos papéis pelada_* no histórico do SQL Editor do Neon sem rotação → RTP-0114; + higiene .gitignore → RTP-0115); repo/histórico sem segredo (gitleaks e grep executados), menor privilégio e TLS/Free conforme evidência do usuário, não reexecutável.
+
+## RTP-0096 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; sem mudança de código, teste só reforça a ausência de dados sensíveis no PDF público (lido, não executado).
+
+## RTP-0101 — DevSecOps — 2026-10-17
+APROVADA, 0 críticos/0 não críticos; diff só de teste, validação de :data antes do banco comprovada (vitest 5/5 executado).
+
+## RTP-0103 — DevSecOps — 2026-10-17
+APROVADA em segurança — diff só de testes, IP não gravado e T-11/T-13 cobertos, limite-taxa 10/10 executado; 0 achados críticos, 0 não críticos.
+
+## RTP-0107 — DevSecOps — 2026-10-17
+APROVADA — cache do ranking com validade finita (7 dias), nenhuma outra rota /api cacheada; 0 críticos, 0 não críticos; evidência: diff lido e pwa-config 8/9 (falha preexistente RTP-0116).
+
+## RTP-0109 — DevSecOps — 2026-10-17
+APROVADA — 0 achados; ausência do binding em ambiente https vira log fixo "limitador ausente" sem IP (T-11/T-13 detectável); lido o diff e config; vitest limite-taxa 10/10 executado.
+
+## RTP-0110 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0121: colchete, ||=, chamada/operador escapam da guarda G-11); executado vitest 37/37, raiz saída 0, sondas e teste de ReDoS.
+
+## RTP-0112 — DevSecOps — 2026-10-17
+APROVADA — passada única preserva literais, `//`/`--` em string não escondem e_dono; 0 críticos, 1 baixo (`i--` ainda esconde e_dono, RTP-0120); probe executado, resto lido.
+
+## RTP-0115 — DevSecOps — 2026-10-17
+APROVADA; 0 achados; check-ignore exit 0 nos dois, ls-files .pnpm-store vazio, nada a corrigir.
+
+## TP-0112 — DevSecOps — 2026-10-17
+APROVADA — evento só com tipo+id anônimo via escrever/schema, cache restrito ao ranking público e revalidado; 147 testes verdes; 0 achados.
+
+## TP-0138 — DevSecOps — 2026-10-17
+APROVADA em segurança; 0 críticos, 2 não críticos (RTP-0118 senha temporária no trace, baixa; RTP-0119 e-mail real do dono em literal no compose); revisão do diff, nada executado por mim.
