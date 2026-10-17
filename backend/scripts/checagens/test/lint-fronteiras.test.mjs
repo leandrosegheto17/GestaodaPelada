@@ -60,6 +60,20 @@ describe('relógio (G-06)', () => {
     },
   );
 
+  it.each([
+    'const { now } = Date; now();',
+    'const { now } = globalThis.Date; now();',
+    'const D = Date; D.now();',
+    'const D = globalThis.Date; D.now();',
+  ])('barra o alias %s no domínio e na API', async (codigo) => {
+    expect((await regras(codigo, DOMINIO)).length).toBeGreaterThan(0);
+    expect((await regras(codigo, API)).length).toBeGreaterThan(0);
+  });
+
+  it('aceita alias de Date no relógio de infraestrutura', async () => {
+    expect(await regras('const D = Date; D.now();', 'backend/api/src/infraestrutura/relogio/relogio.ts')).toEqual([]);
+  });
+
   it('aceita new Date(0) e o relógio de infraestrutura', async () => {
     expect(await regras('new Date(0);', DOMINIO)).toEqual([]);
     expect(await regras('Date.now();', 'backend/api/src/infraestrutura/relogio/relogio.ts')).toEqual([]);
@@ -81,6 +95,13 @@ describe('conversões e cookie', () => {
     }
   });
 
+  it.each(['const d = document; d.cookie;', 'const d = globalThis.document; d.cookie;'])(
+    'barra o alias %s no web',
+    async (codigo) => {
+      expect((await regras(codigo, WEB)).length).toBeGreaterThan(0);
+    },
+  );
+
   it('aceita document.cookie fora do web? não: só o web é restrito', async () => {
     expect(await regras('document.cookie;', 'backend/api/src/x.ts')).toEqual([]);
   });
@@ -97,5 +118,38 @@ describe('fronteiras por caminho real', () => {
     expect(fora).toContain('import-x/no-restricted-paths');
     const dentro = await regras("import { a } from '../api/src/aplicacao/acesso/senhas';", 'backend/scripts/x.ts');
     expect(dentro).not.toContain('import-x/no-restricted-paths');
+  });
+
+  const SCRIPT = 'backend/scripts/x.ts';
+  const FORA_ALIAS = [
+    "import { a } from '@pelada/api/src/aplicacao/acesso/entrar';",
+    "import { a } from '@pelada/api';",
+    "import { a } from '@pelada/api/src/infraestrutura/db';",
+    "import { a } from '@pelada/api/src/aplicacao/acesso/senhas-outra';",
+    "export * from '@pelada/api/src/aplicacao/acesso/entrar';",
+    "export { a } from '@pelada/api/src/entrada/app';",
+    "const m = await import('@pelada/api/src/aplicacao/acesso/entrar');",
+    "const m = require('@pelada/api/src/aplicacao/acesso/entrar');",
+    "import { a } from '@pelada/api/src/infraestrutura/seguranca-x';",
+  ];
+  const DENTRO_ALIAS = [
+    "import { a } from '@pelada/api/src/infraestrutura/db/repositorios';",
+    "import { a } from '@pelada/api/src/infraestrutura/db/repositorios/contas';",
+    "import { a } from '@pelada/api/src/infraestrutura/db/migracoes';",
+    "import { a } from '@pelada/api/src/infraestrutura/seguranca/hash';",
+    "import { a } from '@pelada/api/src/aplicacao/acesso/senhas';",
+    "export { a } from '@pelada/api/src/aplicacao/acesso/senhas';",
+    "const m = await import('@pelada/api/src/aplicacao/acesso/senhas');",
+    "// import { a } from '@pelada/api/src/aplicacao/acesso/entrar';",
+    "const n = '@pelada/api';",
+  ];
+
+  it.each(FORA_ALIAS)('scripts: barra por alias %s', async (codigo) => {
+    expect((await regras(codigo, SCRIPT)).length).toBeGreaterThan(0);
+  });
+
+  it.each(DENTRO_ALIAS)('scripts: aceita por alias %s', async (codigo) => {
+    const ids = await regras(codigo, SCRIPT);
+    expect(ids.filter((id) => id !== 'import-x/no-unresolved')).toEqual([]);
   });
 });

@@ -76,6 +76,14 @@ const semRelogio = [
       "CallExpression[callee.object.object.name='globalThis'][callee.object.property.name='Date'][callee.property.name='now']",
     message: MSG_RELOGIO,
   },
+  {
+    selector: "VariableDeclarator[init.name='Date']",
+    message: MSG_RELOGIO,
+  },
+  {
+    selector: "VariableDeclarator[init.object.name='globalThis'][init.property.name='Date']",
+    message: MSG_RELOGIO,
+  },
   { selector: "NewExpression[callee.name='Date'][arguments.length=0]", message: MSG_RELOGIO },
   {
     selector: "NewExpression[callee.object.name='globalThis'][callee.property.name='Date'][arguments.length=0]",
@@ -126,6 +134,14 @@ const semDocumentCookie = [
     selector: "VariableDeclarator[init.name='document'] > ObjectPattern > Property[key.name='cookie']",
     message: MSG_COOKIE,
   },
+  {
+    selector: "VariableDeclarator[init.name='document'][id.type='Identifier']",
+    message: MSG_COOKIE,
+  },
+  {
+    selector: "VariableDeclarator[init.object.name='globalThis'][init.property.name='document']",
+    message: MSG_COOKIE,
+  },
 ];
 
 const MSG_DONO = 'criarContaDono e apagarDadosDoSeed só podem ser usadas por backend/scripts.';
@@ -135,6 +151,15 @@ const donoSoEmScripts = [
   { selector: "ImportSpecifier[imported.name='apagarDadosDoSeed']", message: MSG_DONO },
   { selector: "MemberExpression[property.name='apagarDadosDoSeed']", message: MSG_DONO },
 ];
+
+const SCRIPTS_PERMITIDOS = [
+  'infraestrutura/db/repositorios',
+  'infraestrutura/db/migracoes',
+  'infraestrutura/seguranca',
+  'aplicacao/acesso/senhas',
+];
+const MSG_ALIAS_API = 'Scripts só importam repositórios, migrações, seguranca e acesso/senhas de @pelada/api (G-01).';
+const ALIAS_API_PROIBIDO = `^(?!@pelada\\/api\\/src\\/(${SCRIPTS_PERMITIDOS.map(escapar).join('|')})(\\/.*)?$)@pelada\\/api(\\/.*)?$`;
 
 const sintaxe = (...grupos) => ['error', ...grupos.flat()];
 
@@ -212,6 +237,28 @@ export default tseslint.config(
     rules: {
       'no-restricted-imports': ['error', restritos(PROIBIDAS_GLOBAL)],
       'no-restricted-syntax': sintaxe(dinamicos(PROIBIDAS_GLOBAL), semRelogio, semAsUnknownAs, donoSoEmScripts),
+    },
+  },
+  {
+    // O alias não passa pela zona de caminhos relativos; barra-se aqui, liberando os mesmos caminhos.
+    files: ['backend/scripts/**'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            ...restritos([...PROIBIDAS_GLOBAL, ...BANCO]).patterns,
+            { regex: ALIAS_API_PROIBIDO, message: MSG_ALIAS_API },
+          ],
+        },
+      ],
+      'no-restricted-syntax': sintaxe(dinamicos([...PROIBIDAS_GLOBAL, ...BANCO]), semAsUnknownAs, [
+        { selector: `ImportExpression[source.value=/${ALIAS_API_PROIBIDO}/]`, message: MSG_ALIAS_API },
+        {
+          selector: `CallExpression[callee.name='require'][arguments.0.value=/${ALIAS_API_PROIBIDO}/]`,
+          message: MSG_ALIAS_API,
+        },
+      ]),
     },
   },
   {
