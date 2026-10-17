@@ -25,18 +25,20 @@ function useDepois(grupoId: string, tambemSessao = false) {
   };
 }
 
-/** A senha temporária vem na resposta: quem usa deve chamar `reset()` ao fechar o diálogo (ADR-015). */
+/** A senha temporária vem na resposta: quem usa deve chamar `reset()` ao fechar o diálogo; `gcTime: 0` tira a mutação do cache junto (ADR-015). */
 export function useAdicionarAdmin(grupoId: string) {
   const depois = useDepois(grupoId);
   return useMutation({
     mutationFn: (corpo: { nome: string; email: string }) => escrever('POST', base(grupoId), corpo, adminAdicionado),
     onSuccess: depois,
+    gcTime: 0,
   });
 }
 
 export function useRedefinirSenha(grupoId: string) {
   return useMutation({
     mutationFn: (contaId: string) => escrever('POST', `${doAdmin(grupoId, contaId)}/redefinir-senha`, {}, senhaExibida),
+    gcTime: 0,
   });
 }
 

@@ -33,6 +33,10 @@
   margin-bottom: var(--esp-3);
 }
 @media (min-width: 600px) {
+  .estreito {
+    box-sizing: border-box;
+    padding-inline: var(--esp-6);
+  }
   .duasColunas {
     grid-template-columns: 1fr 1fr;
   }

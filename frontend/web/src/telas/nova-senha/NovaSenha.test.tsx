@@ -172,7 +172,7 @@ describe('NovaSenha (T06)', () => {
     await screen.findByLabelText('Nova senha');
     expect(await violacoes(container)).toEqual([]);
     await userEvent.click(screen.getByRole('button', { name: 'Salvar e continuar' }));
-    await screen.findByRole('alert');
+    await screen.findByText('A senha precisa ter de 8 a 72 caracteres.');
     expect(await violacoes(container)).toEqual([]);
   });
 });

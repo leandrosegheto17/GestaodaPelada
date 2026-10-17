@@ -7,6 +7,7 @@ import { ErroRede } from '../../componentes/basicos/ErroRede';
 import { EstadoVazio } from '../../componentes/basicos/EstadoVazio';
 import { Faixa } from '../../componentes/basicos/Faixa';
 import { Voltar } from '../../componentes/basicos/Voltar';
+import { TituloPagina } from '../../componentes/pagina';
 import { Lista } from '../../componentes/listas/Lista';
 import { NavegadorMes } from '../../componentes/listas/NavegadorMes';
 import { useGrupo } from '../../dados/grupo';
@@ -44,7 +45,7 @@ export function Component() {
   if (grupo.isError || partidas.isError) {
     return (
       <>
-        <h1 className="sr">Partidas</h1>
+        <TituloPagina>Partidas</TituloPagina>
         <ErroRede
           aoTentar={() => {
             void grupo.refetch();
@@ -62,7 +63,7 @@ export function Component() {
     <>
       <title>{`Partidas: ${grupo.data.grupo.nome}`}</title>
       <Voltar para={base} rotulo="Início" />
-      <h1 className={estilos.titulo}>Partidas</h1>
+      <TituloPagina>Partidas</TituloPagina>
       {retorno?.tipo === 'partida-excluida' ? (
         <Faixa tipo="sucesso">Partida de {diaMes(retorno.data)} excluída.</Faixa>
       ) : null}
@@ -81,7 +82,7 @@ export function Component() {
           ))}
         </Lista>
       ) : (
-        <EstadoVazio titulo="Nenhuma partida neste mês." />
+        <EstadoVazio icone={null} titulo="Nenhuma partida neste mês." />
       )}
       <BarraAcao>
         <BotaoLink to={`${base}/partidas/nova`}>Nova partida</BotaoLink>

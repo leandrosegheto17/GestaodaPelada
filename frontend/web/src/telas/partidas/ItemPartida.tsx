@@ -36,8 +36,8 @@ export function ItemPartida({ grupoId, partida }: Props) {
             {partida.choveu ? (
               <>
                 <span className={estilos.chuva}>
-                  <IconeTempo choveu />
-                </span>
+                  <IconeTempo choveu tamanho={14} />
+                </span>{' '}
                 chuva {'·'}{' '}
               </>
             ) : null}

@@ -7,6 +7,7 @@ import { ErroEnvio } from '../../componentes/basicos/ErroEnvio';
 import { CamposNovaSenha, ID_CONFIRMACAO, ID_NOVA_SENHA } from '../../componentes/campos/CamposNovaSenha';
 import { ResumoErros } from '../../componentes/campos/ResumoErros';
 import { Formulario } from '../../componentes/pagina/Formulario';
+import { Paragrafo } from '../../componentes/pagina/Paragrafo';
 import { PaginaFormulario } from '../../componentes/pagina/PaginaFormulario';
 import { destinoAposEntrar } from '../../app/guarda/decidir-rota';
 import { escrever, semCorpo } from '../../dados/cliente';
@@ -65,7 +66,7 @@ export function Component() {
   ];
   return (
     <PaginaFormulario titulo="Crie sua senha">
-      <p>Por segurança, crie sua senha antes de continuar.</p>
+      <Paragrafo>Por segurança, crie sua senha antes de continuar.</Paragrafo>
       <Formulario aoEnviar={() => void salvar()} enviando={enviando}>
         <ResumoErros erros={itens} />
         <CamposNovaSenha

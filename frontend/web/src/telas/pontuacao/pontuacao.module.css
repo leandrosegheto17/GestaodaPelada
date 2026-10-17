@@ -14,17 +14,10 @@
   letter-spacing: var(--espacamento-caixa-alta);
   margin: var(--esp-6) 0 var(--esp-3);
 }
-.subtituloSemTopo {
-  composes: subtitulo;
-  margin-top: 0;
-}
 .secao {
   margin-top: var(--esp-6);
   padding-top: var(--esp-4);
   border-top: 1px solid var(--cor-linha);
-}
-.secao .subtitulo {
-  margin-top: 0;
 }
 .formulario {
   display: grid;
@@ -43,6 +36,10 @@
   margin-bottom: var(--esp-3);
 }
 @media (min-width: 600px) {
+  .estreito {
+    box-sizing: border-box;
+    padding-inline: var(--esp-6);
+  }
   .duasColunas {
     grid-template-columns: 1fr 1fr;
   }

@@ -10,7 +10,7 @@ export function CartaoVigente({ vigente }: { vigente: PainelPesos['vigente'] }) 
   const id = useId();
   return (
     <section className={estilos.cartao} aria-labelledby={id}>
-      <h2 id={id} className={estilos.subtituloSemTopo}>
+      <h2 id={id} className={estilos.subtitulo}>
         Vigente desde {dataCompleta(vigente.vigenteDesde)}
       </h2>
       <TabelaSimples

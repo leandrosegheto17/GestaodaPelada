@@ -27,36 +27,43 @@ export function ItemAdmin({
   aoRedefinirSenha,
   aoRemover,
 }: Props) {
+  const idAjuda = `ajuda-proprio-acesso-${admin.contaId}`;
   return (
     <Item
       quebra
       titulo={admin.voce ? `${admin.nome} (você)` : admin.nome}
       meta={admin.email}
       acoes={
-        <div className={estilos.grupoBotoes}>
+        <>
           <Interruptor
             rotuloAcessivel={`Acessa financeiro: ${admin.nome}`}
             marcado={acessaFinanceiro}
             aoMudar={aoMudarFinanceiro}
             textoLigado="Financeiro"
             textoDesligado="Financeiro"
-            desabilitado={!podeGerirFinanceiro}
+            desabilitado={!podeGerirFinanceiro || admin.voce}
+            descritoPor={admin.voce ? idAjuda : undefined}
           />
           {admin.voce ? (
             <BotaoLink to="/conta/senha" variante="texto">
               Minha senha
             </BotaoLink>
           ) : (
-            <>
-              <Botao variante="secundario" onClick={aoRedefinirSenha}>
+            <span className={estilos.grupoBotoes}>
+              <Botao variante="texto" onClick={aoRedefinirSenha}>
                 Redefinir senha
               </Botao>
               <Botao variante="textoDestrutivo" onClick={aoRemover}>
                 Remover do grupo
               </Botao>
-            </>
+            </span>
           )}
-        </div>
+          {admin.voce ? (
+            <p className={estilos.ajudaLinha} id={idAjuda}>
+              Você não pode alterar o seu próprio acesso.
+            </p>
+          ) : null}
+        </>
       }
     />
   );

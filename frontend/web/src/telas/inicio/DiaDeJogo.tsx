@@ -51,7 +51,7 @@ export function DiaDeJogo({ grupoId, inicio }: Props) {
               <p className={estilos.status}>
                 {confirmada ? (
                   <>
-                    <Icone nome="sucesso" />
+                    <Icone nome="sucesso" tamanho={18} />
                     Escalação de {diaMes(confirmada)} confirmada
                   </>
                 ) : (

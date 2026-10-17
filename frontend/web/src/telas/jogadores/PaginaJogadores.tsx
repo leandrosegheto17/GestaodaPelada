@@ -68,6 +68,7 @@ export function Component() {
       {itens.length === 0 ? (
         <div className={estilos.acima4}>
           <EstadoVazio
+            icone={null}
             titulo={filtro === 'ativos' ? 'Nenhum jogador cadastrado.' : 'Nenhum jogador inativo.'}
             acao={semNenhumAtivo ? <BotaoLink to={`${base}/jogadores/novo`}>Novo jogador</BotaoLink> : undefined}
           />
@@ -84,7 +85,7 @@ export function Component() {
               ))}
             </Lista>
           ) : (
-            <EstadoVazio titulo="Nenhum jogador encontrado." />
+            <EstadoVazio icone={null} titulo="Nenhum jogador encontrado." />
           )}
         </>
       )}

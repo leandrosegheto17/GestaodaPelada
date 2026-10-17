@@ -115,7 +115,7 @@ export function Component() {
 
   const pendente = financeiro.isPending ? financeiro.variables : undefined;
   return (
-    <div>
+    <div className={estilos.estreito}>
       <title>Admins</title>
       <Voltar para={base} rotulo="Início" />
       <TituloPagina>Admins</TituloPagina>

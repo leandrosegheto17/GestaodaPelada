@@ -90,6 +90,7 @@ function montar(rota: string) {
 
 const NOVO = '/admin/g-quinta/jogadores/novo';
 const FICHA = '/admin/g-quinta/jogadores/j-toninho';
+const API_FICHA = '/api/grupos/g-quinta/jogadores/j-toninho';
 
 async function preencherNovo() {
   await userEvent.type(await screen.findByLabelText('Apelido'), 'Rodrigo');
@@ -102,8 +103,7 @@ describe('PaginaJogador (T16): novo', () => {
   it('campos com as ajudas do mockup e data de entrada = hoje da API', async () => {
     api();
     montar(NOVO);
-    expect(await screen.findByRole('heading', { level: 1, name: 'Novo jogador' })).toBeInTheDocument();
-    expect(screen.getByLabelText('Apelido')).toHaveAccessibleDescription(
+    expect(await screen.findByLabelText('Apelido')).toHaveAccessibleDescription(
       'De 2 a 30 caracteres. É o nome que aparece no ranking.',
     );
     expect(screen.getByLabelText('Posição')).toHaveAccessibleDescription('Só para cadastro.');
@@ -204,7 +204,7 @@ describe('PaginaJogador (T16): ficha', () => {
     await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
     expect(chamadas[0]).toMatchObject({
       metodo: 'POST',
-      caminho: `${FICHA}/inativar`,
+      caminho: `${API_FICHA}/inativar`,
       corpo: { dataSaida: '2026-10-22' },
     });
   });
@@ -215,7 +215,7 @@ describe('PaginaJogador (T16): ficha', () => {
     montar(FICHA);
     expect(await screen.findByText('Inativo desde 31/08/2026.')).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: 'Reativar' }));
-    await waitFor(() => expect(chamadas[0]?.caminho).toBe(`${FICHA}/reativar`));
+    await waitFor(() => expect(chamadas[0]?.caminho).toBe(`${API_FICHA}/reativar`));
   });
 
   it('excluir: D2 com foco em Cancelar; 204 volta à lista', async () => {

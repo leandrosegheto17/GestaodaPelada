@@ -37,7 +37,10 @@ export function FormularioPesos({ vigente, errosDoServidor, enviando, semConexao
     );
     const analise = novosPesosCorpo.safeParse(candidato);
     if (!analise.success) {
-      const invalidos = deValidacao(analise);
+      // O contrato escreve o intervalo com hífen; a interface usa o sinal de menos (U+2212).
+      const invalidos = Object.fromEntries(
+        Object.entries(deValidacao(analise)).map(([campo, texto]) => [campo, texto.replace(/-(?=\d)/g, '−')]),
+      );
       for (const chave of ORDEM_PESOS) {
         if (Number.isNaN(candidato[chave])) invalidos[chave] = 'Use um número inteiro de −10 a 10.';
       }

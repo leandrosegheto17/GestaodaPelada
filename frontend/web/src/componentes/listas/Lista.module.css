@@ -46,5 +46,6 @@ a.item {
   font-variant-numeric: tabular-nums;
 }
 .seta {
+  display: flex;
   color: var(--cor-texto-sec);
 }

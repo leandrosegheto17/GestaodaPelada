@@ -95,7 +95,7 @@
 | T13 | `t13-resultado-dois--` sucesso, carregando, recalculando, erro-recalcular, erro-confirmar, mover, refazer | `/admin/:g/simulador/resultado` | pc, celular |
 | T14 | `t14-resultado-varios--` sucesso, mover (carregando, erro e refazer = T13) | `/admin/:g/simulador/resultado` | pc, celular |
 | T15 | `t15-jogadores--` sucesso, vazio, vazio-inativos | `/admin/:g/jogadores` (`?filtro=inativos`) | pc, celular |
-| T16 | `t16-jogador--` edicao, novo, erro, exclusao-recusada, salvo, sem-habilidades, inativar | `/admin/:g/jogadores/novo` e `/:id` | pc, celular |
+| T16 | `t16-jogador--` edicao, novo, erro, exclusao-recusada, salvo, sem-habilidades, inativar, excluir, inativo | `/admin/:g/jogadores/novo` e `/:id` | pc, celular |
 | T17 | `t17-habilidades--` sucesso, vazio, erro, excluir | `/admin/:g/habilidades` | pc, celular |
 | T18 | `t18-pontuacao--` sucesso, erro, salvo | `/admin/:g/pontuacao` | pc, celular |
 | T19 | `t19-admins--` sucesso, ultimo-admin, senha, vinculo, remover, erro | `/admin/:g/admins` | pc, celular |
@@ -525,6 +525,7 @@ Abaixo do campo nome fica a ajuda ⓘ "O link do ranking será criado a partir d
   |---|---|---|---|
   | T11 | Excluir a partida de dd/mm? | As presenças dessa partida saem do ranking, e os pontos de todos são recalculados. | Excluir partida |
   | T13/T14 | Descartar seus ajustes? | A sugestão será refeita do zero com as mesmas entradas. | Refazer sugestão |
+  | T16 | Excluir <apelido>? | O cadastro é apagado. Só é possível excluir quem não tem partidas nem notas. | Excluir jogador |
   | T17 | Excluir "<habilidade>"? | Excluir "<habilidade>" apaga as notas de todos os jogadores nessa habilidade. | Excluir habilidade |
   | T19 | Remover <nome> do grupo? | Ele perde o acesso a este grupo na hora. | Remover do grupo |
   | T22 | Desmarcar o pagamento de <apelido>? | A entrada "Mensalidade <apelido> mm/aaaa" (R$ x) será removida do caixa. | Desmarcar |

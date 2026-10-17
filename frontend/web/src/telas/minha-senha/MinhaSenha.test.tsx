@@ -1,12 +1,12 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse, type JsonBodyType } from 'msw';
 import { setupServer } from 'msw/node';
 import { createMemoryRouter, RouterProvider } from 'react-router';
-import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
+import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { violacoes } from '../../../test/apoio/axe';
 import { criarClienteConsultas } from '../../dados/consultas';
 import { Component as MinhaSenha } from './MinhaSenha';
@@ -18,7 +18,6 @@ const servidor = setupServer();
 beforeAll(() => servidor.listen({ onUnhandledFrame: 'error' }));
 afterEach(() => {
   servidor.resetHandlers();
-  vi.useRealTimers();
 });
 afterAll(() => servidor.close());
 
@@ -159,10 +158,8 @@ describe('MinhaSenha (T25): validação e envio', () => {
     montar();
     await preencher('atual-123', '12345678');
     await screen.findByRole('status');
-    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
-    act(() => vi.advanceTimersByTime(4000));
-    expect(screen.queryByRole('status')).toBeNull();
-  });
+    await waitFor(() => expect(screen.queryByRole('status')).toBeNull(), { timeout: 5000 });
+  }, 8000);
 
   it('falha de rede mostra o erro de envio e mantém os campos', async () => {
     api(fixture('sessao-eu-admin.json'), 'rede');

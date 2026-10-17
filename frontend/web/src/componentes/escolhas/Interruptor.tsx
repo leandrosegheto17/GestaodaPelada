@@ -11,6 +11,8 @@ interface Props {
   textoLigado: string;
   textoDesligado: string;
   desabilitado?: boolean;
+  /** `id` do texto que explica o interruptor (ex.: por que está desabilitado). */
+  descritoPor?: string;
 }
 
 /** Controlado: o estado é do chamador. O leitor de tela lê o estado pelo `aria-checked` do switch. */
@@ -22,6 +24,7 @@ export function Interruptor({
   textoLigado,
   textoDesligado,
   desabilitado,
+  descritoPor,
 }: Props) {
   return (
     <label className={estilos.interruptor}>
@@ -30,6 +33,7 @@ export function Interruptor({
         type="checkbox"
         role="switch"
         aria-label={rotulo ? undefined : rotuloAcessivel}
+        aria-describedby={descritoPor}
         checked={marcado}
         disabled={desabilitado}
         onChange={(e) => aoMudar(e.target.checked)}

@@ -89,6 +89,15 @@ describe('PaginaAdmins (T19): lista', () => {
     expect(screen.getByRole('switch', { name: 'Acessa financeiro: Marquinhos' })).not.toBeChecked();
   });
 
+  it('o interruptor da própria linha fica desabilitado, com a ajuda ligada por aria-describedby', async () => {
+    api();
+    montar();
+    const chave = await screen.findByRole('switch', { name: 'Acessa financeiro: Leandro' });
+    expect(chave).toBeDisabled();
+    expect(chave).toHaveAccessibleDescription('Você não pode alterar o seu próprio acesso.');
+    expect(screen.getByRole('switch', { name: 'Acessa financeiro: Marquinhos' })).toBeEnabled();
+  });
+
   it('podeGerirFinanceiro falso desabilita os interruptores', async () => {
     const base = fixture('admins-quinta.json') as Record<string, JsonBodyType>;
     api({ lista: { ...base, podeGerirFinanceiro: false } });
@@ -143,6 +152,15 @@ describe('PaginaAdmins (T19): ações', () => {
         .map((m) => m.state.data),
     );
     expect(guardado).not.toContain('senhaTemporaria');
+    expect(guardado).not.toContain('Tb4kWm9sQr3x');
+    expect(
+      JSON.stringify(
+        cliente
+          .getQueryCache()
+          .getAll()
+          .map((q) => q.state.data),
+      ),
+    ).not.toContain('Hx7nRq4tWp2m');
     expect(chamadas[0]).toMatchObject({ metodo: 'POST', xPelada: '1' });
   });
 
