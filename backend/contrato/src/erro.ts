@@ -16,6 +16,8 @@ export const CODIGOS_ERRO = {
   jogadorJaAtivo: 'jogador_ja_ativo',
   jogadorComHistorico: 'jogador_com_historico',
   partidaJaExiste: 'partida_ja_existe',
+  pagamentoJaMarcado: 'pagamento_ja_marcado',
+  lancamentoVinculado: 'lancamento_vinculado',
   muitasRequisicoes: 'muitas_requisicoes',
   corpoGrande: 'corpo_grande',
 } as const;

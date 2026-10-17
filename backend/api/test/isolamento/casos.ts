@@ -156,6 +156,10 @@ export const CASOS: Record<string, Caso> = {
     },
   },
   'GET /api/grupos/:grupoId/financeiro/mes': { tipo: 'financeiro' },
+  'POST /api/grupos/:grupoId/financeiro/pagamentos': {
+    tipo: 'financeiro',
+    corpo: { jogadorId: '00000000-0000-4000-8000-000000000001', mes: '2026-10' },
+  },
   'PUT /api/grupos/:grupoId/financeiro/config': {
     tipo: 'financeiro',
     corpo: { mensalidadeCentavos: 7500, saldoInicialCentavos: 35000, dataSaldoInicial: '2026-02-05' },
