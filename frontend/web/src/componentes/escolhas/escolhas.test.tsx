@@ -53,6 +53,24 @@ describe('Segmentado', () => {
     await userEvent.tab();
     expect(screen.getByRole('button', { name: 'depois' })).toHaveFocus();
   });
+
+  it.each(['{ArrowRight}', '{ArrowDown}'])('%s seleciona a próxima opção e chama aoMudar', async (tecla) => {
+    const aoMudar = vi.fn();
+    render(<SegmentadoControlado aoMudar={aoMudar} />);
+    await userEvent.tab();
+    await userEvent.keyboard(tecla);
+    expect(aoMudar).toHaveBeenCalledWith('inativos');
+    expect(screen.getByRole('radio', { name: 'Inativos (0)' })).toBeChecked();
+  });
+
+  it('ArrowLeft na primeira opção volta à última', async () => {
+    const aoMudar = vi.fn();
+    render(<SegmentadoControlado aoMudar={aoMudar} />);
+    await userEvent.tab();
+    await userEvent.keyboard('{ArrowLeft}');
+    expect(aoMudar).toHaveBeenCalledWith('inativos');
+    expect(screen.getByRole('radio', { name: 'Inativos (0)' })).toHaveFocus();
+  });
 });
 
 function InterruptorControlado(props: { desabilitado?: boolean; rotuloAcessivel?: string }) {
