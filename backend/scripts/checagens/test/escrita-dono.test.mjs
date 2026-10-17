@@ -39,6 +39,10 @@ describe('checar-escrita-e-dono', () => {
     'await sql`INSERT INTO contas (email, "e_dono")\n VALUES (1, true)`;',
     `await db.insertInto('contas').values({ ${CAMPOS_LONGOS}, e_dono: true }).execute();`,
     `await sql\`UPDATE contas SET ${CAMPOS_LONGOS.replaceAll(': 1', ' = 1')}, e_dono = true\`;`,
+    "await db.insertInto('c').values({ nome: 'a;b', e_dono: true }).execute();",
+    'await db.insertInto("c").values({ nome: "a;b", eDono: true }).execute();',
+    "const o = { e_dono: true };\nawait db.insertInto('contas').values(o).execute();",
+    "const o = { nome: 'x', 'eDono': true };\nawait db.updateTable('contas').set(o).execute();",
   ])('falha: %s', (corpo) => {
     expect(rodar(repositorio(rota(corpo)))).toBe(1);
   });
@@ -49,6 +53,7 @@ describe('checar-escrita-e-dono', () => {
     "const aviso = 'nunca gravar e_dono';\nexport {};",
     "const donos = await db.selectFrom('contas').select('e_dono').where('e_dono', '=', true).execute();",
     'export const ehDono = (conta) => conta.eDono === true;',
+    "const a = 'x;y'; const donos = await db.selectFrom('contas').select('e_dono').execute();",
     `const donos = await db.selectFrom('contas').select(['${CAMPOS_LONGOS}', 'e_dono']).where('e_dono', '=', true).execute();`,
   ])('passa: %s', (corpo) => {
     expect(rodar(repositorio(rota(corpo)))).toBe(0);
