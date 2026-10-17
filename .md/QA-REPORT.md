@@ -233,3 +233,24 @@ APROVADA, 0 achados; visual ≤0,11% nos 4 casos, testes da tela e dos campos ve
 
 ## TP-0204 — QA — 2026-10-17
 APROVADA, 0 críticos e 0 não críticos; vitest 82/82 nos arquivos da tarefa, visual T07 pagina/dialogo pc/celular ≤ 0.02%, classe global `dialogo` sem impacto em outros diálogos.
+
+## TP-0117 — QA — 2026-10-17
+APROVADA — 12 testes passando, visual T25 vazio 0,00% pc/celular, erro/sucesso conferidos contra o mockup; 0 achados.
+
+## TP-0121 — QA — 2026-10-17
+APROVADA; 0 críticos, 2 não críticos (RTP-0044 ícone do erro no mockup, RTP-0045 FerramentasLista duplicado); 111 testes verdes, visual T11 ≤ 0,65% (edicao diverge esperado, TP-0122).
+
+## TP-0130 — QA — 2026-10-17
+APROVADA; 0 críticos, 2 não críticos (RTP-0039 harness T27 sem sessão de dono sem grupos: 7,72%/13,63% -> 0,05%/0,16% com a sessão certa; RTP-0042 testes faltantes); gcTime: 0 e .estreito confirmados, 6/6 testes.
+
+## TP-0131 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0041, lacunas de teste); 48 testes ok, CV T28 sucesso 0,11% pc / 0,34% celular, extras de mockup e Campo.tsx aceitos.
+
+## TP-0171 — QA — 2026-10-17
+APROVADA — 53 testes ok; CV T16 acima de 1% em edicao/sem-habilidades por defeito do mockup (base.css, RTP-0040; Apelido RTP-0033), app correto; 0 críticos, 1 não crítico.
+
+## TP-0175 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0043: teste de selos/trocas no sucesso e 8 px na ajuda do Não entra); 125 testes passando e 8 estados x 2 tamanhos conferidos visualmente.
+
+## TP-0183 — QA — 2026-10-17
+APROVADA — PDF 1 página, divergência medida 3,960% (sucesso) e 4,022% (mes-vazio) <= 4,5% (ADR-019), 794x1123 exatos, 1% mantido nas telas; 0 achados; vitest 26/26 e Playwright 2/2.
