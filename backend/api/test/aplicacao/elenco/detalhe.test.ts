@@ -5,12 +5,12 @@ import { emTransacao } from '../../../src/infraestrutura/db/index.js';
 import * as habilidades from '../../../src/infraestrutura/db/repositorios/habilidades.js';
 import * as jogadores from '../../../src/infraestrutura/db/repositorios/jogadores.js';
 import { montarCenario } from '../../apoio/cenario-acesso.js';
-import { usarDbDoWorker } from '../../apoio/db-worker.js';
+import { usarDb } from '../../apoio/db-teste.js';
 import { criarJogador } from '../../apoio/fabricas/jogadores.js';
 import { usarFabrica } from '../../apoio/fabrica.js';
 
 const fabrica = usarFabrica();
-const abrir = usarDbDoWorker(fabrica);
+const abrir = usarDb(fabrica);
 const HOJE = '2026-10-22';
 
 describe('carregarDetalhe (workerd)', () => {

@@ -3,12 +3,12 @@ import { prepararContexto } from '../../../src/aplicacao/simulador/contexto.js';
 import * as habilidades from '../../../src/infraestrutura/db/repositorios/habilidades.js';
 import * as jogadores from '../../../src/infraestrutura/db/repositorios/jogadores.js';
 import { montarCenario } from '../../apoio/cenario-acesso.js';
-import { usarDbDoWorker } from '../../apoio/db-worker.js';
+import { usarDb } from '../../apoio/db-teste.js';
 import { criarJogador } from '../../apoio/fabricas/jogadores.js';
 import { usarFabrica } from '../../apoio/fabrica.js';
 
 const fabrica = usarFabrica();
-const abrir = usarDbDoWorker(fabrica);
+const abrir = usarDb(fabrica);
 
 // O grupo de fábrica joga às quintas-feiras: 2026-10-22 é quinta.
 describe('prepararContexto (workerd)', () => {
