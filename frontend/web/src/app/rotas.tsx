@@ -50,6 +50,9 @@ export const roteador = createBrowserRouter([
           { path: 'partidas/nova', lazy: () => import('../telas/partida/PaginaNovaPartida') },
           { path: 'partidas/:data', lazy: () => import('../telas/partida/PaginaEditarPartida') },
           { path: 'partidas', lazy: () => import('../telas/partidas/PaginaPartidas') },
+          ...(recursos.ligado('financeiro')
+            ? [{ path: 'financeiro', lazy: () => import('../telas/financeiro/PaginaFinanceiro') }]
+            : []),
           ...(recursos.ligado('simulador')
             ? [
                 { path: 'habilidades', lazy: () => import('../telas/habilidades/PaginaHabilidades') },
