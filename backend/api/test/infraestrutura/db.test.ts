@@ -1,9 +1,10 @@
 import { randomBytes } from 'node:crypto';
 import pg from 'pg';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, expectTypeOf, it } from 'vitest';
 import * as publico from '../../src/infraestrutura/db/index.js';
 import { kyselyDe } from '../../src/infraestrutura/db/cliente.js';
 import { criarDb, emTransacao, fecharDb } from '../../src/infraestrutura/db/index.js';
+import type { Db, Tx } from '../../src/infraestrutura/db/index.js';
 import { criarBancoTemporario, temBanco, type BancoTemporario } from '../apoio/banco.js';
 
 function contextoFalso() {
@@ -18,6 +19,21 @@ describe('módulo de dados: superfície pública', () => {
       expect(nomes).not.toContain(proibido);
     }
     expect(nomes.sort()).toEqual(['criarDb', 'emTransacao', 'fecharDb']);
+  });
+
+  it('Db e Tx não expõem Kysely nem pg no tipo público', () => {
+    expectTypeOf<Db>().not.toHaveProperty('kysely');
+    expectTypeOf<Db>().not.toHaveProperty('query');
+    expectTypeOf<Db>().not.toHaveProperty('connect');
+    expectTypeOf<Tx>().not.toHaveProperty('kysely');
+    expectTypeOf<Tx>().not.toHaveProperty('query');
+    expectTypeOf<Tx>().not.toHaveProperty('connect');
+    const db = {} as Db;
+    const tx = {} as Tx;
+    // @ts-expect-error o tipo público não tem consulta direta
+    void db.query;
+    // @ts-expect-error o tipo público não tem consulta direta
+    void tx.connect;
   });
 });
 
@@ -75,15 +91,19 @@ describe.skipIf(!temBanco)('módulo de dados contra o Postgres de teste', () => 
     expect(await externo(`SELECT id FROM ${tabela} WHERE id = 2`)).toEqual([]);
   });
 
-  it('usa a mesma conexão dentro da transação', async () => {
+  it('usa a mesma conexão dentro e fora da transação', async () => {
     const { db } = abrir();
+    const antes = await sql(db, 'SELECT pg_backend_pid() AS pid');
     const dentro = await emTransacao(db, async (tx) => {
       const a = await sql(tx as never, 'SELECT pg_backend_pid() AS pid');
       const b = await sql(tx as never, 'SELECT pg_backend_pid() AS pid');
       return [a.rows, b.rows];
     });
+    const depois = await sql(db, 'SELECT pg_backend_pid() AS pid');
     await fecharDb(db);
     expect(dentro[0]).toEqual(dentro[1]);
+    expect(antes.rows).toEqual(dentro[0]);
+    expect(depois.rows).toEqual(dentro[0]);
   });
 
   it('transação aninhada é recusada', async () => {
