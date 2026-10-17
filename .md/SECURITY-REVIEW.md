@@ -221,3 +221,12 @@ OK, 0 críticos/0 não críticos; texto React puro, validação no limite, escri
 
 ## TP-0172 — DevSecOps — 2026-10-17
 APROVADA; 0 críticos, 0 não críticos; só ids uuid validados por schema, sem persistência/XSS, audit prod limpo, grep de padrões inseguros sem ocorrências.
+
+## TP-0199 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 novos não críticos (margem negativa do .semAcesso já em RTP-0038); 403 sem vazar valores, centavos inteiros, nada guardado no aparelho (leitura do diff, nada executado).
+
+## TP-0201 — DevSecOps — 2026-10-17
+APROVADA, 0 achados; entrada validada pelo schema do contrato, X-Pelada nas escritas sem retry, exclusão com D2, id validado/codificado; 21 testes verdes.
+
+## TP-0204 — DevSecOps — 2026-10-17
+APROVADA, 0 críticos e 0 não críticos; POST via `escrever` com `X-Pelada`, aceite gravado no servidor por conta, página pública só com texto estático, nada no aparelho, conteúdo do aviso conforme RF-64/RNF-06 (leitura do diff; testes executados pelo QA).
