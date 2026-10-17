@@ -101,3 +101,6 @@ APROVADA; 0 críticos, 0 não críticos novos; pnpm audit --prod limpo, eDono e 
 
 ## TP-0089 — DevSecOps — 2026-10-17
 APROVADA; 0 críticos, 0 não críticos; audit --prod limpo, job e2e com contents:read sem segredos/pull_request_target, `--tela` validado; 13 vulns só em devDeps alheias à tarefa.
+
+## TP-0100 — DevSecOps — 2026-10-17
+OK; 0 críticos, 0 novos não críticos; senha só em prop/texto React, sem storage/log/URL/cache (grep executado), confirmação ao fechar e D2 disabled real conferidos por leitura.

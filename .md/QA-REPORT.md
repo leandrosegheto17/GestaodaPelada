@@ -107,3 +107,27 @@ DEVOLVIDA - workers saude/apoio-banco passam (3/3), mas Unhandled Rejection "Str
 
 ## TP-0100 — QA — 2026-10-17
 APROVADA; 0 críticos, 1 não crítico (RTP-0020: cobertura de teste indexedDB/monoespaçada); 46 testes passando; mockup (--fonte-mono, X nos 3 HTML) conforme decisão.
+
+## TP-0019 — QA — 2026-10-17
+APROVADA; 0 achados; 395 testes do contrato verdes, snapshot compatível e tsc limpo.
+
+## TP-0020 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0021: enderecoNovo opcional); 34 testes verdes de publico/registro/snapshot.
+
+## TP-0021 — QA — 2026-10-17
+APROVADA; 28 testes e compatibilidade verdes, todos os JSONs do mockup cobertos, 0 achados (casos de admins em grupo.test.ts aceitável).
+
+## TP-0023 — QA — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; 39 testes de contrato passando, snapshot compatível, tsc limpo.
+
+## TP-0024 — QA — 2026-10-17
+APROVADA; 23 testes ok, snapshot compatível, tsc limpo; 0 achados.
+
+## TP-0090 — QA — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; e2e de cabeçalhos 3/3 e contrato 395/395; sem-eval.ts justificado e sem quebra de contrato.
+
+## TP-0109 — QA — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; 136 testes ok, T02 0,00% pc/celular, T03 0,00% (sem regressão do ajuste de CSS em TelaMensagem).
+
+## TP-0207 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0022: ConteudoPagina sem a classe .conteudo do mockup); 29 testes, axe e stylelint verdes.
