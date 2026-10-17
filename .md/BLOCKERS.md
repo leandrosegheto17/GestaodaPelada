@@ -17,3 +17,30 @@
 - Impacto se não resolvido: e2e/pdf-visual.spec.ts vermelho; job e2e falha
 - Sugestão: limite específico do PDF (ex. 4,5%) justificado em ADR, mantendo 1% nas telas
 - Status: Resolvido (2026-10-17): Coordenador: limite próprio de 4,5% para a comparação visual do PDF (ADR-019); Executor aplica na TP-0183
+
+## Bloqueio 003 — 2026-10-17 (BK-0003)
+- Reportado por: Executor
+- Escalado para: usuário
+- Artefato/trecho afetado: RTP-0014
+- Descrição: Exige push da branch ci-prova e PR real no remoto (ação manual/autorização do usuário); rodar a prova do CI e apagar a branch
+- Impacto se não resolvido: —
+- Sugestão: —
+- Status: Em aberto
+
+## Bloqueio 004 — 2026-10-17 (BK-0004)
+- Reportado por: Executor
+- Escalado para: usuário
+- Artefato/trecho afetado: RTP-0006
+- Descrição: Falta apagar backend/dominio/src/simulador/indicadores.test.ts (rm negado pela permissão) e rodar vitest test/simulador/indicadores test/elenco; caso novo em test/simulador/indicadores.test.ts não verificado
+- Impacto se não resolvido: —
+- Sugestão: —
+- Status: Em aberto
+
+## Bloqueio 005 — 2026-10-17 (BK-0005)
+- Reportado por: Executor
+- Escalado para: usuário
+- Artefato/trecho afetado: RTP-0017
+- Descrição: Item (b) feito; item (a) exige PR real com job e2e verde (push/PR autorizado pelo usuário) e registrar a URL do run
+- Impacto se não resolvido: —
+- Sugestão: —
+- Status: Em aberto

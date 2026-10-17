@@ -81,6 +81,33 @@ describe('indicadoresDois', () => {
     expect(extra.entraSemPar).toEqual(['r2']);
   });
 
+  it('exemplo do mockup (19 aptos, N 7, K 2, Juninho só 1º tempo): pares por time', () => {
+    const ordem = ['Toninho', 'Bigode', 'Careca', 'Juninho', 'Marcão', 'Paulinho', 'Zé Carlos', 'Dudu', 'Gordo',
+      'Tiago', 'Neném', 'Rafinha', 'Alemão', 'Pedrão', 'Cabeça', 'Vini', 'Japa', 'Léo Baiano', 'Serginho'];
+    const js = ordem.map((id, i) => sim(id, 900 - i * 10, 40, id === 'Juninho'));
+    const jogadores = mapa(js);
+    const rank = rankDe(ordem);
+    const timeA = indicadoresDois(
+      { titulares: ['Toninho', 'Careca', 'Marcão', 'Zé Carlos', 'Gordo', 'Rafinha', 'Pedrão'], entram: ['Cabeça', 'Japa'] },
+      jogadores,
+      rank,
+    );
+    expect(timeA.pares).toEqual([
+      { sai: 'Pedrão', entra: 'Cabeça' },
+      { sai: 'Rafinha', entra: 'Japa' },
+    ]);
+    const timeB = indicadoresDois(
+      { titulares: ['Bigode', 'Juninho', 'Paulinho', 'Dudu', 'Tiago', 'Neném', 'Alemão'], entram: ['Vini', 'Léo Baiano'] },
+      jogadores,
+      rank,
+    );
+    expect(timeB.pares).toEqual([
+      { sai: 'Juninho', entra: 'Vini' },
+      { sai: 'Alemão', entra: 'Léo Baiano' },
+    ]);
+    expect(timeB.substituicoes).toBe(2);
+  });
+
   it('média com meio exato sobe', () => {
     const j = mapa([sim('x', 500), sim('y', 501)]);
     const r = indicadoresDois({ titulares: ['x', 'y'], entram: [] }, j, rankDe(['x', 'y']));
