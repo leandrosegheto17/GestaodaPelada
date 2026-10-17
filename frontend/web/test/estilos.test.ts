@@ -16,7 +16,10 @@ describe('aparência = mockup (G-19)', () => {
     const doMockup = readdirSync(join(MOCKUP, 'fontes'))
       .filter((n) => n !== 'baixar-fontes.mjs')
       .sort();
-    const doApp = readdirSync(join(RAIZ, 'public/fontes')).sort();
+    const doApp = readdirSync(join(RAIZ, 'public/fontes'), { withFileTypes: true })
+      .filter((e) => e.isFile())
+      .map((e) => e.name)
+      .sort();
     expect(doApp).toEqual(doMockup);
     for (const nome of doMockup) {
       const a = readFileSync(join(RAIZ, 'public/fontes', nome));
