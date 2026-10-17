@@ -1,4 +1,4 @@
-import { mes as esquemaMes } from '@pelada/contrato';
+import { type MesFinanceiro, mes as esquemaMes } from '@pelada/contrato';
 import { useEffect } from 'react';
 import { useParams, useSearchParams } from 'react-router';
 import { BarraAcao } from '../../componentes/barras/BarraAcao';
@@ -6,8 +6,10 @@ import { BotaoLink } from '../../componentes/basicos/BotaoLink';
 import { ErroRede } from '../../componentes/basicos/ErroRede';
 import { Esqueleto } from '../../componentes/basicos/Esqueleto';
 import { EstadoVazio } from '../../componentes/basicos/EstadoVazio';
+import { Faixa } from '../../componentes/basicos/Faixa';
 import { TelaMensagem } from '../../componentes/basicos/TelaMensagem';
 import { Voltar } from '../../componentes/basicos/Voltar';
+import { DialogoConfirmacao } from '../../componentes/dialogos-padrao';
 import { NavegadorMes } from '../../componentes/listas/NavegadorMes';
 import { TituloPagina } from '../../componentes/pagina/TituloPagina';
 import { ErroApi } from '../../dados/erros';
@@ -16,6 +18,7 @@ import { mesPorExtenso } from '../../formatacao';
 import { CartaoSaldos } from './CartaoSaldos';
 import { SecaoLancamentos } from './SecaoLancamentos';
 import { SecaoPagamentos } from './SecaoPagamentos';
+import { usarPagamentos } from './usarPagamentos';
 import estilos from './financeiro.module.css';
 
 /** T22: o caixa do mês. Só para quem tem a permissão do financeiro (a API decide: 403). */
@@ -100,16 +103,51 @@ export function Component() {
   }
 
   return (
+    <CaixaDoMes
+      grupoId={grupoId}
+      base={base}
+      dados={{
+        ...dados,
+        config: dados.config,
+        resumoMes: dados.resumoMes,
+        saldoAtualCentavos: dados.saldoAtualCentavos,
+      }}
+      aoTrocarMes={(mes) => definirParametros({ mes })}
+    />
+  );
+}
+
+type MesConfigurado = MesFinanceiro & {
+  config: NonNullable<MesFinanceiro['config']>;
+  resumoMes: NonNullable<MesFinanceiro['resumoMes']>;
+  saldoAtualCentavos: number;
+};
+
+interface PropsCaixa {
+  grupoId: string;
+  base: string;
+  dados: MesConfigurado;
+  aoTrocarMes: (mes: string) => void;
+}
+
+function CaixaDoMes({ grupoId, base, dados, aoTrocarMes }: PropsCaixa) {
+  const pagamentos = usarPagamentos(grupoId, dados);
+  return (
     <div>
       <title>{`Financeiro: ${mesPorExtenso(dados.mes)}`}</title>
       <Voltar para={base} rotulo="Início" />
       <TituloPagina>Financeiro</TituloPagina>
+      {pagamentos.erro ? (
+        <Faixa tipo="erro" aoFechar={pagamentos.fecharErro} rotuloFechar="Fechar aviso">
+          {pagamentos.erro}
+        </Faixa>
+      ) : null}
       <div className={estilos.ferramentas}>
         <NavegadorMes
           mes={dados.mes}
           mesAnterior={dados.navegacao.mesAnterior}
           mesSeguinte={dados.navegacao.mesSeguinte}
-          aoTrocar={(mes) => definirParametros({ mes })}
+          aoTrocar={aoTrocarMes}
         />
         <BotaoLink to={`${base}/financeiro/config`} variante="texto">
           Configurar caixa
@@ -117,7 +155,12 @@ export function Component() {
       </div>
       <CartaoSaldos saldoAtualCentavos={dados.saldoAtualCentavos} resumo={dados.resumoMes} />
       <div className={estilos.ladoALado}>
-        <SecaoPagamentos pagamentos={dados.pagamentos} mensalidadeCentavos={dados.config.mensalidadeCentavos} />
+        <SecaoPagamentos
+          pagamentos={pagamentos.pagamentos}
+          mensalidadeCentavos={dados.config.mensalidadeCentavos}
+          aoMudar={pagamentos.pedirMudanca}
+          ocupados={pagamentos.ocupados}
+        />
         <SecaoLancamentos lancamentos={dados.lancamentos} mes={dados.mes} base={`${base}/financeiro/lancamentos`} />
       </div>
       <BarraAcao>
@@ -125,6 +168,16 @@ export function Component() {
           Novo lançamento
         </BotaoLink>
       </BarraAcao>
+      {pagamentos.confirmacao ? (
+        <DialogoConfirmacao
+          titulo={pagamentos.confirmacao.texto.titulo}
+          texto={pagamentos.confirmacao.texto.texto}
+          verbo={pagamentos.confirmacao.texto.verbo}
+          carregando={pagamentos.confirmacao.carregando}
+          aoConfirmar={pagamentos.confirmacao.confirmar}
+          aoCancelar={pagamentos.confirmacao.cancelar}
+        />
+      ) : null}
     </div>
   );
 }

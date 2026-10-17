@@ -11,12 +11,12 @@ interface Props {
   mensalidadeCentavos: number | null;
   /** Marcar ou desmarcar o pagamento (a ação e a confirmação são da tela). */
   aoMudar?: (pagamento: Pagamento, pagou: boolean) => void;
-  /** Interruptores desligados enquanto uma marcação está sendo gravada. */
-  ocupado?: boolean;
+  /** Jogadores com pedido em andamento: só o interruptor deles fica desligado. */
+  ocupados?: ReadonlySet<string>;
 }
 
 /** Quem pagou no mês: um interruptor por jogador ativo, na ordem recebida. */
-export function SecaoPagamentos({ pagamentos, mensalidadeCentavos, aoMudar, ocupado }: Props) {
+export function SecaoPagamentos({ pagamentos, mensalidadeCentavos, aoMudar, ocupados }: Props) {
   const id = useId();
   return (
     <section aria-labelledby={id}>
@@ -36,7 +36,7 @@ export function SecaoPagamentos({ pagamentos, mensalidadeCentavos, aoMudar, ocup
                 aoMudar={(pagou) => aoMudar?.(p, pagou)}
                 textoLigado="Pagou"
                 textoDesligado="Não pagou"
-                desabilitado={ocupado}
+                desabilitado={ocupados?.has(p.jogadorId) ?? false}
               />
             </li>
           ))}
