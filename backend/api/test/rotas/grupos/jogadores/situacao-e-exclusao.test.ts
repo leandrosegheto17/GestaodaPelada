@@ -1,9 +1,11 @@
 import { erroJogadorComHistorico, jogadorDetalhe } from '@pelada/contrato';
 import { randomUUID } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
+import { ativosNaData } from '../../../../src/aplicacao/elenco/ativos.js';
 import { emTransacao } from '../../../../src/infraestrutura/db/index.js';
 import { kyselyDe } from '../../../../src/infraestrutura/db/cliente.js';
 import * as financeiro from '../../../../src/infraestrutura/db/repositorios/financeiro.js';
+import * as jogadoresRepo from '../../../../src/infraestrutura/db/repositorios/jogadores.js';
 import * as habilidades from '../../../../src/infraestrutura/db/repositorios/habilidades.js';
 import * as partidas from '../../../../src/infraestrutura/db/repositorios/partidas.js';
 import { montarCenario } from '../../../apoio/cenario-acesso.js';
@@ -11,12 +13,15 @@ import { clienteTeste } from '../../../apoio/cliente.js';
 import { usarDbDoWorker } from '../../../apoio/db-worker.js';
 import { criarJogador } from '../../../apoio/fabricas/jogadores.js';
 import { usarFabrica } from '../../../apoio/fabrica.js';
-import { relogioFixo } from '../../../apoio/relogio.js';
+import { AGORA_TESTE, diaRelativo, HOJE_TESTE, relogioFixo } from '../../../apoio/relogio.js';
 
 const fabrica = usarFabrica();
 const abrir = usarDbDoWorker(fabrica);
-const HOJE = '2026-10-22';
-const AGORA = new Date('2026-10-22T15:00:00Z');
+const HOJE = HOJE_TESTE;
+const AGORA = AGORA_TESTE;
+const ENTRADA = diaRelativo(-250);
+const SAIDA_ANTIGA = diaRelativo(-25);
+const PRESENCA = diaRelativo(-2);
 const cliente = (cookie: string) => clienteTeste({ relogio: relogioFixo(HOJE), cookie });
 
 describe('inativar e reativar (workerd)', () => {
@@ -24,10 +29,10 @@ describe('inativar e reativar (workerd)', () => {
     const db = await abrir();
     const cen = await montarCenario(db, fabrica);
     const g = cen.grupoA.id;
-    const id = await criarJogador(db, g, cen.adminA.id, { dataEntrada: '2026-02-05' });
+    const id = await criarJogador(db, g, cen.adminA.id, { dataEntrada: ENTRADA });
     const url = `/api/grupos/${g}/jogadores/${id}/inativar`;
-    expect((await cliente(cen.adminA.cookie).post(url, { dataSaida: '2026-10-23' })).status).toBe(422);
-    expect((await cliente(cen.adminA.cookie).post(url, { dataSaida: '2026-02-04' })).status).toBe(422);
+    expect((await cliente(cen.adminA.cookie).post(url, { dataSaida: diaRelativo(1) })).status).toBe(422);
+    expect((await cliente(cen.adminA.cookie).post(url, { dataSaida: diaRelativo(-251) })).status).toBe(422);
     const r = await cliente(cen.adminA.cookie).post(url, {});
     expect(r.status).toBe(200);
     expect(jogadorDetalhe.parse(r.corpo).situacao).toEqual({ ativo: false, desde: HOJE });
@@ -40,7 +45,7 @@ describe('inativar e reativar (workerd)', () => {
     const db = await abrir();
     const cen = await montarCenario(db, fabrica);
     const g = cen.grupoA.id;
-    const id = await criarJogador(db, g, cen.adminA.id, { dataEntrada: '2026-02-05' });
+    const id = await criarJogador(db, g, cen.adminA.id, { dataEntrada: ENTRADA });
     const ativo = await cliente(cen.adminA.cookie).post(`/api/grupos/${g}/jogadores/${id}/reativar`);
     expect(ativo.status).toBe(409);
     expect(ativo.corpo).toMatchObject({ erro: { codigo: 'jogador_ja_ativo' } });
@@ -55,7 +60,7 @@ describe('inativar e reativar (workerd)', () => {
       .orderBy('inicio')
       .execute();
     expect(periodos).toEqual([
-      { inicio: '2026-02-05', fim: HOJE },
+      { inicio: ENTRADA, fim: HOJE },
       { inicio: HOJE, fim: null },
     ]);
   });
@@ -64,11 +69,14 @@ describe('inativar e reativar (workerd)', () => {
     const db = await abrir();
     const cen = await montarCenario(db, fabrica);
     const g = cen.grupoA.id;
-    const id = await criarJogador(db, g, cen.adminA.id, { dataEntrada: '2026-02-05' });
+    const id = await criarJogador(db, g, cen.adminA.id, { dataEntrada: ENTRADA });
     const url = `/api/grupos/${g}/jogadores/${id}/reativar`;
-    await cliente(cen.adminA.cookie).post(`/api/grupos/${g}/jogadores/${id}/inativar`, { dataSaida: '2026-09-22' });
-    expect((await cliente(cen.adminA.cookie).post(url, { dataInicio: '2026-10-01' })).status).toBe(422);
-    const [a, b] = await Promise.all([cliente(cen.adminA.cookie).post(url, {}), cliente(cen.adminA.cookie).post(url, {})]);
+    await cliente(cen.adminA.cookie).post(`/api/grupos/${g}/jogadores/${id}/inativar`, { dataSaida: SAIDA_ANTIGA });
+    expect((await cliente(cen.adminA.cookie).post(url, { dataInicio: diaRelativo(-16) })).status).toBe(422);
+    const [a, b] = await Promise.all([
+      cliente(cen.adminA.cookie).post(url, {}),
+      cliente(cen.adminA.cookie).post(url, {}),
+    ]);
     expect([a.status, b.status].sort()).toEqual([200, 409]);
     const abertos = await kyselyDe(db)
       .selectFrom('periodos_ativos')
@@ -83,10 +91,10 @@ describe('inativar e reativar (workerd)', () => {
     const db = await abrir();
     const cen = await montarCenario(db, fabrica);
     const g = cen.grupoA.id;
-    const id = await criarJogador(db, g, cen.adminA.id, { dataEntrada: '2026-02-05' });
+    const id = await criarJogador(db, g, cen.adminA.id, { dataEntrada: ENTRADA });
     await emTransacao(db, (tx) =>
       partidas.criar(tx, g, {
-        data: '2026-10-15',
+        data: PRESENCA,
         choveu: false,
         presencas: [{ jogadorId: id, situacao: 'presente' }],
         autor: cen.adminA.id,
@@ -94,10 +102,116 @@ describe('inativar e reativar (workerd)', () => {
       }),
     );
     const url = `/api/grupos/${g}/jogadores/${id}/inativar`;
-    const r = await cliente(cen.adminA.cookie).post(url, { dataSaida: '2026-10-15' });
+    const r = await cliente(cen.adminA.cookie).post(url, { dataSaida: PRESENCA });
     expect(r.status).toBe(422);
     expect(r.corpo).toMatchObject({ erro: { campos: { dataSaida: expect.any(String) } } });
-    expect((await cliente(cen.adminA.cookie).post(url, { dataSaida: '2026-10-16' })).status).toBe(200);
+    expect((await cliente(cen.adminA.cookie).post(url, { dataSaida: diaRelativo(-1) })).status).toBe(200);
+  });
+
+  it('inativar: saída igual à entrada e ontem passam; o fim gravado aparece em buscar e o jogador sai de ativosNaData', async () => {
+    const db = await abrir();
+    const cen = await montarCenario(db, fabrica);
+    const g = cen.grupoA.id;
+    const naEntrada = await criarJogador(db, g, cen.adminA.id, { dataEntrada: ENTRADA });
+    const r = await cliente(cen.adminA.cookie).post(`/api/grupos/${g}/jogadores/${naEntrada}/inativar`, {
+      dataSaida: ENTRADA,
+    });
+    expect(r.status).toBe(200);
+    expect(jogadorDetalhe.parse(r.corpo).situacao).toEqual({ ativo: false, desde: ENTRADA });
+
+    const ontem = await criarJogador(db, g, cen.adminA.id, { dataEntrada: ENTRADA });
+    const vespera = diaRelativo(-1);
+    expect(
+      (await cliente(cen.adminA.cookie).post(`/api/grupos/${g}/jogadores/${ontem}/inativar`, { dataSaida: vespera }))
+        .status,
+    ).toBe(200);
+    const gravado = await jogadoresRepo.buscar(db, g, ontem);
+    expect(gravado?.periodos).toEqual([{ inicio: ENTRADA, fim: vespera }]);
+    expect((await ativosNaData(db, g, diaRelativo(-2))).map((j) => j.id)).toContain(ontem);
+    expect((await ativosNaData(db, g, vespera)).map((j) => j.id)).not.toContain(ontem);
+    expect((await ativosNaData(db, g, HOJE)).map((j) => j.id)).not.toContain(ontem);
+  });
+
+  it('inativar: data inexistente, vazia, malformada e campo extra dão 422 e o período segue aberto', async () => {
+    const db = await abrir();
+    const cen = await montarCenario(db, fabrica);
+    const g = cen.grupoA.id;
+    const id = await criarJogador(db, g, cen.adminA.id, { dataEntrada: ENTRADA });
+    const url = `/api/grupos/${g}/jogadores/${id}/inativar`;
+    const invalidos: unknown[] = [
+      { dataSaida: '2026-02-30' },
+      { dataSaida: '' },
+      { dataSaida: HOJE.replaceAll('-', '/') },
+      { dataSaida: HOJE, extra: 1 },
+      { outro: HOJE },
+    ];
+    for (const corpo of invalidos) {
+      expect((await cliente(cen.adminA.cookie).post(url, corpo)).status).toBe(422);
+    }
+    expect((await jogadoresRepo.buscar(db, g, id))?.periodos).toEqual([{ inicio: ENTRADA, fim: null }]);
+  });
+
+  it('inativar jogador reativado: saída antes do 2º período dá 422 e depois dele fecha só o período aberto', async () => {
+    const db = await abrir();
+    const cen = await montarCenario(db, fabrica);
+    const g = cen.grupoA.id;
+    const id = await criarJogador(db, g, cen.adminA.id, { dataEntrada: ENTRADA });
+    const url = `/api/grupos/${g}/jogadores/${id}/inativar`;
+    await cliente(cen.adminA.cookie).post(url, { dataSaida: SAIDA_ANTIGA });
+    await cliente(cen.adminA.cookie).post(`/api/grupos/${g}/jogadores/${id}/reativar`);
+    const antes = await cliente(cen.adminA.cookie).post(url, { dataSaida: diaRelativo(-1) });
+    expect(antes.status).toBe(422);
+    expect(antes.corpo).toMatchObject({ erro: { campos: { dataSaida: expect.any(String) } } });
+    expect((await jogadoresRepo.buscar(db, g, id))?.periodos).toEqual([
+      { inicio: ENTRADA, fim: SAIDA_ANTIGA },
+      { inicio: HOJE, fim: null },
+    ]);
+    expect((await cliente(cen.adminA.cookie).post(url, { dataSaida: HOJE })).status).toBe(200);
+    expect((await jogadoresRepo.buscar(db, g, id))?.periodos).toEqual([
+      { inicio: ENTRADA, fim: SAIDA_ANTIGA },
+      { inicio: HOJE, fim: HOJE },
+    ]);
+  });
+
+  it('inativar: no-store, sem sessão 401 e sem X-Pelada 403', async () => {
+    const db = await abrir();
+    const cen = await montarCenario(db, fabrica);
+    const g = cen.grupoA.id;
+    const id = await criarJogador(db, g, cen.adminA.id, { dataEntrada: ENTRADA });
+    const url = `/api/grupos/${g}/jogadores/${id}/inativar`;
+    const semCsrf = clienteTeste({ relogio: relogioFixo(HOJE), cookie: cen.adminA.cookie, semCsrf: true });
+    expect((await semCsrf.post(url, {})).status).toBe(403);
+    expect((await clienteTeste({ relogio: relogioFixo(HOJE) }).post(url, {})).status).toBe(401);
+    const ok = await cliente(cen.adminA.cookie).post(url, {});
+    expect(ok.status).toBe(200);
+    expect(ok.headers.get('Cache-Control')).toBe('no-store');
+  });
+
+  it('reativar mantém a presença do período antigo e ativosNaData inclui hoje e exclui hoje − 1', async () => {
+    const db = await abrir();
+    const cen = await montarCenario(db, fabrica);
+    const g = cen.grupoA.id;
+    const id = await criarJogador(db, g, cen.adminA.id, { dataEntrada: ENTRADA });
+    await emTransacao(db, (tx) =>
+      partidas.criar(tx, g, {
+        data: diaRelativo(-40),
+        choveu: false,
+        presencas: [{ jogadorId: id, situacao: 'presente' }],
+        autor: cen.adminA.id,
+        agora: AGORA,
+      }),
+    );
+    await cliente(cen.adminA.cookie).post(`/api/grupos/${g}/jogadores/${id}/inativar`, { dataSaida: SAIDA_ANTIGA });
+    expect((await cliente(cen.adminA.cookie).post(`/api/grupos/${g}/jogadores/${id}/reativar`)).status).toBe(200);
+    const presencas = await kyselyDe(db)
+      .selectFrom('presencas')
+      .select('jogador_id')
+      .where('jogador_id', '=', id)
+      .execute();
+    expect(presencas).toHaveLength(1);
+    expect((await ativosNaData(db, g, diaRelativo(-40))).map((j) => j.id)).toContain(id);
+    expect((await ativosNaData(db, g, HOJE)).map((j) => j.id)).toContain(id);
+    expect((await ativosNaData(db, g, diaRelativo(-1))).map((j) => j.id)).not.toContain(id);
   });
 
   it('jogador de outro grupo, inexistente e malformado: 404', async () => {
@@ -144,7 +258,7 @@ describe('DELETE /api/grupos/:g/jogadores/:id (workerd)', () => {
     const comNota = await criarJogador(db, g, cen.adminA.id, { apelido: 'ComNota' });
     await emTransacao(db, (tx) =>
       partidas.criar(tx, g, {
-        data: '2026-10-15',
+        data: PRESENCA,
         choveu: false,
         presencas: [{ jogadorId: comPresenca, situacao: 'presente' }],
         autor: cen.adminA.id,
@@ -174,7 +288,13 @@ describe('DELETE /api/grupos/:g/jogadores/:id (workerd)', () => {
     const g = cen.grupoA.id;
     const id = await criarJogador(db, g, cen.adminA.id, { apelido: 'ComPagamento' });
     await emTransacao(db, (tx) =>
-      financeiro.marcar(tx, g, { jogadorId: id, mes: '2026-10', lancamento: null, autor: cen.adminA.id, agora: AGORA }),
+      financeiro.marcar(tx, g, {
+        jogadorId: id,
+        mes: HOJE.slice(0, 7),
+        lancamento: null,
+        autor: cen.adminA.id,
+        agora: AGORA,
+      }),
     );
     const r = await cliente(cen.adminA.cookie).delete(`/api/grupos/${g}/jogadores/${id}`);
     expect(r.status).toBe(409);

@@ -4,6 +4,7 @@ import { trocarSenha } from '../../../src/aplicacao/acesso/trocar-senha.js';
 import * as contas from '../../../src/infraestrutura/db/repositorios/contas.js';
 import * as pedidos from '../../../src/infraestrutura/db/repositorios/pedidos-reset.js';
 import * as sessoes from '../../../src/infraestrutura/db/repositorios/sessoes.js';
+import { JANELA_TENTATIVAS, LIMITE_FALHAS } from '../../../src/infraestrutura/db/repositorios/tentativas.js';
 import { usarDb } from '../../apoio/db-teste.js';
 import { criarConta } from '../../apoio/fabricas/contas.js';
 import { criarPedido } from '../../apoio/fabricas/pedidos-reset.js';
@@ -100,6 +101,25 @@ describe('trocarSenha', () => {
     expect(await contas.verificarSenha(db, conta.email, conta.senha)).not.toBeNull();
     expect(await trocarSenha(db, sessao, { senhaAtual: conta.senha, novaSenha: NOVA }, agora)).toEqual({ tipo: 'ok' });
     expect(await contas.verificarSenha(db, conta.email, NOVA)).not.toBeNull();
+  });
+
+  it('escopo completo: 5 erros seguidos bloqueiam sem conferir a senha; após a janela volta a aceitar', async () => {
+    const { db, conta, escopo, nova } = await cenario(false);
+    const atual = await nova();
+    const sessao = { contaId: conta.id, sessaoId: atual.id, escopo };
+    for (let i = 0; i < LIMITE_FALHAS; i++) {
+      const r = await trocarSenha(db, sessao, { senhaAtual: 'errada-errada', novaSenha: NOVA }, agora);
+      expect(r.tipo).toBe('recusada');
+    }
+    // Bloqueada: mesmo a senha certa é recusada com a mesma resposta, sem trocar nada.
+    const certa = await trocarSenha(db, sessao, { senhaAtual: conta.senha, novaSenha: NOVA }, agora);
+    const errada = await trocarSenha(db, sessao, { senhaAtual: 'errada-errada', novaSenha: NOVA }, agora);
+    expect(certa).toEqual(errada);
+    expect(certa.tipo).toBe('bloqueada');
+    expect(await contas.verificarSenha(db, conta.email, conta.senha)).not.toBeNull();
+
+    const depois = new Date(agora.getTime() + JANELA_TENTATIVAS + 1000);
+    expect(await trocarSenha(db, sessao, { senhaAtual: conta.senha, novaSenha: NOVA }, depois)).toEqual({ tipo: 'ok' });
   });
 
   it('falha na auditoria desfaz tudo: senha, escopo, outras sessões e pedido continuam', async () => {

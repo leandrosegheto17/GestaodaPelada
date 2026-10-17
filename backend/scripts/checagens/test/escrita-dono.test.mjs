@@ -25,6 +25,7 @@ afterEach(() => {
   while (temporarias.length) rmSync(temporarias.pop(), { recursive: true, force: true });
 });
 
+const CAMPOS_LONGOS = Array.from({ length: 40 }, (_, i) => `campo${i}: 1`).join(', ');
 const rota = (corpo) => ({ 'backend/api/src/entrada/rotas/x.ts': corpo });
 
 describe('checar-escrita-e-dono', () => {
@@ -36,6 +37,8 @@ describe('checar-escrita-e-dono', () => {
     "await db.insertInto('contas').values({ eDono: true }).execute();",
     "const chave = 'e_' + 'dono'; await db.updateTable('contas').set({ [chave]: true }).execute();",
     'await sql`INSERT INTO contas (email, "e_dono")\n VALUES (1, true)`;',
+    `await db.insertInto('contas').values({ ${CAMPOS_LONGOS}, e_dono: true }).execute();`,
+    `await sql\`UPDATE contas SET ${CAMPOS_LONGOS.replaceAll(': 1', ' = 1')}, e_dono = true\`;`,
   ])('falha: %s', (corpo) => {
     expect(rodar(repositorio(rota(corpo)))).toBe(1);
   });
@@ -46,6 +49,7 @@ describe('checar-escrita-e-dono', () => {
     "const aviso = 'nunca gravar e_dono';\nexport {};",
     "const donos = await db.selectFrom('contas').select('e_dono').where('e_dono', '=', true).execute();",
     'export const ehDono = (conta) => conta.eDono === true;',
+    `const donos = await db.selectFrom('contas').select(['${CAMPOS_LONGOS}', 'e_dono']).where('e_dono', '=', true).execute();`,
   ])('passa: %s', (corpo) => {
     expect(rodar(repositorio(rota(corpo)))).toBe(0);
   });
@@ -59,6 +63,26 @@ describe('checar-escrita-e-dono', () => {
       'backend/api/src/entrada/ok.ts': 'export {};',
     });
     expect(rodar(raiz)).toBe(0);
+  });
+
+  describe('contas.ts', () => {
+    const CAMINHO = 'backend/api/src/infraestrutura/db/repositorios/contas.ts';
+    const criarDono =
+      "export async function criarContaDono(ex) {\n  await ex.insertInto('contas').values({ e_dono: true }).execute();\n}\n";
+    const outra =
+      "export async function promoverADono(ex, id) {\n  await ex.updateTable('contas').set({ e_dono: true }).execute();\n}\n";
+
+    it('passa: só criarContaDono escreve e_dono', () => {
+      expect(rodar(repositorio({ [CAMINHO]: criarDono }))).toBe(0);
+    });
+
+    it('falha: outra função do arquivo escreve e_dono', () => {
+      expect(rodar(repositorio({ [CAMINHO]: criarDono + '\n' + outra }))).toBe(1);
+    });
+
+    it('falha: outra função antes de criarContaDono escreve e_dono', () => {
+      expect(rodar(repositorio({ [CAMINHO]: outra + '\n' + criarDono }))).toBe(1);
+    });
   });
 
   it('falha fechado: sem arquivos de código e sem git', () => {

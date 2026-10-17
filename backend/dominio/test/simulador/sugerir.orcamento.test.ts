@@ -10,6 +10,8 @@ import { elencoSim, historicoSim } from './apoio.js';
 const LIMIAR_MS = 4;
 const AQUECIMENTOS = 5;
 const MEDICOES = 50;
+/** O lote inteiro (aquecimento + 50 × 100 chamadas) passa do timeout padrão de 5 s do vitest. */
+const TIMEOUT_MS = 60_000;
 
 /** Chamadas por medição: o relógio de CPU do Windows avança em passos de ~15,6 ms, então o tempo de uma
  * chamada só é legível se dividido entre um lote; cada medição é a média por chamada do lote. */
@@ -41,5 +43,5 @@ describe('orçamento de CPU de sugerir', () => {
     const relato = `${nome}: mediana ${mediana.toFixed(2)} ms, p99 ${p99.toFixed(2)} ms (limiar ${LIMIAR_MS} ms)`;
     expect(mediana, relato).toBeLessThan(LIMIAR_MS);
     expect(p99, relato).toBeLessThan(LIMIAR_MS);
-  });
+  }, TIMEOUT_MS);
 });

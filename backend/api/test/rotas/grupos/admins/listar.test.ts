@@ -4,6 +4,8 @@ import { montarCenario } from '../../../apoio/cenario-acesso.js';
 import { clienteTeste } from '../../../apoio/cliente.js';
 import { usarDbDoWorker } from '../../../apoio/db-worker.js';
 import { usarFabrica } from '../../../apoio/fabrica.js';
+import { criarConta } from '../../../apoio/fabricas/contas.js';
+import { vincularAdmin } from '../../../apoio/fabricas/grupos.js';
 import { relogioFixo } from '../../../apoio/relogio.js';
 
 const fabrica = usarFabrica();
@@ -35,6 +37,18 @@ describe('GET /api/grupos/:g/admins: forma e isolamento (workerd)', () => {
     const lista = listaAdmins.parse(r.corpo);
     expect(lista.podeGerirFinanceiro).toBe(false);
     expect(lista.admins.find((a) => !a.voce)?.acessaFinanceiro).toBe(true);
+  });
+
+  it('lista ordenada por nome mesmo com admins vinculados fora de ordem alfabética', async () => {
+    const db = await abrir();
+    const cen = await montarCenario(db, fabrica);
+    const zeca = await criarConta(db, fabrica, { nome: 'Zeca Teste' });
+    const ana = await criarConta(db, fabrica, { nome: 'Ana Teste' });
+    await vincularAdmin(db, cen.grupoA.id, zeca.id, { acessaFinanceiro: false });
+    await vincularAdmin(db, cen.grupoA.id, ana.id, { acessaFinanceiro: false });
+    const r = await cliente(cen.adminA.cookie).get(`/api/grupos/${cen.grupoA.id}/admins`);
+    const nomes = listaAdmins.parse(r.corpo).admins.map((a) => a.nome);
+    expect(nomes).toEqual(['Admin A', 'Admin A2', 'Ana Teste', 'Zeca Teste']);
   });
 
   it('grupo com 1 admin devolve lista de 1', async () => {

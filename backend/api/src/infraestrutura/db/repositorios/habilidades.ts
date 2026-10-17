@@ -1,5 +1,6 @@
 import { sql } from 'kysely';
 import { kyselyDe, type ExecutorDb } from '../cliente.js';
+import { seViolarUnico } from './comum.js';
 
 export class NomeHabilidadeEmUso extends Error {
   constructor() {
@@ -7,9 +8,7 @@ export class NomeHabilidadeEmUso extends Error {
   }
 }
 
-const emUso = (erro: unknown): boolean =>
-  (erro as { code?: string; constraint?: string }).code === '23505' &&
-  (erro as { constraint?: string }).constraint === 'habilidades_nome_grupo';
+const INDICE_NOME = 'habilidades_nome_grupo';
 
 export interface Habilidade {
   id: string;
@@ -35,8 +34,7 @@ export async function criar(ex: ExecutorDb, grupoId: string, nome: string): Prom
       .executeTakeFirstOrThrow();
     return linha.id;
   } catch (erro) {
-    if (emUso(erro)) throw new NomeHabilidadeEmUso();
-    throw erro;
+    return seViolarUnico(erro, INDICE_NOME, () => new NomeHabilidadeEmUso());
   }
 }
 
@@ -51,8 +49,7 @@ export async function renomear(ex: ExecutorDb, grupoId: string, habilidadeId: st
       .executeTakeFirst();
     return Number(r.numUpdatedRows) > 0;
   } catch (erro) {
-    if (emUso(erro)) throw new NomeHabilidadeEmUso();
-    throw erro;
+    return seViolarUnico(erro, INDICE_NOME, () => new NomeHabilidadeEmUso());
   }
 }
 
@@ -74,8 +71,7 @@ export async function criarCatalogoInicial(ex: ExecutorDb, grupoId: string, nome
       .values(nomes.map((nome) => ({ grupo_id: grupoId, nome })))
       .execute();
   } catch (erro) {
-    if (emUso(erro)) throw new NomeHabilidadeEmUso();
-    throw erro;
+    return seViolarUnico(erro, INDICE_NOME, () => new NomeHabilidadeEmUso());
   }
 }
 

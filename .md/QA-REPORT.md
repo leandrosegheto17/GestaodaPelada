@@ -668,3 +668,6 @@ APROVADA — aceite atendido; 76/77 testes (1 falha é da TP-0168, fixture); 0 c
 
 ## TP-0079 — QA — 2026-10-17
 APROVADA — GET partidas/:data cumpre o aceite (presenças, última alteração, união ativos+presenças, 404/401, isolamento); 0 achados; falha em teste de TP-0078 (escalacoes_n_check) fora do escopo.
+
+## TP-0080 — QA — 2026-10-17
+APROVADA; 5/5 testes (puros e com banco, inclusive outro grupo e Tx), 0 achados críticos/não críticos, lint/prettier limpos.

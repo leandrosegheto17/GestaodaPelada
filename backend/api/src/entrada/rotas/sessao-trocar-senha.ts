@@ -19,6 +19,18 @@ export const rotaSessaoTrocarSenha = new Hono<AppEnv>().post('/api/sessao/trocar
     { senhaAtual: corpo.dado.senhaAtual, novaSenha: corpo.dado.novaSenha },
     new Date(c.var.relogio.agoraIso()),
   );
+  if (resultado.tipo === 'bloqueada') {
+    return c.json(
+      {
+        erro: {
+          codigo: 'bloqueado_temporariamente',
+          mensagem: 'Muitas tentativas. Tente de novo em 15 minutos.',
+          liberaEm: resultado.liberaEm.toISOString(),
+        },
+      },
+      429,
+    );
+  }
   if (resultado.tipo === 'recusada') {
     return c.json(corpoErro(CODIGOS_ERRO.validacao, 'Corrija os campos indicados.', resultado.campos), 422);
   }

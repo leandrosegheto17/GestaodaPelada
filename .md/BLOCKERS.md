@@ -52,4 +52,4 @@
 - Descrição: Orçamento de CPU de sugerir estourado (2 times de 11, 30 aptos: mediana 3,9-4,8 ms vs limiar 4 ms, ADR-017): decidir entre otimizar distribuirDoisTimes ou rever o limiar
 - Impacto se não resolvido: —
 - Sugestão: —
-- Status: Em aberto
+- Status: Resolvido (2026-10-17): distribuirDoisTimes otimizado (ADR-017 passo 1); limiar de 4 ms mantido

@@ -34,7 +34,11 @@ const urlDe = (nome: string): string => {
 const URL_SEED = urlDe(NOME);
 
 function semear(url: string | undefined, ...args: string[]) {
-  const env: NodeJS.ProcessEnv = { ...process.env, CI: 'true' };
+  return semearComEnv(url, {}, ...args);
+}
+
+function semearComEnv(url: string | undefined, extra: NodeJS.ProcessEnv, ...args: string[]) {
+  const env: NodeJS.ProcessEnv = { ...process.env, CI: 'true', ...extra };
   delete env['DATABASE_URL'];
   if (url) env['DATABASE_URL'] = url;
   return spawnSync(process.execPath, ['--import', 'tsx', join(RAIZ, 'backend/scripts/seed-local.ts'), ...args], {
@@ -94,6 +98,16 @@ describe('trava do seed local', () => {
       expect(r.stdout + r.stderr).not.toContain('senha-secreta');
     }
   });
+
+  const locais = ['localhost', '127.0.0.1', '[::1]', 'db'];
+  it.each(locais)('deixa passar o host local %s (falha só ao conectar)', { timeout: 90_000 }, (host) => {
+    const r = semear(`postgres://u:senha-secreta@${host}:1/db`);
+    expect(r.status).toBe(1);
+    const saida = r.stdout + r.stderr;
+    expect(saida).toContain('Falha ao semear o banco local.');
+    expect(saida).not.toContain('Host remoto');
+    expect(saida).not.toContain('senha-secreta');
+  });
 });
 
 describe('seed local', () => {
@@ -125,6 +139,14 @@ describe('seed local', () => {
     expect(await contar(`SELECT count(*) n FROM grupos WHERE slug = 'fora-do-seed-tp0051'`)).toBe(1);
     await cliente.query(`DELETE FROM grupos WHERE slug = 'fora-do-seed-tp0051'`);
     await cliente.query(`DELETE FROM contas WHERE email = 'fora@teste.invalido'`);
+  }, 120_000);
+
+  it('falha no meio da transação desfaz tudo e mantém o seed anterior', async () => {
+    expect(semear(URL_SEED).status).toBe(0);
+    const antes = await fotografia();
+    const r = semearComEnv(URL_SEED, { PELADA_SEED_FALHA_FORCADA: '1' });
+    expect(r.status).toBe(1);
+    expect(await fotografia()).toEqual(antes);
   }, 120_000);
 
   it('contas, senhas, financeiro e notas conforme o README', async () => {

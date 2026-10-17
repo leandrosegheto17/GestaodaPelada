@@ -6,11 +6,15 @@ import * as escalacoes from '../../../src/infraestrutura/db/repositorios/escalac
 import { usarDb } from '../../apoio/db-teste.js';
 import { criarJogador } from '../../apoio/fabricas/jogadores.js';
 import { usarFabrica } from '../../apoio/fabrica.js';
+import { AGORA_TESTE, diaRelativo } from '../../apoio/relogio.js';
 import { criarBase } from '../../apoio/sql-dados.js';
 
 const fabrica = usarFabrica();
 const abrir = usarDb(fabrica);
-const AGORA = new Date('2026-10-20T15:00:00Z');
+const AGORA = AGORA_TESTE;
+const D1 = diaRelativo(1);
+const D2 = diaRelativo(8);
+const DPASSADA = diaRelativo(-30);
 
 const varios = (data: string, jogadores: string[]): EscalacaoCorpo => ({
   formato: 'varios_times',
@@ -33,25 +37,25 @@ const eventosDa = async (db: Awaited<ReturnType<typeof abrir>>, g: string) =>
 describe('confirmarEscalacao', () => {
   it('grava a escalação com autor e momento e um evento; confirmar de novo substitui e conta outro evento', async () => {
     const { db, base, g, a, b } = await cenario();
-    const r = await confirmarEscalacao(db, g, varios('2026-10-22', [a]), { contaId: base.contaId, agora: AGORA });
-    expect(r).toEqual({ ok: true, confirmada: { data: '2026-10-22', confirmadaEm: AGORA.toISOString() } });
-    await confirmarEscalacao(db, g, varios('2026-10-22', [a, b]), { contaId: base.contaId, agora: AGORA });
-    const lida = await escalacoes.porData(db, g, '2026-10-22');
+    const r = await confirmarEscalacao(db, g, varios(D1, [a]), { contaId: base.contaId, agora: AGORA });
+    expect(r).toEqual({ ok: true, confirmada: { data: D1, confirmadaEm: AGORA.toISOString() } });
+    await confirmarEscalacao(db, g, varios(D1, [a, b]), { contaId: base.contaId, agora: AGORA });
+    const lida = await escalacoes.porData(db, g, D1);
     expect(lida).toMatchObject({ confirmadaPor: base.contaId, confirmadaEm: AGORA, k: null });
     expect(lida?.composicao).toEqual({ times: [{ jogadores: [a, b] }] });
     expect(await eventosDa(db, g)).toEqual([
-      { tipo: 'escalacao_confirmada', data_partida: '2026-10-22' },
-      { tipo: 'escalacao_confirmada', data_partida: '2026-10-22' },
+      { tipo: 'escalacao_confirmada', data_partida: D1 },
+      { tipo: 'escalacao_confirmada', data_partida: D1 },
     ]);
-    await confirmarEscalacao(db, g, varios('2026-10-29', [a]), { contaId: base.contaId, agora: AGORA });
-    expect(await escalacoes.porData(db, g, '2026-10-29')).not.toBeNull();
+    await confirmarEscalacao(db, g, varios(D2, [a]), { contaId: base.contaId, agora: AGORA });
+    expect(await escalacoes.porData(db, g, D2)).not.toBeNull();
   });
 
   it('dois times: k numérico é gravado e "ilimitado" vira nulo', async () => {
     const { db, base, g, a, b } = await cenario();
     const corpo = (k: number | 'ilimitado'): EscalacaoCorpo => ({
       formato: 'dois_times',
-      data: '2026-10-22',
+      data: D1,
       n: 2,
       k,
       composicao: {
@@ -63,19 +67,19 @@ describe('confirmarEscalacao', () => {
       },
     });
     await confirmarEscalacao(db, g, corpo(3), { contaId: base.contaId, agora: AGORA });
-    expect((await escalacoes.porData(db, g, '2026-10-22'))?.k).toBe(3);
+    expect((await escalacoes.porData(db, g, D1))?.k).toBe(3);
     await confirmarEscalacao(db, g, corpo('ilimitado'), { contaId: base.contaId, agora: AGORA });
-    expect((await escalacoes.porData(db, g, '2026-10-22'))?.k).toBeNull();
+    expect((await escalacoes.porData(db, g, D1))?.k).toBeNull();
   });
 
   it('falha ao registrar o evento desfaz a escalação e deixa a anterior intacta', async () => {
     const { db, base, g, a, b } = await cenario();
-    await confirmarEscalacao(db, g, varios('2026-10-22', [a]), { contaId: base.contaId, agora: AGORA });
+    await confirmarEscalacao(db, g, varios(D1, [a]), { contaId: base.contaId, agora: AGORA });
     await expect(
       confirmarEscalacao(
         db,
         g,
-        varios('2026-10-22', [a, b]),
+        varios(D1, [a, b]),
         { contaId: base.contaId, agora: AGORA },
         {
           registrarEvento: async () => {
@@ -84,7 +88,7 @@ describe('confirmarEscalacao', () => {
         },
       ),
     ).rejects.toThrow('falha simulada');
-    expect((await escalacoes.porData(db, g, '2026-10-22'))?.composicao).toEqual({ times: [{ jogadores: [a] }] });
+    expect((await escalacoes.porData(db, g, D1))?.composicao).toEqual({ times: [{ jogadores: [a] }] });
     expect(await eventosDa(db, g)).toHaveLength(1);
   });
 
@@ -92,15 +96,15 @@ describe('confirmarEscalacao', () => {
     const { db, base, g, a } = await cenario();
     const doOutro = await criarJogador(db, base.outroGrupo.id, base.contaId);
     for (const intruso of [doOutro, '00000000-0000-4000-8000-000000000000']) {
-      const r = await confirmarEscalacao(db, g, varios('2026-10-22', [a, intruso]), {
+      const r = await confirmarEscalacao(db, g, varios(D1, [a, intruso]), {
         contaId: base.contaId,
         agora: AGORA,
       });
       expect(r.ok).toBe(false);
     }
-    const antes = await confirmarEscalacao(db, g, varios('2025-12-31', [a]), { contaId: base.contaId, agora: AGORA });
+    const antes = await confirmarEscalacao(db, g, varios(DPASSADA, [a]), { contaId: base.contaId, agora: AGORA });
     expect(antes.ok).toBe(false);
-    expect(await escalacoes.porData(db, g, '2026-10-22')).toBeNull();
+    expect(await escalacoes.porData(db, g, D1)).toBeNull();
     expect(await eventosDa(db, g)).toEqual([]);
   });
 

@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { listaHabilidades } from '@pelada/contrato';
 import { HABILIDADES_INICIAIS } from '@pelada/dominio';
 import { describe, expect, it } from 'vitest';
@@ -8,6 +10,7 @@ import { usarDbDoWorker } from '../../../apoio/db-worker.js';
 import { usarFabrica } from '../../../apoio/fabrica.js';
 import { relogioFixo } from '../../../apoio/relogio.js';
 
+const RESPOSTAS = join(import.meta.dirname, '../../../../../../.md/mockup/respostas');
 const fabrica = usarFabrica();
 const abrir = usarDbDoWorker(fabrica);
 const cliente = (cookie?: string) =>
@@ -24,6 +27,8 @@ describe('GET /api/grupos/:g/habilidades (workerd)', () => {
     const lista = listaHabilidades.parse(r.corpo);
     expect(lista.habilidades.map((h) => h.nome)).toEqual([...HABILIDADES_INICIAIS]);
     expect(Object.keys(lista.habilidades[0]!).sort()).toEqual(['id', 'nome']);
+    const modelo = listaHabilidades.parse(JSON.parse(readFileSync(join(RESPOSTAS, 'habilidades.json'), 'utf8')));
+    expect(lista.habilidades.map((h) => h.nome)).toEqual(modelo.habilidades.map((h) => h.nome));
   });
 
   it('grupo sem habilidade devolve lista vazia', async () => {
@@ -31,7 +36,7 @@ describe('GET /api/grupos/:g/habilidades (workerd)', () => {
     const cen = await montarCenario(db, fabrica);
     const r = await cliente(cen.adminA.cookie).get(`/api/grupos/${cen.grupoA.id}/habilidades`);
     expect(r.status).toBe(200);
-    expect(r.corpo).toEqual({ habilidades: [] });
+    expect(r.corpo).toEqual(JSON.parse(readFileSync(join(RESPOSTAS, 'habilidades-vazio.json'), 'utf8')));
   });
 
   it('não mostra a habilidade de outro grupo; outro admin leva 404; sem sessão, 401; id malformado, 404', async () => {

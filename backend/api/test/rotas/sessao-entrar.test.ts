@@ -108,6 +108,19 @@ describe('POST /api/sessao/entrar (workerd)', () => {
     );
   }, 60_000);
 
+  it('10 pedidos paralelos para o mesmo e-mail: no máximo 5 conferem a senha, o resto recebe 429', async () => {
+    const db = await abrir();
+    const conta = await criarConta(db, fabrica);
+    const respostas = await Promise.all(
+      Array.from({ length: 10 }, () =>
+        clienteEm('2026-10-16').post('/api/sessao/entrar', { email: conta.email, senha: 'errada-123' }),
+      ),
+    );
+    const status = respostas.map((r) => r.status);
+    expect(status.filter((s) => s === 401)).toHaveLength(5);
+    expect(status.filter((s) => s === 429)).toHaveLength(5);
+  }, 60_000);
+
   it('corpo inválido: 422 sem ecoar a senha', async () => {
     const r = await clienteEm('2026-10-16').post('/api/sessao/entrar', {
       email: 'sem-arroba',

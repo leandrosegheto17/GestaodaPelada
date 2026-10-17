@@ -13,19 +13,19 @@ export type ResultadoEntrar =
  * exista a conta ou não. O token é sempre novo: nunca reaproveita o cookie recebido.
  */
 export async function entrar(db: Db, entrada: { email: string; senha: string }, agora: Date): Promise<ResultadoEntrar> {
-  const bloqueio = await tentativas.consultarBloqueio(db, entrada.email, agora);
-  if (bloqueio.liberaEm) return { tipo: 'bloqueado', liberaEm: bloqueio.liberaEm };
+  // A falha é gravada antes de conferir a senha (sob trava por e-mail); só some se a senha conferir.
+  const reserva = await emTransacao(db, (tx) => tentativas.reservarFalha(tx, entrada.email, agora));
+  if ('liberaEm' in reserva) return { tipo: 'bloqueado', liberaEm: reserva.liberaEm };
+  const falhaId = reserva.id;
 
   const verificada = await contas.verificarSenha(db, entrada.email, entrada.senha);
-  if (!verificada) {
-    await tentativas.registrar(db, { email: entrada.email, sucesso: false, agora });
-    return { tipo: 'invalido' };
-  }
+  if (!verificada) return { tipo: 'invalido' };
 
   const token = gerarTokenSessao();
   const escopo: EscopoSessao = verificada.senhaTemporaria ? 'troca_de_senha' : 'completo';
   const tokenHash = await hashToken(token);
   await emTransacao(db, async (tx) => {
+    await tentativas.descartarFalha(tx, falhaId);
     await sessoes.criar(tx, { contaId: verificada.contaId, tokenHash, escopo, agora });
     await tentativas.registrar(tx, { email: entrada.email, sucesso: true, agora });
     await tentativas.podar(tx, agora);

@@ -54,6 +54,32 @@ export async function registrar(
     .execute();
 }
 
+/**
+ * Serializa por e-mail (trava de transação) e, se o e-mail não está bloqueado, grava já uma falha
+ * provisória. Assim pedidos paralelos não leem todos "0 falhas" antes da verificação da senha.
+ * Deve rodar numa transação curta, fora do hash da senha. Devolve a liberação (bloqueado) ou o id da falha provisória.
+ */
+export async function reservarFalha(
+  ex: ExecutorDb,
+  email: string,
+  agora: Date,
+): Promise<{ liberaEm: Date } | { id: string }> {
+  await sql`SELECT pg_advisory_xact_lock(hashtext(${email}))`.execute(kyselyDe(ex));
+  const bloqueio = await consultarBloqueio(ex, email, agora);
+  if (bloqueio.liberaEm) return { liberaEm: bloqueio.liberaEm };
+  const linha = await kyselyDe(ex)
+    .insertInto('tentativas_login')
+    .values({ email, sucesso: false, momento: agora })
+    .returning('id')
+    .executeTakeFirstOrThrow();
+  return { id: linha.id };
+}
+
+/** Remove a falha provisória quando a senha confere. */
+export async function descartarFalha(ex: ExecutorDb, id: string): Promise<void> {
+  await kyselyDe(ex).deleteFrom('tentativas_login').where('id', '=', id).execute();
+}
+
 /** Apaga as tentativas com mais de um dia e devolve quantas eram. */
 export async function podar(ex: ExecutorDb, agora: Date): Promise<number> {
   const limite = new Date(agora.getTime() - RETENCAO_TENTATIVAS);

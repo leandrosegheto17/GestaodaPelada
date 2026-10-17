@@ -6,13 +6,24 @@ import { JogadorForaDoGrupo, PartidaDuplicada } from '../../src/infraestrutura/d
 import { usarDb } from '../apoio/db-teste.js';
 import { criarConta } from '../apoio/fabricas/contas.js';
 import { criarJogador } from '../apoio/fabricas/jogadores.js';
+import { criarPartida } from '../apoio/fabricas/partidas.js';
 import { usarFabrica } from '../apoio/fabrica.js';
+import { AGORA_TESTE, HOJE_TESTE, diaRelativo } from '../apoio/relogio.js';
 import { criarBase } from '../apoio/sql-dados.js';
 
 const fabrica = usarFabrica();
 const abrir = usarDb(fabrica);
-const AGORA = new Date('2026-10-16T12:00:00Z');
-const MAIS_TARDE = new Date('2026-10-17T12:00:00Z');
+const AGORA = AGORA_TESTE;
+const MAIS_TARDE = new Date(AGORA.getTime() + 24 * 60 * 60 * 1000);
+
+const HOJE = HOJE_TESTE;
+const MES = HOJE.slice(0, 7);
+const PRIMEIRO_DIA = `${MES}-01`;
+const DIA_1_SEGUINTE = `${diaRelativo(31, PRIMEIRO_DIA).slice(0, 7)}-01`;
+const ULTIMO_DIA = diaRelativo(-1, DIA_1_SEGUINTE);
+const MES_ANTERIOR = diaRelativo(-1, PRIMEIRO_DIA).slice(0, 7);
+const ONTEM = diaRelativo(-1);
+const AMANHA = diaRelativo(1);
 
 async function cenario() {
   const db = await abrir();
@@ -27,7 +38,7 @@ describe('repositório de partidas', () => {
   it('criar guarda as presenças, autor e momento; mesma data duplica no grupo mas não em outro', async () => {
     const { db, base, a, b, c } = await cenario();
     const dados = {
-      data: '2026-10-15',
+      data: HOJE,
       choveu: true,
       presencas: [
         { jogadorId: a, situacao: 'presente' as const },
@@ -38,7 +49,7 @@ describe('repositório de partidas', () => {
       agora: AGORA,
     };
     await emTransacao(db, (tx) => partidas.criar(tx, base.grupo.id, dados));
-    const p = await partidas.porData(db, base.grupo.id, '2026-10-15');
+    const p = await partidas.porData(db, base.grupo.id, HOJE);
     expect(p).toMatchObject({ choveu: true, alteradaPor: 'Conta de Teste', alteradaEm: AGORA });
     expect(p?.presencas).toHaveLength(3);
     await expect(emTransacao(db, (tx) => partidas.criar(tx, base.grupo.id, dados))).rejects.toBeInstanceOf(
@@ -55,7 +66,7 @@ describe('repositório de partidas', () => {
     await expect(
       emTransacao(db, (tx) =>
         partidas.criar(tx, base.grupo.id, {
-          data: '2026-10-08',
+          data: ONTEM,
           choveu: false,
           presencas: [
             { jogadorId: a, situacao: 'presente' },
@@ -66,43 +77,35 @@ describe('repositório de partidas', () => {
         }),
       ),
     ).rejects.toBeInstanceOf(JogadorForaDoGrupo);
-    expect(await partidas.porData(db, base.grupo.id, '2026-10-08')).toBeNull();
+    expect(await partidas.porData(db, base.grupo.id, ONTEM)).toBeNull();
   });
 
   it('porMes: inclui o último dia, exclui o dia 1 seguinte, conta e ordena', async () => {
     const { db, base, a, b } = await cenario();
     const nova = (data: string, presencas: partidas.PresencaGravada[]) =>
-      emTransacao(db, (tx) =>
-        partidas.criar(tx, base.grupo.id, { data, choveu: false, presencas, autor: base.contaId, agora: AGORA }),
-      );
-    await nova('2026-10-01', [{ jogadorId: a, situacao: 'presente' }]);
-    await nova('2026-10-31', [
+      criarPartida(db, base.grupo.id, data, base.contaId, { presencas });
+    await nova(PRIMEIRO_DIA, [{ jogadorId: a, situacao: 'presente' }]);
+    await nova(ULTIMO_DIA, [
       { jogadorId: a, situacao: 'presente' },
       { jogadorId: b, situacao: 'expulso' },
     ]);
-    await nova('2026-11-01', [{ jogadorId: a, situacao: 'presente' }]);
-    const outubro = await partidas.porMes(db, base.grupo.id, '2026-10');
-    expect(outubro.map((p) => p.data)).toEqual(['2026-10-31', '2026-10-01']);
-    expect(outubro[0]?.contagem).toEqual({ presentes: 1, lesionados: 0, expulsos: 1 });
-    expect(await partidas.porMes(db, base.grupo.id, '2026-09')).toEqual([]);
-    expect((await partidas.historicoAte(db, base.grupo.id, '2026-10-31')).partidas).toHaveLength(2);
-    expect((await partidas.historicoAte(db, base.grupo.id, '2026-11-01')).presencas).toHaveLength(4);
+    await nova(DIA_1_SEGUINTE, [{ jogadorId: a, situacao: 'presente' }]);
+    const doMes = await partidas.porMes(db, base.grupo.id, MES);
+    expect(doMes.map((p) => p.data)).toEqual([ULTIMO_DIA, PRIMEIRO_DIA]);
+    expect(doMes[0]?.contagem).toEqual({ presentes: 1, lesionados: 0, expulsos: 1 });
+    expect(await partidas.porMes(db, base.grupo.id, MES_ANTERIOR)).toEqual([]);
+    expect((await partidas.historicoAte(db, base.grupo.id, ULTIMO_DIA)).partidas).toHaveLength(2);
+    expect((await partidas.historicoAte(db, base.grupo.id, DIA_1_SEGUINTE)).presencas).toHaveLength(4);
   });
 
   it('substituir troca choveu, presenças e autor; data inexistente dá false', async () => {
     const { db, base, a, b } = await cenario();
     const outro = await criarConta(db, fabrica, { nome: 'Segundo Autor' });
-    await emTransacao(db, (tx) =>
-      partidas.criar(tx, base.grupo.id, {
-        data: '2026-10-15',
-        choveu: false,
-        presencas: [{ jogadorId: a, situacao: 'presente' }],
-        autor: base.contaId,
-        agora: AGORA,
-      }),
-    );
+    await criarPartida(db, base.grupo.id, HOJE, base.contaId, {
+      presencas: [{ jogadorId: a, situacao: 'presente' }],
+    });
     const ok = await emTransacao(db, (tx) =>
-      partidas.substituir(tx, base.grupo.id, '2026-10-15', {
+      partidas.substituir(tx, base.grupo.id, HOJE, {
         choveu: true,
         presencas: [{ jogadorId: b, situacao: 'lesionado' }],
         autor: outro.id,
@@ -110,7 +113,7 @@ describe('repositório de partidas', () => {
       }),
     );
     expect(ok).toBe(true);
-    const p = await partidas.porData(db, base.grupo.id, '2026-10-15');
+    const p = await partidas.porData(db, base.grupo.id, HOJE);
     expect(p).toMatchObject({ choveu: true, alteradaPor: 'Segundo Autor' });
     expect(p?.presencas).toEqual([{ jogadorId: b, situacao: 'lesionado' }]);
     expect(

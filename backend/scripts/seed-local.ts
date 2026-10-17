@@ -34,6 +34,9 @@ import {
  * Dados fictícios para o ambiente local: 2 grupos, 5 contas, jogadores com notas e 3 meses de
  * partidas, nas datas fixas do mockup (até `HOJE_DO_SEED`). Idempotente: apaga e recria só o que é do seed.
  * Só roda em host local (a trava recusa qualquer outro, mesmo com --alvo).
+ * Limite conhecido: um grupo criado fora do seed pelas contas do seed (FK `criado_por`) impede
+ * reexecutar; nesse caso apague esse grupo antes. `PELADA_SEED_FALHA_FORCADA=1` força um erro no
+ * fim da transação (só para provar o rollback nos testes).
  */
 const DIA_QUINTA: DiaDaSemana = 4;
 const DIA_DOMINGO: DiaDaSemana = 0;
@@ -170,6 +173,7 @@ async function semear(tx: Tx, hoje: string, agora: Date): Promise<Record<string,
   const datasDomingo = datasDeJogo(hoje, DIA_DOMINGO, 2);
   const presencas = await criarPartidas(tx, quinta.id, datasQuinta, idsQuinta, dono, agora);
   await criarPartidas(tx, domingo.id, datasDomingo, idsDomingo, dono, agora);
+  if (process.env['PELADA_SEED_FALHA_FORCADA'] === '1') throw new Error('Falha forçada do seed.');
 
   return {
     contas: 5,

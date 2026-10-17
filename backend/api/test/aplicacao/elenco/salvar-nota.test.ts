@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { salvarNota } from '../../../src/aplicacao/elenco/salvar-nota.js';
+import * as jogadores from '../../../src/infraestrutura/db/repositorios/jogadores.js';
 import * as habilidades from '../../../src/infraestrutura/db/repositorios/habilidades.js';
 import { montarCenario } from '../../apoio/cenario-acesso.js';
 import { usarDbDoWorker } from '../../apoio/db-worker.js';
@@ -57,5 +58,16 @@ describe('salvarNota (workerd)', () => {
     expect(await salvarNota(db, cen.grupoA.id, jogadorB, habilidadeA, 5)).toBeNull();
     expect(await habilidades.notasDoGrupo(db, cen.grupoA.id)).toEqual([]);
     expect(await habilidades.notasDoGrupo(db, cen.grupoB.id)).toEqual([]);
+  });
+
+  it('jogador inativo também recebe nota', async () => {
+    const db = await abrir();
+    const cen = await montarCenario(db, fabrica);
+    const g = cen.grupoA.id;
+    const jogador = await criarJogador(db, g, cen.adminA.id);
+    const passe = await habilidades.criar(db, g, 'Passe');
+    const DEPOIS_DE_TODO_INICIO = '2100-01-01';
+    expect(await jogadores.inativar(db, g, jogador, DEPOIS_DE_TODO_INICIO)).toBe('ok');
+    expect(await salvarNota(db, g, jogador, passe, 6)).toMatchObject({ nota: 6, nivel: 6, semNota: false });
   });
 });

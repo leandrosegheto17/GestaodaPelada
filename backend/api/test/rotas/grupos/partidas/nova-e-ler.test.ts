@@ -58,8 +58,8 @@ describe('GET /api/grupos/:g/partidas/nova (workerd)', () => {
     await escalacoes.confirmar(db, g, {
       data: '2026-10-22',
       formato: 'dois_times',
-      n: 1,
-      k: 1,
+      n: 2,
+      k: null,
       composicao: {
         times: [
           { titulares: [{ id: t1, so1oTempo: false }], entramNo2oTempo: [{ id: reserva, so1oTempo: false }] },
@@ -142,6 +142,52 @@ describe('GET /api/grupos/:g/partidas/nova (workerd)', () => {
     expect(dup.status).toBe(409);
     expect(dup.corpo).toMatchObject({ erro: { codigo: 'partida_ja_existe', dataExistente: '2026-10-15' } });
     expect((await cliente(cen.adminB.cookie).get(`/api/grupos/${g}/partidas/nova`)).status).toBe(404);
+  });
+
+  it('data sem jogadores ativos: 200 com lista vazia, e sem cache', async () => {
+    const db = await abrir();
+    const cen = await montarCenario(db, fabrica);
+    const g = cen.grupoA.id;
+    await criarJogador(db, g, cen.adminA.id, { apelido: 'Tardio', dataEntrada: '2026-10-22' });
+    const r = await cliente(cen.adminA.cookie).get(`/api/grupos/${g}/partidas/nova?data=2026-10-01`);
+    expect(r.status).toBe(200);
+    expect(r.headers.get('Cache-Control')).toBe('no-store');
+    expect(partidaNova.parse(r.corpo).jogadores).toEqual([]);
+  });
+
+  it('data futura: mensagem em campos.data', async () => {
+    const db = await abrir();
+    const cen = await montarCenario(db, fabrica);
+    const r = await cliente(cen.adminA.cookie).get(`/api/grupos/${cen.grupoA.id}/partidas/nova?data=2026-10-23`);
+    expect(r.status).toBe(422);
+    expect((r.corpo as { erro: { campos: { data: string } } }).erro.campos.data).toBe('A data não pode ser no futuro.');
+  });
+
+  it('partida do grupo B na mesma data não bloqueia o grupo A (G-03)', async () => {
+    const db = await abrir();
+    const cen = await montarCenario(db, fabrica);
+    await emTransacao(db, (tx) =>
+      partidas.criar(tx, cen.grupoB.id, {
+        data: '2026-10-15',
+        choveu: false,
+        presencas: [],
+        autor: cen.adminB.id,
+        agora: AGORA,
+      }),
+    );
+    const r = await cliente(cen.adminA.cookie).get(`/api/grupos/${cen.grupoA.id}/partidas/nova?data=2026-10-15`);
+    expect(r.status).toBe(200);
+    expect(partidaNova.parse(r.corpo)).toMatchObject({ data: '2026-10-15', jaExiste: false });
+  });
+
+  it('grupo com uuid malformado: 404; sem sessão: 401', async () => {
+    const db = await abrir();
+    const cen = await montarCenario(db, fabrica);
+    expect((await cliente(cen.adminA.cookie).get('/api/grupos/nao-e-uuid/partidas/nova')).status).toBe(404);
+    const anonimo = await clienteTeste({ relogio: relogioFixo('2026-10-22') }).get(
+      `/api/grupos/${cen.grupoA.id}/partidas/nova`,
+    );
+    expect(anonimo.status).toBe(401);
   });
 });
 

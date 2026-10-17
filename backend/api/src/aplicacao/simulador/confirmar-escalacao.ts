@@ -10,6 +10,8 @@ export type ResultadoConfirmar =
 
 export const MSG_COMPOSICAO_FORA_DO_GRUPO = 'Há jogadores que não estão ativos no grupo nesta data.';
 
+export const MSG_COMPOSICAO_REPETIDA = 'Há jogador repetido na composição.';
+
 export { idsDaComposicao } from './composicao.js';
 
 export interface DependenciasConfirmar {
@@ -29,8 +31,12 @@ export async function confirmarEscalacao(
   contexto: { contaId: string; agora: Date },
   deps: DependenciasConfirmar = { registrarEvento: eventos.registrar },
 ): Promise<ResultadoConfirmar> {
+  const ids = idsDaComposicao(corpo);
+  if (new Set(ids).size !== ids.length) {
+    return { ok: false, campos: { composicao: MSG_COMPOSICAO_REPETIDA } };
+  }
   const ativos = new Set((await ativosNaData(db, grupoId, corpo.data)).map((j) => j.id));
-  if (!idsDaComposicao(corpo).every((id) => ativos.has(id))) {
+  if (!ids.every((id) => ativos.has(id))) {
     return { ok: false, campos: { composicao: MSG_COMPOSICAO_FORA_DO_GRUPO } };
   }
 

@@ -5,6 +5,7 @@ import { emTransacao } from '../../../src/infraestrutura/db/index.js';
 import * as escalacoes from '../../../src/infraestrutura/db/repositorios/escalacoes.js';
 import * as eventos from '../../../src/infraestrutura/db/repositorios/eventos.js';
 import * as habilidades from '../../../src/infraestrutura/db/repositorios/habilidades.js';
+import * as jogadores from '../../../src/infraestrutura/db/repositorios/jogadores.js';
 import * as partidas from '../../../src/infraestrutura/db/repositorios/partidas.js';
 import * as pesos from '../../../src/infraestrutura/db/repositorios/pesos.js';
 import { montarCenario } from '../../apoio/cenario-acesso.js';
@@ -83,6 +84,62 @@ describe('GET /api/grupos/:grupoId (workerd)', () => {
     expect(await saldoDe(cen.adminASemFinanceiro.cookie)).toBeNull();
   });
 
+  it('numa sexta: sugerida é a quinta anterior e o próximo jogo é a quinta seguinte; sem partida na data, false', async () => {
+    const db = await abrir();
+    const cen = await montarCenario(db, fabrica);
+    const g = cen.grupoA.id;
+    const sexta = clienteTeste({ relogio: relogioFixo('2026-10-23', '12:00'), cookie: cen.adminA.cookie });
+    const ler = async () => grupoDetalhe.parse((await sexta.get(`/api/grupos/${g}`)).corpo).inicio;
+
+    expect(await ler()).toMatchObject({
+      dataSugeridaPartida: HOJE,
+      proximoDiaDeJogo: '2026-10-29',
+      partidaNaDataSugerida: false,
+    });
+    const a = await criarJogador(db, g, cen.adminA.id, { dataEntrada: '2026-01-01' });
+    await criarPartida(db, g, cen.adminA.id, '2026-10-29', a);
+    expect((await ler()).partidaNaDataSugerida).toBe(false);
+    await criarPartida(db, g, cen.adminA.id, HOJE, a);
+    expect((await ler()).partidaNaDataSugerida).toBe(true);
+  });
+
+  it('jogadoresAtivos: quem saiu antes de hoje não conta', async () => {
+    const db = await abrir();
+    const cen = await montarCenario(db, fabrica);
+    const g = cen.grupoA.id;
+    await criarJogador(db, g, cen.adminA.id, { dataEntrada: '2026-01-01' });
+    const saiu = await criarJogador(db, g, cen.adminA.id, { dataEntrada: '2026-01-01' });
+    const lerAtivos = async () =>
+      grupoDetalhe.parse((await cliente(cen.adminA.cookie).get(`/api/grupos/${g}`)).corpo).inicio.jogadoresAtivos;
+
+    expect(await lerAtivos()).toBe(2);
+    expect(await jogadores.inativar(db, g, saiu, '2026-10-10')).toBe('ok');
+    expect(await lerAtivos()).toBe(1);
+  });
+
+  it('partidasNoMes e aparelhosNaSemana: outro mês, outra semana e o grupo B não contam', async () => {
+    const db = await abrir();
+    const cen = await montarCenario(db, fabrica);
+    const g = cen.grupoA.id;
+    const a = await criarJogador(db, g, cen.adminA.id, { dataEntrada: '2026-01-01' });
+    const b = await criarJogador(db, cen.grupoB.id, cen.adminB.id, { dataEntrada: '2026-01-01' });
+    const lerInicio = async () =>
+      grupoDetalhe.parse((await cliente(cen.adminA.cookie).get(`/api/grupos/${g}`)).corpo).inicio;
+    const aparelho = (n: number) => `123e4567-e89b-12d3-a456-4266141740${String(n).padStart(2, '0')}`;
+    const evento = (grupoId: string, n: number, momento: Date) =>
+      eventos.registrar(db, grupoId, { tipo: 'ranking_aberto', dispositivoId: aparelho(n), momento });
+
+    await criarPartida(db, g, cen.adminA.id, '2026-09-24', a);
+    await criarPartida(db, cen.grupoB.id, cen.adminB.id, HOJE, b);
+    await evento(g, 1, new Date('2026-10-14T15:00:00Z'));
+    await evento(cen.grupoB.id, 2, AGORA);
+    expect(await lerInicio()).toMatchObject({ partidasNoMes: 0, aparelhosNaSemana: 0 });
+
+    await criarPartida(db, g, cen.adminA.id, '2026-10-15', a);
+    await evento(g, 3, AGORA);
+    expect(await lerInicio()).toMatchObject({ partidasNoMes: 1, aparelhosNaSemana: 1 });
+  });
+
   it('sem financeiro: acessaFinanceiro false; admin de outro grupo: 404', async () => {
     const cen = await montarCenario(await abrir(), fabrica);
     const sem = await cliente(cen.adminASemFinanceiro.cookie).get(`/api/grupos/${cen.grupoA.id}`);
@@ -91,6 +148,18 @@ describe('GET /api/grupos/:grupoId (workerd)', () => {
     expect((await cliente(cen.adminB.cookie).get(`/api/grupos/${cen.grupoA.id}`)).status).toBe(404);
   });
 });
+
+async function criarPartida(db: Awaited<ReturnType<typeof abrir>>, grupoId: string, autor: string, data: string, jogadorId: string) {
+  await emTransacao(db, (tx) =>
+    partidas.criar(tx, grupoId, {
+      data,
+      choveu: false,
+      presencas: [{ jogadorId, situacao: 'presente' }],
+      autor,
+      agora: AGORA,
+    }),
+  );
+}
 
 async function jogadoresEPartidas(db: Awaited<ReturnType<typeof abrir>>, grupoId: string, autor: string) {
   const a = await criarJogador(db, grupoId, autor, { dataEntrada: '2026-01-01' });

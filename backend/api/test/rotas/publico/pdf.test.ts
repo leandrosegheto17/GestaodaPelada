@@ -1,13 +1,18 @@
+import { createExecutionContext, env, waitOnExecutionContext } from 'cloudflare:test';
 import { projecaoPdf, rankingPublico } from '@pelada/contrato';
 import { PESOS_PADRAO } from '@pelada/dominio';
 import { describe, expect, it } from 'vitest';
+import fixtureOutubro from '../../../../../.md/mockup/respostas/publico-pdf-2026-10.json';
+import { buscarGrupoPublico } from '../../../src/aplicacao/publico/grupo-por-slug.js';
 import { kyselyDe } from '../../../src/infraestrutura/db/cliente.js';
 import { emTransacao } from '../../../src/infraestrutura/db/index.js';
+import * as jogadoresRepo from '../../../src/infraestrutura/db/repositorios/jogadores.js';
 import * as partidas from '../../../src/infraestrutura/db/repositorios/partidas.js';
 import * as pesos from '../../../src/infraestrutura/db/repositorios/pesos.js';
 import { montarCenario } from '../../apoio/cenario-acesso.js';
 import { clienteTeste } from '../../apoio/cliente.js';
 import { usarDbDoWorker } from '../../apoio/db-worker.js';
+import { criarLancamento } from '../../apoio/fabricas/financeiro.js';
 import { criarJogador } from '../../apoio/fabricas/jogadores.js';
 import { usarFabrica } from '../../apoio/fabrica.js';
 import { relogioFixo } from '../../apoio/relogio.js';
@@ -134,5 +139,66 @@ describe('GET /api/publico/:slug/pdf (workerd)', () => {
     for (const proibida of PROIBIDAS) expect(chaves(r.corpo)).not.toContain(proibida);
     expect(r.texto).not.toContain(cen.grupoA.id);
     expect(r.texto).not.toContain('1985');
+  });
+
+  it('mesmas chaves da resposta de referência e no máximo 12 colunas', async () => {
+    const cen = await grupoComHistorico(await abrir());
+    const pdf = projecaoPdf.parse((await anonimo().get(`/api/publico/${cen.grupoA.slug}/pdf`)).corpo);
+    expect(Object.keys(pdf).sort()).toEqual(Object.keys(fixtureOutubro).sort());
+    expect(Object.keys(pdf.grupo).sort()).toEqual(Object.keys(fixtureOutubro.grupo).sort());
+    expect(Object.keys(pdf.colunas[0] ?? {}).sort()).toEqual(Object.keys(fixtureOutubro.colunas[0] ?? {}).sort());
+    expect(Object.keys(pdf.linhas[0] ?? {}).sort()).toEqual(Object.keys(fixtureOutubro.linhas[0] ?? {}).sort());
+    expect(pdf.colunas.length).toBeLessThanOrEqual(12);
+  });
+
+  it('o link acompanha URL_PUBLICA, sem barra dupla', async () => {
+    const cen = await grupoComHistorico(await abrir());
+    const ctx = createExecutionContext();
+    const resp = await anonimo().app.fetch(
+      new Request(`http://app.invalid/api/publico/${cen.grupoA.slug}/pdf`),
+      { ...env, URL_PUBLICA: 'https://outra.exemplo.com/' },
+      ctx,
+    );
+    await waitOnExecutionContext(ctx);
+    expect(projecaoPdf.parse(await resp.json()).urlPublica).toBe(`https://outra.exemplo.com/g/${cen.grupoA.slug}`);
+  });
+
+  it('mes malformado: 422 em campos.mes', async () => {
+    const cen = await grupoComHistorico(await abrir());
+    for (const mes of ['abc', '2026-13']) {
+      const r = await anonimo().get(`/api/publico/${cen.grupoA.slug}/pdf?mes=${mes}`);
+      expect(r.status).toBe(422);
+      expect(JSON.stringify(r.corpo)).toContain('mes');
+      expect((r.corpo as { campos?: Record<string, unknown> }).campos).toHaveProperty('mes');
+    }
+  });
+
+  it('slug malformado não consulta o banco', async () => {
+    const intocavel = new Proxy({}, { get: () => { throw new Error('consultou'); } });
+    expect(await buscarGrupoPublico(intocavel as never, 'Maiuscula!')).toBeNull();
+  });
+
+  it('telefone, posição e lançamento financeiro semeados não aparecem na resposta', async () => {
+    const db = await abrir();
+    const cen = await grupoComHistorico(db);
+    await emTransacao(db, (tx) =>
+      jogadoresRepo.criar(tx, cen.grupoA.id, {
+        apelido: 'Caio',
+        anoNascimento: 1977,
+        posicao: 'goleiro',
+        telefone: '11987654321',
+        dataEntrada: '2026-01-01',
+        autor: cen.adminA.id,
+        agora: AGORA,
+      }),
+    );
+    await criarLancamento(db, cen.grupoA.id, cen.adminA.id, { descricao: 'Churrasco secreto', valorCentavos: 123_457 });
+    const r = await anonimo().get(`/api/publico/${cen.grupoA.slug}/pdf`);
+    for (const valor of ['11987654321', '1977', 'goleiro', 'Churrasco secreto', '123457', '1234,57']) {
+      expect(r.texto).not.toContain(valor);
+    }
+    for (const proibida of ['telefone', 'anoNascimento', 'idade', 'nivel', 'notas', 'jogadorId', 'valor']) {
+      expect(chaves(r.corpo)).not.toContain(proibida);
+    }
   });
 });

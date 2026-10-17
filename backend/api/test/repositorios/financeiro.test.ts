@@ -1,5 +1,6 @@
 import { totais } from '@pelada/dominio';
-import { describe, expect, it } from 'vitest';
+import pg from 'pg';
+import { describe, expect, it, vi } from 'vitest';
 import { emTransacao } from '../../src/infraestrutura/db/index.js';
 import * as financeiro from '../../src/infraestrutura/db/repositorios/financeiro.js';
 import * as jogadores from '../../src/infraestrutura/db/repositorios/jogadores.js';
@@ -184,5 +185,29 @@ describe('histórico do jogador', () => {
       financeiro.marcar(tx, a, { jogadorId: ana, mes: '2026-10', lancamento: null, autor: conta, agora: AGORA }),
     );
     expect(await jogadores.temHistorico(db, a, ana)).toBe(true);
+  });
+});
+
+describe('consultas', () => {
+  it('lancamentosDoMes com 5 lançamentos faz uma consulta só', async () => {
+    const { db, a, conta } = await cenario();
+    for (let i = 1; i <= 5; i += 1) {
+      await criarLancamento(db, a, conta, { data: `2026-10-0${i}`, descricao: `Item ${i}` });
+    }
+    const consultas = vi.spyOn(pg.Client.prototype, 'query');
+    try {
+      expect(await financeiro.lancamentosDoMes(db, a, '2026-10-01', '2026-10-31')).toHaveLength(5);
+      expect(consultas).toHaveBeenCalledTimes(1);
+    } finally {
+      consultas.mockRestore();
+    }
+  });
+
+  it('marcar exige transação (não compila com o executor comum)', async () => {
+    const { db, a, conta } = await cenario();
+    const ana = await criarJogador(db, a, conta, { apelido: 'Ana' });
+    // @ts-expect-error marcar só aceita Tx
+    const chamada = () => financeiro.marcar(db, a, { jogadorId: ana, mes: '2026-10', lancamento: null, autor: conta, agora: AGORA });
+    expect(typeof chamada).toBe('function');
   });
 });

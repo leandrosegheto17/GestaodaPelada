@@ -1,6 +1,6 @@
-import { saidaNoIntervalo, type ClassificacaoDois } from './classificacao.js';
+import type { ClassificacaoDois } from './classificacao.js';
 import { dividirMeioParaCima } from '../elenco/nivel.js';
-import { agregar, somaNivel2oTempo, trocarNoAgregado, type Agregado, type Jogadores } from './indicadores.js';
+import { agregar, trocarNoAgregado, type Agregado, type Jogadores } from './indicadores.js';
 import type { ComposicaoDois, JogadorSim, TimeDois } from './tipos.js';
 
 /** Teto de trocas aceitas na busca local (ADR-007 §2): garante que o laço termina. */
@@ -31,18 +31,37 @@ interface Estado {
   jogam: Agregado;
 }
 
-function ordenarPorRank(ids: readonly string[], jogadores: Jogadores, rank: ReadonlyMap<string, number>): JogadorSim[] {
-  const pos = (id: string): number => rank.get(id) ?? Number.MAX_SAFE_INTEGER;
-  return [...ids].sort((x, y) => pos(x) - pos(y) || (x < y ? -1 : x > y ? 1 : 0)).map((id) => jogadores.get(id)!);
-}
-
-/** Substituições do time: pares entre quem sai no intervalo e quem entra. */
-function substituicoes(time: TimeDois, jogadores: Jogadores): number {
-  const saem = saidaNoIntervalo(
-    time.titulares.map((id) => jogadores.get(id)!),
-    time.entram.length,
-  );
-  return Math.min(saem.length, time.entram.length);
+/**
+ * Substituições e nível do 2º tempo do time numa só passada, sem ordenar o time inteiro: sai quem é
+ * "só 1º tempo" e, até `max(só 1º tempo, reservas)` saídas, os de pior prioridade (mesma regra de
+ * `saidaNoIntervalo`, com empate pelo id decrescente).
+ */
+function resumoSegundoTempo(
+  time: TimeDois,
+  jogadores: Jogadores,
+  rank: ReadonlyMap<string, number>,
+): { subs: number; nivel2: number } {
+  let nivel2 = 0;
+  let so1o = 0;
+  const demais: JogadorSim[] = [];
+  for (const id of time.titulares) {
+    const j = jogadores.get(id)!;
+    if (j.so1oTempo) so1o += 1;
+    else {
+      demais.push(j);
+      nivel2 += j.nivel;
+    }
+  }
+  const total = Math.min(Math.max(so1o, time.entram.length), time.titulares.length);
+  const extra = total - so1o;
+  if (extra > 0) {
+    const pos = (j: JogadorSim): number => rank.get(j.id) ?? Number.MAX_SAFE_INTEGER;
+    // pior prioridade primeiro: posição maior; no empate, id maior
+    demais.sort((x, y) => pos(y) - pos(x) || (x.id < y.id ? 1 : x.id > y.id ? -1 : 0));
+    for (let i = 0; i < extra; i += 1) nivel2 -= demais[i]!.nivel;
+  }
+  for (const id of time.entram) nivel2 += jogadores.get(id)!.nivel;
+  return { subs: Math.min(total, time.entram.length), nivel2 };
 }
 
 const idadeMedia = (e: Estado): number => (e.jogam.n > 0 ? dividirMeioParaCima(100 * e.jogam.somaIdade, e.jogam.n) : 0);
@@ -59,14 +78,10 @@ function chaveDe(
   rank: ReadonlyMap<string, number>,
 ): Chave {
   const violaN = Number(times[0].titulares.length !== n) + Number(times[1].titulares.length !== n);
-  const excessoSubs = Math.max(
-    0,
-    Math.abs(substituicoes(times[0], jogadores) - substituicoes(times[1], jogadores)) - 1,
-  );
-  const nivel2 = (t: TimeDois): number =>
-    somaNivel2oTempo(ordenarPorRank(t.titulares, jogadores, rank), ordenarPorRank(t.entram, jogadores, rank));
-  const difNivel =
-    Math.abs(ea.titulares.somaNivel - eb.titulares.somaNivel) + Math.abs(nivel2(times[0]) - nivel2(times[1]));
+  const ra = resumoSegundoTempo(times[0], jogadores, rank);
+  const rb = resumoSegundoTempo(times[1], jogadores, rank);
+  const excessoSubs = Math.max(0, Math.abs(ra.subs - rb.subs) - 1);
+  const difNivel = Math.abs(ea.titulares.somaNivel - eb.titulares.somaNivel) + Math.abs(ra.nivel2 - rb.nivel2);
   return [violaN, excessoSubs, difNivel, Math.abs(idadeMedia(ea) - idadeMedia(eb))];
 }
 

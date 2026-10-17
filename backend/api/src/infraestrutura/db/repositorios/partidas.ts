@@ -1,5 +1,6 @@
 import { sql } from 'kysely';
-import { kyselyDe, type ExecutorDb } from '../cliente.js';
+import { kyselyDe, type ExecutorDb, type Tx } from '../cliente.js';
+import { seViolarUnico } from './comum.js';
 
 export class PartidaDuplicada extends Error {
   constructor() {
@@ -117,7 +118,7 @@ export async function historicoAte(ex: ExecutorDb, grupoId: string, data: string
 
 /** Insere as presenças de uma vez; jogador que não é do grupo faz a transação inteira falhar. */
 async function inserirPresencas(
-  ex: ExecutorDb,
+  ex: Tx,
   grupoId: string,
   partidaId: string,
   presencas: readonly PresencaGravada[],
@@ -142,7 +143,7 @@ export interface DadosDaPartida {
 }
 
 export async function criar(
-  ex: ExecutorDb,
+  ex: Tx,
   grupoId: string,
   partida: DadosDaPartida & { data: string },
 ): Promise<string> {
@@ -163,8 +164,7 @@ export async function criar(
       .executeTakeFirstOrThrow();
     id = linha.id;
   } catch (erro) {
-    if ((erro as { code?: string }).code === '23505') throw new PartidaDuplicada();
-    throw erro;
+    return seViolarUnico(erro, 'partidas_grupo_id_data_key', () => new PartidaDuplicada());
   }
   await inserirPresencas(ex, grupoId, id, partida.presencas);
   return id;
@@ -172,7 +172,7 @@ export async function criar(
 
 /** Atualiza `choveu` e a última alteração e troca as presenças. `false` se não há partida na data. */
 export async function substituir(
-  ex: ExecutorDb,
+  ex: Tx,
   grupoId: string,
   data: string,
   partida: DadosDaPartida,
@@ -192,7 +192,7 @@ export async function substituir(
 }
 
 /** Apaga as presenças (cascata) e a partida. */
-export async function excluir(ex: ExecutorDb, grupoId: string, data: string): Promise<boolean> {
+export async function excluir(ex: Tx, grupoId: string, data: string): Promise<boolean> {
   const r = await kyselyDe(ex)
     .deleteFrom('partidas')
     .where('grupo_id', '=', grupoId)

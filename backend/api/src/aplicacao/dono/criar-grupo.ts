@@ -32,7 +32,15 @@ export interface DependenciasCriarGrupo {
     autor: { tipo: 'conta'; contaId: string },
     agora: Date,
   ) => Promise<AdminAdicionado>;
+  criarPesosPadrao: typeof pesos.criarPadrao;
+  criarCatalogoInicial: typeof habilidades.criarCatalogoInicial;
 }
+
+const DEPENDENCIAS_REAIS: DependenciasCriarGrupo = {
+  vincularOuCriarAdmin,
+  criarPesosPadrao: pesos.criarPadrao,
+  criarCatalogoInicial: habilidades.criarCatalogoInicial,
+};
 
 const TENTATIVAS = 3;
 
@@ -48,13 +56,13 @@ async function umaTentativa(tx: ExecutorDb, e: EntradaCriarGrupo, deps: Dependen
     criadoPor: e.autorContaId,
     agora: e.agora,
   });
-  await pesos.criarPadrao(tx, grupoId, {
+  await deps.criarPesosPadrao(tx, grupoId, {
     pesos: PESOS_PADRAO,
     vigenteDesde: e.hoje,
     registradoPor: e.autorContaId,
     agora: e.agora,
   });
-  await habilidades.criarCatalogoInicial(tx, grupoId, HABILIDADES_INICIAIS);
+  await deps.criarCatalogoInicial(tx, grupoId, HABILIDADES_INICIAIS);
   const autor = { tipo: 'conta', contaId: e.autorContaId } as const;
   const primeiroAdmin = await deps.vincularOuCriarAdmin(
     tx,
@@ -84,8 +92,9 @@ async function umaTentativa(tx: ExecutorDb, e: EntradaCriarGrupo, deps: Dependen
 export async function criarGrupo(
   db: Db,
   entrada: EntradaCriarGrupo,
-  deps: DependenciasCriarGrupo = { vincularOuCriarAdmin },
+  substituicoes: Partial<DependenciasCriarGrupo> = {},
 ): Promise<GrupoCriado> {
+  const deps = { ...DEPENDENCIAS_REAIS, ...substituicoes };
   for (let tentativa = 1; ; tentativa++) {
     try {
       return await emTransacao(db, (tx) => umaTentativa(tx, entrada, deps));

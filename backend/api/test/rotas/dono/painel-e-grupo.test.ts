@@ -10,6 +10,9 @@ import { usarDbDoWorker } from '../../apoio/db-worker.js';
 import { usarFabrica } from '../../apoio/fabrica.js';
 import { vincularAdmin } from '../../apoio/fabricas/grupos.js';
 import { relogioFixo } from '../../apoio/relogio.js';
+import { entrarComo } from '../../apoio/sessao.js';
+import painelCheio from '../../../../../.md/mockup/respostas/dono-painel.json';
+import painelVazio from '../../../../../.md/mockup/respostas/dono-painel-vazio.json';
 
 const fabrica = usarFabrica();
 const abrir = usarDbDoWorker(fabrica);
@@ -27,6 +30,17 @@ function chaves(no: unknown, saida: string[] = []): string[] {
     }
   }
   return saida;
+}
+
+/** Caminho de cada chave (arrays fundidos em `[]`) e os tipos vistos nele. */
+function formaDe(no: unknown, caminho = '', mapa = new Map<string, Set<string>>()): Map<string, Set<string>> {
+  const tipo = no === null ? 'null' : Array.isArray(no) ? 'array' : typeof no;
+  if (caminho) mapa.set(caminho, (mapa.get(caminho) ?? new Set()).add(tipo));
+  if (Array.isArray(no)) no.forEach((n) => formaDe(n, `${caminho}[]`, mapa));
+  else if (no && typeof no === 'object') {
+    for (const [k, v] of Object.entries(no)) formaDe(v, `${caminho}.${k}`, mapa);
+  }
+  return mapa;
 }
 
 describe('GET /api/dono/painel (workerd)', () => {
@@ -69,14 +83,43 @@ describe('GET /api/dono/painel (workerd)', () => {
     expect(painel.grupos.slice(primeiroArquivado).every((g) => g.arquivadoEm !== null)).toBe(true);
   });
 
-  it('forma vazia do mockup é aceita pelo contrato', () => {
-    expect(painelDono.parse({ pedidosReset: [], grupos: [], dono: { tambemAdmin: false } }).grupos).toEqual([]);
+  it('a resposta tem a mesma forma (chaves e tipos) de dono-painel.json', async () => {
+    const db = await abrir();
+    const cen = await montarCenario(db, fabrica);
+    await pedidos.registrarOuAtualizar(db, cen.adminB.id, AGORA);
+    fabrica.registrar(async () => {
+      await kyselyDe(db).deleteFrom('pedidos_reset').where('conta_id', '=', cen.adminB.id).execute();
+    });
+    const r = await cliente(cen.dono.cookie).get('/api/dono/painel');
+    const esperada = formaDe(painelCheio);
+    const obtida = formaDe(r.corpo);
+    expect([...obtida.keys()].sort()).toEqual([...esperada.keys()].sort());
+    for (const [caminho, tipos] of obtida) {
+      const aceitos = esperada.get(caminho) ?? new Set();
+      for (const t of tipos) if (t !== 'null' && !aceitos.has('null')) expect(aceitos, caminho).toContain(t);
+    }
   });
 
-  it('admin comum recebe 404; sem sessão, 401; sessão restrita, 403', async () => {
+  it('sem grupos e pedidos, a resposta tem a forma de dono-painel-vazio.json', async () => {
+    const cen = await montarCenario(await abrir(), fabrica);
+    const r = await cliente(cen.dono.cookie).get('/api/dono/painel');
+    // O banco de teste é compartilhado e sempre tem os grupos do cenário: esvazia só as listas.
+    expect({ ...(r.corpo as object), pedidosReset: [], grupos: [] }).toEqual(painelVazio);
+  });
+
+  it('admin comum recebe 404; sem sessão, 401', async () => {
     const cen = await montarCenario(await abrir(), fabrica);
     expect((await cliente(cen.adminA.cookie).get('/api/dono/painel')).status).toBe(404);
     expect((await cliente().get('/api/dono/painel')).status).toBe(401);
+  });
+
+  it('dono com sessão de escopo troca_de_senha: 403 troca_de_senha_obrigatoria', async () => {
+    const db = await abrir();
+    const cen = await montarCenario(db, fabrica);
+    const parcial = await entrarComo(db, fabrica, cen.dono.id, { escopo: 'troca_de_senha' });
+    const r = await cliente(parcial.cookie).get('/api/dono/painel');
+    expect(r.status).toBe(403);
+    expect(r.corpo).toMatchObject({ erro: { codigo: 'troca_de_senha_obrigatoria' } });
   });
 });
 
