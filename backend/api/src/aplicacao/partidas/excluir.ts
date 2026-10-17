@@ -9,10 +9,11 @@ export async function excluirPartida(
   grupoId: string,
   data: string,
   contexto: { autorContaId: string; agora: Date },
+  registrarAuditoria: typeof auditoria.registrar = auditoria.registrar,
 ): Promise<void> {
   await emTransacao(db, async (tx) => {
     if (!(await partidas.excluir(tx, grupoId, data))) throw new PartidaNaoEncontrada();
-    await auditoria.registrar(tx, grupoId, {
+    await registrarAuditoria(tx, grupoId, {
       autor: { tipo: 'conta', contaId: contexto.autorContaId },
       acao: 'partida_excluida',
       entidade: 'partida',

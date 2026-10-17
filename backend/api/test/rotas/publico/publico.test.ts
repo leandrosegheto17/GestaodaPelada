@@ -93,7 +93,14 @@ describe('GET /api/publico/:slug/ranking (workerd)', () => {
   });
 
   it('grupo sem partidas: só o mês de hoje, com navegação nula', async () => {
-    const cen = await montarCenario(await abrir(), fabrica);
+    const db = await abrir();
+    const cen = await montarCenario(db, fabrica);
+    await pesos.criarPadrao(db, cen.grupoB.id, {
+      pesos: PESOS_PADRAO,
+      vigenteDesde: '2026-01-01',
+      registradoPor: cen.adminB.id,
+      agora: AGORA,
+    });
     const url = `/api/publico/${cen.grupoB.slug}/ranking`;
     const r = await anonimo().get(url);
     expect(rankingPublico.parse(r.corpo).navegacao).toEqual({ mesAnterior: null, mesSeguinte: null });

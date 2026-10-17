@@ -614,3 +614,48 @@ APROVADA; 0 críticos/0 não críticos; diff só de testes (remoção de duplica
 
 ## RTP-0074 — DevSecOps — 2026-10-17
 APROVADA; 0 críticos, 0 não críticos; diff só de testes, fecha furo da G-04 (app.all) sem superfície nova; lido, sem execução própria.
+
+## RTP-0079 — DevSecOps — 2026-10-17
+APROVADA — só teste alterado, cobre senha errada/correta, token e 429 em console.*; 0 achados (revisão de leitura, nada executado pelo DevSecOps).
+
+## TP-0054 — DevSecOps — 2026-10-17
+APROVADA — painel do dono atrás de exigirDono (404), saída estrita sem dado de jogo/id/token, SQL parametrizado, caso de isolamento presente; 0 críticos, 0 não críticos (revisão de diff, sem execução).
+
+## TP-0056 — DevSecOps — 2026-10-17
+APROVADA — revisão do diff sem achado de segurança (dono-only, strict, senha só na resposta/no-store, transação única); 0 críticos, 0 novos; prova de 401/403/422 strict segue no RTP-0086
+
+## TP-0057 — DevSecOps — 2026-10-17
+APROVADA (revisão de diff) — 0 críticos, 0 não críticos; dono-only via exigirDono, uuid/corpo validados no limite, SQL parametrizado, resposta strict GrupoDono; nada executado por DevSecOps.
+
+## TP-0058 — DevSecOps — 2026-10-17
+APROVADA — revisão do diff: dono-only via exigirDono, nome conferido no servidor, sem DELETE, auditoria sem dado sensível; 0 críticos, 0 não críticos, sem RTP.
+
+## TP-0061 — DevSecOps — 2026-10-17
+APROVADA em segurança; 0 críticos, 0 não críticos novos (RTP-0087 já cobre testes); autorização por vínculo/404 uniforme, isolamento, saldo só com financeiro e resposta por allowlist conferidos por leitura do diff.
+
+## TP-0071 — DevSecOps — 2026-10-17
+APROVADA — revisão do diff sem achados (G-03 por grupo_id, transação única, corpo strict, sem vazamento de telefone/data); nada executado por segurança.
+
+## TP-0072 — DevSecOps — 2026-10-17
+APROVADA — 0 críticos, 0 não críticos de segurança; revisão do diff (isolamento por grupo, uuid/corpo strict, relógio do servidor, SQL parametrizado); nada executado por mim.
+
+## TP-0073 — DevSecOps — 2026-10-17
+APROVADA — isolamento por grupo, data do servidor, corpo strict, CSRF e SQL parametrizado conferidos por leitura do diff; 0 críticos, 0 não críticos.
+
+## TP-0074 — DevSecOps — 2026-10-17
+OK — revisão do diff sem achados (grupo_id em todo DELETE, auditoria atômica só com apelido, 409 sem vazamento); 0 críticos / 0 não críticos.
+
+## TP-0075 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; revisão do diff confirma escopo por vínculo (ADR-005), 404 idêntico, saída strict só com nome do autor e SQL parametrizado (lido; execução vem do QA).
+
+## TP-0076 — DevSecOps — 2026-10-17
+APROVADA — 0 críticos, 0 não críticos; revisão do diff (vigência do servidor, strict, CSRF, vínculo admin, auditoria transacional); nada executado por este chapéu.
+
+## TP-0077 — DevSecOps — 2026-10-17
+APROVADA (segurança); 0 críticos, 0 não críticos novos; isolamento por grupo, validação de `mes` e SQL parametrizado conferidos por leitura, sem dado pessoal na resposta.
+
+## TP-0078 — DevSecOps — 2026-10-17
+APROVADA — isolamento por vínculo, data validada no servidor antes do banco, resposta sem dado pessoal; 0 achados (revisão de diff, nada executado por DevSecOps).
+
+## TP-0079 — DevSecOps — 2026-10-17
+OK — GET partidas/:data isolado por grupo via vinculo, SQL parametrizado, `:data` validada antes do banco, resposta sem e-mail; 0 achados (revisão de diff, sem ferramenta executada).
