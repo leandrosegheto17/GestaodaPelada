@@ -854,3 +854,6 @@ APROVADA — i--/--i deixam de esconder e_dono (só estreita falso negativo), 46
 
 ## RTP-0121 — DevSecOps — 2026-10-17
 APROVADA — 0 críticos, 1 não crítico (RTP-0122: `|=`/`&=`/`^=`/`>>=` escapam da guarda); 46 testes + checagem na raiz executados.
+
+## TP-0133 — DevSecOps — 2026-10-17
+OK — só o id do Hyperdrive muda; cache off, origem direta, plano Free, nenhum segredo no repositório; recomendado limpar o histórico do PowerShell onde o token foi digitado.
