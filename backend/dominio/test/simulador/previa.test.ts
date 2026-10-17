@@ -33,7 +33,7 @@ describe('calcularPrevia: vários times', () => {
   it.each([
     [8, 4, 3, true],
     [7, 4, 3, true],
-    [5, 2, 2, true],
+    [5, 3, 2, true],
     [4, 2, null, true],
     [3, 2, null, false],
     [0, 2, null, false],
