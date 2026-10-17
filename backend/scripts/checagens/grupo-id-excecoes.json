@@ -1,4 +1,5 @@
 [
+  { "arquivo": "comum.ts", "motivo": "utilitários de erro do banco, sem consulta" },
   { "arquivo": "contas.ts", "motivo": "contas não são dado de grupo" },
   { "arquivo": "sessoes.ts", "motivo": "sessões não são dado de grupo" },
   { "arquivo": "tentativas.ts", "motivo": "tentativas de login não são dado de grupo" },

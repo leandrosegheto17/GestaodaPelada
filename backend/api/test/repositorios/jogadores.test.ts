@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+import { kyselyDe } from '../../src/infraestrutura/db/cliente.js';
 import {
   ApelidoEmUso,
   JaAtivo,
@@ -69,17 +70,46 @@ describe('repositório de jogadores', () => {
       autor: base.contaId,
       agora: AGORA,
     };
-    expect(await jogadores.editar(db, base.grupo.id, id, { ...novo, dataEntrada: '2026-02-10' })).toBe(true);
+    const editar = (grupoId: string, extra: { dataEntrada?: string } = {}) =>
+      emTransacao(db, (tx) => jogadores.editar(tx, grupoId, id, { ...novo, ...extra }));
+    expect(await editar(base.grupo.id, { dataEntrada: '2026-02-10' })).toBe(true);
     const j = await jogadores.buscar(db, base.grupo.id, id);
     expect(j).toMatchObject({ apelido: 'Novo Nome', posicao: 'goleiro', telefone: '11987654321' });
     expect(j?.periodos).toEqual([
       { inicio: '2026-02-10', fim: '2026-03-01' },
       { inicio: '2026-04-01', fim: null },
     ]);
-    await expect(
-      jogadores.editar(db, base.grupo.id, id, { ...novo, dataEntrada: '2026-03-02' }),
-    ).rejects.toBeInstanceOf(PeriodoInvalido);
-    expect(await jogadores.editar(db, base.outroGrupo.id, id, novo)).toBe(false);
+    await expect(editar(base.grupo.id, { dataEntrada: '2026-03-02' })).rejects.toBeInstanceOf(PeriodoInvalido);
+    expect(await editar(base.outroGrupo.id)).toBe(false);
+    expect((await jogadores.buscar(db, base.grupo.id, id))?.apelido).toBe('Novo Nome');
+  });
+
+  it('com id de outro grupo: inativar, excluir e temHistorico não tocam o jogador; sem Tx não compila', async () => {
+    const db = await abrir();
+    const base = await criarBase(db, fabrica);
+    const id = await criarJogador(db, base.grupo.id, base.contaId);
+    expect(await jogadores.inativar(db, base.outroGrupo.id, id, '2026-06-01')).toBe('sem_periodo_aberto');
+    expect(await emTransacao(db, (tx) => jogadores.excluir(tx, base.outroGrupo.id, id))).toBe(false);
+    expect(await jogadores.temHistorico(db, base.outroGrupo.id, id)).toBe(false);
+    expect((await jogadores.buscar(db, base.grupo.id, id))?.periodos).toEqual([{ inicio: '2026-01-01', fim: null }]);
+    // @ts-expect-error criar exige Tx
+    void jogadores.criar(db, base.grupo.id, { ...dados('SemTx'), autor: base.contaId }).catch(() => undefined);
+  });
+
+  it('listar usa uma consulta só, com os períodos de cada jogador', async () => {
+    const db = await abrir();
+    const base = await criarBase(db, fabrica);
+    for (const apelido of ['Um', 'Dois', 'Tres']) {
+      const id = await criarJogador(db, base.grupo.id, base.contaId, { apelido, dataEntrada: '2026-01-01' });
+      await jogadores.inativar(db, base.grupo.id, id, '2026-02-01');
+      await jogadores.reativar(db, base.grupo.id, id, '2026-03-01');
+    }
+    const espiao = vi.spyOn(kyselyDe(db).getExecutor(), 'executeQuery');
+    const lista = await jogadores.listar(db, base.grupo.id);
+    expect(espiao).toHaveBeenCalledTimes(1);
+    espiao.mockRestore();
+    expect(lista).toHaveLength(3);
+    expect(lista.every((j) => j.periodos.length === 2)).toBe(true);
   });
 
   it('inativar fecha o aberto; de novo não há período aberto; reativar abre outro e não aceita já ativo', async () => {

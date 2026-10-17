@@ -1,5 +1,6 @@
 import { sql } from 'kysely';
 import { kyselyDe, type ExecutorDb } from '../cliente.js';
+import { seViolarUnico } from './comum.js';
 
 export interface Grupo {
   id: string;
@@ -118,9 +119,7 @@ export async function criar(ex: ExecutorDb, novo: NovoGrupo): Promise<string> {
       .executeTakeFirstOrThrow();
     return linha.id;
   } catch (erro) {
-    const pg = erro as { code?: string; constraint?: string };
-    if (pg.code === '23505' && pg.constraint === 'grupos_slug_key') throw new SlugEmUso();
-    throw erro;
+    return seViolarUnico(erro, 'grupos_slug_key', () => new SlugEmUso());
   }
 }
 

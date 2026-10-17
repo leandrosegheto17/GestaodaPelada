@@ -1,5 +1,6 @@
 import { sql } from 'kysely';
-import { kyselyDe, type ExecutorDb } from '../cliente.js';
+import { kyselyDe, type ExecutorDb, type Tx } from '../cliente.js';
+import { seViolarUnico } from './comum.js';
 
 export class ApelidoEmUso extends Error {
   constructor() {
@@ -89,8 +90,9 @@ export interface DadosJogador {
   telefone: string | null;
 }
 
+/** Duas tabelas: exige transação. */
 export async function criar(
-  ex: ExecutorDb,
+  ex: Tx,
   grupoId: string,
   dados: DadosJogador & { dataEntrada: string; autor: string; agora: Date },
 ): Promise<string> {
@@ -117,16 +119,13 @@ export async function criar(
       .execute();
     return linha.id;
   } catch (erro) {
-    if (codigoDe(erro).code === '23505' && codigoDe(erro).constraint === 'jogadores_apelido_grupo') {
-      throw new ApelidoEmUso();
-    }
-    throw erro;
+    return seViolarUnico(erro, 'jogadores_apelido_grupo', () => new ApelidoEmUso());
   }
 }
 
 /** Atualiza os dados; `dataEntrada` move o início do primeiro período. */
 export async function editar(
-  ex: ExecutorDb,
+  ex: Tx,
   grupoId: string,
   jogadorId: string,
   dados: DadosJogador & { dataEntrada?: string; autor: string; agora: Date },
@@ -157,9 +156,8 @@ export async function editar(
     return true;
   } catch (erro) {
     const { code, constraint } = codigoDe(erro);
-    if (code === '23505' && constraint === 'jogadores_apelido_grupo') throw new ApelidoEmUso();
     if (code === '23514' && constraint === 'periodo_fim_depois_inicio') throw new PeriodoInvalido();
-    throw erro;
+    return seViolarUnico(erro, 'jogadores_apelido_grupo', () => new ApelidoEmUso());
   }
 }
 
@@ -212,7 +210,7 @@ export async function reativar(
 }
 
 /** Apaga o jogador e os períodos dele; presença ou nota (chave estrangeira) vira `JogadorComHistorico`. */
-export async function excluir(ex: ExecutorDb, grupoId: string, jogadorId: string): Promise<boolean> {
+export async function excluir(ex: Tx, grupoId: string, jogadorId: string): Promise<boolean> {
   const banco = kyselyDe(ex);
   try {
     await banco
