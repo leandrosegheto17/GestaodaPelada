@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-16 21:26
+Atualizado: 2026-10-16 21:27
 
-Resumo: Não executada 190 · Executada (aguarda teste) 17 · Testada (aguarda segurança) 2 · total 209
+Resumo: Não executada 189 · Executada (aguarda teste) 18 · Testada (aguarda segurança) 2 · total 209
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -207,7 +207,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 192 | TP-0190 | executor | ✔ | Endpoint GET /api/grupos/:g/financeiro/mes?mes= | L42 | TP-0013, TP-0032, TP-0033, TP-0052, TP-0186, TP-0187, TP-0189 | Executada (aguarda teste) |
 | 193 | TP-0191 | executor | ✔ | Endpoint PUT /api/grupos/:g/financeiro/config | L42 | TP-0030, TP-0032, TP-0033, TP-0186, TP-0189 | Executada (aguarda teste) |
 | 194 | TP-0192 | executor | ✔ | Endpoint POST /api/grupos/:g/financeiro/pagamentos (marcar) | L42 | TP-0014, TP-0030, TP-0032, TP-0033, TP-0186, TP-0187, TP-0189 | Executada (aguarda teste) |
-| 195 | TP-0193 | executor | ✔ | Endpoint DELETE /api/grupos/:g/financeiro/pagamentos/:jogadorId/:mes (desmarcar) | L42 | TP-0014, TP-0030, TP-0032, TP-0033, TP-0186, TP-0189 | Não executada |
+| 195 | TP-0193 | executor | ✔ | Endpoint DELETE /api/grupos/:g/financeiro/pagamentos/:jogadorId/:mes (desmarcar) | L42 | TP-0014, TP-0030, TP-0032, TP-0033, TP-0186, TP-0189 | Executada (aguarda teste) |
 | 196 | TP-0194 | executor | ✔ | Resumo do início com o saldo atual | L42 | TP-0061, TP-0187, TP-0189 | Não executada |
 | 197 | TP-0195 | executor | ✔ | Endpoint POST /api/grupos/:g/financeiro/lancamentos | L43 | TP-0030, TP-0032, TP-0033, TP-0186, TP-0189 | Não executada |
 | 198 | TP-0196 | executor | ✔ | Endpoint GET /api/grupos/:g/financeiro/lancamentos/:id | L43 | TP-0032, TP-0033, TP-0186, TP-0189 | Não executada |

@@ -160,6 +160,10 @@ export const CASOS: Record<string, Caso> = {
     tipo: 'financeiro',
     corpo: { jogadorId: '00000000-0000-4000-8000-000000000001', mes: '2026-10' },
   },
+  'DELETE /api/grupos/:grupoId/financeiro/pagamentos/:jogadorId/:mes': {
+    tipo: 'financeiro',
+    parametros: () => ({ mes: '2026-10' }),
+  },
   'PUT /api/grupos/:grupoId/financeiro/config': {
     tipo: 'financeiro',
     corpo: { mensalidadeCentavos: 7500, saldoInicialCentavos: 35000, dataSaldoInicial: '2026-02-05' },
