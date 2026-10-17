@@ -74,3 +74,15 @@ APROVADA; 0 críticos, 1 não crítico (RTP-0010: testes mais fracos que o plano
 
 ## TP-0153 — QA — 2026-10-17
 APROVADA; 0 críticos, 0 não críticos; 14 testes passando, aceites (a)-(d) cobertos, incluindo exemplo literal do mockup.
+
+## TP-0098 — QA — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; vitest barras 11/11, axe limpo, CSS fiel ao mockup.
+
+## TP-0099 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0013: foco escapa por Shift+Tab no título com focoNoTitulo, sem teste); 33 testes ok, lint ok.
+
+## TP-0101 — QA — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; 9 testes passando cobrindo todos os casos do plano, eslint limpo; visual fica nas telas T10/T21/T08.
+
+## TP-0104 — QA — 2026-10-17
+APROVADA; 27/27 testes (plano coberto, matriz adversarial e axe ok); 0 achados críticos, 0 não críticos.
