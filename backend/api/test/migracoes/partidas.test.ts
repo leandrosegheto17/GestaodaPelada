@@ -1,12 +1,21 @@
 import { describe, expect, it } from 'vitest';
 import { usarDb } from '../apoio/db-teste.js';
 import { usarFabrica } from '../apoio/fabrica.js';
+import { criarRelogio } from '../../src/infraestrutura/relogio/index.js';
+import { relogioFixo } from '../apoio/relogio.js';
 import { criarBase, inserirJogador } from '../apoio/sql-dados.js';
 import { codigoDoErro, executarSql } from '../apoio/sql.js';
 
 const fabrica = usarFabrica();
 const abrir = usarDb(fabrica);
-const AGORA = '2026-10-16T12:00:00Z';
+const relogio = relogioFixo(criarRelogio().hoje());
+const AGORA = relogio.agoraIso();
+const dia = (n: number): string => {
+  const d = new Date(AGORA);
+  d.setUTCDate(d.getUTCDate() + n);
+  return d.toISOString().slice(0, 10);
+};
+const VIGENCIA = dia(0);
 
 async function inserirPartida(conta: string, grupoId: string, data: string): Promise<string> {
   const linhas = await executarSql<{ id: string }>(
@@ -33,33 +42,38 @@ describe('migração de pesos, partidas e presenças', () => {
            lesionado_com_chuva, expulso, registrado_por, registrado_em) VALUES ($1, $2, 1, 1, 1, 1, $3, $4, $5)`,
         [grupoId, vigencia, expulso, base.contaId, AGORA],
       );
-    expect(await codigoDoErro(inserir(base.grupo.id, '2026-02-05', -11))).toBe('23514');
-    expect(await codigoDoErro(inserir(base.grupo.id, '2026-02-05', 11))).toBe('23514');
-    expect(await codigoDoErro(inserir(base.grupo.id, '2026-02-05', -1))).toBeNull();
-    expect(await codigoDoErro(inserir(base.grupo.id, '2026-02-05', -1))).toBe('23505');
-    expect(await codigoDoErro(inserir(base.outroGrupo.id, '2026-02-05', -1))).toBeNull();
+    expect(await codigoDoErro(inserir(base.grupo.id, VIGENCIA, -11))).toBe('23514');
+    expect(await codigoDoErro(inserir(base.grupo.id, VIGENCIA, 11))).toBe('23514');
+    expect(await codigoDoErro(inserir(base.grupo.id, dia(-2), -10))).toBeNull();
+    expect(await codigoDoErro(inserir(base.grupo.id, dia(-1), 10))).toBeNull();
+    expect(await codigoDoErro(inserir(base.grupo.id, VIGENCIA, -1))).toBeNull();
+    expect(await codigoDoErro(inserir(base.grupo.id, VIGENCIA, -1))).toBe('23505');
+    expect(await codigoDoErro(inserir(base.outroGrupo.id, VIGENCIA, -1))).toBeNull();
   });
 
   it('uma partida por grupo e data', async () => {
     const base = await criarBase(await abrir(), fabrica);
-    await inserirPartida(base.contaId, base.grupo.id, '2026-10-15');
-    expect(await codigoDoErro(inserirPartida(base.contaId, base.grupo.id, '2026-10-15'))).toBe('23505');
-    expect(await codigoDoErro(inserirPartida(base.contaId, base.outroGrupo.id, '2026-10-15'))).toBeNull();
+    const data = dia(-1);
+    await inserirPartida(base.contaId, base.grupo.id, data);
+    expect(await codigoDoErro(inserirPartida(base.contaId, base.grupo.id, data))).toBe('23505');
+    expect(await codigoDoErro(inserirPartida(base.contaId, base.outroGrupo.id, data))).toBeNull();
   });
 
   it('presença: uma por partida e jogador, situação válida e jogador do mesmo grupo', async () => {
     const base = await criarBase(await abrir(), fabrica);
-    const partida = await inserirPartida(base.contaId, base.grupo.id, '2026-10-08');
+    const partida = await inserirPartida(base.contaId, base.grupo.id, dia(-8));
     const jogador = await inserirJogador(fabrica, base, base.grupo.id, 'Presente');
     const alheio = await inserirJogador(fabrica, base, base.outroGrupo.id, 'Alheio');
-    const marcar = (jogadorId: string, situacao: string) =>
+    const marcar = (jogadorId: string, situacao: string, grupoId = base.grupo.id) =>
       executarSql('INSERT INTO presencas (partida_id, jogador_id, grupo_id, situacao) VALUES ($1, $2, $3, $4)', [
         partida,
         jogadorId,
-        base.grupo.id,
+        grupoId,
         situacao,
       ]);
     expect(await codigoDoErro(marcar(jogador, 'ausente'))).toBe('23514');
+    expect(await codigoDoErro(marcar(jogador, 'falta'))).toBe('23514');
+    expect(await codigoDoErro(marcar(alheio, 'presente', base.outroGrupo.id))).toBe('23503');
     expect(await codigoDoErro(marcar(jogador, 'presente'))).toBeNull();
     expect(await codigoDoErro(marcar(jogador, 'expulso'))).toBe('23505');
     expect(await codigoDoErro(marcar(alheio, 'presente'))).toBe('23503');
@@ -67,7 +81,7 @@ describe('migração de pesos, partidas e presenças', () => {
 
   it('apagar a partida apaga as presenças; apagar jogador com presença é recusado', async () => {
     const base = await criarBase(await abrir(), fabrica);
-    const partida = await inserirPartida(base.contaId, base.grupo.id, '2026-10-01');
+    const partida = await inserirPartida(base.contaId, base.grupo.id, dia(-15));
     const jogador = await inserirJogador(fabrica, base, base.grupo.id, 'Historico');
     await executarSql(
       "INSERT INTO presencas (partida_id, jogador_id, grupo_id, situacao) VALUES ($1, $2, $3, 'presente')",
