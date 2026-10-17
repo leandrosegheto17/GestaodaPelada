@@ -254,3 +254,9 @@ APROVADA; 0 críticos, 1 não crítico (RTP-0043: teste de selos/trocas no suces
 
 ## TP-0183 — QA — 2026-10-17
 APROVADA — PDF 1 página, divergência medida 3,960% (sucesso) e 4,022% (mes-vazio) <= 4,5% (ADR-019), 794x1123 exatos, 1% mantido nas telas; 0 achados; vitest 26/26 e Playwright 2/2.
+
+## TP-0200 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0048: D2 com fallback na config); 29 testes passando, visual T22 OK (vazio-mes pc só RTP-0029), asserções dos 2 testes corrigidos preservadas.
+
+## TP-0202 — QA — 2026-10-17
+APROVADA — 16/16 testes, celular 0,00%; pc 1,50% por largura 560 vs 512 px (RTP-0047, baixa; não é o caso do RTP-0029); estado erro conferido por leitura; 0 críticos, 1 não crítico.
