@@ -479,3 +479,42 @@ APROVADA — 13 testes verdes em banco próprio e checagem aditiva ok; CHECKs po
 
 ## TP-0160 — QA — 2026-10-17
 APROVADA; 13/13 testes e checagem aditiva verdes; 0 críticos, 1 baixo (datas literais no teste, RTP-0062).
+
+## RTP-0062 — QA — 2026-10-17
+APROVADA; 13/13 passando, sem literal de data, datas derivadas do relogioFixo; 0 achados.
+
+## RTP-0063 — QA — 2026-10-17
+APROVADA; cookie `__Host-sessao` duplicado -> 401 (também em mw-grupo/mw-dono), cookie único segue 200, mutação derruba o teste; 0 achados.
+
+## RTP-0064 — QA — 2026-10-17
+APROVADA; 111/111 testes, raiz exit 0 em ~4,4 s, ~50 sondas novas de contorno todas barradas (exit 1), 0 achados.
+
+## RTP-0065 — QA — 2026-10-17
+APROVADA; regex sem âncora validada por mutação (4 testes falham com a antiga), nenhum chamador real usa chave que a nova regra recuse; 0 achados.
+
+## RTP-0066 — QA — 2026-10-17
+APROVADA; mutação cost 04 falha o caso, export de HASH_FIXO aceitável (constante não secreta, anotada como só-teste); 0 críticos, 0 não críticos.
+
+## TP-0032 — QA — 2026-10-17
+APROVADA; 12 testes passam, aceite central coberto; lacuna de teste (troca_de_senha, `/grupos//eco`, mw-dono.test.ts) virou RTP-0069; 0 críticos, 1 não crítico.
+
+## TP-0037 — QA — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; 5 testes passando (sessões, pedido, auditoria, atomicidade, sem senha em log); assinatura com `agora` e tipo local não divergem do aceite.
+
+## TP-0038 — QA — 2026-10-17
+APROVADA; mutações de AdminJaVinculado e nome guardado falham os testes, auditoria admin_vinculado sem asserção (RTP-0068); assinatura com Date/ExecutorDb e erro genérico na corrida aceitos; 0 críticos, 1 não crítico.
+
+## TP-0043 — QA — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; 7/7 testes de migração e checagem aditiva (10 migrações) verdes.
+
+## TP-0044 — QA — 2026-10-17
+APROVADA; 4/4 passando, aditiva ok; 0 críticos, 1 não crítico (RTP-0070: datas literais e 3 casos do plano sem teste).
+
+## TP-0050 — QA — 2026-10-17
+APROVADA - 5/5 testes, aceite central (fuso, distintos, 48 h, isolamento) coberto; 0 críticos, 1 não crítico (RTP-0067: ts-expect-error, N+1, fábrica, colunas); PENDENTE (a)-(c) adotado sem Coordenador.
+
+## TP-0161 — QA — 2026-10-17
+APROVADA, 0 críticos/0 não críticos; 5/5 testes + checar-grupo-id verdes; desvio (sem dataTexto/comum.ts) segue o padrão dos demais repositórios.
+
+## TP-0188 — QA — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; 10/10 testes de migração e checagem aditiva verdes, centavos inteiros e isolamento por grupo confirmados.
