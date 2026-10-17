@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { expect, test, type Browser, type Page } from '@playwright/test';
 import { EMAIL_DONO, EMAIL_MARQUINHOS, SENHA_DE_TESTE } from '../../../../backend/scripts/seed-local/ids';
-import { entrarComo } from './apoio/sessao';
+import { aceitarAvisoDePrivacidade, entrarComo } from './apoio/sessao';
 
 const sufixo = randomUUID().slice(0, 8);
 const NOME_DO_GRUPO = `Racha E2E ${sufixo}`;
@@ -65,13 +65,18 @@ test.describe.serial('I1: do grupo novo ao ranking público', () => {
   test('o admin cadastra 3 jogadores e lança a partida na data sugerida', async ({ browser }) => {
     const page = await novoContexto(browser);
     await entrarComo(page, EMAIL_ADMIN, SENHA_NOVA);
+    // Os jogadores entram na data que a tela de partida sugere, para estarem ativos nela.
+    await page.goto(`/admin/${estado.grupoId}/partidas/nova`);
+    await aceitarAvisoDePrivacidade(page);
+    const dataSugerida = await page.getByLabel('Data', { exact: true }).inputValue();
     for (const apelido of APELIDOS) {
       await page.goto(`/admin/${estado.grupoId}/jogadores/novo`);
       await page.getByLabel('Apelido').fill(apelido);
+      await page.getByLabel('Data de entrada').fill(dataSugerida);
       await page.getByLabel('Ano de nascimento').fill('1990');
       await page.getByLabel('Posição').selectOption('meio_campo');
       await page.getByRole('button', { name: 'Salvar' }).click();
-      await expect(page.getByText('Jogador salvo')).toBeVisible();
+      await expect(page.getByRole('heading', { level: 1, name: apelido })).toBeVisible();
     }
     await page.goto(`/admin/${estado.grupoId}/jogadores`);
     for (const apelido of APELIDOS) await expect(page.getByRole('link', { name: new RegExp(apelido) })).toBeVisible();
@@ -98,7 +103,10 @@ test.describe.serial('I1: do grupo novo ao ranking público', () => {
   test('o ranking público mostra os 3 jogadores com os pontos dos pesos vigentes', async ({ browser }) => {
     const admin = await novoContexto(browser);
     await entrarComo(admin, EMAIL_ADMIN, SENHA_NOVA);
-    const pesos = (await (await admin.request.get(`/api/grupos/${estado.grupoId}/pesos`)).json()) as {
+    await expect(admin).toHaveURL(/\/admin/);
+    const respostaPesos = await admin.request.get(`/api/grupos/${estado.grupoId}/pesos`);
+    expect(respostaPesos.status(), await respostaPesos.text()).toBe(200);
+    const pesos = (await respostaPesos.json()) as {
       vigente: { presencaSemChuva: number; lesionadoSemChuva: number };
     };
     const publico = await novoContexto(browser);
@@ -112,11 +120,16 @@ test.describe.serial('I1: do grupo novo ao ranking público', () => {
   test('admin de outro grupo recebe 404 na URL do grupo (isolamento)', async ({ browser }) => {
     const page = await novoContexto(browser);
     await entrarComo(page, EMAIL_MARQUINHOS, SENHA_DE_TESTE);
+    await expect(page).toHaveURL(/\/admin/);
     const direto = await page.request.get(`/api/grupos/${estado.grupoId}`);
     expect(direto.status()).toBe(404);
     expect((await page.request.get(`/api/grupos/${estado.grupoId}/jogadores`)).status()).toBe(404);
     await page.goto(`/admin/${estado.grupoId}`);
-    await expect(page).toHaveURL(/\/admin$/);
+    // A guarda de navegação leva quem não é do grupo para a própria área; o grupo alheio nunca aparece.
+    await expect(page).toHaveURL(
+      (url) => /^\/admin(\/[0-9a-f-]{36})?$/.test(url.pathname) && !url.pathname.includes(estado.grupoId ?? ''),
+    );
+    await expect(page.getByRole('heading', { level: 1, name: new RegExp(NOME_DO_GRUPO) })).toHaveCount(0);
   });
 
   test('anônimo em /admin vai para a entrada com o destino', async ({ browser }) => {
