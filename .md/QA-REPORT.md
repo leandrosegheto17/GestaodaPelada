@@ -824,3 +824,39 @@ APROVADA; 0 críticos, 1 não crítico (RTP-0111, montarCenario 2x no mesmo test
 
 ## TP-0132 — QA — 2026-10-17
 APROVADA — 0 críticos, 1 não crítico (branch Neon é `production`, não `main`: deploy.yml/SDD/TP-0133/TP-0135 → RTP-0113); evidência manual do usuário conferida contra o aceite, nenhum segredo no repositório, não reexecutável pelo QA.
+
+## RTP-0096 — QA — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; pdf.test.ts 10/10 verde, todos os casos do aceite presentes.
+
+## RTP-0101 — QA — 2026-10-17
+APROVADA, 0 críticos/0 não críticos; editar.test.ts 5/5 passando, 404 de :data inválida com zero chamadas ao db.
+
+## RTP-0103 — QA — 2026-10-17
+APROVADA — limite-taxa.test passa 2x seguidas no mesmo banco (10/10), lacunas do plano cobertas; 0 achados críticos, 0 não críticos.
+
+## RTP-0107 — QA — 2026-10-17
+APROVADA — maxAgeSeconds 7 dias no cache do ranking, teste novo passa; 0 críticos, 1 não crítico preexistente (ícones vs mockup) aberto como RTP-0116.
+
+## RTP-0109 — QA — 2026-10-17
+APROVADA — 0 achados; binding ausente em ambiente https registra "limitador ausente" uma vez sem IP, local silencioso; vitest limite-taxa 10/10.
+
+## RTP-0110 — QA — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; vitest 37/37 e checagem na raiz saída 0.
+
+## RTP-0112 — QA — 2026-10-17
+APROVADA — vitest 37/37 e checagem na raiz exit 0; `//` e `--` em literal não escondem mais `e_dono`; 0 achados.
+
+## RTP-0115 — QA — 2026-10-17
+APROVADA; 0 achados; check-ignore devolve .pnpm-store e .tmp-out.txt (exit 0), nada rastreado.
+
+## RTP-0097 — QA — 2026-10-17
+BLOQUEIO por ambiente (pesos/cenário quebra 9 testes de rota do simulador); código correto, uma só definição, contrato 31/31, confirmar-escalacao e partidas verdes; 0 achados.
+
+## TP-0112 — QA — 2026-10-17
+APROVADA — 191 testes + 2 e2e offline + visual T01 13/13 verdes; 0 achados; 3 estados manuais conferidos por DOM contra o mockup.
+
+## TP-0138 — QA — 2026-10-17
+APROVADA; 7/7 do i1 passam contra o compose real; 0 críticos, 2 não críticos (RTP-0117 faixa "Jogador salvo", RTP-0118 senha temporária no trace); job CI não verificado em PR.
+
+## TP-0196 — QA — 2026-10-17
+BLOQUEIO de ambiente: 74 testes de lancamentos/ler+isolamento passam, mas afterAll do isolamento falha por linhas residuais (conta órfã em pelada_teste); 0 achados, rever após limpar o banco.
