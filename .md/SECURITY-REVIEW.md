@@ -29,3 +29,18 @@ APROVADA — previa.ts pura, inteiros, sem I/O/import/relógio/random/dado pesso
 
 ## TP-0149 — DevSecOps — 2026-10-16
 APROVADA em segurança; diff lido + grep executado (sem random/relógio/import/ID), sem dependência nova, sem dado pessoal; 0 achados.
+
+## TP-0008 — DevSecOps — 2026-10-17
+APROVADA em segurança; 0 críticos, 0 não críticos; revisão do diff (função pura, sem relógio/IO/import externo/dado pessoal, O(n log m)), sem dependência nova e sem comando executado.
+
+## TP-0009 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos novos; revisão do diff de funções puras sem I/O, relógio, import externo nem dado pessoal; sem dependência nova (nada executado além da seção 5).
+
+## TP-0013 — DevSecOps — 2026-10-17
+APROVADA COM DÉBITO — diff seguro (CSRF antes de rotas, 500 sem detalhe, no-store inclusive 404/500, wrangler em lista fechada); `pnpm audit --prod` limpo, avisos altos de sharp/undici só em dev via wrangler -> RTP-0008; teste ativo fica para o /deploy.
+
+## TP-0088 — DevSecOps — 2026-10-17
+OK — revisão do diff sem achados (sem inline/terceiros, recursos falha fechado, deps oficiais); pnpm audit --prod sem vulnerabilidades; 0 críticos, 0 não críticos.
+
+## TP-0150 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos novos; revisão do diff (função pura sem I/O, relógio, random ou import externo, divisões protegidas), sem dependência nova; nada executado neste chapéu.
