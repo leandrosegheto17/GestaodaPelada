@@ -791,3 +791,6 @@ APROVADA; 0 achados de segurança (projeção estrita, 404 uniforme, entrada val
 
 ## TP-0203 — DevSecOps — 2026-10-17
 APROVADA — aviso-privacidade sem IDOR (conta da sessão), sessão completa, CSRF e corpo strict ok, só grava instante (LGPD); tsc limpo; 0 achados.
+
+## TP-0087 — DevSecOps — 2026-10-17
+TP-0087 APROVADA em segurança, 1 achado baixo (RTP-0109: binding ausente desliga o limite sem log); limitador antes do banco, IP só como chave, ratelimits Free 10/60 ok; tsc/eslint limpos.
