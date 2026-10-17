@@ -232,11 +232,12 @@ export async function excluir(ex: ExecutorDb, grupoId: string, jogadorId: string
   }
 }
 
-/** Há presença ou nota registrada para o jogador? */
+/** Há presença, nota ou pagamento registrado para o jogador? */
 export async function temHistorico(ex: ExecutorDb, grupoId: string, jogadorId: string): Promise<boolean> {
   const r = await sql<{ existe: boolean }>`
     SELECT EXISTS (SELECT 1 FROM presencas WHERE grupo_id = ${grupoId} AND jogador_id = ${jogadorId})
-        OR EXISTS (SELECT 1 FROM notas WHERE grupo_id = ${grupoId} AND jogador_id = ${jogadorId}) AS existe
+        OR EXISTS (SELECT 1 FROM notas WHERE grupo_id = ${grupoId} AND jogador_id = ${jogadorId})
+        OR EXISTS (SELECT 1 FROM pagamentos_mes WHERE grupo_id = ${grupoId} AND jogador_id = ${jogadorId}) AS existe
   `.execute(kyselyDe(ex));
   return r.rows[0]?.existe ?? false;
 }

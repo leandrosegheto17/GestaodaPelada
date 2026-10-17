@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 import { emTransacao } from '../../../../src/infraestrutura/db/index.js';
 import { kyselyDe } from '../../../../src/infraestrutura/db/cliente.js';
+import * as financeiro from '../../../../src/infraestrutura/db/repositorios/financeiro.js';
 import * as habilidades from '../../../../src/infraestrutura/db/repositorios/habilidades.js';
 import * as partidas from '../../../../src/infraestrutura/db/repositorios/partidas.js';
 import { montarCenario } from '../../../apoio/cenario-acesso.js';
@@ -125,6 +126,20 @@ describe('DELETE /api/grupos/:g/jogadores/:id (workerd)', () => {
       expect((await cliente(cen.adminA.cookie).get(`/api/grupos/${g}/jogadores/${id}`)).status).toBe(200);
     }
     expect(await kyselyDe(db).selectFrom('auditoria').select('id').where('grupo_id', '=', g).execute()).toEqual([]);
+  });
+
+  it('só com pagamento de mensalidade: 409 jogador_com_historico e nada some', async () => {
+    const db = await abrir();
+    const cen = await montarCenario(db, fabrica);
+    const g = cen.grupoA.id;
+    const id = await criarJogador(db, g, cen.adminA.id, { apelido: 'ComPagamento' });
+    await emTransacao(db, (tx) =>
+      financeiro.marcar(tx, g, { jogadorId: id, mes: '2026-10', lancamento: null, autor: cen.adminA.id, agora: AGORA }),
+    );
+    const r = await cliente(cen.adminA.cookie).delete(`/api/grupos/${g}/jogadores/${id}`);
+    expect(r.status).toBe(409);
+    expect(erroJogadorComHistorico.safeParse(r.corpo).success).toBe(true);
+    expect((await cliente(cen.adminA.cookie).get(`/api/grupos/${g}/jogadores/${id}`)).status).toBe(200);
   });
 
   it('outro grupo e malformado: 404', async () => {
