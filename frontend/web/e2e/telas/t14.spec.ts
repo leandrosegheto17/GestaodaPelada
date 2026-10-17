@@ -41,6 +41,7 @@ test.describe('T12 → T14: simulador com 3 ou mais times (respostas falsas)', (
     const { escalacoes } = await simularApi(page);
     await page.goto('/admin/g-quinta/simulador');
     await page.getByLabel('3 ou mais times').check();
+    await page.locator('#n').fill('4');
     await expect(page.getByText('4 times de 4 + 1 time incompleto de 2')).toBeVisible();
 
     await page.getByRole('button', { name: 'Sugerir times' }).click();
@@ -60,6 +61,7 @@ test.describe('T12 → T14: simulador com 3 ou mais times (respostas falsas)', (
     await simularApi(page);
     await page.goto('/admin/g-quinta/simulador');
     await page.getByLabel('3 ou mais times').check();
+    await page.locator('#n').fill('4');
     await page.getByRole('button', { name: 'Sugerir times' }).click();
     await expect(page.getByText('Incompleto (2 de 4)')).toBeVisible();
     const colunas = async () =>

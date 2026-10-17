@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-17 03:37
+Atualizado: 2026-10-17 03:42
 
-Resumo: Não executada 168 · Em execução 3 · Aprovada 86 · total 257
+Resumo: Não executada 167 · Em execução 4 · Testada (aguarda segurança) 2 · Aprovada 86 · total 259
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -136,7 +136,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 121 | TP-0119 | executor | ✔ | Tela T09: Início do admin | L26 | TP-0021, TP-0089, TP-0092, TP-0095, TP-0101, TP-0106, TP-0111, TP-0207 | Aprovada |
 | 122 | TP-0120 | executor | ✔ | Tela T10: Partidas | L26 | TP-0024, TP-0089, TP-0092, TP-0095, TP-0101, TP-0106, TP-0207 | Aprovada |
 | 123 | TP-0121 | executor | ✔ | Tela T11: Lançar partida | L26 | TP-0024, TP-0089, TP-0095, TP-0096, TP-0097, TP-0098, TP-0103, TP-0106, TP-0119, TP-0207 | Aprovada |
-| 124 | TP-0122 | executor | ✔ | Tela T11: editar e excluir partida | L26 | TP-0100, TP-0120, TP-0121 | Não executada |
+| 124 | TP-0122 | executor | ✔ | Tela T11: editar e excluir partida | L26 | TP-0100, TP-0120, TP-0121 | Em execução |
 | 125 | TP-0123 | executor | ✔ | Tela T15: Jogadores | L27 | TP-0023, TP-0089, TP-0093, TP-0095, TP-0097, TP-0101, TP-0106, TP-0207 | Aprovada |
 | 126 | TP-0124 | executor | ✔ | Tela T16: Ficha do jogador (dados e situação) | L27 | TP-0023, TP-0089, TP-0093, TP-0095, TP-0096, TP-0099, TP-0100, TP-0106, TP-0207 | Aprovada |
 | 127 | TP-0125 | executor | ✔ | Tela T18: Pontuação | L27 | TP-0024, TP-0089, TP-0095, TP-0096, TP-0101, TP-0106, TP-0207 | Aprovada |
@@ -192,7 +192,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 177 | TP-0173 | executor | ✔ | Cartão de time, tabela comparativa e lista de avisos | L37 | TP-0088, TP-0092, TP-0095, TP-0146 | Aprovada |
 | 178 | TP-0174 | executor | ✔ | Ajuste manual do simulador: D3 e gancho de reavaliação | L37 | TP-0091, TP-0099, TP-0146 | Aprovada |
 | 179 | TP-0175 | executor | ✔ | Tela T13: resultado com 2 times | L38 | TP-0089, TP-0098, TP-0100, TP-0106, TP-0172, TP-0173, TP-0174 | Aprovada |
-| 180 | TP-0176 | executor | ✔ | Tela T14: resultado com 3 ou mais times | L38 | TP-0089, TP-0098, TP-0100, TP-0106, TP-0172, TP-0173, TP-0174, TP-0175 | Não executada |
+| 180 | TP-0176 | executor | ✔ | Tela T14: resultado com 3 ou mais times | L38 | TP-0089, TP-0098, TP-0100, TP-0106, TP-0172, TP-0173, TP-0174, TP-0175 | Em execução |
 | 181 | TP-0177 | executor | ✔ | E2E de integração do I2 (API real) | L38 | TP-0138, TP-0162, TP-0163, TP-0165, TP-0166, TP-0167, TP-0168, TP-0172, TP-0175 | Não executada |
 | 182 | TP-0178 | executor | ✔ | [U] Go-live do I2 | L38 | SPK-0002, TP-0139, TP-0155, TP-0156, TP-0157, TP-0158, TP-0159, TP-0169, TP-0170, TP-0171, TP-0176, TP-0177 | Não executada |
 | 183 | TP-0179 | executor | ✔ | dominio/pdf: colunas do PDF e PTS INICIAL antes da 1ª coluna | L39 | TP-0010 | Não executada |
@@ -201,7 +201,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 186 | TP-0182 | executor | ✔ | Gerador de PDF: desenho da folha | L39 | TP-0004, TP-0088, TP-0092, TP-0093, TP-0180 | Aprovada |
 | 187 | BK-0002 | coordenador | ✔ | Comparação visual do PDF (P01) fica em 3,96% (sucesso) e 4,02% (mes-vazio) contra o limite | — | — | Aprovada |
 | 188 | TP-0183 | executor | ✔ | Gerador de PDF: uma página, legenda e rodapé | L39 | BK-0002, TP-0182 | Aprovada |
-| 189 | TP-0184 | executor | ✔ | T01: Exportar PDF (compartilhar ou baixar) | L39 | TP-0091, TP-0099, TP-0111, TP-0180, TP-0183 | Não executada |
+| 189 | TP-0184 | executor | ✔ | T01: Exportar PDF (compartilhar ou baixar) | L39 | TP-0091, TP-0099, TP-0111, TP-0180, TP-0183 | Em execução |
 | 190 | TP-0185 | executor | ✔ | [U] Go-live do I3 e início da janela de 8 semanas | L40 | TP-0178, TP-0181, TP-0184 | Não executada |
 | 191 | TP-0186 | executor | ✔ | contrato/financeiro | L41 | TP-0005, TP-0018 | Aprovada |
 | 192 | TP-0187 | executor | ✔ | dominio/caixa: saldos e entrada vinculada | L41 | TP-0007 | Não executada |
@@ -217,9 +217,9 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 202 | TP-0197 | executor | ✔ | Endpoint PUT /api/grupos/:g/financeiro/lancamentos/:id | L43 | TP-0030, TP-0032, TP-0033, TP-0186, TP-0189 | Não executada |
 | 203 | TP-0198 | executor | ✔ | Endpoint DELETE /api/grupos/:g/financeiro/lancamentos/:id | L43 | TP-0030, TP-0032, TP-0033, TP-0186, TP-0189 | Não executada |
 | 204 | TP-0199 | executor | ✔ | Tela T22: Financeiro do mês | L44 | TP-0089, TP-0092, TP-0095, TP-0101, TP-0106, TP-0186, TP-0207 | Aprovada |
-| 205 | TP-0200 | executor | ✔ | Tela T22: marcar e desmarcar pagamento | L44 | TP-0097, TP-0100, TP-0199 | Em execução |
+| 205 | TP-0200 | executor | ✔ | Tela T22: marcar e desmarcar pagamento | L44 | TP-0097, TP-0100, TP-0199 | Testada (aguarda segurança) |
 | 206 | TP-0201 | executor | ✔ | Tela T23: Lançamento | L44 | TP-0089, TP-0095, TP-0096, TP-0097, TP-0098, TP-0100, TP-0106, TP-0186, TP-0207 | Aprovada |
-| 207 | TP-0202 | executor | ✔ | Tela T24: Configuração do caixa | L44 | TP-0089, TP-0095, TP-0096, TP-0098, TP-0106, TP-0186, TP-0199, TP-0207 | Em execução |
+| 207 | TP-0202 | executor | ✔ | Tela T24: Configuração do caixa | L44 | TP-0089, TP-0095, TP-0096, TP-0098, TP-0106, TP-0186, TP-0199, TP-0207 | Testada (aguarda segurança) |
 | 208 | TP-0203 | executor | ✔ | Endpoint POST /api/sessao/aviso-privacidade | L45 | TP-0019, TP-0027, TP-0031, TP-0033 | Não executada |
 | 209 | TP-0204 | executor | ✔ | Tela T07: Aviso de privacidade (página e diálogo do 1º acesso) | L45 | TP-0089, TP-0095, TP-0099, TP-0105, TP-0106, TP-0207 | Aprovada |
 | 210 | TP-0205 | executor | ✔ | E2E de integração do I4 (API real) | L45 | TP-0138, TP-0190, TP-0191, TP-0192, TP-0193, TP-0195, TP-0199, TP-0200, TP-0201, TP-0202 | Não executada |
@@ -267,6 +267,8 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 252 | RTP-0039 | executor | ✔ | Harness T27: sessão de dono sem grupos no estado vazio | Refatoração Lote-L28 | RTP-0037 | Não executada |
 | 253 | RTP-0042 | executor | ✔ | Testes da T27: Criando…/clique duplo, painel invalidado, 500, axe no D1 | Refatoração Lote-L28 | TP-0130 | Não executada |
 | 254 | RTP-0038 | executor | ✔ | T22: largura do vazio-config e margens negativas do SemAcessoFinanceiro acopladas ao la... | Refatoração Lote-L44 | TP-0199 | Não executada |
-| 255 | RTP-0040 | executor | ✔ | Mockup base.css: .campo__entrada--nota perde para .campo__entrada (selects de nota esti... | Refatoração Lote-L37 | TP-0171 | Não executada |
-| 256 | RTP-0041 | executor | ✔ | T28: completar testes do plano (Ativo envia null, 422 da situação, reativar, rede, axe... | Refatoração Lote-28 | TP-0131 | Não executada |
-| 257 | RTP-0043 | executor | ✔ | T13: teste de página cobrir selos e trocas do sucesso; ajuda do Não entra 8 px abaixo d... | L38 | TP-0175 | Não executada |
+| 255 | RTP-0047 | executor | ✔ | T24: largura do formulário 560 px no app vs 512 px no mockup (pc) | Refatoração Lote-L44 | TP-0202 | Não executada |
+| 256 | RTP-0040 | executor | ✔ | Mockup base.css: .campo__entrada--nota perde para .campo__entrada (selects de nota esti... | Refatoração Lote-L37 | TP-0171 | Não executada |
+| 257 | RTP-0041 | executor | ✔ | T28: completar testes do plano (Ativo envia null, 422 da situação, reativar, rede, axe... | Refatoração Lote-28 | TP-0131 | Não executada |
+| 258 | RTP-0043 | executor | ✔ | T13: teste de página cobrir selos e trocas do sucesso; ajuda do Não entra 8 px abaixo d... | L38 | TP-0175 | Não executada |
+| 259 | RTP-0048 | executor | ✔ | T22: valor do D2 de desmarcar não pode cair em config.mensalidadeCentavos | L44 | TP-0200 | Não executada |

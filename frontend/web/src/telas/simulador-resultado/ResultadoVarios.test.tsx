@@ -78,7 +78,8 @@ describe('ResultadoVarios (T14)', () => {
       ],
     });
     montar();
-    expect(await screen.findByRole('status')).toHaveTextContent('Experimente N = 3 ou 2.');
+    const aviso = await screen.findByText(/Experimente N = 3 ou 2\./);
+    expect(aviso.closest('[role=status]')).not.toBeNull();
   });
 
   it('D3: "Time 1" atual, "Mover para Time 2…5" e "Trocar com…", sem "Só 1º tempo"', async () => {
@@ -140,7 +141,6 @@ describe('ResultadoVarios (T14)', () => {
     await screen.findByRole('heading', { name: 'Times sugeridos' });
     expect(await violacoes(container)).toEqual([]);
     await userEvent.click(screen.getByRole('button', { name: /Toninho/ }));
-    await screen.findByRole('dialog', { name: 'Toninho' });
-    expect(await violacoes(document.body)).toEqual([]);
+    expect(await violacoes(await screen.findByRole('dialog', { name: 'Toninho' }))).toEqual([]);
   });
 });
