@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-17 20:35
+Atualizado: 2026-10-17 20:39
 
-Resumo: Não executada 22 · Em execução 13 · Executada (aguarda teste) 4 · Aprovada 298 · Bloqueada 5 · Despriorizada 1 · total 343
+Resumo: Não executada 22 · Em execução 7 · Executada (aguarda teste) 10 · Aprovada 298 · Bloqueada 5 · Despriorizada 1 · total 343
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -211,11 +211,11 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 196 | TP-0187 | executor | ✔ | dominio/caixa: saldos e entrada vinculada | L41 | TP-0007 | Aprovada |
 | 197 | TP-0188 | executor | ✔ | Migração do financeiro | L41 | TP-0015, TP-0016, TP-0042 | Aprovada |
 | 198 | TP-0189 | executor | ✔ | Repositório do financeiro (e histórico do jogador com pagamentos) | L41 | TP-0014, TP-0016, TP-0017, TP-0046, TP-0074, TP-0188 | Aprovada |
-| 199 | TP-0190 | executor | ✔ | Endpoint GET /api/grupos/:g/financeiro/mes?mes= | L42 | TP-0013, TP-0032, TP-0033, TP-0052, TP-0186, TP-0187, TP-0189 | Em execução |
-| 200 | TP-0191 | executor | ✔ | Endpoint PUT /api/grupos/:g/financeiro/config | L42 | TP-0030, TP-0032, TP-0033, TP-0186, TP-0189 | Em execução |
-| 201 | TP-0192 | executor | ✔ | Endpoint POST /api/grupos/:g/financeiro/pagamentos (marcar) | L42 | TP-0014, TP-0030, TP-0032, TP-0033, TP-0186, TP-0187, TP-0189 | Em execução |
-| 202 | TP-0193 | executor | ✔ | Endpoint DELETE /api/grupos/:g/financeiro/pagamentos/:jogadorId/:mes (desmarcar) | L42 | TP-0014, TP-0030, TP-0032, TP-0033, TP-0186, TP-0189 | Em execução |
-| 203 | TP-0194 | executor | ✔ | Resumo do início com o saldo atual | L42 | TP-0061, TP-0187, TP-0189 | Em execução |
+| 199 | TP-0190 | executor | ✔ | Endpoint GET /api/grupos/:g/financeiro/mes?mes= | L42 | TP-0013, TP-0032, TP-0033, TP-0052, TP-0186, TP-0187, TP-0189 | Executada (aguarda teste) |
+| 200 | TP-0191 | executor | ✔ | Endpoint PUT /api/grupos/:g/financeiro/config | L42 | TP-0030, TP-0032, TP-0033, TP-0186, TP-0189 | Executada (aguarda teste) |
+| 201 | TP-0192 | executor | ✔ | Endpoint POST /api/grupos/:g/financeiro/pagamentos (marcar) | L42 | TP-0014, TP-0030, TP-0032, TP-0033, TP-0186, TP-0187, TP-0189 | Executada (aguarda teste) |
+| 202 | TP-0193 | executor | ✔ | Endpoint DELETE /api/grupos/:g/financeiro/pagamentos/:jogadorId/:mes (desmarcar) | L42 | TP-0014, TP-0030, TP-0032, TP-0033, TP-0186, TP-0189 | Executada (aguarda teste) |
+| 203 | TP-0194 | executor | ✔ | Resumo do início com o saldo atual | L42 | TP-0061, TP-0187, TP-0189 | Executada (aguarda teste) |
 | 204 | TP-0195 | executor | ✔ | Endpoint POST /api/grupos/:g/financeiro/lancamentos | L43 | TP-0030, TP-0032, TP-0033, TP-0186, TP-0189 | Em execução |
 | 205 | TP-0196 | executor | ✔ | Endpoint GET /api/grupos/:g/financeiro/lancamentos/:id | L43 | TP-0032, TP-0033, TP-0186, TP-0189 | Executada (aguarda teste) |
 | 206 | TP-0197 | executor | ✔ | Endpoint PUT /api/grupos/:g/financeiro/lancamentos/:id | L43 | TP-0030, TP-0032, TP-0033, TP-0186, TP-0189 | Em execução |
@@ -325,7 +325,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 310 | RTP-0081 | executor | ✔ | Teste de ordem por nome em GET /api/grupos/:g/admins | Refatoração Lote-L14 | TP-0063 | Aprovada |
 | 311 | RTP-0082 | executor | ✔ | Testes de aplicação com db-worker rodam no projeto node do vitest | L15 | TP-0069 | Aprovada |
 | 312 | RTP-0106 | executor | ✔ | montarCenario usa e-mail de dono fixo: testes de aplicação colidem em contas_email_unic... | Refatoração Lote-L15 | RTP-0082 | Aprovada |
-| 313 | RTP-0111 | executor | ✔ | montarCenario chamado duas vezes no mesmo teste colide em contas_email_unico (pagamento... | Refatoração Lote-L15 | RTP-0106 | Em execução |
+| 313 | RTP-0111 | executor | ✔ | montarCenario chamado duas vezes no mesmo teste colide em contas_email_unico (pagamento... | Refatoração Lote-L15 | RTP-0106 | Executada (aguarda teste) |
 | 314 | RTP-0087 | executor | ✔ | Testes da rota GET /api/grupos/:g: cobrir sexta, saídas, mês/semana e grupo B | Refatoração Lote-L13 | TP-0061 | Aprovada |
 | 315 | RTP-0099 | executor | ✔ | ler.test.ts: jogadoresEPartidas reutiliza o helper criarPartida | Refatoração Lote-L13 | RTP-0087 | Aprovada |
 | 316 | RTP-0088 | executor | ✔ | Testes de partidas/nova: cobrir lacunas do plano da TP-0078 | Refatoração Lote-L17 | TP-0078 | Aprovada |
