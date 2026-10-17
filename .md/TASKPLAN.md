@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-17 20:10
+Atualizado: 2026-10-17 20:19
 
-Resumo: Não executada 24 · Em execução 14 · Executada (aguarda teste) 3 · Aprovada 295 · Bloqueada 4 · total 340
+Resumo: Não executada 24 · Em execução 13 · Executada (aguarda teste) 4 · Aprovada 295 · Bloqueada 4 · total 340
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -151,7 +151,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 136 | TP-0132 | executor | ✔ | [U] Neon: projeto novo em São Paulo (PI-1) — **tarefa manual do usuário** | L29 | — | Aprovada |
 | 137 | BK-0008 | coordenador | ✔ | Rodar o roteiro Cloudflare (subdomínio, token, wrangler hyperdrive create pelada-prod/pela | — | — | Aprovada |
 | 138 | TP-0133 | executor | ✔ | [U] Cloudflare: subdomínio, token e Hyperdrive (PI-2, PI-3) | L29 | BK-0008, TP-0013, TP-0132 | Aprovada |
-| 139 | TP-0134 | executor | ✔ | [U] GitHub: secrets e environments (PI-4) | L29 | TP-0132, TP-0133 | Em execução |
+| 139 | TP-0134 | executor | ✔ | [U] GitHub: secrets e environments (PI-4) | L29 | TP-0132, TP-0133 | Executada (aguarda teste) |
 | 140 | SPK-0001 | coordenador | — | Spike S-01: transação interativa pg sobre o Hyperdrive | L29 | TP-0014, TP-0133 | Não executada |
 | 141 | TP-0136 | executor | ✔ | Workflow de backup diário (backup.yml) | L30 | TP-0134 | Não executada |
 | 142 | TP-0135 | executor | ✔ | Workflow de deploy (deploy.yml) | L30 | TP-0003, TP-0013, TP-0015, TP-0133, TP-0134, TP-0136 | Não executada |
