@@ -92,3 +92,12 @@ APROVADA COM DÉBITO; 0 críticos, 1 baixo (RTP-0015: fixar actions de terceiros
 
 ## TP-0096 — DevSecOps — 2026-10-17
 APROVADA; 0 críticos, 0 não críticos de segurança; diff lido, grep de storage/log/HTML perigoso/style= com 0 ocorrências, senha sem persistência, sem dependência nova.
+
+## TP-0016 — DevSecOps — 2026-10-17
+APROVADA COM DÉBITO; guardas falham fechado e isenções auditáveis; 0 críticos, 1 médio (RTP-0019: grupoId contornável por export em chamada/objeto/classe), 1 baixo.
+
+## TP-0018 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos novos; pnpm audit --prod limpo, eDono e falha fechada confirmados no diff.
+
+## TP-0089 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; audit --prod limpo, job e2e com contents:read sem segredos/pull_request_target, `--tela` validado; 13 vulns só em devDeps alheias à tarefa.
