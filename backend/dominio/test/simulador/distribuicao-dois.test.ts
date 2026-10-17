@@ -111,6 +111,27 @@ describe('distribuirDoisTimes: determinismo e referência', () => {
     }
   });
 
+  it('ótimo local: nenhuma troca entra↔entra melhora a chave final', () => {
+    const { composicao, jogadores, rank } = montar(elenco(21, [3]), 7, 'ilimitado');
+    const base = chaveDaComposicao(composicao, 7, jogadores, rank);
+    const [ta, tb] = composicao.times;
+    for (const x of ta.entram) {
+      for (const y of tb.entram) {
+        const troca = (l: string[], de: string, para: string) => l.map((id) => (id === de ? para : id));
+        const outra = {
+          ...composicao,
+          times: [
+            { ...ta, entram: troca(ta.entram, x, y) },
+            { ...tb, entram: troca(tb.entram, y, x) },
+          ] as typeof composicao.times,
+        };
+        const chave = chaveDaComposicao(outra, 7, jogadores, rank);
+        const melhora = chave.some((v, i) => v < base[i]! && chave.slice(0, i).every((w, m) => w === base[m]));
+        expect(melhora).toBe(false);
+      }
+    }
+  });
+
   it('teto de trocas: com 1 troca aceita ainda devolve composição válida', () => {
     const { composicao } = montar(elenco(19, [4]), 7, 2, 1);
     expect(composicao.times[0].titulares).toHaveLength(7);

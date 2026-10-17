@@ -1,6 +1,7 @@
 import type { ClassificacaoDois } from './classificacao.js';
-import { indicadoresDois, type Jogadores } from './indicadores.js';
-import type { ComposicaoDois, TimeDois } from './tipos.js';
+import { dividirMeioParaCima } from '../elenco/nivel.js';
+import { agregar, somaNivel2oTempo, trocarNoAgregado, type Agregado, type Jogadores } from './indicadores.js';
+import type { ComposicaoDois, JogadorSim, TimeDois } from './tipos.js';
 
 /** Teto de trocas aceitas na busca local (ADR-007 §2): garante que o laço termina. */
 export const MAX_TROCAS_ACEITAS = 200;
@@ -24,6 +25,27 @@ function menor(a: Chave, b: Chave): boolean {
   return false;
 }
 
+/** Acumulados de um time que a troca atualiza em O(1): nível dos titulares e idade de quem joga. */
+interface Estado {
+  titulares: Agregado;
+  jogam: Agregado;
+}
+
+function ordenarPorRank(ids: readonly string[], jogadores: Jogadores, rank: ReadonlyMap<string, number>): JogadorSim[] {
+  const pos = (id: string): number => rank.get(id) ?? Number.MAX_SAFE_INTEGER;
+  return [...ids].sort((x, y) => pos(x) - pos(y) || (x < y ? -1 : x > y ? 1 : 0)).map((id) => jogadores.get(id)!);
+}
+
+/** Substituições do time: pares entre quem sai no intervalo e quem entra. */
+function substituicoes(time: TimeDois, jogadores: Jogadores): number {
+  let so1o = 0;
+  for (const id of time.titulares) if (jogadores.get(id)!.so1oTempo) so1o += 1;
+  const saem = Math.min(Math.max(so1o, time.entram.length), time.titulares.length);
+  return Math.min(saem, time.entram.length);
+}
+
+const idadeMedia = (e: Estado): number => (e.jogam.n > 0 ? dividirMeioParaCima(100 * e.jogam.somaIdade, e.jogam.n) : 0);
+
 /**
  * Chave lexicográfica da composição, só em inteiros: titulares fora de N, excesso de substituições
  * além de 1 de diferença, diferença de nível (1º + 2º tempo) e diferença de idade média.
@@ -31,16 +53,24 @@ function menor(a: Chave, b: Chave): boolean {
 function chaveDe(
   times: [TimeDois, TimeDois],
   n: number,
+  [ea, eb]: [Estado, Estado],
   jogadores: Jogadores,
   rank: ReadonlyMap<string, number>,
 ): Chave {
-  const [a, b] = [indicadoresDois(times[0], jogadores, rank), indicadoresDois(times[1], jogadores, rank)];
   const violaN = Number(times[0].titulares.length !== n) + Number(times[1].titulares.length !== n);
-  const excessoSubs = Math.max(0, Math.abs(a.substituicoes - b.substituicoes) - 1);
+  const excessoSubs = Math.max(
+    0,
+    Math.abs(substituicoes(times[0], jogadores) - substituicoes(times[1], jogadores)) - 1,
+  );
+  const nivel2 = (t: TimeDois): number =>
+    somaNivel2oTempo(ordenarPorRank(t.titulares, jogadores, rank), ordenarPorRank(t.entram, jogadores, rank));
   const difNivel =
-    Math.abs(a.nivelSoma1oTempo - b.nivelSoma1oTempo) + Math.abs(a.nivelSoma2oTempo - b.nivelSoma2oTempo);
-  const difIdade = Math.abs((a.idadeMedia ?? 0) - (b.idadeMedia ?? 0));
-  return [violaN, excessoSubs, difNivel, difIdade];
+    Math.abs(ea.titulares.somaNivel - eb.titulares.somaNivel) + Math.abs(nivel2(times[0]) - nivel2(times[1]));
+  return [violaN, excessoSubs, difNivel, Math.abs(idadeMedia(ea) - idadeMedia(eb))];
+}
+
+function estadoDe(t: TimeDois, jogadores: Jogadores): Estado {
+  return { titulares: agregar(t.titulares, jogadores), jogam: agregar([...t.titulares, ...t.entram], jogadores) };
 }
 
 /**
@@ -60,7 +90,8 @@ export function distribuirDoisTimes({
   classificacao.reservasQueEntram.forEach((r, i) => (i % 2 === 0 ? a : b).entram.push(r.id));
   const times: [TimeDois, TimeDois] = [a, b];
 
-  let chave = chaveDe(times, n, jogadores, rank);
+  let estado: [Estado, Estado] = [estadoDe(a, jogadores), estadoDe(b, jogadores)];
+  let chave = chaveDe(times, n, estado, jogadores, rank);
   let aceitas = 0;
   let melhorou = true;
   while (melhorou && aceitas < maxTrocas) {
@@ -70,10 +101,22 @@ export function distribuirDoisTimes({
       const lb = b[categoria];
       for (let i = 0; i < la.length && !melhorou; i += 1) {
         for (let j = 0; j < lb.length && !melhorou; j += 1) {
+          const deA = jogadores.get(la[i]!)!;
+          const deB = jogadores.get(lb[j]!)!;
+          const [ta, tb] = trocarNoAgregado(estado[0].jogam, estado[1].jogam, deA, deB);
+          const [na, nb] =
+            categoria === 'titulares'
+              ? trocarNoAgregado(estado[0].titulares, estado[1].titulares, deA, deB)
+              : [estado[0].titulares, estado[1].titulares];
           [la[i], lb[j]] = [lb[j]!, la[i]!];
-          const candidata = chaveDe(times, n, jogadores, rank);
+          const proximo: [Estado, Estado] = [
+            { titulares: na, jogam: ta },
+            { titulares: nb, jogam: tb },
+          ];
+          const candidata = chaveDe(times, n, proximo, jogadores, rank);
           if (menor(candidata, chave)) {
             chave = candidata;
+            estado = proximo;
             melhorou = true;
             aceitas += 1;
           } else {
@@ -101,5 +144,11 @@ export function chaveDaComposicao(
   jogadores: Jogadores,
   rank: ReadonlyMap<string, number>,
 ): readonly number[] {
-  return chaveDe(composicao.times, n, jogadores, rank);
+  return chaveDe(
+    composicao.times,
+    n,
+    [estadoDe(composicao.times[0], jogadores), estadoDe(composicao.times[1], jogadores)],
+    jogadores,
+    rank,
+  );
 }
