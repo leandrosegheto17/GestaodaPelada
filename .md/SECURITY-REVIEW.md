@@ -602,3 +602,15 @@ APROVADA em segurança — 0 críticos, 0 não críticos; G-03 (grupoId do vínc
 
 ## TP-0070 — DevSecOps — 2026-10-17
 APROVADA; 0 críticos/0 não críticos; revisão do diff confirma grupoId do vínculo, corpo strict, relógio injetado, sem log/eco de telefone (leitura; testes verdes reportados pelo QA).
+
+## RTP-0005 — DevSecOps — 2026-10-17
+APROVADA; diff só de testes, sem superfície de segurança (lido, nada executado), 0 achados.
+
+## RTP-0006 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; só remoção de teste duplicado, sem superfície de segurança (revisão de diff, busca por padrões executada).
+
+## RTP-0007 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; diff só de testes (remoção de duplicado), sem segredo/dependência/produção; lido (diff+grep), nada além executado.
+
+## RTP-0074 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; diff só de testes, fecha furo da G-04 (app.all) sem superfície nova; lido, sem execução própria.

@@ -623,3 +623,48 @@ APROVADA; 0 críticos/0 não críticos; vitest test/atividade 20 verdes, duplica
 
 ## RTP-0074 — QA — 2026-10-17
 APROVADA; 0 críticos, 0 não críticos; isolamento 70/70 passando, meta-teste de app.all e conferência de contagem de tabelas verificados.
+
+## RTP-0079 — QA — 2026-10-17
+APROVADA — teste cobre senha errada, senha correta, token do cookie e caminho 429; 13/13 passando; 0 achados.
+
+## TP-0054 — QA — 2026-10-17
+APROVADA — painel do dono atende o aceite (RF-06/07, contrato estrito, isolamento verde), 80/80 testes; 0 críticos, 1 não crítico (RTP-0089: comparar forma com fixtures e afirmar 403 de troca_de_senha).
+
+## TP-0056 — QA — 2026-10-17
+APROVADA — aceite atendido e 75/75 testes passando; 0 críticos, 1 não crítico (RTP-0086: testes do plano ausentes: atomicidade em pesos/habilidades, corrida, 422 strict, 401/403)
+
+## TP-0057 — QA — 2026-10-17
+APROVADA — 0 críticos, 0 não críticos com RTP; 80/80 testes (gestao-de-grupos + isolamento), 5 situações/422/404/401/403/no-store/inalterados verificados.
+
+## TP-0058 — QA — 2026-10-17
+APROVADA — 87/87 testes (aplicação, rotas, isolamento) passando; aceite RF-03/ADR-005 cumprido; 0 críticos, 0 não críticos, sem RTP.
+
+## TP-0061 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0087: faltam casos do plano em ler.test.ts); 94 testes verdes (rota, utilitários, dono, isolamento).
+
+## TP-0071 — QA — 2026-10-17
+APROVADA — 86 testes passando (editar/repo/isolamento), aceite L-11/RN-03/RN-05 verificado, 0 achados.
+
+## TP-0072 — QA — 2026-10-17
+APROVADA — 0 críticos, 1 não crítico (RTP-0092: lacunas de teste do plano e datas literais); 100 testes passando, aceite coberto.
+
+## TP-0073 — QA — 2026-10-17
+APROVADA — aceite e 91/91 testes passando; 0 críticos, 1 não crítico (falta asserção de acumulado mantido/ativosNaData, RTP-0090).
+
+## TP-0074 — QA — 2026-10-17
+APROVADA — 85 testes verdes (aplicação, rota e isolamento), 0 achados críticos / 0 não críticos, aceite e atomicidade/corrida comprovados.
+
+## TP-0075 — QA — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; 92 testes verdes (aplicação, rota workers e isolamento) cobrindo vigente/histórico, 404 idêntico e no-store.
+
+## TP-0076 — QA — 2026-10-17
+APROVADA — 0 críticos, 0 não críticos; 89 testes (aplicação, rotas, isolamento) passando em banco próprio.
+
+## TP-0077 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (teste duplicado -> RTP-0091); 78 testes verdes (rota + isolamento), aceite e limites de navegação conferidos.
+
+## TP-0078 — QA — 2026-10-17
+APROVADA — aceite atendido; 76/77 testes (1 falha é da TP-0168, fixture); 0 críticos, 1 não crítico (lacunas de teste, RTP-0088).
+
+## TP-0079 — QA — 2026-10-17
+APROVADA — GET partidas/:data cumpre o aceite (presenças, última alteração, união ativos+presenças, 404/401, isolamento); 0 achados; falha em teste de TP-0078 (escalacoes_n_check) fora do escopo.
