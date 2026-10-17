@@ -89,3 +89,6 @@ OK; link só https no host de enderecoNovo, sem XSS/open redirect, 27/27 testes 
 
 ## TP-0003 — DevSecOps — 2026-10-17
 APROVADA COM DÉBITO; 0 críticos, 1 baixo (RTP-0015: fixar actions de terceiros por SHA); ci.yml com contents:read, sem pull_request_target, sem segredo exposto a fork, actionlint 0.
+
+## TP-0096 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos de segurança; diff lido, grep de storage/log/HTML perigoso/style= com 0 ocorrências, senha sem persistência, sem dependência nova.
