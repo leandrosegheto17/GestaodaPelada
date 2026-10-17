@@ -155,7 +155,7 @@ describe('TabelaSemanas', () => {
     const tabela = screen.getByRole('table', { name: 'Uso por semana' });
     expect(within(tabela).getAllByRole('columnheader')).toHaveLength(5);
     expect(within(tabela).getAllByRole('rowheader')).toHaveLength(4);
-    const cartoes = screen.getAllByRole('heading', { level: 2 });
+    const cartoes = screen.getAllByRole('heading', { level: 2, hidden: true });
     expect(cartoes.map((h) => h.textContent)).toEqual([
       '19/10 a 25/10',
       '12/10 a 18/10',
