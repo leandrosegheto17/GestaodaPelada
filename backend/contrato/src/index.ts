@@ -1,3 +1,4 @@
+import './sem-eval.js';
 export * from './enums.js';
 export * from './erro.js';
 export * from './limites.js';
