@@ -177,15 +177,7 @@ async function jogadoresEPartidas(db: Awaited<ReturnType<typeof abrir>>, grupoId
     registradoPor: autor,
     agora: AGORA,
   });
-  await emTransacao(db, (tx) =>
-    partidas.criar(tx, grupoId, {
-      data: HOJE,
-      choveu: false,
-      presencas: [{ jogadorId: a, situacao: 'presente' }],
-      autor,
-      agora: AGORA,
-    }),
-  );
+  await criarPartida(db, grupoId, autor, HOJE, a);
   await eventos.registrar(db, grupoId, {
     tipo: 'ranking_aberto',
     dispositivoId: '123e4567-e89b-12d3-a456-426614174000',
