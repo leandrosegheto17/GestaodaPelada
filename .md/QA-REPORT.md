@@ -161,3 +161,9 @@ APROVADA — 41 testes ok, CV T03 0,00% em pc e celular, 0 achados.
 
 ## TP-0180 — QA — 2026-10-17
 APROVADA; 0 críticos/0 não críticos; 25 testes + compatibilidade de snapshot verdes, mockups e G-10 cobertos.
+
+## TP-0173 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0023: alinhar mockup ao div[role=status]); 21 testes verdes, axe limpo.
+
+## TP-0174 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0024: debounce próprio em vez de usarValorAtrasado); 24/24 testes, mockup trocar conforme o plano.
