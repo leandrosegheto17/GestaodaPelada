@@ -794,3 +794,18 @@ APROVADA — aviso-privacidade sem IDOR (conta da sessão), sessão completa, CS
 
 ## TP-0087 — DevSecOps — 2026-10-17
 TP-0087 APROVADA em segurança, 1 achado baixo (RTP-0109: binding ausente desliga o limite sem log); limitador antes do banco, IP só como chave, ratelimits Free 10/60 ok; tsc/eslint limpos.
+
+## RTP-0098 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; só timeout de teste (lido no diff, nada executado), sem impacto em superfície de segurança.
+
+## RTP-0099 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; revisão do diff de ler.test.ts (refatoração só de teste, sem impacto de segurança), nada executado.
+
+## RTP-0104 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0112: '//' ou '--' em literal esconde e_dono); vitest 25/25, checador na raiz exit 0, probes dos casos do aceite falham como esperado.
+
+## RTP-0105 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; revisão do diff (nada executado pelo DevSecOps): advisory lock por conta serializa reserva de falha antes do hash, sem bypass, enumeração nem vazamento; evidência de execução é a do QA.
+
+## RTP-0106 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; só código de teste (lock advisory com chave constante, sem segredo/dado sensível/src), verificado por leitura do diff, nada executado.
