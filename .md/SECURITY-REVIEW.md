@@ -512,3 +512,30 @@ APROVADA, 0 críticos/0 não críticos; isolamento por grupo_id no upsert e SQL 
 
 ## TP-0188 — DevSecOps — 2026-10-17
 APROVADA; 0 críticos, 0 não críticos; revisão do diff confirma isolamento por grupo via FK composta, centavos inteiros, sem DEFAULT now() e sem dado pessoal novo (testes não reexecutados pelo DevSecOps).
+
+## RTP-0068 — DevSecOps — 2026-10-17
+APROVADA — diff só de teste (SQL parametrizado, sem secret/dependência), reforça auditoria admin_vinculado; 0 achados.
+
+## RTP-0069 — DevSecOps — 2026-10-17
+APROVADA — diff só de testes que provam recusa troca_de_senha antes do 404 em grupo/financeiro/dono; 0 achados, sem mudança em src/dependências.
+
+## RTP-0070 — DevSecOps — 2026-10-17
+APROVADA — diff só de teste, sem segredo/dependência/dado pessoal, reforça isolamento por grupo; 0 achados (revisão de leitura).
+
+## TP-0033 — DevSecOps — 2026-10-17
+APROVADA — revisão do diff sem achado novo (0 críticos); guarda G-03/G-04 usa app completo e falha fechado; risco residual (rota ALL) já na RTP-0074.
+
+## TP-0041 — DevSecOps — 2026-10-17
+APROVADA - revisão do diff sem achado crítico (trava de host, senha uma vez no stdout, sem vazamento de URL, SQL parametrizado, lint/CI de G-11); 0 críticos, 1 não crítico (checagem ignora contas.ts inteiro, RTP-0077).
+
+## TP-0046 — DevSecOps — 2026-10-17
+APROVADA — revisão do diff: filtro por grupo_id em todas as consultas, SQL parametrizado, sem telefone em log/erro; 0 críticos, 0 não críticos.
+
+## TP-0047 — DevSecOps — 2026-10-17
+APROVADA — isolamento por grupoId em gravarNota/leituras, SQL parametrizado, sem uso em rota pública; 0 críticos, 0 novos não críticos (RTP-0071 do QA já aberto); revisão de diff, nada executado.
+
+## TP-0048 — DevSecOps — 2026-10-17
+APROVADA — consultas parametrizadas e filtradas por grupo_id, RN-04 preservada, autor só por nome, checar-grupo-id ok; 0 achados.
+
+## TP-0049 — DevSecOps — 2026-10-17
+APROVADA — revisão do diff: isolamento por grupo_id, SQL parametrizado e jogador por JOIN conferidos (leitura; testes rodados pelo QA); 0 críticos, 1 não crítico (escrita aceita ExecutorDb em vez de Tx) em RTP-0076.

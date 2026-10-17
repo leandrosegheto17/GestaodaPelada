@@ -201,6 +201,7 @@ describe('repositório de eventos de uso', () => {
 
   it('o tipo fechado recusa dado pessoal e exige dispositivoId em ranking_aberto', () => {
     // Só checagem de tipo (tsc); a função nunca roda.
+    const M = em('2026-10-14', '10:00');
     const _nunca = async (db: Db): Promise<void> => {
       // @ts-expect-error campo livre `ip` não existe no evento
       await eventos.registrar(db, 'g', { tipo: 'pdf_exportado', mes: '2026-10', momento: M, ip: '1.2.3.4' });
