@@ -1,4 +1,5 @@
 import { Faixa } from '../basicos/Faixa';
+import estilos from './ResumoErros.module.css';
 
 export interface ErroDeCampo {
   idCampo: string;
@@ -13,7 +14,7 @@ interface Props {
 export function ResumoErros({ erros }: Props) {
   if (erros.length < 2) return null;
   return (
-    <Faixa tipo="erro">
+    <Faixa tipo="erro" className={estilos.resumo}>
       <strong>Corrija {erros.length} campos:</strong>
       <ul>
         {erros.map((e) => (

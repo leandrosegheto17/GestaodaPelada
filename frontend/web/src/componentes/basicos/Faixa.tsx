@@ -19,13 +19,15 @@ interface Props {
   aoFechar?: () => void;
   /** Obrigatório com `aoFechar` (ex.: "Fechar aviso de instalação"). */
   rotuloFechar?: string;
+  /** Classe extra para quem compõe a faixa (ex.: o resumo de erros). */
+  className?: string;
 }
 
-export function Faixa({ tipo, topo, papel, children, acao, aoFechar, rotuloFechar }: Props) {
+export function Faixa({ tipo, topo, papel, children, acao, aoFechar, rotuloFechar, className }: Props) {
   const papelFinal = papel ?? (tipo === 'erro' ? 'alert' : 'status');
   return (
     <div
-      className={juntar(estilos.faixa, estilos[tipo], topo && estilos.topo, `faixa--${tipo}`)}
+      className={juntar(estilos.faixa, estilos[tipo], topo && estilos.topo, `faixa--${tipo}`, className)}
       role={papelFinal}
       aria-live={papelFinal === 'status' ? 'polite' : undefined}
     >

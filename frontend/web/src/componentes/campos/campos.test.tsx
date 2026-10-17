@@ -209,6 +209,20 @@ describe('ResumoErros', () => {
     await userEvent.click(screen.getByRole('link', { name: 'Confirmar nova senha' }));
     expect(screen.getByLabelText('conf')).toHaveFocus();
   });
+
+  it('2 erros: o alerta leva a classe do resumo e a faixa de erro', () => {
+    render(
+      <ResumoErros
+        erros={[
+          { idCampo: 'a', rotulo: 'A' },
+          { idCampo: 'b', rotulo: 'B' },
+        ]}
+      />,
+    );
+    const alerta = screen.getByRole('alert');
+    expect(alerta.className).toMatch(/resumo/);
+    expect(alerta).toHaveClass('faixa--erro');
+  });
 });
 
 describe('acessibilidade', () => {

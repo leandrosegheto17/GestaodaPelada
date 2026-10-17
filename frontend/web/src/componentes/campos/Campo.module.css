@@ -71,10 +71,3 @@
   color: var(--cor-desabilitado-texto);
   cursor: default;
 }
-.resumo ul {
-  margin: var(--esp-1) 0 0;
-  padding-left: var(--esp-5);
-}
-.resumo {
-  border: 2px solid var(--cor-erro-texto);
-}
