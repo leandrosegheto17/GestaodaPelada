@@ -74,3 +74,15 @@ OK; 0 críticos, 1 baixo (RTP-0012: sem limite de aptos na entrada); função pu
 
 ## TP-0153 — DevSecOps — 2026-10-17
 APROVADA; 0 achados; sem import externo/relógio/nível exposto, laço limitado a 30; 14 testes passando.
+
+## TP-0098 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; sem style=/innerHTML/VITE_, recurso financeiro respeitado, vitest barras 11/11.
+
+## TP-0099 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos novos; diff lido + grep de sinks perigosos limpo, sem mudança de dependências.
+
+## TP-0101 — DevSecOps — 2026-10-17
+APROVADA; 0 achados; diff de apresentação sem HTML injetado, sem URL absoluta, sem import de domínio (grep executado, 0 ocorrências); sem dependência nova.
+
+## TP-0104 — DevSecOps — 2026-10-17
+OK; link só https no host de enderecoNovo, sem XSS/open redirect, 27/27 testes executados; 0 achados.
