@@ -266,3 +266,141 @@ APROVADA — 0 achados; diff só de exibição, G-05 e G-17 conferidos, sem depe
 
 ## TP-0184 — DevSecOps — 2026-10-17
 OK; 0 críticos, 0 novos não críticos; evento pdf_exportado só {tipo,mes} com X-Pelada, blob/URL revogada, audit --prod limpo.
+
+## RTP-0001 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; lint-fronteiras 57/57, diff revisado (regex ancorada, sem dependência/dado sensível).
+
+## RTP-0002 — DevSecOps — 2026-10-17
+APROVADA — seletores de alias Date/document confirmados por probe ESLint (falha em domínio/web, passa em relogio); 0 achados, sem dependência nem dado pessoal.
+
+## RTP-0003 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; diff só de teste, sem superfície de segurança nem dependência alterada.
+
+## RTP-0004 — DevSecOps — 2026-10-17
+APROVADA; 0 achados; diff só de testes (sem dependência/produção), revisão de leitura, nada executado.
+
+## RTP-0008 — DevSecOps — 2026-10-17
+APROVADA — audit sem sharp/undici (resta só braces, fora de escopo), lockfile só com versões corrigidas, override `>=` risco baixo (só dev tooling); 0 críticos, 0 não críticos.
+
+## RTP-0009 — DevSecOps — 2026-10-17
+APROVADA; só teste, sem segredos nem dependências novas, 0 achados.
+
+## RTP-0010 — DevSecOps — 2026-10-17
+APROVADA — só teste, sem I/O/segredos/dependências alteradas; 0 achados.
+
+## RTP-0011 — DevSecOps — 2026-10-17
+APROVADA — função pura sem I/O/aleatoriedade/dependência nova; grep de sinks limpo; 0 achados.
+
+## RTP-0012 — DevSecOps — 2026-10-17
+APROVADA, 0 achados; guarda de 60 aptos com RangeError antes do laço, sem dado sensível na mensagem, vitest 66/66.
+
+## RTP-0013 — DevSecOps — 2026-10-17
+APROVADA — mudança só de foco no cliente, sem superfície de segurança nem dependência nova; 0 achados (revisão de diff, nada executado).
+
+## RTP-0015 — DevSecOps — 2026-10-17
+APROVADA — actions de terceiros fixadas em SHA verificado contra as tags via ls-remote, permissions contents:read; 0 achados.
+
+## RTP-0016 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; diff só de className/CSS, sem dependência nem dado sensível (revisão por leitura, nada executado).
+
+## RTP-0018 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; falha fechada de G-11/G-20 preservada, sem dependência nova, 34 testes dos arquivos alterados verdes.
+
+## RTP-0019 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 1 média (RTP-0057: alias/ternário/membro/namespace/satisfies ainda passam sem grupoId); 3 casos do aceite falham fechado, 25/25 testes verdes.
+
+## RTP-0020 — DevSecOps — 2026-10-17
+APROVADA, 0 críticos/0 não críticos; sem superfície nova, senha só em memória/DOM confirmada (grep + 21 testes passando).
+
+## RTP-0021 — DevSecOps — 2026-10-17
+APROVADA, 0 críticos/0 não críticos; contrato público segue strict sem vazamento, enderecoNovo vem de config do operador; 405 testes do contrato passando.
+
+## RTP-0022 — DevSecOps — 2026-10-17
+APROVADA — mudança só de CSS/classe sem superfície de segurança nem dependências; 0 achados.
+
+## RTP-0023 — DevSecOps — 2026-10-17
+APROVADA, 0 achados; mudança só de HTML estático do mockup, sem script/URL externa/dado sensível/dependência (grep executado).
+
+## RTP-0024 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; refactor de debounce sem superfície de segurança, 25 testes passando, sem mudança de dependências.
+
+## RTP-0025 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; diff lido (fail-closed no corpo nulo, sem dado sensível), vitest ajuste-simulador 25/25.
+
+## RTP-0026 — DevSecOps — 2026-10-17
+APROVADA; 0 achados; só reordenação de CSS de padding, sem superfície de segurança (grep de url/@import vazio).
+
+## RTP-0027 — DevSecOps — 2026-10-17
+APROVADA; só teste alterado, sem dependência, segredo ou dado sensível; 0 achados.
+
+## RTP-0028 — DevSecOps — 2026-10-17
+APROVADA; 0 achados; diff só de teste (axe D1/D2), sem impacto de segurança, dependências inalteradas (revisão de leitura).
+
+## RTP-0029 — DevSecOps — 2026-10-17
+APROVADA; 0 achados; só HTML estático de mockup reposicionado, sem script/dependência/dado pessoal (grep de script/handlers limpo, href só relativo interno).
+
+## RTP-0031 — DevSecOps — 2026-10-17
+APROVADA; 0 achados; diff só de teste (senha fictícia de 72 caracteres), sem impacto de segurança.
+
+## RTP-0032 — DevSecOps — 2026-10-17
+APROVADA, 0 críticos/0 não críticos; diff só adiciona id/aria-describedby, sem dependência nova nem dado sensível.
+
+## RTP-0033 — DevSecOps — 2026-10-17
+APROVADA; 0 achados de segurança; diff só HTML estático de mockup (texto de ajuda), sem script, dado pessoal ou dependência; revisão de leitura, nada executado.
+
+## RTP-0034 — DevSecOps — 2026-10-17
+APROVADA em segurança, 0 achados; mudança de texto estático em mockup HTML, sem superfície de ataque, dependências intactas.
+
+## RTP-0035 — DevSecOps — 2026-10-17
+APROVADA; 0 achados; só CSS de layout com tokens, sem superfície de segurança, sem dependência nem dado pessoal.
+
+## RTP-0036 — DevSecOps — 2026-10-17
+APROVADA; 0 achados; diff é uma propriedade CSS em mockup estático, sem superfície de segurança (revisão de leitura).
+
+## RTP-0037 — DevSecOps — 2026-10-17
+APROVADA; 0 achados; mudança só em mockup/fixture fictícia (eDono true) sem referência em código de app/produção, sem dependência alterada.
+
+## RTP-0038 — DevSecOps — 2026-10-17
+APROVADA — diff só CSS de layout, sem superfície de segurança, sem dependências nem dado pessoal; 0 achados.
+
+## RTP-0040 — DevSecOps — 2026-10-17
+APROVADA, 0 achados; mudança só de CSS de mockup (lida, sem superfície de segurança).
+
+## RTP-0041 — DevSecOps — 2026-10-17
+APROVADA; tarefa só de testes, sem segredos, dependências ou dado pessoal real; 0 achados.
+
+## RTP-0042 — DevSecOps — 2026-10-17
+APROVADA; 0 achados; só testes com dados fictícios, sem mudança de dependência ou de código de app.
+
+## RTP-0043 — DevSecOps — 2026-10-17
+APROVADA — mudança só de teste e 1 linha de CSS; sem superfície de segurança, sem dependência alterada; 0 achados.
+
+## RTP-0044 — DevSecOps — 2026-10-17
+APROVADA, 0 achados; diff é SVG inline estático em mockup HTML, sem script/recurso externo/dado pessoal/dependência (grep executado).
+
+## RTP-0045 — DevSecOps — 2026-10-17
+APROVADA; 0 achados; diff só de apresentação (JSX/CSS), sem dependência nem dado pessoal; leitura apenas.
+
+## RTP-0046 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; corpo validado com o schema do contrato antes do POST/PUT, inválido não chega à rede (6 testes verdes), sem exposição de dados.
+
+## RTP-0047 — DevSecOps — 2026-10-17
+APROVADA, 0 achados; diff só CSS de layout (largura 512 px), sem superfície de segurança, dependências inalteradas.
+
+## RTP-0048 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; fallback para config removido, valor só exibido (servidor decide), 30/30 testes verdes, sem dado sensível.
+
+## RTP-0049 — DevSecOps — 2026-10-17
+APROVADA; diff só de teste e UX-SPEC, sem dependência nem dado pessoal; 0 achados.
+
+## RTP-0050 — DevSecOps — 2026-10-17
+APROVADA; mudança só em teste, sem dependência nem dado pessoal; 0 achados (diff lido, sem ferramenta executada por não haver código de produção).
+
+## TP-0010 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; função pura, saída sem campos pessoais, sem relógio/import externo/dependência nova, 11 testes ok.
+
+## TP-0025 — DevSecOps — 2026-10-17
+APROVADA — dono único e credenciais só em hash garantidos no banco, sem IP/UA; 7/7 testes e checagem aditiva executados; 0 críticos, 1 baixo (RTP-0056).
+
+## TP-0187 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; grep G-01/G-06/G-07 limpo, estouro tratado, 13 testes verdes, sem mudança de dependências.
