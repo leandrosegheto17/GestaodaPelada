@@ -2,29 +2,19 @@ import { randomUUID } from 'node:crypto';
 import { createExecutionContext, env, waitOnExecutionContext } from 'cloudflare:test';
 import { describe, expect, it, vi } from 'vitest';
 import { carregarVinculo } from '../../src/aplicacao/acesso/vinculo.js';
-import { exigirDono } from '../../src/entrada/middlewares/dono.js';
 import { criarExigirVinculo } from '../../src/entrada/middlewares/grupo.js';
 import { kyselyDe } from '../../src/infraestrutura/db/cliente.js';
 import { criarApp } from '../../src/entrada/app.js';
 import { montarCenario } from '../apoio/cenario-acesso.js';
-import { clienteTeste } from '../apoio/cliente.js';
+import { comEco } from '../apoio/eco-rotas.js';
 import { usarDbDoWorker } from '../apoio/db-worker.js';
 import { usarFabrica } from '../apoio/fabrica.js';
-import { relogioFixo } from '../apoio/relogio.js';
+import { entrarComo } from '../apoio/sessao.js';
 
 const fabrica = usarFabrica();
 const abrir = usarDbDoWorker(fabrica);
 
-function comEco(cookie?: string) {
-  const c = clienteTeste({ relogio: relogioFixo('2026-10-16'), ...(cookie ? { cookie } : {}) });
-  c.app.get('/api/grupos/:grupoId/eco', (ctx) => ctx.json({ ok: true }));
-  c.app.post('/api/grupos/:grupoId/eco', (ctx) => ctx.json({ ok: true }));
-  c.app.get('/api/grupos/:grupoId/financeiro/eco', (ctx) => ctx.json({ ok: true }));
-  c.app.get('/api/dono/eco', (ctx) => ctx.json({ ok: true }));
-  return c;
-}
-
-describe('middlewares de grupo e de dono (workerd)', () => {
+describe('middlewares de grupo e financeiro (workerd)', () => {
   it('admin de A vê A; admin de B recebe o mesmo 404 de um grupo inexistente', async () => {
     const cen = await montarCenario(await abrir(), fabrica);
     expect((await comEco(cen.adminA.cookie).get(`/api/grupos/${cen.grupoA.id}/eco`)).status).toBe(200);
@@ -62,12 +52,33 @@ describe('middlewares de grupo e de dono (workerd)', () => {
     expect((await comEco(cen.adminB.cookie).get(rota)).status).toBe(404);
   });
 
-  it('dono: eDono passa, admin comum recebe 404 e o dono sem vínculo não vê o grupo', async () => {
+  it.each(['eco', 'financeiro/eco'])(
+    'sessão de escopo troca_de_senha em /api/grupos/:id/%s: 403 troca_de_senha_obrigatoria, não 404',
+    async (sufixo) => {
+      const db = await abrir();
+      const cen = await montarCenario(db, fabrica);
+      const parcial = await entrarComo(db, fabrica, cen.adminA.id, { escopo: 'troca_de_senha' });
+      const r = await comEco(parcial.cookie).get(`/api/grupos/${cen.grupoA.id}/${sufixo}`);
+      expect(r.status).toBe(403);
+      expect(r.corpo).toMatchObject({ erro: { codigo: 'troca_de_senha_obrigatoria' } });
+    },
+  );
+
+  it.each(['/api/grupos//eco', '/api/grupos/%20/eco'])('%s responde 404 sem consultar o vínculo', async (caminho) => {
+    const espiao = vi.fn(carregarVinculo);
+    const app = criarApp();
+    app.use('/api/grupos/:grupoId/*', criarExigirVinculo({ carregarVinculo: espiao }));
+    app.get('/api/grupos/:grupoId/eco', (c) => c.json({ ok: true }));
     const cen = await montarCenario(await abrir(), fabrica);
-    expect((await comEco(cen.dono.cookie).get('/api/dono/eco')).status).toBe(200);
-    expect((await comEco(cen.adminA.cookie).get('/api/dono/eco')).status).toBe(404);
-    expect((await comEco(cen.dono.cookie).get(`/api/grupos/${cen.grupoA.id}/eco`)).status).toBe(404);
-    expect(typeof exigirDono).toBe('function');
+    const ctx = createExecutionContext();
+    const resposta = await app.fetch(
+      new Request(`http://app.invalid${caminho}`, { headers: { Cookie: cen.adminA.cookie } }),
+      env,
+      ctx,
+    );
+    await waitOnExecutionContext(ctx);
+    expect(resposta.status).toBe(404);
+    expect(espiao).not.toHaveBeenCalled();
   });
 
   it('vínculo removido entre duas requisições: a segunda dá 404', async () => {
