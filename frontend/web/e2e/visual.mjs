@@ -22,7 +22,7 @@ try {
   telas =
     indice >= 0
       ? lerTelasAtivas((process.argv[indice + 1] ?? '').replaceAll(',', '\n'), idsValidos)
-      : lerTelasAtivas(readFileSync(join(AQUI, 'telas-ativas.txt'), 'utf8'), idsValidos);
+      : lerTelasAtivas(readFileSync(process.env.TELAS_ATIVAS_ARQUIVO ?? join(AQUI, 'telas-ativas.txt'), 'utf8'), idsValidos);
 } catch (erro) {
   falhar(erro.message);
 }

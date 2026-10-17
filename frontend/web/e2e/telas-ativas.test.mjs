@@ -1,5 +1,6 @@
 import { spawnSync } from 'node:child_process';
-import { existsSync } from 'node:fs';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { lerTelasAtivas } from './telas-ativas.mjs';
@@ -24,15 +25,33 @@ describe('lerTelasAtivas', () => {
 
 describe('visual.mjs', () => {
   const script = join(import.meta.dirname, 'visual.mjs');
-  const rodar = (...args) => spawnSync(process.execPath, [script, ...args], { encoding: 'utf8' });
+  const comLista = (conteudo, ...args) => {
+    const dir = mkdtempSync(join(tmpdir(), 'telas-'));
+    const arquivo = join(dir, 'lista.txt');
+    writeFileSync(arquivo, conteudo);
+    try {
+      return rodar2(arquivo, args);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  };
+  const rodar2 = (arquivo, args) =>
+    spawnSync(process.execPath, [script, ...args], {
+      encoding: 'utf8',
+      env: { ...process.env, TELAS_ATIVAS_ARQUIVO: arquivo },
+    });
 
-  it('lista vazia sai com 0 sem criar resultado', () => {
-    const r = rodar();
+  it('lista vazia sai com 0 sem chamar a comparação', () => {
+    const r = comLista('# nada');
     expect(r.status).toBe(0);
-    expect(existsSync(join(import.meta.dirname, 'resultado'))).toBe(false);
+    expect(r.stdout).toMatch(/Nenhuma tela ativa/);
+  });
+
+  it('id inválido no arquivo sai com 2', () => {
+    expect(comLista('T99').status).toBe(2);
   });
 
   it('--tela com id inválido sai com 2', () => {
-    expect(rodar('--tela', 'T99').status).toBe(2);
+    expect(comLista('', '--tela', 'T99').status).toBe(2);
   });
 });
