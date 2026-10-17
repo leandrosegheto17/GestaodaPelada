@@ -43,6 +43,10 @@ describe('checar-escrita-e-dono', () => {
     'await db.insertInto("c").values({ nome: "a;b", eDono: true }).execute();',
     "const o = { e_dono: true };\nawait db.insertInto('contas').values(o).execute();",
     "const o = { nome: 'x', 'eDono': true };\nawait db.updateTable('contas').set(o).execute();",
+    "const o = {};\no.e_dono = true;\nawait db.insertInto('c').values(o).execute();",
+    "const o = {};\no.eDono = !!x;\nawait db.insertInto('c').values(o).execute();",
+    "const o = { e_dono: !!x };\nawait db.updateTable('c').set(o).execute();",
+    "const o = { nome: 'x', eDono: a ? b : c };\nawait db.updateTable('c').set(o).execute();",
   ])('falha: %s', (corpo) => {
     expect(rodar(repositorio(rota(corpo)))).toBe(1);
   });
@@ -55,6 +59,9 @@ describe('checar-escrita-e-dono', () => {
     'export const ehDono = (conta) => conta.eDono === true;',
     "const a = 'x;y'; const donos = await db.selectFrom('contas').select('e_dono').execute();",
     `const donos = await db.selectFrom('contas').select(['${CAMPOS_LONGOS}', 'e_dono']).where('e_dono', '=', true).execute();`,
+    'export const ehDono = (conta) => conta.e_dono == true;',
+    'export const ler = (conta) => ({ eDono: conta.eDono, outro: 1 });',
+    'if (conta.eDono === true) { x(); }',
   ])('passa: %s', (corpo) => {
     expect(rodar(repositorio(rota(corpo)))).toBe(0);
   });
