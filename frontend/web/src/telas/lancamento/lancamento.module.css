@@ -1,0 +1,19 @@
+.estreito {
+  max-width: var(--largura-formulario);
+  margin: 0 auto;
+}
+.formulario {
+  display: grid;
+  gap: var(--esp-4);
+}
+.grupoBotoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--esp-2);
+}
+.ajuda {
+  font-size: var(--texto-sm);
+  color: var(--cor-texto-sec);
+  margin: 0;
+}

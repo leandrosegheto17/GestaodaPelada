@@ -51,7 +51,14 @@ export const roteador = createBrowserRouter([
           { path: 'partidas/:data', lazy: () => import('../telas/partida/PaginaEditarPartida') },
           { path: 'partidas', lazy: () => import('../telas/partidas/PaginaPartidas') },
           ...(recursos.ligado('financeiro')
-            ? [{ path: 'financeiro', lazy: () => import('../telas/financeiro/PaginaFinanceiro') }]
+            ? [
+                { path: 'financeiro', lazy: () => import('../telas/financeiro/PaginaFinanceiro') },
+                { path: 'financeiro/lancamentos/novo', lazy: () => import('../telas/lancamento/PaginaLancamento') },
+                {
+                  path: 'financeiro/lancamentos/:lancamentoId',
+                  lazy: () => import('../telas/lancamento/PaginaLancamento'),
+                },
+              ]
             : []),
           ...(recursos.ligado('simulador')
             ? [
