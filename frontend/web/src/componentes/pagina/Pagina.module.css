@@ -23,7 +23,13 @@
 }
 @media (min-width: 600px) {
   .conteudo {
-    padding: var(--esp-6) var(--esp-4) var(--esp-12);
+    padding: var(--esp-6) var(--esp-6) var(--esp-12);
+  }
+}
+@media (min-width: 600px) {
+  .conteudoEstreito {
+    padding-left: var(--esp-6);
+    padding-right: var(--esp-6);
   }
 }
 .conteudoEstreito {

@@ -1,5 +1,4 @@
-import { rankingPublico } from '@pelada/contrato';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Navigate, useNavigate, useSearchParams } from 'react-router';
 import { BarraAdmin } from '../../componentes/barras/BarraAdmin';
 import { Botao } from '../../componentes/basicos/Botao';
@@ -15,28 +14,7 @@ import { PaginaFormulario } from '../../componentes/pagina/PaginaFormulario';
 import { recursos } from '../../config/recursos';
 import { useSair, useSessao } from '../../dados/sessao';
 import { descreverAgenda } from '../../formatacao/agenda';
-import { rankingAtual } from '../../pwa/armazenamento';
 import { decidirGrupo, destinoDoGrupo } from './decidirGrupo';
-
-/** Nome do grupo do link, se o ranking dele já esteve neste aparelho; senão, o aviso fica sem nome. */
-function useNomeDoGrupoDoLink(slug: string | null): string | null {
-  const [nome, setNome] = useState<string | null>(null);
-  useEffect(() => {
-    setNome(null);
-    if (!slug) return;
-    let ativo = true;
-    rankingAtual(slug)
-      .then((guardado) => {
-        const analise = rankingPublico.safeParse(guardado?.dados);
-        if (ativo && analise.success) setNome(analise.data.grupo.nome);
-      })
-      .catch(() => undefined);
-    return () => {
-      ativo = false;
-    };
-  }, [slug]);
-  return nome;
-}
 
 /** T08: escolher o grupo. Com um só grupo (ou um link válido), segue direto para a tela de início. */
 export function Component() {
@@ -49,7 +27,6 @@ export function Component() {
   const decisao = sessao.data
     ? decidirGrupo(sessao.data, { grupo: parametros.get('grupo'), area: parametros.get('area') })
     : null;
-  const nomeDoLink = useNomeDoGrupoDoLink(decisao?.tipo === 'lista' ? decisao.grupoSemAcesso : null);
 
   if (sessao.isError) {
     return (
@@ -72,6 +49,7 @@ export function Component() {
     return (
       <PaginaFormulario titulo="Seus grupos" barra={<BarraAdmin />}>
         <EstadoVazio
+          icone={null}
           titulo="Nenhum grupo"
           texto="Você não é admin de nenhum grupo. Fale com o dono da plataforma."
           acao={
@@ -89,15 +67,14 @@ export function Component() {
   }
 
   const financeiroLigado = recursos.ligado('financeiro');
-  const aviso = nomeDoLink
-    ? `Você não é admin de “${nomeDoLink}”. Escolha um dos seus grupos.`
-    : 'Você não é admin desse grupo. Escolha um dos seus grupos.';
   return (
     <PaginaFormulario
       titulo="Seus grupos"
       barra={<BarraAdmin menuAberto={menuAberto} aoAbrirMenu={() => setMenuAberto(true)} />}
     >
-      {decisao.grupoSemAcesso ? <Faixa tipo="atencao">{aviso}</Faixa> : null}
+      {decisao.grupoSemAcesso ? (
+        <Faixa tipo="atencao">Você não é admin desse grupo. Escolha um dos seus grupos.</Faixa>
+      ) : null}
       <Lista>
         {sessao.data.grupos.map((grupo) => (
           <Item

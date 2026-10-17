@@ -13,7 +13,6 @@ import { criarClienteConsultas } from '../../dados/consultas';
 import { Component as EscolherGrupo } from './EscolherGrupo';
 
 vi.mock('../../config/recursos', () => ({ recursos: { ligado: vi.fn(() => true) } }));
-vi.mock('../../pwa/armazenamento', () => ({ rankingAtual: vi.fn(async () => null) }));
 
 const RESPOSTAS = join(import.meta.dirname, '../../../../../.md/mockup/respostas');
 const fixture = (nome: string): JsonBodyType => JSON.parse(readFileSync(join(RESPOSTAS, nome), 'utf8')) as JsonBodyType;
@@ -76,7 +75,7 @@ describe('EscolherGrupo (T08): lista', () => {
     expect(screen.queryByText('Sem acesso ao financeiro')).toBeNull();
   });
 
-  it('link de grupo alheio mostra o aviso (sem nome quando não há ranking guardado)', async () => {
+  it('link de grupo alheio mostra o aviso sem o nome do grupo', async () => {
     api(fixture('sessao-eu-admin.json'));
     montar('/admin?grupo=futebol-da-firma');
     expect(await screen.findByRole('status')).toHaveTextContent(
