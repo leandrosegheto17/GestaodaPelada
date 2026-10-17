@@ -3,6 +3,7 @@ import {
   PESOS_PADRAO,
   acumuladoAte,
   configVigente,
+  criarResolvedorDePesos,
   pontosDaPresenca,
   pontosNaData,
   type ConfigPesos,
@@ -31,6 +32,12 @@ describe('pontosDaPresenca com pesos padrão', () => {
   ] as const)('%s chuva=%s → %i', (situacao, choveu, esperado) => {
     expect(pontosDaPresenca(situacao, choveu, PESOS_PADRAO)).toBe(esperado);
   });
+
+  it('expulso ignora a chuva mesmo com pesos distintos', () => {
+    const pesos = { ...PESOS_PADRAO, presencaComChuva: 5, expulso: -3 };
+    expect(pontosDaPresenca('expulso', true, pesos)).toBe(-3);
+    expect(pontosDaPresenca('expulso', false, pesos)).toBe(-3);
+  });
 });
 
 describe('vigência dos pesos', () => {
@@ -51,6 +58,14 @@ describe('vigência dos pesos', () => {
   });
   it('sem configurações é erro de domínio', () => {
     expect(() => configVigente([], '2026-09-02')).toThrow();
+  });
+  it('ordem do array não altera o resultado', () => {
+    expect(configVigente([nova, antiga], '2026-08-27')).toBe(antiga);
+    expect(configVigente([nova, antiga], '2026-09-02')).toBe(nova);
+  });
+  it('aceita resolvedor já criado', () => {
+    const resolvedor = criarResolvedorDePesos([antiga, nova]);
+    expect(pontosNaData('presente', true, '2026-09-10', resolvedor)).toBe(2);
   });
 });
 
@@ -74,5 +89,26 @@ describe('acumuladoAte', () => {
     expect(acumuladoAte([], [antiga], '2026-10-01')).toBe(0);
     const so = [{ data: '2026-09-10', choveu: false, situacao: 'expulso' as const }];
     expect(acumuladoAte(so, [antiga], '2026-10-01')).toBe(-1);
+  });
+  it('acumulado negativo com duas expulsões (sem e com chuva)', () => {
+    const so = [
+      { data: '2026-03-01', choveu: false, situacao: 'expulso' as const },
+      { data: '2026-03-08', choveu: true, situacao: 'expulso' as const },
+    ];
+    expect(acumuladoAte(so, [antiga, nova], '2026-12-31')).toBe(-2);
+  });
+
+  describe('massa com lesionado em 2026-08-31 e expulso em 2026-10-08', () => {
+    const presencasMistas = [
+      { data: '2026-08-27', choveu: true, situacao: 'presente' as const },
+      { data: '2026-08-31', choveu: false, situacao: 'lesionado' as const },
+      { data: '2026-09-01', choveu: true, situacao: 'presente' as const },
+      { data: '2026-10-08', choveu: true, situacao: 'expulso' as const },
+    ];
+    it('troca de pesos não muda partidas anteriores (2026-08-31 e 2026-10-08)', () => {
+      expect(acumuladoAte(presencasMistas, [antiga, nova], '2026-08-31')).toBe(2);
+      expect(acumuladoAte(presencasMistas, [antiga], '2026-08-31')).toBe(2);
+      expect(acumuladoAte(presencasMistas, [antiga, nova], '2026-10-08')).toBe(3);
+    });
   });
 });
