@@ -127,18 +127,26 @@ describe('BarraAcao', () => {
 });
 
 describe('acessibilidade', () => {
-  it('sem violações do axe', async () => {
+  const variantes: Array<[string, React.ReactElement]> = [
+    ['pública', <BarraSuperior key="p" titulo="Pelada" destinoAdmin="/entrar" destinoFinanceiro="/f" />],
+    [
+      'admin',
+      <BarraAdmin
+        key="a"
+        nomeGrupo="Pelada"
+        destinoTrocarGrupo="/admin"
+        destinoRanking="/g/p"
+        aoAbrirMenu={() => undefined}
+      />,
+    ],
+    ['dono', <BarraDono key="d" destinoMeusGrupos="/admin" aoAbrirMenu={() => undefined} />],
+  ];
+
+  it.each(variantes)('barra %s com pular e barra de ação: sem violações do axe', async (_nome, barra) => {
     const { container } = dentro(
       <>
         <PularConteudo />
-        <BarraSuperior titulo="Pelada" destinoAdmin="/entrar" destinoFinanceiro="/f" />
-        <BarraAdmin
-          nomeGrupo="Pelada"
-          destinoTrocarGrupo="/admin"
-          destinoRanking="/g/p"
-          aoAbrirMenu={() => undefined}
-        />
-        <BarraDono destinoMeusGrupos="/admin" aoAbrirMenu={() => undefined} />
+        {barra}
         <main id="conteudo" tabIndex={-1}>
           <BarraAcao>
             <button type="button">Ok</button>
