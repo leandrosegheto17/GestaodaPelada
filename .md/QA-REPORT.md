@@ -554,3 +554,63 @@ APROVADA — árvore sem marcadores de conflito, gerador código 0, IHDR 192/512
 
 ## RTP-0067 — QA — 2026-10-17
 APROVADA (rodada 2) - 0 críticos, 0 não críticos; QA-1 resolvido: `M` declarado, remover as 4 diretivas gera exatamente 4 erros tsc reais (ip, nome, ranking_aberto sem dispositivoId, dispositivoId fora de ranking_aberto); 12/12 testes passando.
+
+## RTP-0073 — QA — 2026-10-17
+APROVADA, 0 críticos/0 não críticos; jogadores.test.ts 10/10, grep 2026- = 0, temPresencaDesde com filtro de grupo coberto.
+
+## TP-0034 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0079: teste de log não cobre senha correta/token); sessao-entrar 13/13 e tentativas verdes, bloqueio/401/cookie/escopo conferidos.
+
+## TP-0035 — QA — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; sessao-eu 8/8 e isolamento 70/70 verdes, 401/escopo/grupos arquivados/no-store/sem hash conferidos.
+
+## TP-0036 — QA — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; 74 testes (sair + isolamento) verdes em banco próprio, idempotência, escopo troca_de_senha, CSRF e encerramento só do aparelho confirmados.
+
+## TP-0039 — QA — 2026-10-17
+APROVADA — 0 críticos/0 não críticos; 9/9 testes da rota e isolamento 70/70 verdes, respostas idênticas para admin/inexistente/dono, nada gravado para não-admin.
+
+## TP-0040 — QA — 2026-10-17
+APROVADA — caso de uso 5 + rota 11 + isolamento 70 testes verdes, eslint 0; 0 achados críticos e 0 não críticos; atomicidade, sessões encerradas e G-08 comprovados.
+
+## TP-0051 — QA — 2026-10-17
+APROVADA - seed local idempotente, travado em host local, 6/6 testes + checagens ok; 0 críticos, 1 não crítico (RTP-0080: teste duplicado, falta rollback/trava positiva).
+
+## TP-0052 — QA — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; dominio 24 + api 4 testes passando, isolamento por grupo e fronteiras de intervalo semiaberto conferidos.
+
+## TP-0053 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0078: sem asserção automática do limite de 4 consultas); 5 testes verdes, isolamento entre grupos e adaptadores conferidos.
+
+## TP-0055 — QA — 2026-10-17
+APROVADA, 0 críticos/0 não críticos; rota e isolamento verdes (8 + 70 testes), tsc/eslint/checagens limpos.
+
+## TP-0059 — QA — 2026-10-17
+APROVADA — 77 testes verdes (rota + isolamento); 204/404/401/403, no-store e nova pendência conferidos; 0 críticos, 0 não críticos.
+
+## TP-0060 — QA — 2026-10-17
+APROVADA — 0 críticos, 0 não críticos; pedidos-e-senhas 7/7 e isolamento 70/70 verdes, tsc/eslint limpos, 404 do dono idêntico ao de inexistente, senha `no-store` e fora de logs.
+
+## TP-0063 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0081: falta teste de ordem por nome); 75 testes passando (rota, aplicação, isolamento), aceite e segurança conferidos.
+
+## TP-0064 — QA — 2026-10-17
+APROVADA — 86 testes verdes (rota + isolamento), aceite RF-13 coberto (201 criado/vinculado, 409, 422, no-store, sem financeiro); 0 achados.
+
+## TP-0065 — QA — 2026-10-17
+APROVADA — 20 testes da tarefa + 70 de isolamento verdes; transação com trava, 409s, auditoria e corte de acesso comprovados; 0 achados.
+
+## TP-0066 — QA — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; redefinir-senha 6/6 + isolamento 70/70 verdes, ordem de checagens e 404 idêntico confirmados.
+
+## TP-0067 — QA — 2026-10-17
+APROVADA - 0 críticos/0 não críticos; 403 só por exigirFinanceiro, auditoria atômica, 409 própria conta, 11 testes + isolamento 70/70 verdes.
+
+## TP-0068 — QA — 2026-10-17
+APROVADA — GET /api/grupos/:g/jogadores cumpre o aceite (filtros, nível 1 casa, inativoDesde, ordem, 422/401/404/no-store, isolamento verde); 0 críticos, 0 não críticos.
+
+## TP-0069 — QA — 2026-10-17
+APROVADA — 0 críticos, 1 não crítico (RTP-0082: detalhe.test.ts não carrega no projeto node do vitest; passa no workers); rota/isolamento 100% e lógica do detalhe 5/5 verificadas.
+
+## TP-0070 — QA — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; criar.test.ts (21) e test/isolamento (70) verdes, aceites de ano máximo, apelido sem caixa e período por data de entrada comprovados.

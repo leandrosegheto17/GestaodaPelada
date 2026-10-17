@@ -36,6 +36,20 @@ describe('a suíte de isolamento morde', () => {
     ).resolves.toBeUndefined();
   });
 
+  it('rota de negócio registrada com app.all é apontada como sem caso', () => {
+    const app = criarApp();
+    app.all('/api/grupos/:grupoId/x', (c) => c.json({}));
+    const semCaso = listarRotas(app).filter((r) => !(r in CASOS));
+    expect(semCaso).toContain('ALL /api/grupos/:grupoId/x');
+  });
+
+  it('middleware registrado por use (com proximo) não é apontado, mesmo sob /api/grupos', () => {
+    const app = criarApp();
+    app.use('/api/grupos/:grupoId/*', async (_c, proximo) => proximo());
+    const semCaso = listarRotas(app).filter((r) => !(r in CASOS));
+    expect(semCaso).toEqual([]);
+  });
+
   it('rota de grupo registrada fora do prefixo protegido faz o helper falhar', async () => {
     const cenario = await montarCenario(await abrir(), fabrica);
     await expect(

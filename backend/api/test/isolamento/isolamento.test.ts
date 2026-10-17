@@ -1,7 +1,7 @@
-import { describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { criarApp } from '../../src/entrada/app.js';
 import { montarCenario, type Cenario } from '../apoio/cenario-acesso.js';
-import { usarDbDoWorker } from '../apoio/db-worker.js';
+import { contarLinhasPorTabela, usarDbDoWorker } from '../apoio/db-worker.js';
 import { usarFabrica } from '../apoio/fabrica.js';
 import { CASOS } from './casos.js';
 import { listarRotas } from './rotas.js';
@@ -31,6 +31,14 @@ describe('cobertura da suíte de isolamento (G-04)', () => {
 });
 
 describe('isolamento entre grupos (G-03)', () => {
+  let antes: Record<string, number> = {};
+  beforeAll(async () => {
+    antes = await contarLinhasPorTabela();
+  });
+  afterAll(async () => {
+    expect(await contarLinhasPorTabela(), 'a suíte deixou linhas no banco compartilhado').toEqual(antes);
+  });
+
   let cenario: Cenario | null = null;
   const cenarioAtual = async (): Promise<Cenario> => {
     cenario = await montarCenario(await abrir(), fabrica);
