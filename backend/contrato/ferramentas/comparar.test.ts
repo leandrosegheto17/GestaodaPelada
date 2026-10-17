@@ -113,6 +113,25 @@ describe('conferir', () => {
   it('esquema removido é quebra', () => {
     expect(conferir({}, { x: a }, '').quebras).toHaveLength(1);
   });
+  const cabecalho = '| esquema | caminho | mudança | deploy 1 | deploy 2 |\n|---|---|---|---|---|\n';
+  const comEDono = (io: 'input' | 'output', direcao: Direcao) => ({
+    direcao,
+    esquema: json(z.object({ a: z.string(), eDono: z.boolean() }), io),
+  });
+  it('eDono em entrada falha mesmo com linha em QUEBRAS.md', () => {
+    const entrada = comEDono('input', 'entrada');
+    const quebrasMd = `${cabecalho}| x | eDono | removido | aceita ambos | remove antigo |`;
+    expect(conferir({ x: entrada }, { x: entrada }, quebrasMd).eDono).toEqual(['x.eDono']);
+  });
+  it('eDono em resposta não falha', () => {
+    const resposta = comEDono('output', 'resposta');
+    expect(conferir({ x: resposta }, { x: resposta }, '').eDono).toEqual([]);
+  });
+  it('enum de entrada com valor removido é quebra', () => {
+    const antes = { direcao: 'entrada' as const, esquema: json(z.object({ e: z.enum(['a', 'b']) }), 'input') };
+    const depois = { direcao: 'entrada' as const, esquema: json(z.object({ e: z.enum(['a']) }), 'input') };
+    expect(conferir({ x: depois }, { x: antes }, '').quebras).toHaveLength(1);
+  });
   it('instantâneo igual não está desatualizado', () => {
     expect(serializar(a)).toBe(serializar({ ...a }));
     expect(conferir({ x: a }, { x: a }, '').desatualizados).toEqual([]);

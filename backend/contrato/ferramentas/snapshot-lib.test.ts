@@ -1,8 +1,8 @@
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
-import { conferir, gerarInstantaneos, gravar, lerSnapshot, temSnapshot } from './snapshot-lib.js';
+import { conferir, executarSnapshot, gerarInstantaneos, gravar, lerSnapshot, temSnapshot } from './snapshot-lib.js';
 
 const pastas: string[] = [];
 const temporaria = (): string => {
@@ -31,6 +31,30 @@ describe('lerSnapshot falha fechado', () => {
     const p = temporaria();
     writeFileSync(join(p, 'x.json'), '{"direcao":"outra"}');
     expect(() => lerSnapshot(p)).toThrow(/corrompido/);
+  });
+});
+
+describe('executarSnapshot (CLI snapshot)', () => {
+  const lerTudo = (p: string) => Object.fromEntries(readdirSync(p).map((n) => [n, readFileSync(join(p, n), 'utf8')]));
+
+  it('recusa regravar com quebra não listada: código 1 e snapshot intacto', () => {
+    const p = temporaria();
+    const atual = gerarInstantaneos();
+    const nome = Object.keys(atual).find((n) => atual[n]!.direcao === 'resposta')!;
+    const antigo = JSON.parse(JSON.stringify(atual)) as typeof atual;
+    const esquema = antigo[nome]!.esquema as { properties?: Record<string, unknown> };
+    esquema.properties = { ...(esquema.properties ?? {}), campoRemovido: { type: 'string' } };
+    gravar(antigo, p);
+    const antes = lerTudo(p);
+    const r = executarSnapshot(atual, '', p);
+    expect(r.codigo).toBe(1);
+    expect(r.mensagens.join('\n')).toMatch(/campoRemovido/);
+    expect(lerTudo(p)).toEqual(antes);
+  });
+  it('sem quebra regrava e devolve 0', () => {
+    const p = temporaria();
+    expect(executarSnapshot(gerarInstantaneos(), '', p).codigo).toBe(0);
+    expect(temSnapshot(p)).toBe(true);
   });
 });
 

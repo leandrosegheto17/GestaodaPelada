@@ -103,6 +103,29 @@ export function gravar(atual: Record<string, Instantaneo>, pasta = PASTA_SNAPSHO
   }
 }
 
+export interface ResultadoSnapshot {
+  codigo: 0 | 1;
+  mensagens: string[];
+}
+
+/** Regrava o snapshot só se não houver quebra nem `eDono` de entrada; senão devolve código 1 e não escreve. */
+export function executarSnapshot(
+  atual: Record<string, Instantaneo>,
+  quebrasMd: string,
+  pasta = PASTA_SNAPSHOT,
+): ResultadoSnapshot {
+  const relatorio = conferir(atual, temSnapshot(pasta) ? lerSnapshot(pasta) : {}, quebrasMd);
+  const problemas = [
+    ...relatorio.eDono.map((c) => `campo de entrada eDono proibido: ${c}`),
+    ...relatorio.quebras.map((q) => `quebra em ${q.esquema}${q.caminho ? `.${q.caminho}` : ''}: ${q.mudanca}`),
+  ];
+  if (problemas.length > 0) {
+    return { codigo: 1, mensagens: [...problemas, 'Não regravo o snapshot: liste a quebra em QUEBRAS.md.'] };
+  }
+  gravar(atual, pasta);
+  return { codigo: 0, mensagens: [`Snapshot gravado (${Object.keys(atual).length} esquema(s)).`] };
+}
+
 /** Há ao menos um arquivo de snapshot versionado? */
 export function temSnapshot(pasta = PASTA_SNAPSHOT): boolean {
   return existsSync(pasta) && readdirSync(pasta).some((nome) => nome.endsWith('.json'));
