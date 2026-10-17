@@ -224,3 +224,12 @@ APROVADA, 0 críticos/0 não críticos; 18 testes ok, axe nos 4 estados, visual 
 
 ## TP-0172 — QA — 2026-10-17
 APROVADA; 0 críticos, 1 não crítico (RTP-0035: largura do cartão vazio 560 vs 512 px); 22/22 testes, visual vazio pc 0,41% e celular 0,00%.
+
+## TP-0199 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0038: largura vazio-config e margens negativas do .semAcesso); CV T22 ok exceto vazio-mes pc 1,72% só pela .barra-acao do mockup (RTP-0029); 2 testes vermelhos são da TP-0200.
+
+## TP-0201 — QA — 2026-10-17
+APROVADA, 0 achados; visual ≤0,11% nos 4 casos, testes da tela e dos campos verdes, CampoTexto sem regressão nos consumidores (falhas em SecaoNotas/dono são de outras tarefas).
+
+## TP-0204 — QA — 2026-10-17
+APROVADA, 0 críticos e 0 não críticos; vitest 82/82 nos arquivos da tarefa, visual T07 pagina/dialogo pc/celular ≤ 0.02%, classe global `dialogo` sem impacto em outros diálogos.

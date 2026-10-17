@@ -206,3 +206,18 @@ OK; 0 achados de segurança; corpo só com 5 inteiros, X-Pelada via escrever, sa
 
 ## TP-0126 — DevSecOps — 2026-10-17
 APROVADA em segurança; 0 críticos, 0 não críticos; senha temporária só no diálogo e descartada (reset + gcTime 0), escritas com X-Pelada, 13 testes OK.
+
+## TP-0127 — DevSecOps — 2026-10-17
+APROVADA; 0 achados; urls-absolutas limpo, 36 testes verdes, PATCH sem slug/urlPublica, Permissions-Policy não bloqueia clipboard/share (lido, não testado em navegador).
+
+## TP-0128 — DevSecOps — 2026-10-17
+OK, 0 críticos/0 não críticos; só inteiros anônimos exibidos, grupoId codificado, sem dependência nova; revisão do diff + 5 testes executados.
+
+## TP-0129 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; senha temporária fora do cache (gcTime 0) e do armazenamento, SW não cacheia /api/dono, X-Pelada nas escritas, RF-07 respeitado; 9 testes ok.
+
+## TP-0170 — DevSecOps — 2026-10-17
+OK, 0 críticos/0 não críticos; texto React puro, validação no limite, escrita via cliente padrão, rota atrás de flag; grep e 16 testes executados.
+
+## TP-0172 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; só ids uuid validados por schema, sem persistência/XSS, audit prod limpo, grep de padrões inseguros sem ocorrências.
