@@ -44,7 +44,7 @@ services:
       pnpm install --frozen-lockfile &&
       pnpm migrar &&
       pnpm seed &&
-      pnpm --filter @pelada/api exec wrangler dev -c ../../wrangler.jsonc --ip 0.0.0.0 --port 8787 --var URL_PUBLICA:http://localhost:5173 --var DONO_EMAIL:leandrosegheto17@gmail.com"
+      pnpm --filter @pelada/api exec wrangler dev -c ../../wrangler.jsonc --ip 0.0.0.0 --port 8787 --var URL_PUBLICA:http://localhost:5173 --var DONO_EMAIL:$$(pnpm --silent exec tsx -e \"import { EMAIL_DONO } from './backend/scripts/seed-local/ids'; process.stdout.write(EMAIL_DONO)\")"
 
   frontend:
     <<: *node
