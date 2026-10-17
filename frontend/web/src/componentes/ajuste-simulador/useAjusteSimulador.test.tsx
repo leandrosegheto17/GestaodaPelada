@@ -1,13 +1,26 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { delay, http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
-import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { sugestaoDoisDeTeste } from './apoio-teste';
 import { MENSAGEM_FALHA, useAjusteSimulador } from './useAjusteSimulador';
 
+const corpoInvalido = vi.hoisted(() => ({ ligado: false }));
+vi.mock('./composicaoLocal', async (importarOriginal) => {
+  const original = await importarOriginal<typeof import('./composicaoLocal')>();
+  return {
+    ...original,
+    paraCorpoAvaliar: (...args: Parameters<typeof original.paraCorpoAvaliar>) =>
+      corpoInvalido.ligado ? null : original.paraCorpoAvaliar(...args),
+  };
+});
+
 const servidor = setupServer();
 beforeAll(() => servidor.listen({ onUnhandledFrame: 'error' }));
-afterEach(() => servidor.resetHandlers());
+afterEach(() => {
+  servidor.resetHandlers();
+  corpoInvalido.ligado = false;
+});
 afterAll(() => servidor.close());
 
 const { sugestao, entrada, ids } = sugestaoDoisDeTeste();
@@ -116,6 +129,17 @@ describe('useAjusteSimulador', () => {
     expect(pedidos).toHaveLength(2);
     expect(pedidos[1]?.corpo).toEqual(pedidos[0]?.corpo);
     expect(result.current.podeConfirmar).toBe(true);
+  });
+
+  it('corpo inválido após o ajuste falha sem chamar a API e mantém Confirmar desabilitado', async () => {
+    api();
+    corpoInvalido.ligado = true;
+    const { result } = montar();
+    act(() => result.current.mover(japa, { lugar: 'titular', time: 1 }));
+    await waitFor(() => expect(result.current.erroRecalculo).toBe(MENSAGEM_FALHA));
+    expect(result.current.podeConfirmar).toBe(false);
+    await new Promise((r) => setTimeout(r, 400));
+    expect(pedidos).toHaveLength(0);
   });
 
   it('uma sugestão nova descarta os ajustes e o "movido"', () => {

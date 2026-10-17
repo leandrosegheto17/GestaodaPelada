@@ -1,18 +1,16 @@
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { http, HttpResponse, type JsonBodyType } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { violacoes } from '../../../test/apoio/axe';
+import { lerFixture, uuidDoJogador } from '../../../test/apoio/fixtures';
 import { criarClienteConsultas } from '../../dados/consultas';
 import { Component as PaginaEditarPartida } from './PaginaEditarPartida';
 
-const RESPOSTAS = join(import.meta.dirname, '../../../../../.md/mockup/respostas');
-const fixture = (nome: string): JsonBodyType => JSON.parse(readFileSync(join(RESPOSTAS, nome), 'utf8')) as JsonBodyType;
+const fixture = lerFixture;
 
 const servidor = setupServer();
 beforeAll(() => servidor.listen({ onUnhandledFrame: 'error' }));
@@ -104,7 +102,9 @@ describe('PaginaEditarPartida (T11 edição)', () => {
     expect(chamadas[0]?.metodo).toBe('PUT');
     expect(chamadas[0]?.xPelada).toBe('1');
     expect(chamadas[0]?.corpo?.data).toBe('2026-10-15');
-    expect(chamadas[0]?.corpo?.marcacoes.find((m) => m.jogadorId === 'j-alemao')?.situacao).toBe('ausente');
+    expect(chamadas[0]?.corpo?.marcacoes.find((m) => m.jogadorId === uuidDoJogador('j-alemao'))?.situacao).toBe(
+      'ausente',
+    );
     expect(roteador.state.location.state).toEqual({ retorno: { tipo: 'partida-salva', data: '2026-10-15' } });
   });
 

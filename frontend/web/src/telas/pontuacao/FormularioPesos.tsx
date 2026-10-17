@@ -25,6 +25,7 @@ export function FormularioPesos({ vigente, errosDoServidor, enviando, semConexao
   );
   const [errosLocais, setErrosLocais] = useState<ErrosDeCampos>({});
   const erros = { ...errosDoServidor, ...errosLocais };
+  const idAjuda = `${base}-ajuda`;
   const idDe = (chave: ChavePeso) => `${base}-${chave}`;
   const itens = ORDEM_PESOS.filter((c) => erros[c]).map((c) => ({ idCampo: idDe(c), rotulo: ROTULO_PESO[c] }));
 
@@ -68,6 +69,7 @@ export function FormularioPesos({ vigente, errosDoServidor, enviando, semConexao
             key={chave}
             id={idDe(chave)}
             rotulo={ROTULO_PESO[chave]}
+            descritoPor={idAjuda}
             erro={erros[chave]}
             erroComoAlerta={itens.length === 1}
           >
@@ -86,7 +88,9 @@ export function FormularioPesos({ vigente, errosDoServidor, enviando, semConexao
           </Campo>
         ))}
       </div>
-      <p className={estilos.ajuda}>Inteiros de {'−'}10 a 10. Partidas anteriores a hoje não mudam.</p>
+      <p id={idAjuda} className={estilos.ajuda}>
+        Inteiros de {'−'}10 a 10. Partidas anteriores a hoje não mudam.
+      </p>
       {semConexao ? <ErroEnvio /> : null}
       <div>
         <Botao type="submit" carregando={enviando}>

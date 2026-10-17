@@ -92,10 +92,20 @@ describe('NovaSenha (T06)', () => {
     expect(envios).toBe(0);
   });
 
-  it('8 e 72 caracteres seguem; 73 não', async () => {
+  it('8 caracteres: faz o POST', async () => {
     api({ status: 204 });
     montar();
     await preencher('12345678');
+    await waitFor(() => expect(envios).toBe(1));
+  });
+
+  it('72 caracteres: faz o POST', async () => {
+    api({ status: 204 });
+    montar();
+    const limite = 'a'.repeat(72);
+    fireEvent.change(await screen.findByLabelText('Nova senha'), { target: { value: limite } });
+    fireEvent.change(screen.getByLabelText('Confirmar nova senha'), { target: { value: limite } });
+    await userEvent.click(screen.getByRole('button', { name: 'Salvar e continuar' }));
     await waitFor(() => expect(envios).toBe(1));
   });
 

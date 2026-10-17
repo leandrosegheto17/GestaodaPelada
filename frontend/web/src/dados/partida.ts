@@ -1,4 +1,4 @@
-import { partidaDetalhe, partidaNova } from '@pelada/contrato';
+import { partidaDetalhe, partidaNova, salvarPartidaCorpoBase } from '@pelada/contrato';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ler, escrever, semCorpo } from './cliente';
 import { chaveGrupo } from './grupo';
@@ -28,12 +28,18 @@ export interface CorpoSalvarPartida {
   marcacoes: { jogadorId: string; situacao: string }[];
 }
 
+/**
+ * Valida o corpo com o schema de entrada do contrato antes de qualquer requisição; corpo inválido
+ * lança e não chega à rede. A regra "data ≤ hoje" fica com a API, que é a autoridade.
+ */
+const corpoValidado = (corpo: CorpoSalvarPartida) => salvarPartidaCorpoBase.parse(corpo);
+
 /** Lança a partida. Sem repetição automática: reenviar é decisão da pessoa (evita partida duplicada). */
 export function useSalvarPartida(grupoId: string) {
   const cliente = useQueryClient();
   return useMutation({
     mutationFn: (corpo: CorpoSalvarPartida) =>
-      escrever('POST', `/grupos/${encodeURIComponent(grupoId)}/partidas`, corpo, partidaDetalhe),
+      escrever('POST', `/grupos/${encodeURIComponent(grupoId)}/partidas`, corpoValidado(corpo), partidaDetalhe),
     onSuccess: () => cliente.invalidateQueries({ queryKey: chaveGrupo(grupoId) }),
   });
 }
@@ -58,7 +64,8 @@ export function usePartida(grupoId: string, data: string, habilitado = true) {
 export function useEditarPartida(grupoId: string, data: string) {
   const cliente = useQueryClient();
   return useMutation({
-    mutationFn: (corpo: CorpoSalvarPartida) => escrever('PUT', caminhoPartida(grupoId, data), corpo, partidaDetalhe),
+    mutationFn: (corpo: CorpoSalvarPartida) =>
+      escrever('PUT', caminhoPartida(grupoId, data), corpoValidado(corpo), partidaDetalhe),
     onSuccess: () => cliente.invalidateQueries({ queryKey: chaveGrupo(grupoId) }),
   });
 }

@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router';
 import { describe, expect, it, vi } from 'vitest';
 import { violacoes } from '../../../test/apoio/axe';
+import { PaginaFormulario } from './PaginaFormulario';
 import {
   Cartao,
   ConteudoPagina,
@@ -59,6 +60,19 @@ describe('componentes de página', () => {
     rerender(<ConteudoPagina estreito>x</ConteudoPagina>);
     expect((container.firstElementChild as HTMLElement).className).not.toBe(largo);
     expect((container.firstElementChild as HTMLElement).className).toContain(largo);
+  });
+
+  it('ConteudoPagina usa classe própria, distinta da de PaginaFormulario', () => {
+    const { container } = render(<ConteudoPagina>x</ConteudoPagina>);
+    const classe = (container.firstElementChild as HTMLElement).className;
+    const { container: outro } = render(
+      <MemoryRouter>
+        <PaginaFormulario titulo="T">x</PaginaFormulario>
+      </MemoryRouter>,
+    );
+    const classeFormulario = (outro.querySelector('main') as HTMLElement).className;
+    expect(classe).not.toBe('');
+    expect(classe).not.toBe(classeFormulario);
   });
 
   it('Voltar com `para` é link; com `aoClicar` é botão acionável por teclado', async () => {

@@ -8,7 +8,7 @@ interface Props {
   children: ReactNode;
 }
 
-/** Área de conteúdo de páginas que não passam pelo layout do admin (`.conteudo`/`.conteudo--estreito`). */
+/** Área de conteúdo de páginas que não passam pelo layout do admin (`.conteudo`/`.conteudo--estreito` do mockup). */
 export function ConteudoPagina({ estreito = false, children }: Props) {
-  return <div className={juntar(estilos.conteudo, estreito && estilos.conteudoEstreito)}>{children}</div>;
+  return <div className={juntar(estilos.conteudoPagina, estreito && estilos.conteudoEstreito)}>{children}</div>;
 }

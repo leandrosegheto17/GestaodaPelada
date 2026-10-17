@@ -120,6 +120,19 @@ describe('T01: outros estados', () => {
     expect(await screen.findByText('Nenhuma partida registrada neste mês')).toBeInTheDocument();
   });
 
+  it('mês sem partidas não renderiza a Legenda', async () => {
+    responder(ok('publico-ranking-2026-07.json'));
+    montar();
+    await screen.findByText('Nenhuma partida registrada neste mês');
+    expect(screen.queryByRole('heading', { name: 'Legenda' })).toBeNull();
+  });
+
+  it('mês com partidas renderiza a Legenda', async () => {
+    responder(ok('publico-ranking-2026-10.json'));
+    montar();
+    expect(await screen.findByRole('heading', { name: 'Legenda' })).toBeInTheDocument();
+  });
+
   it('endereço novo mostra a faixa de atenção', async () => {
     responder(ok('publico-ranking-endereco-novo.json'));
     montar();

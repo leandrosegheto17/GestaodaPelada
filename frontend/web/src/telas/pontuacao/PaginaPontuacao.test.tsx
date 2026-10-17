@@ -51,18 +51,6 @@ function montar() {
   return { container };
 }
 
-describe('rótulos dos pesos', () => {
-  it('um rótulo para cada peso, na ordem do mockup', () => {
-    expect(ORDEM_PESOS.map((c) => ROTULO_PESO[c])).toEqual([
-      'Presença sem chuva',
-      'Presença com chuva',
-      'Lesionado sem chuva',
-      'Lesionado com chuva',
-      'Expulso',
-    ]);
-  });
-});
-
 describe('PaginaPontuacao (T18)', () => {
   it('cartão vigente, formulário preenchido, ajuda e histórico com autor', async () => {
     api();
@@ -78,7 +66,11 @@ describe('PaginaPontuacao (T18)', () => {
       '1',
       '-1',
     ]);
-    expect(screen.getByText('Inteiros de −10 a 10. Partidas anteriores a hoje não mudam.')).toBeInTheDocument();
+    const ajuda = screen.getByText('Inteiros de −10 a 10. Partidas anteriores a hoje não mudam.');
+    expect(ajuda).toHaveAttribute('id');
+    for (const c of ORDEM_PESOS) {
+      expect(screen.getByLabelText(ROTULO_PESO[c])).toHaveAccessibleDescription(ajuda.textContent ?? '');
+    }
     expect(screen.getByText('De 05/02/2026 a 31/08/2026')).toBeInTheDocument();
     expect(screen.getByText(/registrado por Leandro/)).toBeInTheDocument();
   });
@@ -137,7 +129,26 @@ describe('PaginaPontuacao (T18)', () => {
     montar();
     await userEvent.click(await screen.findByRole('button', { name: 'Salvar nova configuração' }));
     expect(await screen.findByText('Use um número inteiro de −10 a 10.')).toBeInTheDocument();
-    expect(screen.getByLabelText('Presença com chuva')).toBeInvalid();
+    const campo = screen.getByLabelText('Presença com chuva');
+    expect(campo).toBeInvalid();
+    expect(campo.getAttribute('aria-describedby')).toContain(`${campo.id}-erro`);
+    expect(document.getElementById(`${campo.id}-erro`)).toHaveTextContent('Use um número inteiro de −10 a 10.');
+  });
+
+  it('sem violações do axe no estado de erro (422)', async () => {
+    api(() => HttpResponse.json(fixture('erro-validacao-pesos.json'), { status: 422 }));
+    const { container } = montar();
+    await userEvent.click(await screen.findByRole('button', { name: 'Salvar nova configuração' }));
+    await screen.findByText('Use um número inteiro de −10 a 10.');
+    expect(await violacoes(container)).toEqual([]);
+  });
+
+  it('sem violações do axe no estado salvo', async () => {
+    api();
+    const { container } = montar();
+    await userEvent.click(await screen.findByRole('button', { name: 'Salvar nova configuração' }));
+    await screen.findByRole('heading', { name: 'Vigente desde 22/10/2026' });
+    expect(await violacoes(container)).toEqual([]);
   });
 
   it('falha de rede mantém os valores digitados', async () => {

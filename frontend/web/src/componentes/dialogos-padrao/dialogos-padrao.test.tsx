@@ -151,10 +151,22 @@ describe('DialogoSenha (D1)', () => {
 
   it('não grava em armazenamento e some do DOM ao desmontar', () => {
     const setItem = vi.spyOn(Storage.prototype, 'setItem');
+    const abrir = vi.fn();
+    vi.stubGlobal('indexedDB', { open: abrir });
     const { unmount } = render(<DialogoSenha nome="Rodrigo" senha={SENHA} aoFechar={() => undefined} />);
+    expect(document.body).toHaveTextContent(SENHA);
     expect(setItem).not.toHaveBeenCalled();
+    expect(abrir).not.toHaveBeenCalled();
     unmount();
+    expect(setItem).not.toHaveBeenCalled();
+    expect(abrir).not.toHaveBeenCalled();
     expect(document.body).not.toHaveTextContent(SENHA);
+    vi.unstubAllGlobals();
+  });
+
+  it('a senha fica num contêiner de classe monoespaçada', () => {
+    render(<DialogoSenha nome="Rodrigo" senha={SENHA} aoFechar={() => undefined} />);
+    expect(screen.getByText(SENHA).parentElement?.className).toMatch(/senha/);
   });
 
   it('sem violações do axe', async () => {

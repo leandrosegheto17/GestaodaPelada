@@ -1,6 +1,7 @@
 import type { AvaliacaoSimulador, EntradaSimulador, SugestaoSimulador } from '@pelada/contrato';
 import { useEffect, useMemo, useState } from 'react';
 import { avaliarComposicao } from '../../dados/simulador';
+import { usarValorAtrasado } from '../../dados/usarValorAtrasado';
 import {
   definirSo1oTempo,
   deSugestao,
@@ -13,7 +14,6 @@ import {
   type Destino,
 } from './composicaoLocal';
 
-const ATRASO_MS = 300;
 export const MENSAGEM_FALHA = 'Não foi possível recalcular.';
 
 interface Entrada {
@@ -50,30 +50,33 @@ export function useAjusteSimulador({ grupoId, entrada, sugestao }: Entrada) {
   const info = useMemo(() => infoDosJogadores(sugestao), [sugestao]);
   const corpo = useMemo(() => paraCorpoAvaliar(entrada, composicao), [entrada, composicao]);
 
+  const corpoAtrasado = usarValorAtrasado(corpo);
+  const defasado = houveAjuste && corpo !== corpoAtrasado;
+
   useEffect(() => {
-    if (!houveAjuste || !corpo) return;
+    if (!houveAjuste || defasado) return;
+    if (!corpoAtrasado) {
+      setSituacao('falhou');
+      return;
+    }
     setSituacao('pendente');
     const controle = new AbortController();
-    const timer = setTimeout(() => {
-      avaliarComposicao(grupoId, corpo, controle.signal).then(
-        (resposta) => {
-          setUltima(resposta);
-          setSituacao('ocioso');
-        },
-        () => {
-          if (!controle.signal.aborted) setSituacao('falhou');
-        },
-      );
-    }, ATRASO_MS);
-    return () => {
-      clearTimeout(timer);
-      controle.abort();
-    };
-  }, [grupoId, corpo, houveAjuste, tentativa]);
+    avaliarComposicao(grupoId, corpoAtrasado, controle.signal).then(
+      (resposta) => {
+        setUltima(resposta);
+        setSituacao('ocioso');
+      },
+      () => {
+        if (!controle.signal.aborted) setSituacao('falhou');
+      },
+    );
+    return () => controle.abort();
+  }, [grupoId, corpoAtrasado, defasado, houveAjuste, tentativa]);
 
   const ajustar = (nova: ComposicaoLocal, id: string[]) => {
     setComposicao(nova);
     setHouveAjuste(true);
+    setSituacao('pendente');
     setMovidos((atual) => new Set([...atual, ...id]));
   };
 
@@ -82,16 +85,17 @@ export function useAjusteSimulador({ grupoId, entrada, sugestao }: Entrada) {
     composicao,
     movidos,
     houveAjuste,
-    recalculando: situacao === 'pendente',
+    recalculando: defasado || situacao === 'pendente',
     erroRecalculo: situacao === 'falhou' ? MENSAGEM_FALHA : null,
-    /** Confirmar só vale com os números em dia: sem pedido pendente e sem falha. */
-    podeConfirmar: situacao === 'ocioso',
+    /** Confirmar só vale com os números em dia: sem ajuste aguardando o atraso, sem pedido pendente e sem falha. */
+    podeConfirmar: !defasado && situacao === 'ocioso',
     tentarDeNovo: () => setTentativa((n) => n + 1),
     mover: (id: string, destino: Destino) => ajustar(moverNaComposicao(composicao, id, destino), [id]),
     trocar: (a: string, b: string) => ajustar(trocarNaComposicao(composicao, a, b), [a, b]),
     definirSo1oTempo: (id: string, valor: boolean) => {
       setComposicao(definirSo1oTempo(composicao, id, valor));
       setHouveAjuste(true);
+      setSituacao('pendente');
     },
   };
 }

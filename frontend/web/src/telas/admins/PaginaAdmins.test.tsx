@@ -132,6 +132,25 @@ describe('PaginaAdmins (T19): lista', () => {
     await screen.findByText('Leandro (você)');
     expect(await violacoes(container)).toEqual([]);
   });
+
+  // O axe roda no diálogo: a página montada sem o layout não tem landmark <main> e dispararia a regra "region".
+  it('sem violações do axe com o diálogo de senha temporária aberto', async () => {
+    api();
+    montar();
+    const outro = (await screen.findAllByRole('listitem')).find((li) => li.textContent?.includes('Marquinhos'))!;
+    await userEvent.click(within(outro).getByRole('button', { name: 'Redefinir senha' }));
+    const dialogo = await screen.findByRole('dialog', { name: 'Senha temporária de Marquinhos' });
+    expect(await violacoes(dialogo)).toEqual([]);
+  });
+
+  it('sem violações do axe com o diálogo de remover aberto', async () => {
+    api();
+    montar();
+    const outro = (await screen.findAllByRole('listitem')).find((li) => li.textContent?.includes('Marquinhos'))!;
+    await userEvent.click(within(outro).getByRole('button', { name: 'Remover do grupo' }));
+    const dialogo = await screen.findByRole('alertdialog', { name: 'Remover Marquinhos do grupo?' });
+    expect(await violacoes(dialogo)).toEqual([]);
+  });
 });
 
 describe('PaginaAdmins (T19): ações', () => {

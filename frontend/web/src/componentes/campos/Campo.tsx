@@ -15,6 +15,8 @@ export interface PropsCampo {
   /** Rótulo só para leitor de tela, quando o título da seção já o mostra. */
   rotuloOculto?: boolean;
   ajuda?: string;
+  /** Id de texto externo ao campo (ex.: ajuda compartilhada por vários campos) que também o descreve. */
+  descritoPor?: string;
   erro?: string | undefined;
   /** `true` quando o campo é validado sozinho (sem `ResumoErros`): o erro vira `role=alert`. */
   erroComoAlerta?: boolean;
@@ -32,6 +34,7 @@ export function Campo({
   rotulo,
   rotuloOculto,
   ajuda,
+  descritoPor,
   erro,
   erroComoAlerta,
   id,
@@ -43,7 +46,7 @@ export function Campo({
   const idEntrada = id ?? gerado;
   const idAjuda = `${idEntrada}-ajuda`;
   const idErro = `${idEntrada}-erro`;
-  const descricao = [ajuda ? idAjuda : null, erro ? idErro : null].filter(Boolean).join(' ');
+  const descricao = [ajuda ? idAjuda : null, descritoPor ?? null, erro ? idErro : null].filter(Boolean).join(' ');
   const entrada = children({
     id: idEntrada,
     'aria-describedby': descricao || undefined,

@@ -1,6 +1,6 @@
 import { Botao } from '../../componentes/basicos/Botao';
 import { CampoBusca } from '../../componentes/campos/CampoBusca';
-import estilos from './partida.module.css';
+import { FerramentasLista as Contenedor } from '../../componentes/pagina/FerramentasLista';
 
 interface Props {
   busca: string;
@@ -12,7 +12,7 @@ interface Props {
 /** Busca local e ações em massa (valem para a lista inteira). */
 export function FerramentasLista({ busca, aoBuscar, aoMarcarTodos, aoLimpar }: Props) {
   return (
-    <div className={estilos.ferramentas}>
+    <Contenedor>
       <CampoBusca rotulo="Buscar jogador" valor={busca} aoMudar={aoBuscar} />
       <Botao variante="secundario" onClick={aoMarcarTodos}>
         Marcar todos como presentes
@@ -20,6 +20,6 @@ export function FerramentasLista({ busca, aoBuscar, aoMarcarTodos, aoLimpar }: P
       <Botao variante="texto" onClick={aoLimpar}>
         Limpar marcações
       </Botao>
-    </div>
+    </Contenedor>
   );
 }
