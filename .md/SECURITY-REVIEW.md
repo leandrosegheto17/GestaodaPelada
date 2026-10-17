@@ -158,3 +158,9 @@ APROVADA — slug/mês validados pelo contrato e codificados, T03 estática igua
 
 ## TP-0180 — DevSecOps — 2026-10-17
 APROVADA; 0 críticos/0 não críticos; schema strict em todos os níveis sem dado pessoal (G-10), 25 testes executados verdes.
+
+## TP-0173 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; diff lido, grep de sinks (innerHTML/style/dominio/hex) com 0 ocorrências, sem dependência nova.
+
+## TP-0174 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 1 baixo (RTP-0025: corpo inválido deixa Confirmar habilitado); cancelamento por AbortController e sem persistência/vazamento confirmados por leitura e grep.

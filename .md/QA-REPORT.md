@@ -167,3 +167,18 @@ APROVADA; 0 críticos, 1 não crítico (RTP-0023: alinhar mockup ao div[role=sta
 
 ## TP-0174 — QA — 2026-10-17
 APROVADA; 0 críticos, 1 não crítico (RTP-0024: debounce próprio em vez de usarValorAtrasado); 24/24 testes, mockup trocar conforme o plano.
+
+## TP-0106 — QA — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; layout-admin.test e rotas verdes; falha de layout-admin.privacidade.test é do teste de TP-0204 (body.innerHTML), não do LayoutAdmin.
+
+## TP-0111 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0027: teste da Legenda oculta); visual T01 13/13 OK (<=0,06%); testes de basicos/tabela-ranking passam, falhas em layout-admin.privacidade são de outra tarefa.
+
+## TP-0114 — QA — 2026-10-17
+APROVADA — 35 testes passando, visual T04 vazio 0,00% pc/celular, UX-SPEC corrigida conforme decisão; 0 achados.
+
+## TP-0118 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0026, CSS morto em Pagina.module.css); visual T08 ≤0,04% e T02/T03/T04/T05/T25 0,00%; T06 e 2 testes de senha falhando por causa externa (Faixa/TP-0111).
+
+## TP-0182 — QA — 2026-10-17
+APROVADA — 26/26 testes, vite build ok, jspdf em chunk separado (fora do entry), vite.config só afeta o bloco de teste; 0 achados.
