@@ -83,6 +83,51 @@ describe('GET /api/grupos/:g/partidas/nova (workerd)', () => {
     expect(fumaca).toBeDefined();
   });
 
+  it('jogador da escalação inativado antes da data não aparece na lista nem vaza o nome (RF-25)', async () => {
+    const db = await abrir();
+    const cen = await montarCenario(db, fabrica);
+    const g = cen.grupoA.id;
+    const ativo = await criarJogador(db, g, cen.adminA.id, { apelido: 'Ana', dataEntrada: '2026-01-01' });
+    const saiu = await criarJogador(db, g, cen.adminA.id, { apelido: 'Saiu Fora', dataEntrada: '2026-01-01' });
+    await escalacoes.confirmar(db, g, {
+      data: '2026-10-22',
+      formato: 'varios_times',
+      n: 2,
+      k: null,
+      composicao: { times: [{ jogadores: [ativo, saiu] }] },
+      confirmadaPor: cen.adminA.id,
+      confirmadaEm: AGORA,
+    });
+    await jogadores.inativar(db, g, saiu, '2026-10-22');
+    const r = await cliente(cen.adminA.cookie).get(`/api/grupos/${g}/partidas/nova`);
+    expect(r.status).toBe(200);
+    const nova = partidaNova.parse(r.corpo);
+    expect(nova.jogadores.map((j) => [j.apelido, j.situacao])).toEqual([['Ana', 'presente']]);
+    expect(JSON.stringify(r.corpo)).not.toContain('Saiu Fora');
+  });
+
+  it('partida já lançada na data com escalação confirmada continua 409', async () => {
+    const db = await abrir();
+    const cen = await montarCenario(db, fabrica);
+    const g = cen.grupoA.id;
+    const a = await criarJogador(db, g, cen.adminA.id, { apelido: 'Ana', dataEntrada: '2026-01-01' });
+    await escalacoes.confirmar(db, g, {
+      data: '2026-10-22',
+      formato: 'varios_times',
+      n: 2,
+      k: null,
+      composicao: { times: [{ jogadores: [a] }] },
+      confirmadaPor: cen.adminA.id,
+      confirmadaEm: AGORA,
+    });
+    await emTransacao(db, (tx) =>
+      partidas.criar(tx, g, { data: '2026-10-22', choveu: false, presencas: [], autor: cen.adminA.id, agora: AGORA }),
+    );
+    const r = await cliente(cen.adminA.cookie).get(`/api/grupos/${g}/partidas/nova`);
+    expect(r.status).toBe(409);
+    expect(r.corpo).toMatchObject({ erro: { codigo: 'partida_ja_existe', dataExistente: '2026-10-22' } });
+  });
+
   it('escalação em vários times pré-marca todos; em outra data ou de outro grupo não pré-marca; jsonb inválido é ignorado', async () => {
     const db = await abrir();
     const cen = await montarCenario(db, fabrica);
