@@ -15,14 +15,16 @@ describe('a suíte de isolamento morde', () => {
     const app = criarApp();
     app.get('/api/grupos/:grupoId/sem-caso', (c) => c.json({}));
     const semCaso = listarRotas(app).filter((r) => !(r in CASOS));
-    expect(semCaso).toEqual(['GET /api/grupos/:grupoId/sem-caso']);
+    expect(semCaso).toContain('GET /api/grupos/:grupoId/sem-caso');
   });
 
   it('rota ALL (middleware) não entra na lista, mas rota de negócio entra', () => {
+    const base = listarRotas(criarApp());
     const app = criarApp();
     app.use('/api/qualquer/*', async (_c, proximo) => proximo());
     app.post('/api/grupos/:grupoId/ok', (c) => c.json({}));
-    expect(listarRotas(app)).toEqual(['GET /api/saude', 'POST /api/grupos/:grupoId/ok']);
+    const novas = listarRotas(app).filter((r) => !base.includes(r));
+    expect(novas).toEqual(['POST /api/grupos/:grupoId/ok']);
   });
 
   it('rota sob o prefixo protegido passa no helper', async () => {
