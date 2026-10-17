@@ -6,6 +6,9 @@ import type { ComposicaoTimesVarios, JogadorSim } from './tipos.js';
 /** Teto de trocas aceitas na busca local (ADR-007 §2): garante que o laço termina. */
 export const MAX_TROCAS_ACEITAS_VARIOS = 200;
 
+/** Teto de aptos aceitos: a vizinhança da busca local cresce com O(T²·N²) e cada avaliação com O(T). */
+export const MAX_APTOS_SIMULADOR = 60;
+
 export interface EntradaDistribuicaoVarios {
   n: number;
   jogadores: readonly JogadorSim[];
@@ -55,6 +58,9 @@ export function distribuirVariosTimes({
 }: EntradaDistribuicaoVarios): DistribuicaoVarios {
   if (!calcularPrevia({ formato: 'varios_times', n, aptos: jogadores.length }).valida) {
     throw new RangeError(`aptos insuficientes: ${jogadores.length} para 3 ou mais times de ${n}`);
+  }
+  if (jogadores.length > MAX_APTOS_SIMULADOR) {
+    throw new RangeError(`aptos demais: ${jogadores.length} (máximo ${MAX_APTOS_SIMULADOR})`);
   }
   const { times: total, tamanhoIncompleto } = composicaoVarios(jogadores.length, n);
   const capacidade = Array.from({ length: total }, (_, t) =>

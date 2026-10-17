@@ -1,4 +1,4 @@
-import type { ClassificacaoDois } from './classificacao.js';
+import { saidaNoIntervalo, type ClassificacaoDois } from './classificacao.js';
 import { dividirMeioParaCima } from '../elenco/nivel.js';
 import { agregar, somaNivel2oTempo, trocarNoAgregado, type Agregado, type Jogadores } from './indicadores.js';
 import type { ComposicaoDois, JogadorSim, TimeDois } from './tipos.js';
@@ -38,10 +38,11 @@ function ordenarPorRank(ids: readonly string[], jogadores: Jogadores, rank: Read
 
 /** Substituições do time: pares entre quem sai no intervalo e quem entra. */
 function substituicoes(time: TimeDois, jogadores: Jogadores): number {
-  let so1o = 0;
-  for (const id of time.titulares) if (jogadores.get(id)!.so1oTempo) so1o += 1;
-  const saem = Math.min(Math.max(so1o, time.entram.length), time.titulares.length);
-  return Math.min(saem, time.entram.length);
+  const saem = saidaNoIntervalo(
+    time.titulares.map((id) => jogadores.get(id)!),
+    time.entram.length,
+  );
+  return Math.min(saem.length, time.entram.length);
 }
 
 const idadeMedia = (e: Estado): number => (e.jogam.n > 0 ? dividirMeioParaCima(100 * e.jogam.somaIdade, e.jogam.n) : 0);

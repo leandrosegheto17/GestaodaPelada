@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { agregar, composicaoVarios, distribuirVariosTimes, type JogadorSim } from '../../src/index.js';
+import {
+  agregar,
+  composicaoVarios,
+  distribuirVariosTimes,
+  MAX_APTOS_SIMULADOR,
+  type JogadorSim,
+} from '../../src/index.js';
 
 function elenco(quantos: number, nivelFixo?: number, idadeFixa?: number): JogadorSim[] {
   return Array.from({ length: quantos }, (_, i) => ({
@@ -34,6 +40,13 @@ describe('distribuirVariosTimes: tamanhos', () => {
   it('sem aptos para 3 times lança RangeError', () => {
     expect(() => distribuirVariosTimes({ n: 4, jogadores: elenco(8) })).toThrow(RangeError);
   });
+
+  it(`aceita ${MAX_APTOS_SIMULADOR} aptos e rejeita um a mais com RangeError`, () => {
+    expect(MAX_APTOS_SIMULADOR).toBe(60);
+    const r = distribuirVariosTimes({ n: 5, jogadores: elenco(MAX_APTOS_SIMULADOR) });
+    expect(r.times).toHaveLength(12);
+    expect(() => distribuirVariosTimes({ n: 5, jogadores: elenco(MAX_APTOS_SIMULADOR + 1) })).toThrow(RangeError);
+  });
 });
 
 describe('distribuirVariosTimes: propriedades', () => {
@@ -54,14 +67,18 @@ describe('distribuirVariosTimes: propriedades', () => {
 
     const semTrocas = distribuirVariosTimes({ n, jogadores: js, maxTrocas: 0 });
     const mapa = new Map(js.map((j) => [j.id, j]));
-    const amplitude = (d: typeof r) => {
-      const medias = d.times.map((t) => {
-        const ag = agregar(t.jogadores, mapa);
-        return ag.somaNivel / ag.n;
-      });
-      return Math.max(...medias) - Math.min(...medias);
+    const amplitudes = (d: typeof r): [number, number] => {
+      const ags = d.times.map((t) => agregar(t.jogadores, mapa));
+      const nivel = ags.map((g) => g.somaNivel / g.n);
+      const idade = ags.map((g) => g.somaIdade / g.n);
+      return [Math.max(...nivel) - Math.min(...nivel), Math.max(...idade) - Math.min(...idade)];
     };
-    expect(amplitude(r)).toBeLessThanOrEqual(amplitude(semTrocas) + 1e-9);
+    const [nivelFinal, idadeFinal] = amplitudes(r);
+    const [nivelInicial, idadeInicial] = amplitudes(semTrocas);
+    const naoPiora =
+      nivelFinal < nivelInicial - 1e-6 ||
+      (Math.abs(nivelFinal - nivelInicial) <= 1e-6 && idadeFinal <= idadeInicial + 1e-6);
+    expect(naoPiora).toBe(true);
   });
 });
 
@@ -92,14 +109,15 @@ describe('distribuirVariosTimes: ótimo local', () => {
 });
 
 describe('distribuirVariosTimes: incompleto e determinismo', () => {
-  it('nada força o pior no incompleto: o objetivo é a média, com todos candidatos', () => {
-    const niveis = [1000, 800, 900, 900, 900, 900, 900, 900];
+  it('todos são candidatos ao incompleto: a menor amplitude de média exige o melhor jogador nele', () => {
+    const niveis = [850, 700, 700, 700, 1000, 950, 950, 900];
     const js = niveis.map((nivel, i) => ({ ...elenco(8)[i]!, nivel, idade: 30 }));
     const r = distribuirVariosTimes({ n: 3, jogadores: js });
     const mapa = new Map(js.map((j) => [j.id, j]));
     const medias = r.times.map((t) => agregar(t.jogadores, mapa).somaNivel / t.jogadores.length);
-    expect(Math.max(...medias) - Math.min(...medias)).toBe(0);
-    expect(r.times[r.incompleto!]!.jogadores).not.toContain('j02');
+    // Por enumeração de todas as partições 3+3+2, a amplitude mínima é 50/3 e só ocorre com o melhor no time de 2.
+    expect(Math.max(...medias) - Math.min(...medias)).toBeCloseTo(50 / 3, 9);
+    expect(r.times[r.incompleto!]!.jogadores).toContain('j05');
   });
 
   it('a lista embaralhada por permutações fixas dá a mesma saída', () => {
