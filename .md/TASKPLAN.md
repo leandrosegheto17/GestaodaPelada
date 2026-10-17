@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-17 15:44
+Atualizado: 2026-10-17 15:50
 
-Resumo: Não executada 31 · Em execução 17 · Executada (aguarda teste) 1 · Aprovada 278 · Bloqueada 3 · total 330
+Resumo: Não executada 31 · Em execução 11 · Executada (aguarda teste) 7 · Aprovada 278 · Bloqueada 3 · total 330
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -155,7 +155,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 140 | TP-0136 | executor | ✔ | Workflow de backup diário (backup.yml) | L30 | TP-0134 | Não executada |
 | 141 | TP-0135 | executor | ✔ | Workflow de deploy (deploy.yml) | L30 | TP-0003, TP-0013, TP-0015, TP-0133, TP-0134, TP-0136 | Não executada |
 | 142 | TP-0137 | executor | ✔ | Runbook backend/DEPLOY.md e ensaio de restauração | L30 | TP-0041, TP-0135, TP-0136 | Não executada |
-| 143 | TP-0138 | executor | ✔ | E2E de integração do I1 (API real) | L30 | TP-0034, TP-0035, TP-0040, TP-0056, TP-0061, TP-0070, TP-0078, TP-0081, TP-0084, TP-0089, TP-0094, TP-0111, TP-0114, TP-0116, TP-0119, TP-0121, TP-0123, TP-0124, TP-0129, TP-0130 | Em execução |
+| 143 | TP-0138 | executor | ✔ | E2E de integração do I1 (API real) | L30 | TP-0034, TP-0035, TP-0040, TP-0056, TP-0061, TP-0070, TP-0078, TP-0081, TP-0084, TP-0089, TP-0094, TP-0111, TP-0114, TP-0116, TP-0119, TP-0121, TP-0123, TP-0124, TP-0129, TP-0130 | Executada (aguarda teste) |
 | 144 | TP-0139 | executor | ✔ | [U] Go-live do I1 | L30 | SPK-0001, TP-0036, TP-0039, TP-0041, TP-0054, TP-0055, TP-0057, TP-0058, TP-0059, TP-0060, TP-0062, TP-0063, TP-0064, TP-0065, TP-0066, TP-0067, TP-0068, TP-0069, TP-0071, TP-0072, TP-0073, TP-0074, TP-0075, TP-0076, TP-0077, TP-0079, TP-0082, TP-0083, TP-0085, TP-0086, TP-0087, TP-0090, TP-0109, TP-0112, TP-0113, TP-0115, TP-0117, TP-0118, TP-0120, TP-0122, TP-0125, TP-0126, TP-0127, TP-0128, TP-0131, TP-0135, TP-0137, TP-0138 | Não executada |
 | 145 | TP-0140 | executor | ✔ | [U] Play Console: app com.gestaodapelada.app (PI-5) | L31 | — | Não executada |
 | 146 | TP-0141 | executor | ✔ | /.well-known/assetlinks.json servido pelo Worker | L31 | TP-0088, TP-0140 | Não executada |
@@ -285,7 +285,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 270 | RTP-0050 | executor | ✔ | T01 PDF: completar testes (troca de mês, POST pdf_exportado real, axe das faixas) | Refatoração Lote-L39 | TP-0184 | Aprovada |
 | 271 | RTP-0054 | executor | ✔ | Teste flaky 'toque antes da projeção chegar' (exportar-pdf) depende de delay de 150 ms | Refatoração Lote-L39 | RTP-0050 | Aprovada |
 | 272 | RTP-0058 | executor | ✔ | dominio/pdf: testes do plano que faltam (mockup, troca de pesos, mês com mais de 12) | Refatoração Lote-L39 | TP-0179 | Aprovada |
-| 273 | RTP-0096 | executor | ✔ | pdf.test.ts: cobrir lacunas do plano de teste de GET publico/:slug/pdf | Refatoração Lote-L39 | TP-0181 | Em execução |
+| 273 | RTP-0096 | executor | ✔ | pdf.test.ts: cobrir lacunas do plano de teste de GET publico/:slug/pdf | Refatoração Lote-L39 | TP-0181 | Executada (aguarda teste) |
 | 274 | RTP-0051 | executor | ✔ | dominio/caixa: unificar testes duplicados | Refatoração Lote-L41 | TP-0187 | Aprovada |
 | 275 | RTP-0102 | executor | ✔ | Dividir repositorios/financeiro.ts (319 linhas) em config, pagamentos e lançamentos | Refatoração Lote-L41 | TP-0189 | Não executada |
 | 276 | RTP-0056 | executor | ✔ | Documentar no banco que auditoria.resumo nunca recebe senha/token | Refatoração Lote-L06 | TP-0025 | Aprovada |
@@ -311,7 +311,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 296 | RTP-0098 | executor | ✔ | Teste de trocar-senha: caso dos 5 erros estoura o timeout padrão de 5 s | L08 | RTP-0085 | Aprovada |
 | 297 | RTP-0105 | executor | ✔ | Trocar senha: serializar a checagem de bloqueio da senha atual (corrida entre consulta... | L08 | RTP-0085 | Aprovada |
 | 298 | RTP-0104 | executor | ✔ | checar-escrita-e-dono: ';' dentro de string ou objeto pré-montado esconde a escrita de... | L08 | RTP-0072 | Aprovada |
-| 299 | RTP-0110 | executor | ✔ | checar-escrita-e-dono: atribuição o.e_dono = v e valor-expressão em chave de objeto esc... | Refatoração Lote-L08 | RTP-0104 | Em execução |
+| 299 | RTP-0110 | executor | ✔ | checar-escrita-e-dono: atribuição o.e_dono = v e valor-expressão em chave de objeto esc... | Refatoração Lote-L08 | RTP-0104 | Executada (aguarda teste) |
 | 300 | RTP-0112 | executor | ✔ | checar-escrita-e-dono: '//' ou '--' dentro de literal de texto apaga o resto da linha e... | Refatoração Lote-L08 | RTP-0104 | Não executada |
 | 301 | RTP-0070 | executor | ✔ | Teste de partidas: relógio fixo e casos faltantes do plano | Refatoração Lote-L09 | TP-0044 | Aprovada |
 | 302 | RTP-0078 | executor | ✔ | Asserção automática do limite de 4 consultas em carregarHistoricoGrupo | L11 | TP-0053 | Aprovada |
@@ -328,11 +328,11 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 313 | RTP-0090 | executor | ✔ | Teste de reativar: acumulado mantido e ativosNaData | Refatoração Lote-L16 | TP-0073 | Aprovada |
 | 314 | RTP-0092 | executor | ✔ | Testes de inativar: cobrir bordas e efeito do plano do TP-0072 | Refatoração Lote-L16 | TP-0072 | Aprovada |
 | 315 | RTP-0093 | executor | ✔ | Testes de partida nova: inativado depois e 409 com escalação (TP-0168) | Refatoração Lote-L36 | TP-0168 | Aprovada |
-| 316 | RTP-0097 | executor | ✔ | Unificar a enumeração de ids da composição (idsDaComposicao duplicada em 3 lugares) | L36 | TP-0167 | Em execução |
+| 316 | RTP-0097 | executor | ✔ | Unificar a enumeração de ids da composição (idsDaComposicao duplicada em 3 lugares) | L36 | TP-0167 | Executada (aguarda teste) |
 | 317 | RTP-0108 | executor | ✔ | Confirmar escalação: recusar id repetido na composição (422) | Refatoração Lote-L36 | TP-0167 | Não executada |
 | 318 | RTP-0094 | executor | ✔ | Testes do ranking público: cobrir o plano do TP-0084 em publico-ranking.test.ts | L19 | TP-0084 | Aprovada |
-| 319 | RTP-0103 | executor | ✔ | limite-taxa.test: idempotência do login e lacunas do plano (IP distinto, no-store, POST... | Refatoração Lote-L19 | TP-0087 | Em execução |
-| 320 | RTP-0109 | executor | ✔ | Limitador de taxa: binding ausente em produção desliga o limite sem aviso | Refatoração Lote-L19 | TP-0087 | Em execução |
+| 319 | RTP-0103 | executor | ✔ | limite-taxa.test: idempotência do login e lacunas do plano (IP distinto, no-store, POST... | Refatoração Lote-L19 | TP-0087 | Executada (aguarda teste) |
+| 320 | RTP-0109 | executor | ✔ | Limitador de taxa: binding ausente em produção desliga o limite sem aviso | Refatoração Lote-L19 | TP-0087 | Executada (aguarda teste) |
 | 321 | RTP-0100 | executor | ✔ | Testes do POST partidas: concorrência, falha no evento e 422 de corpo | Refatoração Lote-L18 | TP-0081 | Em execução |
 | 322 | RTP-0101 | executor | ✔ | Teste do PUT partidas: 404 de :data malformada sem consulta ao banco | L18 | TP-0082 | Não executada |
 | 323 | RTP-0107 | executor | ✔ | sw.ts: validade máxima (maxAgeSeconds) no cache do ranking público | L23 | TP-0108 | Não executada |
