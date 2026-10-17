@@ -59,3 +59,18 @@ OK; 0 achados; revisão do diff, só importa @pelada/contrato, sem dado pessoal 
 
 ## TP-0095 — DevSecOps — 2026-10-17
 OK; 0 achados; diff lido e grep executado sem dangerouslySetInnerHTML/style inline/cor literal, sem dependência nova.
+
+## TP-0097 — DevSecOps — 2026-10-17
+APROVADA — controles de apresentação sem superfície de segurança; sem innerHTML/style/cores fixas (grep executado), sem dependência nova, 0 achados.
+
+## TP-0107 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; só slug/uuid/ranking público/booleano no aparelho, validados na leitura; `pnpm audit --prod` sem vulnerabilidades.
+
+## TP-0151 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos novos (RTP-0011 do QA cobre a duplicação); laço com teto, sem aleatório/relógio, 67 testes passando.
+
+## TP-0152 — DevSecOps — 2026-10-17
+OK; 0 críticos, 1 baixo (RTP-0012: sem limite de aptos na entrada); função pura sem aleatoriedade/I/O, 65 testes passando.
+
+## TP-0153 — DevSecOps — 2026-10-17
+APROVADA; 0 achados; sem import externo/relógio/nível exposto, laço limitado a 30; 14 testes passando.
