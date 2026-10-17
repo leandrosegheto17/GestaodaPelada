@@ -43,6 +43,9 @@ export const trocarSenhaCorpo = z
     message: 'As senhas não conferem.',
   });
 
+/** Corpo vazio: a conta é sempre a da sessão (a resposta é 204). */
+export const avisoPrivacidadeCorpo = z.strictObject({});
+
 export const grupoDaSessao = z.strictObject({
   id: idResposta,
   nome: z.string(),
@@ -84,6 +87,7 @@ export const esquemasSessao: Esquemas = {
   'sessao.entrar.corpo': { direcao: 'entrada', schema: entrarCorpo },
   'sessao.esqueci-senha.corpo': { direcao: 'entrada', schema: esqueciSenhaCorpo },
   'sessao.trocar-senha.corpo': { direcao: 'entrada', schema: trocarSenhaCorpo },
+  'sessao.aviso-privacidade.corpo': { direcao: 'entrada', schema: avisoPrivacidadeCorpo },
   'sessao.eu': { direcao: 'resposta', schema: sessaoEu },
   'sessao.esqueci-senha.resposta': { direcao: 'resposta', schema: esqueciSenhaResposta },
   'sessao.erro.nao-autenticado': { direcao: 'resposta', schema: erroNaoAutenticado },

@@ -5,6 +5,7 @@ import { rotaDonoGrupo } from './rotas/dono/grupo.js';
 import { rotaDonoPainel } from './rotas/dono/painel.js';
 import { rotaSessaoEntrar } from './rotas/sessao-entrar.js';
 import { rotaSessaoEsqueciSenha } from './rotas/sessao-esqueci-senha.js';
+import { rotaSessaoAvisoPrivacidade } from './rotas/sessao-aviso-privacidade.js';
 import { rotaSessaoEu } from './rotas/sessao-eu.js';
 import { rotaSessaoTrocarSenha } from './rotas/sessao-trocar-senha.js';
 import { rotaSessaoSair } from './rotas/sessao-sair.js';
@@ -60,6 +61,7 @@ export const ROTAS: readonly Hono<AppEnv>[] = [
   rotaSessaoEu,
   rotaSessaoSair,
   rotaSessaoTrocarSenha,
+  rotaSessaoAvisoPrivacidade,
   rotaDonoPainel,
   rotaDonoGrupo,
   rotaDonoCriarGrupo,

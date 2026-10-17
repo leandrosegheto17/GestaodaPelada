@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  avisoPrivacidadeCorpo,
   entrarCorpo,
   erroBloqueado,
   erroNaoAutenticado,
@@ -81,5 +82,13 @@ describe('entrarCorpo e esqueciSenhaCorpo', () => {
   it('senha vazia ou acima de 72 bytes é recusada no login', () => {
     expect(entrarCorpo.safeParse({ email: 'a@b.com', senha: '' }).success).toBe(false);
     expect(entrarCorpo.safeParse({ email: 'a@b.com', senha: 'ç'.repeat(40) }).success).toBe(false);
+  });
+});
+
+describe('avisoPrivacidadeCorpo', () => {
+  it('aceita só o corpo vazio', () => {
+    expect(avisoPrivacidadeCorpo.safeParse({}).success).toBe(true);
+    expect(avisoPrivacidadeCorpo.safeParse({ contaId: 'x' }).success).toBe(false);
+    expect(avisoPrivacidadeCorpo.safeParse({ visto: true }).success).toBe(false);
   });
 });

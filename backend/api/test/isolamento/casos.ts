@@ -40,6 +40,10 @@ export const CASOS: Record<string, Caso> = {
     tipo: 'nao_se_aplica',
     justificativa: 'Rota de sessão: troca só a senha da própria conta, sem dado de grupo.',
   },
+  'POST /api/sessao/aviso-privacidade': {
+    tipo: 'nao_se_aplica',
+    justificativa: 'Grava só na conta da própria sessão, sem grupo.',
+  },
   'GET /api/dono/painel': { tipo: 'dono' },
   'GET /api/dono/grupos/:id': { tipo: 'dono' },
   'POST /api/dono/grupos': {

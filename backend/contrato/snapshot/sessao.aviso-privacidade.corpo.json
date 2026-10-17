@@ -1,0 +1,8 @@
+{
+  "direcao": "entrada",
+  "esquema": {
+    "additionalProperties": false,
+    "properties": {},
+    "type": "object"
+  }
+}
