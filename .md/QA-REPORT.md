@@ -518,3 +518,33 @@ APROVADA, 0 críticos/0 não críticos; 5/5 testes + checar-grupo-id verdes; des
 
 ## TP-0188 — QA — 2026-10-17
 APROVADA; 0 críticos, 0 não críticos; 10/10 testes de migração e checagem aditiva verdes, centavos inteiros e isolamento por grupo confirmados.
+
+## RTP-0067 — QA — 2026-10-17
+DEVOLVIDA - 1 crítico (os 4 @ts-expect-error são vacuosos: `M` indefinido mascara o erro, tsc passa mesmo com tipo aberto), 0 não críticos; demais testes (12/12, 1 consulta, colunas, isolamento A/B, fábrica) OK.
+
+## RTP-0068 — QA — 2026-10-17
+APROVADA — auditoria `admin_vinculado` asserida, mutação falha o caso, 7/7, lint/tsc limpos; 0 achados.
+
+## RTP-0069 — QA — 2026-10-17
+APROVADA — 18/18 testes passam, mutação em grupo.ts/dono.ts falha 5 casos incluindo os 3 de troca_de_senha; 0 achados.
+
+## RTP-0070 — QA — 2026-10-17
+APROVADA — 4/4 testes passando, zero literal `2026-`, três casos faltantes cobertos; 0 achados.
+
+## TP-0041 — QA — 2026-10-17
+APROVADA - checagem 14/14, dono.test 4/4 com Postgres, lint 0, repo real verde; 0 críticos, 1 não crítico (janela fixa de 300 caracteres na checagem de e_dono, RTP-0072).
+
+## TP-0046 — QA — 2026-10-17
+APROVADA — 17 testes, checar-grupo-id e tsc ok; 0 críticos, 3 não críticos (temPresencaDesde ausente, teste sem caso de presença, datas literais) -> RTP-0073.
+
+## TP-0047 — QA — 2026-10-17
+APROVADA — 7/7 testes da tarefa + 13 do domínio + checar-grupo-id OK; 0 críticos, 1 não crítico (duplica seViolarUnico de comum.ts -> RTP-0071).
+
+## TP-0033 — QA — 2026-10-17
+APROVADA — 68/68 testes e tsc OK em banco isolado, aceite cumprido; 0 críticos, 2 não críticos (rota ALL descartada, sem contagem de tabelas) na RTP-0074.
+
+## TP-0048 — QA — 2026-10-17
+APROVADA — pesos.test.ts 6/6 com banco real, checar-grupo-id ok, diff conforme convenções; 0 achados.
+
+## TP-0049 — QA — 2026-10-17
+APROVADA — 7/7 testes passando (banco próprio), checar-grupo-id limpo, critério de aceite coberto; 0 críticos, 3 não críticos (datas literais, seViolarUnico, fábrica de partidas) em RTP-0075.
