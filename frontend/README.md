@@ -48,4 +48,5 @@ docker compose down -v   # apaga o banco e os volumes
 ```
 
 Abra `http://localhost:5173`; o Vite repassa `/api` ao backend (mesma origem, como em produção).
-O Postgres é descartável e a senha do compose é fictícia.
+O Postgres é descartável e a senha do compose é fictícia; por isso as portas são publicadas só em
+`127.0.0.1`: o ambiente escuta apenas na máquina local, não na rede (Wi-Fi compartilhado).

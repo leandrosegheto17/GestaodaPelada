@@ -20,7 +20,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: pelada
     ports:
-      - '5432:5432'
+      - '127.0.0.1:5432:5432'
     volumes:
       - dados_db:/var/lib/postgresql/data
     healthcheck:
@@ -38,7 +38,7 @@ services:
       DATABASE_URL: postgres://postgres:postgres@db:5432/pelada
       CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_HYPERDRIVE: postgres://postgres:postgres@db:5432/pelada
     ports:
-      - '8787:8787'
+      - '127.0.0.1:8787:8787'
     command: >
       sh -c "corepack enable &&
       pnpm install --frozen-lockfile &&
@@ -54,7 +54,7 @@ services:
       ALVO_API_DEV: http://backend:8787
       CHOKIDAR_USEPOLLING: 'true'
     ports:
-      - '5173:5173'
+      - '127.0.0.1:5173:5173'
     command: >
       sh -c "corepack enable &&
       pnpm install --frozen-lockfile &&
