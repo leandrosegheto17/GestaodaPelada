@@ -104,3 +104,27 @@ APROVADA; 0 críticos, 0 não críticos; audit --prod limpo, job e2e com content
 
 ## TP-0100 — DevSecOps — 2026-10-17
 OK; 0 críticos, 0 novos não críticos; senha só em prop/texto React, sem storage/log/URL/cache (grep executado), confirmação ao fechar e D2 disabled real conferidos por leitura.
+
+## TP-0019 — DevSecOps — 2026-10-17
+APROVADA; 0 achados; limites de senha (caracteres e bytes), mensagens genéricas e ausência de eDono na entrada confirmados; 28 testes de sessão verdes.
+
+## TP-0020 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 novos não críticos (RTP-0021 já cobre enderecoNovo); contrato público estrito sem dado pessoal, 34 testes verdes.
+
+## TP-0021 — DevSecOps — 2026-10-17
+APROVADA; senha só em respostas de criação, corpos strict, 28 testes executados, 0 achados.
+
+## TP-0023 — DevSecOps — 2026-10-17
+APROVADA; 0 achados; LGPD ok (ano/telefone só no contrato admin, publico não importa elenco), strict e limites ok; 39 testes e pnpm audit --prod limpos.
+
+## TP-0024 — DevSecOps — 2026-10-17
+APROVADA; revisão de diff + 23 testes executados; strict, limites e uuid ok, uso só com contagens; 0 achados.
+
+## TP-0090 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; CSP sem unsafe-*, nosniff/same-origin/Permissions-Policy/frame-ancestors ok, zod jitless ok; e2e cabeçalhos 3/3 executado, HSTS ausente por decisão do SDD.
+
+## TP-0109 — DevSecOps — 2026-10-17
+APROVADA; 0 achados; redirect validado pelo schema do contrato, link relativo, sem dado pessoal (revisão de leitura do diff, sem dependência nova).
+
+## TP-0207 — DevSecOps — 2026-10-17
+APROVADA; 0 achados de segurança (sem innerHTML/style/console, sem dependência nova, sem dado pessoal).

@@ -131,3 +131,6 @@ APROVADA; 0 críticos/0 não críticos; 136 testes ok, T02 0,00% pc/celular, T03
 
 ## TP-0207 — QA — 2026-10-17
 APROVADA; 0 críticos, 1 não crítico (RTP-0022: ConteudoPagina sem a classe .conteudo do mockup); 29 testes, axe e stylelint verdes.
+
+## TP-0017 — QA — 2026-10-17
+APROVADA - reteste workers saude/apoio-banco sai 0 sem Unhandled Rejection, node db verde (16/16), ouvinte de erro só no fechamento; 0 críticos, 0 não críticos.
