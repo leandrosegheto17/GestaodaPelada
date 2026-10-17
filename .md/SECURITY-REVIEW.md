@@ -86,3 +86,6 @@ APROVADA; 0 achados; diff de apresentação sem HTML injetado, sem URL absoluta,
 
 ## TP-0104 — DevSecOps — 2026-10-17
 OK; link só https no host de enderecoNovo, sem XSS/open redirect, 27/27 testes executados; 0 achados.
+
+## TP-0003 — DevSecOps — 2026-10-17
+APROVADA COM DÉBITO; 0 críticos, 1 baixo (RTP-0015: fixar actions de terceiros por SHA); ci.yml com contents:read, sem pull_request_target, sem segredo exposto a fork, actionlint 0.

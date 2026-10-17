@@ -89,3 +89,6 @@ APROVADA; 27/27 testes (plano coberto, matriz adversarial e axe ok); 0 achados c
 
 ## TP-0003 — QA — 2026-10-17
 APROVADA; 0 críticos, 1 não crítico (RTP-0014: prova do CI em PR real pendente de push do usuário); actionlint/lint/typecheck/test:checagens/checagens de ID e URL = 0, format:check só por CRLF local do wrangler.jsonc.
+
+## TP-0096 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (CSS .resumo não aplicado -> RTP-0016); 49 testes de componentes/campos+basicos passando, axe limpo, tsc/stylelint 0; UX-SPEC T23 confere com a decisão.
