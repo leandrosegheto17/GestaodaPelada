@@ -42,7 +42,7 @@ export const rankingPublico = z.strictObject({
   mes,
   hoje: data,
   geradoEm: z.iso.datetime(),
-  enderecoNovo: z.url().nullable().optional(),
+  enderecoNovo: z.url().nullable(),
   navegacao: z.strictObject({ mesAnterior: mes.nullable(), mesSeguinte: mes.nullable() }),
   resumoMes: z.strictObject({
     partidas: z.number().int().min(0),

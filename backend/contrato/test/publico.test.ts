@@ -8,6 +8,17 @@ describe('respostas do mockup', () => {
   });
 });
 
+describe('enderecoNovo obrigatório', () => {
+  const base = respostas(/^publico-ranking-2026-10\.json$/)[0]?.json as Record<string, unknown>;
+  it('ranking sem a chave é recusado; null e URL passam; texto solto é recusado', () => {
+    const semChave = Object.fromEntries(Object.entries(base).filter(([chave]) => chave !== 'enderecoNovo'));
+    expect(rankingPublico.safeParse(semChave).success).toBe(false);
+    expect(rankingPublico.safeParse({ ...base, enderecoNovo: null }).success).toBe(true);
+    expect(rankingPublico.safeParse({ ...base, enderecoNovo: 'https://exemplo.com/p' }).success).toBe(true);
+    expect(rankingPublico.safeParse({ ...base, enderecoNovo: 'lixo' }).success).toBe(false);
+  });
+});
+
 describe('campos proibidos (G-10)', () => {
   const base = respostas(/^publico-ranking-2026-10\.json$/)[0]?.json as {
     grupo: object;
