@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-17 19:41
+Atualizado: 2026-10-17 19:56
 
-Resumo: Não executada 25 · Em execução 14 · Executada (aguarda teste) 2 · Aprovada 293 · Bloqueada 5 · total 339
+Resumo: Não executada 25 · Em execução 14 · Executada (aguarda teste) 3 · Aprovada 294 · Bloqueada 4 · total 340
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -149,8 +149,8 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 134 | TP-0130 | executor | ✔ | Tela T27: Novo grupo | L28 | TP-0022, TP-0089, TP-0093, TP-0095, TP-0096, TP-0097, TP-0098, TP-0100, TP-0105, TP-0129, TP-0207 | Aprovada |
 | 135 | TP-0131 | executor | ✔ | Tela T28: Grupo (visão do dono) | L28 | TP-0022, TP-0089, TP-0093, TP-0095, TP-0096, TP-0098, TP-0100, TP-0101, TP-0105, TP-0129, TP-0207 | Aprovada |
 | 136 | TP-0132 | executor | ✔ | [U] Neon: projeto novo em São Paulo (PI-1) — **tarefa manual do usuário** | L29 | — | Aprovada |
-| 137 | BK-0008 | coordenador | ✔ | Rodar o roteiro Cloudflare (subdomínio, token, wrangler hyperdrive create pelada-prod/pela | — | — | Não executada |
-| 138 | TP-0133 | executor | ✔ | [U] Cloudflare: subdomínio, token e Hyperdrive (PI-2, PI-3) | L29 | BK-0008, TP-0013, TP-0132 | Bloqueada |
+| 137 | BK-0008 | coordenador | ✔ | Rodar o roteiro Cloudflare (subdomínio, token, wrangler hyperdrive create pelada-prod/pela | — | — | Aprovada |
+| 138 | TP-0133 | executor | ✔ | [U] Cloudflare: subdomínio, token e Hyperdrive (PI-2, PI-3) | L29 | BK-0008, TP-0013, TP-0132 | Executada (aguarda teste) |
 | 139 | TP-0134 | executor | ✔ | [U] GitHub: secrets e environments (PI-4) | L29 | TP-0132, TP-0133 | Não executada |
 | 140 | SPK-0001 | coordenador | — | Spike S-01: transação interativa pg sobre o Hyperdrive | L29 | TP-0014, TP-0133 | Não executada |
 | 141 | TP-0136 | executor | ✔ | Workflow de backup diário (backup.yml) | L30 | TP-0134 | Não executada |
@@ -346,9 +346,10 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 331 | RTP-0118 | executor | ✔ | Trace do e2e de integração guarda a senha temporária (resposta de POST /api/dono/grupos) | Refatoração Lote-L30 | TP-0138 | Aprovada |
 | 332 | RTP-0119 | executor | ✔ | docker-compose repete o e-mail real do dono em literal | Refatoração Lote-L30 | TP-0138 | Aprovada |
 | 333 | RTP-0120 | executor | ✔ | checar-escrita-e-dono: '--' de código (i--) é tratado como comentário SQL e esconde e_dono | Refatoração Lote-L30 | RTP-0112 | Aprovada |
-| 334 | BK-0003 | coordenador | ✔ | Exige push da branch ci-prova e PR real no remoto (ação manual/autorização do usuário); ro | — | — | Não executada |
-| 335 | RTP-0014 | executor | ✔ | Executar a prova do CI em PR real (ci-prova) | Refatoração Lote-L01 | BK-0003, TP-0003 | Bloqueada |
-| 336 | BK-0005 | coordenador | ✔ | Item (b) feito; item (a) exige PR real com job e2e verde (push/PR autorizado pelo usuário) | — | — | Não executada |
-| 337 | RTP-0017 | executor | ✔ | Provar job e2e verde em PR real e cobrir dist/ ausente em visual.mjs | Refatoração Lote-L20 | BK-0005, TP-0089 | Bloqueada |
-| 338 | BK-0007 | coordenador | ✔ | Rotacionar senhas pelada_app/pelada_backup no console do Neon (ALTER ROLE nos branches pro | — | — | Não executada |
-| 339 | RTP-0114 | executor | ✔ | Rotacionar senhas de pelada_app/pelada_backup do Neon antes do primeiro uso real | Refatoração Lote-L29 | BK-0007, TP-0132 | Bloqueada |
+| 334 | BK-0009 | coordenador | ✔ | Ajustar SDD/ADR-010/URL_PUBLICA/CORS/deploy.yml ao domínio prod-ljs.workers.dev e aos acei | — | — | Não executada |
+| 335 | BK-0003 | coordenador | ✔ | Exige push da branch ci-prova e PR real no remoto (ação manual/autorização do usuário); ro | — | — | Não executada |
+| 336 | RTP-0014 | executor | ✔ | Executar a prova do CI em PR real (ci-prova) | Refatoração Lote-L01 | BK-0003, TP-0003 | Bloqueada |
+| 337 | BK-0005 | coordenador | ✔ | Item (b) feito; item (a) exige PR real com job e2e verde (push/PR autorizado pelo usuário) | — | — | Não executada |
+| 338 | RTP-0017 | executor | ✔ | Provar job e2e verde em PR real e cobrir dist/ ausente em visual.mjs | Refatoração Lote-L20 | BK-0005, TP-0089 | Bloqueada |
+| 339 | BK-0007 | coordenador | ✔ | Rotacionar senhas pelada_app/pelada_backup no console do Neon (ALTER ROLE nos branches pro | — | — | Não executada |
+| 340 | RTP-0114 | executor | ✔ | Rotacionar senhas de pelada_app/pelada_backup do Neon antes do primeiro uso real | Refatoração Lote-L29 | BK-0007, TP-0132 | Bloqueada |

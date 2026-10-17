@@ -70,4 +70,13 @@
 - Descrição: Rodar o roteiro Cloudflare (subdomínio, token, wrangler hyperdrive create pelada-prod/pelada-teste com cache desligado) e informar os dois ids do Hyperdrive
 - Impacto se não resolvido: Bloqueia TP-0134 e o deploy
 - Sugestão: Fazer os passos 1-4 do plano com as strings do TP-0132; depois desbloquear e rodar /executar --tarefa TP-0133 para gravar os ids no wrangler.jsonc
+- Status: Resolvido (2026-10-17): Subdomínio workers.dev = prod-ljs; Hyperdrive pelada-prod criado (id e06363bd85874f1eaffc6382da6d394b, cache desligado, host direto); sem homologação por decisão do usuário (pelada-teste fora)
+
+## Bloqueio 009 — 2026-10-17 (BK-0009)
+- Reportado por: Executor
+- Escalado para: Coordenador
+- Artefato/trecho afetado: —
+- Descrição: Ajustar SDD/ADR-010/URL_PUBLICA/CORS/deploy.yml ao domínio prod-ljs.workers.dev e aos aceites de TP-0133/TP-0134/TP-0135 sem homologação (sem pelada-teste)
+- Impacto se não resolvido: —
+- Sugestão: Decidir se env.teste sai do wrangler.jsonc ou fica adormecido; revisar TP-0134 e TP-0135
 - Status: Em aberto
