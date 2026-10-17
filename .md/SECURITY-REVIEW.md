@@ -230,3 +230,24 @@ APROVADA, 0 achados; entrada validada pelo schema do contrato, X-Pelada nas escr
 
 ## TP-0204 — DevSecOps — 2026-10-17
 APROVADA, 0 críticos e 0 não críticos; POST via `escrever` com `X-Pelada`, aceite gravado no servidor por conta, página pública só com texto estático, nada no aparelho, conteúdo do aviso conforme RF-64/RNF-06 (leitura do diff; testes executados pelo QA).
+
+## TP-0117 — DevSecOps — 2026-10-17
+APROVADA — senhas só em estado e limpas no sucesso, autocomplete correto, `?grupo=` validado contra a sessão, sem log/storage/URL; 12 testes passando; 0 achados.
+
+## TP-0121 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0046 corpo do POST sem validação pelo schema do contrato); data validada, 409/422 como texto, X-Pelada nas escritas lidos no código.
+
+## TP-0130 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; senha temporária fora do cache (gcTime 0) e do state/URL/storage, sem slug/eDono no corpo, autorização só do dono na API (404); vitest 6/6.
+
+## TP-0131 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos novos (RTP-0041 do QA cobre lacunas de teste); RF-07 sem atalho a dados internos, senha D1 sem persistência, link só da urlPublica, 10 testes ok.
+
+## TP-0171 — DevSecOps — 2026-10-17
+APROVADA — notas/nível só em cache de memória, fora de storage e service worker, PUT com X-Pelada e ids codificados, cache invalidado corretamente; 40 testes ok; 0 críticos, 0 não críticos.
+
+## TP-0175 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; diff lido (state validado por schema, escrita via `escrever`, sem HTML injetado, sem persistência local, sem cálculo na tela), grep de padrões de risco sem ocorrências.
+
+## TP-0183 — DevSecOps — 2026-10-17
+APROVADA - PDF só com campos de ProjecaoPdf (G-10), texto puro, fontes locais, jspdf dinâmico, pdfjs-dist só devDependency; pnpm audit --prod limpo; 0 achados.
