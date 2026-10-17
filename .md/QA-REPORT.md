@@ -92,3 +92,12 @@ APROVADA; 0 críticos, 1 não crítico (RTP-0014: prova do CI em PR real pendent
 
 ## TP-0096 — QA — 2026-10-17
 APROVADA; 0 críticos, 1 não crítico (CSS .resumo não aplicado -> RTP-0016); 49 testes de componentes/campos+basicos passando, axe limpo, tsc/stylelint 0; UX-SPEC T23 confere com a decisão.
+
+## TP-0016 — QA — 2026-10-17
+APROVADA; 46/46 testes e ambos os scripts verdes na raiz, sondas adversariais extras falham fechado; 0 críticos, 0 não críticos.
+
+## TP-0018 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0018, lacunas de teste); 29 testes e checar-compatibilidade exit 0.
+
+## TP-0089 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0017: prova do job e2e em PR e teste de dist ausente); testes 6/6 e visual T02 sem ERRO.
