@@ -26,3 +26,5 @@ export * from './simulador/sugerir.js';
 export * from './ranking/rodadas.js';
 export * from './pdf/colunas.js';
 export * from './pdf/projecao.js';
+export * from './caixa/saldos.js';
+export * from './caixa/mensalidade.js';
