@@ -50,11 +50,11 @@ const verificador = programa.getTypeChecker();
 function funcaoDe(declaracao) {
   if (ts.isFunctionDeclaration(declaracao) || ts.isMethodDeclaration(declaracao)) return declaracao;
   if (ts.isVariableDeclaration(declaracao) && declaracao.initializer) {
-    const inicial = declaracao.initializer;
+    const inicial = exprSemAsserts(declaracao.initializer);
     if (ts.isArrowFunction(inicial) || ts.isFunctionExpression(inicial)) return inicial;
   }
   if (ts.isExportAssignment(declaracao)) {
-    const e = declaracao.expression;
+    const e = exprSemAsserts(declaracao.expression);
     if (ts.isArrowFunction(e) || ts.isFunctionExpression(e)) return e;
   }
   return null;
@@ -75,9 +75,18 @@ const exprSemAsserts = (e) => {
 };
 const ehCallable = (n) => ts.isArrowFunction(n) || ts.isFunctionExpression(n);
 
+const ehDadoLiteral = (e) =>
+  ts.isLiteralExpression(e) ||
+  e.kind === ts.SyntaxKind.TrueKeyword ||
+  e.kind === ts.SyntaxKind.FalseKeyword ||
+  e.kind === ts.SyntaxKind.NullKeyword ||
+  (ts.isPrefixUnaryExpression(e) && ts.isLiteralExpression(e.operand)) ||
+  (ts.isArrayLiteralExpression(e) && e.elements.every((x) => ehDadoLiteral(exprSemAsserts(x))));
+
 // Forma que pode esconder função de repositório (chamada, objeto com métodos, classe) e que
 // funcaoDe não consegue conferir parâmetro a parâmetro.
 function formaNaoAnalisavel(declaracao) {
+  if (ts.isModuleDeclaration(declaracao)) return MOTIVO_NAO_ANALISAVEL;
   if (ts.isClassDeclaration(declaracao)) {
     return declaracao.members.some((m) => ts.isMethodDeclaration(m) || ts.isAccessor(m)) ? MOTIVO_NAO_ANALISAVEL : null;
   }
@@ -87,8 +96,8 @@ function formaNaoAnalisavel(declaracao) {
   if (!expr) return null;
   expr = exprSemAsserts(expr);
   if (ehCallable(expr)) return null;
-  if (ts.isCallExpression(expr) || ts.isNewExpression(expr) || ts.isClassExpression(expr)) return MOTIVO_NAO_ANALISAVEL;
-  if (ts.isObjectLiteralExpression(expr)) {
+  if (!ts.isObjectLiteralExpression(expr)) return ehDadoLiteral(expr) ? null : MOTIVO_NAO_ANALISAVEL;
+  {
     const temFuncao = expr.properties.some(
       (p) =>
         ts.isMethodDeclaration(p) ||
@@ -99,7 +108,6 @@ function formaNaoAnalisavel(declaracao) {
     );
     return temFuncao ? MOTIVO_NAO_ANALISAVEL : null;
   }
-  return null;
 }
 
 function problemaDosParametros(funcao) {

@@ -2,9 +2,8 @@ import { ativosEm } from '../atividade/atividade.js';
 import { somarDias } from '../datas/datas.js';
 import { criarResolvedorDePesos } from '../pontuacao/pesos.js';
 import { acumuladoAte } from '../pontuacao/pontos.js';
-import type { PresencaDoJogador } from '../pontuacao/tipos.js';
 import { rodadasDoJogador, type Rodada } from '../ranking/rodadas.js';
-import { calcularRanking, type EntradaRanking } from '../ranking/ranking.js';
+import { agruparPresencasPorJogador, calcularRanking, type EntradaRanking } from '../ranking/ranking.js';
 import { escolherColunasPdf, type ColunaPdf } from './colunas.js';
 
 export interface LinhaPdf {
@@ -35,17 +34,8 @@ export function calcularPdf(entrada: EntradaRanking): ProjecaoPdf {
   const ranking = calcularRanking(entrada);
   const { colunas, semPartidasNoMes } = escolherColunasPdf(entrada.partidas, entrada.mes);
   const resolver = criarResolvedorDePesos(entrada.configsPesos);
-  const partidaPorId = new Map(entrada.partidas.map((p) => [p.id, p]));
   const periodos = new Map(ativosEm(entrada.jogadores, entrada.hoje).map((j) => [j.id, j.periodos]));
-
-  const presencasPorJogador = new Map<string, (PresencaDoJogador & { partidaId: string })[]>();
-  for (const pr of entrada.presencas) {
-    const partida = partidaPorId.get(pr.partidaId);
-    if (!partida) continue;
-    const lista = presencasPorJogador.get(pr.jogadorId) ?? [];
-    lista.push({ partidaId: pr.partidaId, data: partida.data, choveu: partida.choveu, situacao: pr.situacao });
-    presencasPorJogador.set(pr.jogadorId, lista);
-  }
+  const presencasPorJogador = agruparPresencasPorJogador(entrada.partidas, entrada.presencas);
 
   const primeira = colunas[0];
   const linhas = ranking.linhas.map((linha): LinhaPdf => {

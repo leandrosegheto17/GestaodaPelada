@@ -1,8 +1,13 @@
 import { somarDias, type Data } from '../datas/datas.js';
 import { criarResolvedorDePesos } from '../pontuacao/pesos.js';
 import { acumuladoAte } from '../pontuacao/pontos.js';
-import type { ConfigPesos, PresencaDoJogador } from '../pontuacao/tipos.js';
-import type { JogadorDoRanking, PartidaDoRanking, PresencaDoRanking } from '../ranking/ranking.js';
+import type { ConfigPesos } from '../pontuacao/tipos.js';
+import {
+  agruparPresencasPorJogador,
+  type JogadorDoRanking,
+  type PartidaDoRanking,
+  type PresencaDoRanking,
+} from '../ranking/ranking.js';
 import { ordenarPorRanking } from '../ranking/ordem.js';
 
 export interface EntradaPrioridade {
@@ -22,17 +27,8 @@ export interface EntradaPrioridade {
 export function ordenarPrioridade(entrada: EntradaPrioridade): string[] {
   const referencia = somarDias(entrada.dataPartida, -1);
   const resolver = criarResolvedorDePesos(entrada.configsPesos);
-  const partidas = new Map(entrada.partidas.map((p) => [p.id, p]));
   const porId = new Map(entrada.jogadores.map((j) => [j.id, j]));
-
-  const presencasPorJogador = new Map<string, PresencaDoJogador[]>();
-  for (const pr of entrada.presencas) {
-    const partida = partidas.get(pr.partidaId);
-    if (!partida) continue;
-    const lista = presencasPorJogador.get(pr.jogadorId) ?? [];
-    lista.push({ data: partida.data, choveu: partida.choveu, situacao: pr.situacao });
-    presencasPorJogador.set(pr.jogadorId, lista);
-  }
+  const presencasPorJogador = agruparPresencasPorJogador(entrada.partidas, entrada.presencas);
 
   const aptos = [...entrada.aptos].sort().map((id) => {
     const jogador = porId.get(id);

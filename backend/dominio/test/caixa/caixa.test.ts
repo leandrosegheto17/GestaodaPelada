@@ -16,7 +16,25 @@ const mov = (tipo: 'entrada' | 'saida', data: string, valorCentavos: number): Mo
   valorCentavos,
 });
 
+/** Aplica o intervalo como o SQL do repositório faria. */
+function saldoPelosMovimentos(movs: MovimentoCaixa[], hoje: string): number {
+  const iv = intervaloDoSaldo(config, hoje);
+  const dentro = iv ? movs.filter((m) => m.data >= iv.desde && m.data <= iv.ate) : [];
+  return saldoAtual(config, iv ? totais(dentro) : null);
+}
+
 describe('intervaloDoSaldo e saldoAtual', () => {
+  it('equivalente ao SQL: entradas somam, saídas subtraem desde a data do saldo inicial', () => {
+    const movs = [mov('entrada', '2026-02-05', 5000), mov('saida', '2026-03-01', 12000), mov('entrada', '2026-10-01', 10000)];
+    expect(saldoPelosMovimentos(movs, '2026-10-17')).toBe(35000 + 15000 - 12000);
+  });
+
+  it('lançamento no dia do saldo inicial entra; dia anterior e depois de hoje não', () => {
+    expect(saldoPelosMovimentos([mov('entrada', '2026-02-05', 100)], '2026-10-17')).toBe(35100);
+    expect(saldoPelosMovimentos([mov('entrada', '2026-02-04', 100)], '2026-10-17')).toBe(35000);
+    expect(saldoPelosMovimentos([mov('entrada', '2026-10-18', 100)], '2026-10-17')).toBe(35000);
+  });
+
   it('o intervalo vai do dia do saldo inicial (inclusive) até hoje', () => {
     expect(intervaloDoSaldo(config, '2026-10-22')).toEqual({ desde: '2026-02-05', ate: '2026-10-22' });
     expect(intervaloDoSaldo(config, '2026-02-05')).toEqual({ desde: '2026-02-05', ate: '2026-02-05' });
@@ -39,6 +57,11 @@ describe('intervaloDoSaldo e saldoAtual', () => {
         { entradasCentavos: 1, saidasCentavos: 0 },
       ),
     ).toThrow(RangeError);
+  });
+
+  it('estouro também na soma de totais', () => {
+    const max = Number.MAX_SAFE_INTEGER;
+    expect(() => totais([mov('entrada', '2026-10-01', max), mov('entrada', '2026-10-02', 1)])).toThrow(RangeError);
   });
 });
 
@@ -83,6 +106,15 @@ describe('totais e resumoDoMes', () => {
     });
     expect(r.resultadoCentavos).toBe(60);
   });
+
+  it('virada de ano com entradas e saídas mistas', () => {
+    const r = resumoDoMes({
+      movimentosDoMes: [mov('entrada', '2027-01-02', 5000), mov('entrada', '2027-01-31', 5000), mov('saida', '2027-01-15', 3000)],
+      ativosNoMes: ['a', 'b'],
+      pagos: ['a', 'b'],
+    });
+    expect(r).toEqual({ entradasCentavos: 10000, saidasCentavos: 3000, resultadoCentavos: 7000, naoPagaram: 0 });
+  });
 });
 
 describe('entradaDaMensalidade', () => {
@@ -102,6 +134,10 @@ describe('entradaDaMensalidade', () => {
     const r = entradaDaMensalidade({ ...base, apelido, mes: '2026-01' });
     expect(r?.descricao).toBe(`Mensalidade ${apelido} 01/2026`);
     expect(r?.descricao.length).toBeLessThanOrEqual(80);
+  });
+
+  it('a data é a de hoje, não a do mês pago', () => {
+    expect(entradaDaMensalidade({ ...base, mes: '2026-01' })?.data).toBe('2026-10-22');
   });
 
   it('sem mensalidade configurada, só a marcação vale', () => {

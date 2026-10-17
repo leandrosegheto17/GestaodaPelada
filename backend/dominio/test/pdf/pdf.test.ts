@@ -86,7 +86,7 @@ describe('calcularPdf', () => {
   });
 
   it('as 12 colunas cortam o começo: ptsInicial passa a ser o acumulado antes da primeira coluna', () => {
-    const extra = datas('2026-07-02', 8).map((d) => partida(d));
+    const extra = datas('2026-07-02', 8, 3).map((d) => partida(d));
     const pdf = calcularPdf({ ...entrada('2026-10'), partidas: [...base.partidas, ...extra] });
     expect(pdf.colunas).toHaveLength(12);
     for (const linha of pdf.linhas) {

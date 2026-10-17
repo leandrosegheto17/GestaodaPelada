@@ -57,25 +57,33 @@ export interface ResultadoRanking {
   limites: LimitesDeMes;
 }
 
-/** Ranking de `mes` visto em `hoje`: ordem pelo acumulado até hoje, igual em qualquer mês. */
-export function calcularRanking(entrada: EntradaRanking): ResultadoRanking {
-  const { hoje, mes } = entrada;
-  const resolver = criarResolvedorDePesos(entrada.configsPesos);
-  const dataDaPartida = new Map(entrada.partidas.map((p) => [p.id, p]));
-
-  const presencasPorJogador = new Map<string, (PresencaDoJogador & { partidaId: string })[]>();
-  for (const pr of entrada.presencas) {
-    const partida = dataDaPartida.get(pr.partidaId);
+/** Presenças de cada jogador com a data e a chuva da partida; presença de partida desconhecida é ignorada. */
+export function agruparPresencasPorJogador(
+  partidas: readonly PartidaDoRanking[],
+  presencas: readonly PresencaDoRanking[],
+): Map<string, (PresencaDoJogador & { partidaId: string })[]> {
+  const porId = new Map(partidas.map((p) => [p.id, p]));
+  const resultado = new Map<string, (PresencaDoJogador & { partidaId: string })[]>();
+  for (const pr of presencas) {
+    const partida = porId.get(pr.partidaId);
     if (!partida) continue;
-    const lista = presencasPorJogador.get(pr.jogadorId) ?? [];
+    const lista = resultado.get(pr.jogadorId) ?? [];
     lista.push({
       partidaId: pr.partidaId,
       data: partida.data,
       choveu: partida.choveu,
       situacao: pr.situacao,
     });
-    presencasPorJogador.set(pr.jogadorId, lista);
+    resultado.set(pr.jogadorId, lista);
   }
+  return resultado;
+}
+
+/** Ranking de `mes` visto em `hoje`: ordem pelo acumulado até hoje, igual em qualquer mês. */
+export function calcularRanking(entrada: EntradaRanking): ResultadoRanking {
+  const { hoje, mes } = entrada;
+  const resolver = criarResolvedorDePesos(entrada.configsPesos);
+  const presencasPorJogador = agruparPresencasPorJogador(entrada.partidas, entrada.presencas);
 
   const ativos = ativosEm(entrada.jogadores, hoje);
   const acumulados = new Map(

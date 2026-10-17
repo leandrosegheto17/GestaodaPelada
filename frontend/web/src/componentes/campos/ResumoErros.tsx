@@ -14,7 +14,7 @@ interface Props {
 export function ResumoErros({ erros }: Props) {
   if (erros.length < 2) return null;
   return (
-    <Faixa tipo="erro" className={estilos.resumo}>
+    <Faixa tipo="erro" semIcone className={estilos.resumo}>
       <strong>Corrija {erros.length} campos:</strong>
       <ul>
         {erros.map((e) => (

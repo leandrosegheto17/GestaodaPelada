@@ -142,6 +142,22 @@ describe('PaginaFinanceiro: pagamentos (T22)', () => {
     expect(chamadas).toEqual([]);
   });
 
+  it('desmarcar com a mensalidade alterada depois: o diálogo mostra o valor da entrada, não o da configuração', async () => {
+    api(ok);
+    const alterada = comoJson({
+      ...base,
+      lancamentos: (base.lancamentos as { mensalidade: boolean; descricao: string }[]).map((l) =>
+        l.mensalidade && l.descricao.includes('Toninho') ? { ...l, valorCentavos: 6000 } : l,
+      ),
+    });
+    servidor.use(http.get('/api/grupos/g-quinta/financeiro/mes', () => HttpResponse.json(alterada)));
+    montar();
+    await userEvent.click(await interruptor('Toninho'));
+    const dialogo = await screen.findByRole('alertdialog', { name: 'Desmarcar o pagamento de Toninho?' });
+    expect(dialogo).toHaveTextContent('(R$ 60,00)');
+    expect(dialogo).not.toHaveTextContent('R$ 75,00');
+  });
+
   it('desmarcar sem a entrada vinculada: desmarca direto, sem diálogo e sem usar o valor da configuração', async () => {
     api(ok);
     const semEntrada = comoJson({

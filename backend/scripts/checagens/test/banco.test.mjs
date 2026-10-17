@@ -110,6 +110,13 @@ describe('checar-grupo-id', () => {
     'export const C = class { listar(id: string) { return id; } };',
     'export default { listar(id: string) { return id; } };',
     'export default (globalThis as any).envolver((id: string) => id);',
+    'const a = (id: string) => id; export const f = a;',
+    'const a = (id: string) => id; const b = a; export const f = true ? a : b;',
+    'const o = { l: (id: string) => id }; export const f = o.l;',
+    'const a = (id: string) => id; export const f = a || a;',
+    'export namespace N { export function g(id: string) { return id; } }',
+    'export const f = await Promise.resolve((id: string) => id);',
+    'export const f = ((id: string) => id) satisfies unknown;',
   ])('falha: %s', (corpo) => {
     expect(rodarRepo(repo(corpo)).status).toBe(1);
   });

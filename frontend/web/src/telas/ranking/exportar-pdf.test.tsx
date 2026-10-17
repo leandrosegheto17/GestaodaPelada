@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { delay, http, HttpResponse, type JsonBodyType } from 'msw';
+import { http, HttpResponse, type JsonBodyType } from 'msw';
 import { setupServer } from 'msw/node';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -117,15 +117,21 @@ describe('Exportar PDF na T01', () => {
   });
 
   it('toque antes da projeção chegar: "Preparando PDF…" até a resposta e depois segue', async () => {
+    let liberar!: () => void;
+    const sinal = new Promise<void>((resolve) => {
+      liberar = resolve;
+    });
     api({
       pdf: async () => {
-        await delay(150);
+        await sinal;
         return HttpResponse.json(fixture('publico-pdf-2026-10.json'));
       },
     });
     montar();
     await userEvent.click((await screen.findAllByRole('button', { name: 'Exportar PDF' }))[0]!);
     expect(botoes()[0]).toHaveTextContent('Preparando PDF…');
+    expect(entregarPdf).not.toHaveBeenCalled();
+    liberar();
     await waitFor(() => expect(entregarPdf).toHaveBeenCalledTimes(1));
   });
 

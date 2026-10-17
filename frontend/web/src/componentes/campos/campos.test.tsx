@@ -223,6 +223,18 @@ describe('ResumoErros', () => {
     expect(alerta.className).toMatch(/resumo/);
     expect(alerta).toHaveClass('faixa--erro');
   });
+
+  it('2 erros: o alerta não mostra ícone', () => {
+    render(
+      <ResumoErros
+        erros={[
+          { idCampo: 'a', rotulo: 'A' },
+          { idCampo: 'b', rotulo: 'B' },
+        ]}
+      />,
+    );
+    expect(screen.getByRole('alert').querySelector('svg')).toBeNull();
+  });
 });
 
 describe('acessibilidade', () => {

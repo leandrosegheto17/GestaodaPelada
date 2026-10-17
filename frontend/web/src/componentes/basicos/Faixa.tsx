@@ -21,9 +21,11 @@ interface Props {
   rotuloFechar?: string;
   /** Classe extra para quem compõe a faixa (ex.: o resumo de erros). */
   className?: string;
+  /** Omite o ícone de tipo (o resumo de erros do mockup não tem). */
+  semIcone?: boolean;
 }
 
-export function Faixa({ tipo, topo, papel, children, acao, aoFechar, rotuloFechar, className }: Props) {
+export function Faixa({ tipo, topo, papel, children, acao, aoFechar, rotuloFechar, className, semIcone }: Props) {
   const papelFinal = papel ?? (tipo === 'erro' ? 'alert' : 'status');
   return (
     <div
@@ -31,7 +33,7 @@ export function Faixa({ tipo, topo, papel, children, acao, aoFechar, rotuloFecha
       role={papelFinal}
       aria-live={papelFinal === 'status' ? 'polite' : undefined}
     >
-      <Icone nome={ICONE[tipo]} />
+      {semIcone ? null : <Icone nome={ICONE[tipo]} />}
       <div className={estilos.texto}>{children}</div>
       {acao}
       {aoFechar ? (
