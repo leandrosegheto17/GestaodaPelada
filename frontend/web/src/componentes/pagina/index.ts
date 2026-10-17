@@ -1,0 +1,11 @@
+export { Voltar } from '../basicos/Voltar';
+export { Cartao } from './Cartao';
+export { ConteudoPagina } from './ConteudoPagina';
+export { DuasColunas } from './DuasColunas';
+export { FerramentasLista } from './FerramentasLista';
+export { AjudaDoFormulario, Formulario } from './Formulario';
+export { GrupoBotoes } from './GrupoBotoes';
+export { Paragrafo } from './Paragrafo';
+export { Secao } from './Secao';
+export { Subtitulo } from './Subtitulo';
+export { TituloPagina } from './TituloPagina';
