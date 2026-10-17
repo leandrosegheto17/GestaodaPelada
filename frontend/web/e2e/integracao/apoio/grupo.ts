@@ -1,6 +1,6 @@
 import type { Browser, Page } from '@playwright/test';
 import { EMAIL_DONO, SENHA_DE_TESTE } from '../../../../../backend/scripts/seed-local/ids';
-import { entrarComo } from './sessao';
+import { aceitarAvisoDePrivacidade, entrarComo } from './sessao';
 
 export interface GrupoDeTeste {
   grupoId: string;
@@ -13,10 +13,12 @@ export interface GrupoDeTeste {
 /**
  * Cria um grupo novo pela tela do dono e deixa o primeiro admin com senha própria (a temporária só vale
  * uma vez). Devolve o contexto já autenticado como esse admin. O sufixo mantém os dados da execução à parte.
+ * O aviso de privacidade do 1º acesso é aceito, a menos que o teste queira vê-lo (`aceitarAviso: false`).
  */
 export async function criarGrupoComAdmin(
   browser: Browser,
   sufixo: string,
+  opcoes: { aceitarAviso?: boolean } = {},
 ): Promise<{ grupo: GrupoDeTeste; admin: Page }> {
   const nome = `Racha E2E ${sufixo}`;
   const emailAdmin = `e2e-${sufixo}@exemplo.com.br`;
@@ -43,6 +45,10 @@ export async function criarGrupoComAdmin(
   await admin.getByLabel('Confirmar nova senha').fill(senhaAdmin);
   await admin.getByRole('button', { name: 'Salvar e continuar' }).click();
   await admin.waitForURL(new RegExp(`/admin(/${criado.grupo.id})?$`));
+  if (opcoes.aceitarAviso ?? true) {
+    if (!admin.url().endsWith(`/admin/${criado.grupo.id}`)) await admin.goto(`/admin/${criado.grupo.id}`);
+    await aceitarAvisoDePrivacidade(admin);
+  }
   return { grupo: { grupoId: criado.grupo.id, slug: criado.grupo.slug, nome, emailAdmin, senhaAdmin }, admin };
 }
 

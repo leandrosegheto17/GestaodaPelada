@@ -7,3 +7,22 @@ export async function entrarComo(page: Page, email: string, senha: string): Prom
   await page.getByLabel('Senha', { exact: true }).fill(senha);
   await page.getByRole('button', { name: 'Entrar' }).click();
 }
+
+/**
+ * Numa tela do admin de um grupo, aceita o aviso de privacidade do 1º acesso, se ele aparecer ("Entendi"
+ * e o POST responder 204). Sem diálogo (já visto, ou recurso desligado), segue sem fazer nada.
+ */
+export async function aceitarAvisoDePrivacidade(page: Page): Promise<void> {
+  const dialogo = page.getByRole('dialog', { name: 'Privacidade' });
+  const apareceu = await dialogo.waitFor({ state: 'visible', timeout: 5_000 }).then(
+    () => true,
+    () => false,
+  );
+  if (!apareceu) return;
+  const resposta = page.waitForResponse(
+    (r) => r.request().method() === 'POST' && new URL(r.url()).pathname === '/api/sessao/aviso-privacidade',
+  );
+  await dialogo.getByRole('button', { name: 'Entendi' }).click();
+  if ((await resposta).status() !== 204) throw new Error('O aviso de privacidade não foi marcado como visto.');
+  await dialogo.waitFor({ state: 'hidden' });
+}
