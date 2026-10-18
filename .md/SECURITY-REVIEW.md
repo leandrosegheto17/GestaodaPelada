@@ -875,3 +875,6 @@ APROVADA, 0 críticos/0 não críticos; isolamento, CSRF, limite de corpo, SQL p
 
 ## TP-0192 — DevSecOps — 2026-10-17
 APROVADA — 0 críticos/0 não críticos; revisão do diff confirma grupoId do vínculo, IDOR do jogadorId contra o grupo, corpo strict, valor da config, auditoria na mesma transação; isolamento 70/70 executado.
+
+## TP-0154 — DevSecOps — 2026-10-17
+APROVADA — 0 críticos, 0 não críticos; função pura, busca local com teto de 200 trocas, sem relógio/aleatório/import externo/ID de tarefa (greps e eslint executados), limiar 4 ms mantido.

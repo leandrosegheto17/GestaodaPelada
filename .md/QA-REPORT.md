@@ -905,3 +905,6 @@ APROVADA; 0 críticos, 0 não críticos; pagamentos-desmarcar 6/6 e isolamento 6
 
 ## TP-0191 — QA — 2026-10-17
 APROVADA, 0 críticos/0 não críticos, 14/14 testes de config e 70/70 de isolamento passando (falhas intermitentes só por colisão de banco compartilhado entre sessões).
+
+## TP-0154 — QA — 2026-10-17
+APROVADA — 0 críticos, 0 não críticos; orçamento 6/6 isoladas e 4/4 sob carga verdes (2x11 mediana 0,47 ms, p99 até 1,72; 6x5 mediana 0,78, p99 até 2,19; limiar 4 ms), 215/215 simulador, tsc/eslint limpos, reescrita equivalente.
