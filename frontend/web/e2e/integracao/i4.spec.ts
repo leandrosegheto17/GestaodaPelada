@@ -87,8 +87,14 @@ test.describe.serial('I4: caixa do grupo, do aviso de privacidade aos saldos', (
 
   test('marca o pagamento: a entrada da mensalidade aparece e o saldo sobe', async () => {
     const page = admin();
+    const chave = page.getByRole('switch', { name: `Pagou: ${APELIDOS[0]}` });
+    await expect(
+      chave,
+      `tela sem a chave de pagamento:
+${await page.locator('main').ariaSnapshot()}`,
+    ).toBeVisible();
     const marcado = esperarChamada(page, 'POST', '/financeiro/pagamentos', 204);
-    await page.getByRole('switch', { name: `Pagou: ${APELIDOS[0]}` }).click();
+    await chave.click();
     await marcado;
 
     const saldos = page.getByRole('region', { name: 'Saldo atual' });
