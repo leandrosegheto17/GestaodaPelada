@@ -10,8 +10,11 @@ const RESULTADOS = join(import.meta.dirname, 'resultado');
 const resposta = (nome: string) => readFileSync(join(RESPOSTAS, nome), 'utf8');
 const json = (corpo: string) => ({ status: 200, contentType: 'application/json', body: corpo });
 
-/** Limite do PDF (ADR-019): rasterizador do PDF e do navegador suavizam o texto de formas diferentes; telas seguem em 1%. */
-const LIMITE_PDF = 0.045;
+/**
+ * Limite do PDF (ADR-019): rasterizador do PDF e do navegador suavizam o texto de formas diferentes; telas seguem em 1%.
+ * No runner Linux do CI as fontes têm hinting próprio e a divergência medida é de 6-7% (leiaute idêntico), por isso o limite é maior lá.
+ */
+const LIMITE_PDF = process.env.CI ? 0.09 : 0.045;
 
 const ESTADOS = [
   { nome: 'sucesso', mes: '2026-10', pdf: 'publico-pdf-2026-10.json', ranking: 'publico-ranking-2026-10.json' },

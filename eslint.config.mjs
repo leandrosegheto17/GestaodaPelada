@@ -198,7 +198,15 @@ const ZONAS = [
 
 export default tseslint.config(
   {
-    ignores: ['**/dist/**', '.md/**', '.claude/**', '**/.wrangler/**', '**/node_modules/**', '**/coverage/**'],
+    ignores: [
+      '**/dist/**',
+      '.md/**',
+      'evidencia/**',
+      '.claude/**',
+      '**/.wrangler/**',
+      '**/node_modules/**',
+      '**/coverage/**',
+    ],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
