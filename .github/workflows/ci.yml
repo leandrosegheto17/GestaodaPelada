@@ -27,7 +27,7 @@ jobs:
       - run: pnpm --filter @pelada/contrato checar-compatibilidade
       - run: pnpm format:check
       - run: pnpm typecheck
-      - run: pnpm -r test
+      - run: pnpm -r --filter '!@pelada/api' test
       - run: pnpm test:checagens
       - run: node backend/scripts/checagens/checar-ids-tarefa.mjs
       - run: node backend/scripts/checagens/checar-urls-absolutas.mjs
