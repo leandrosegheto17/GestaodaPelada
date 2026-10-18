@@ -2,6 +2,7 @@ import { habilidadeCorpo } from '@pelada/contrato';
 import { useRef, useState } from 'react';
 import { Botao } from '../../componentes/basicos/Botao';
 import { Campo } from '../../componentes/campos/Campo';
+import { Formulario } from '../../componentes/pagina/Formulario';
 import { ErroApi } from '../../dados/erros';
 import { deErroApi, deValidacao } from '../../dados/errosDeCampos';
 import { useCriarHabilidade } from '../../dados/habilidades';
@@ -36,15 +37,7 @@ export function NovaHabilidade({ grupoId }: { grupoId: string }) {
   };
 
   return (
-    <form
-      className={estilos.secao}
-      noValidate
-      aria-busy={criar.isPending || undefined}
-      onSubmit={(e) => {
-        e.preventDefault();
-        enviar();
-      }}
-    >
+    <Formulario aoEnviar={enviar} enviando={criar.isPending} className={estilos.secao}>
       <Campo
         id="nova"
         rotulo="Nova habilidade"
@@ -68,6 +61,6 @@ export function NovaHabilidade({ grupoId }: { grupoId: string }) {
           />
         )}
       </Campo>
-    </form>
+    </Formulario>
   );
 }

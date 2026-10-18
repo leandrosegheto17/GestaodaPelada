@@ -1,6 +1,7 @@
 import { BotaoLink } from '../../componentes/basicos/BotaoLink';
 import { CampoData } from '../../componentes/campos/CampoData';
 import { Interruptor } from '../../componentes/escolhas/Interruptor';
+import { DuasColunas } from '../../componentes/pagina/DuasColunas';
 import { diaMes } from '../../formatacao';
 import estilos from './partida.module.css';
 
@@ -33,7 +34,7 @@ export function CabecalhoDaPartida({
   dataSomenteLeitura,
 }: Props) {
   return (
-    <div className={estilos.duasColunas}>
+    <DuasColunas>
       <div>
         <CampoData
           rotulo="Data"
@@ -54,6 +55,6 @@ export function CabecalhoDaPartida({
         ) : null}
       </div>
       <Interruptor rotulo="Choveu?" marcado={choveu} aoMudar={aoMudarChoveu} textoLigado="Sim" textoDesligado="Não" />
-    </div>
+    </DuasColunas>
   );
 }

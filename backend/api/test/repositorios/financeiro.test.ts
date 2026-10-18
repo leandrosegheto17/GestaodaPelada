@@ -1,9 +1,9 @@
 import { totais } from '@pelada/dominio';
-import pg from 'pg';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { emTransacao } from '../../src/infraestrutura/db/index.js';
 import * as financeiro from '../../src/infraestrutura/db/repositorios/financeiro.js';
 import * as jogadores from '../../src/infraestrutura/db/repositorios/jogadores.js';
+import { contarConsultas } from '../apoio/contar-consultas.js';
 import { usarDb } from '../apoio/db-teste.js';
 import { criarConfig, criarLancamento } from '../apoio/fabricas/financeiro.js';
 import { criarJogador } from '../apoio/fabricas/jogadores.js';
@@ -194,13 +194,12 @@ describe('consultas', () => {
     for (let i = 1; i <= 5; i += 1) {
       await criarLancamento(db, a, conta, { data: `2026-10-0${i}`, descricao: `Item ${i}` });
     }
-    const consultas = vi.spyOn(pg.Client.prototype, 'query');
-    try {
-      expect(await financeiro.lancamentosDoMes(db, a, '2026-10-01', '2026-10-31')).toHaveLength(5);
-      expect(consultas).toHaveBeenCalledTimes(1);
-    } finally {
-      consultas.mockRestore();
-    }
+    let lancamentos: Awaited<ReturnType<typeof financeiro.lancamentosDoMes>> = [];
+    const consultas = await contarConsultas(async () => {
+      lancamentos = await financeiro.lancamentosDoMes(db, a, '2026-10-01', '2026-10-31');
+    });
+    expect(lancamentos).toHaveLength(5);
+    expect(consultas).toBe(1);
   });
 
   it('marcar exige transação (não compila com o executor comum)', async () => {

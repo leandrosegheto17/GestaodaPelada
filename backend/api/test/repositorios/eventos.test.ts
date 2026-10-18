@@ -1,7 +1,7 @@
-import pg from 'pg';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { kyselyDe, type Db } from '../../src/infraestrutura/db/cliente.js';
 import * as eventos from '../../src/infraestrutura/db/repositorios/eventos.js';
+import { contarConsultas } from '../apoio/contar-consultas.js';
 import { usarDb } from '../apoio/db-teste.js';
 import { criarEvento } from '../apoio/fabricas/eventos.js';
 import { usarFabrica } from '../apoio/fabrica.js';
@@ -141,14 +141,12 @@ describe('repositório de eventos de uso', () => {
     for (const dia of ['2026-10-05', '2026-10-12', '2026-10-19', '2026-10-26']) {
       await criarEvento(db, fabrica, g, { tipo: 'ranking_aberto', dispositivoId: D1, momento: em(dia, '10:00') });
     }
-    const consultas = vi.spyOn(pg.Client.prototype, 'query');
-    try {
-      const semanas = await eventos.porSemana(db, g);
-      expect(semanas).toHaveLength(4);
-      expect(consultas).toHaveBeenCalledTimes(1);
-    } finally {
-      consultas.mockRestore();
-    }
+    let semanas: Awaited<ReturnType<typeof eventos.porSemana>> = [];
+    const consultas = await contarConsultas(async () => {
+      semanas = await eventos.porSemana(db, g);
+    });
+    expect(semanas).toHaveLength(4);
+    expect(consultas).toBe(1);
   });
 
   describe('colunas gravadas por tipo', () => {

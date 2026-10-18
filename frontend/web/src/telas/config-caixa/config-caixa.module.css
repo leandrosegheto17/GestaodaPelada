@@ -7,16 +7,3 @@
     max-width: calc(var(--largura-formulario) - 2 * var(--esp-6));
   }
 }
-.formulario {
-  display: grid;
-  gap: var(--esp-4);
-}
-.duasColunas {
-  display: grid;
-  gap: var(--esp-4);
-}
-@media (min-width: 600px) {
-  .duasColunas {
-    grid-template-columns: 1fr 1fr;
-  }
-}

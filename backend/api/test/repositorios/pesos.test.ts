@@ -1,7 +1,7 @@
-import pg from 'pg';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import * as pesos from '../../src/infraestrutura/db/repositorios/pesos.js';
 import { VigenciaNoPassado } from '../../src/infraestrutura/db/repositorios/pesos.js';
+import { contarConsultas } from '../apoio/contar-consultas.js';
 import { usarDb } from '../apoio/db-teste.js';
 import { usarFabrica } from '../apoio/fabrica.js';
 import { relogioFixo } from '../apoio/relogio.js';
@@ -117,12 +117,11 @@ describe('repositório de pesos', () => {
     for (const dias of [0, 10, 20]) {
       await pesos.criar(db, g, { ...base3, vigenteDesde: somarDias(HOJE, dias) });
     }
-    const consultas = vi.spyOn(pg.Client.prototype, 'query');
-    try {
-      expect(await pesos.historico(db, g)).toHaveLength(3);
-      expect(consultas).toHaveBeenCalledTimes(1);
-    } finally {
-      consultas.mockRestore();
-    }
+    let historico: Awaited<ReturnType<typeof pesos.historico>> = [];
+    const consultas = await contarConsultas(async () => {
+      historico = await pesos.historico(db, g);
+    });
+    expect(historico).toHaveLength(3);
+    expect(consultas).toBe(1);
   });
 });

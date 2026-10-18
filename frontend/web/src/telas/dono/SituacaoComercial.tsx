@@ -4,6 +4,7 @@ import { Botao } from '../../componentes/basicos/Botao';
 import { ErroEnvio } from '../../componentes/basicos/ErroEnvio';
 import { CampoData } from '../../componentes/campos/CampoData';
 import { CampoSeletor } from '../../componentes/campos/CampoSeletor';
+import { Formulario } from '../../componentes/pagina/Formulario';
 import { deValidacao, type ErrosDeCampos } from '../../dados/errosDeCampos';
 import { ORDEM_SITUACAO_COMERCIAL, ROTULO_SITUACAO_COMERCIAL } from '../../rotulos';
 import estilos from './dono.module.css';
@@ -42,15 +43,7 @@ export function SituacaoComercial({ grupo, errosDoServidor, enviando, semConexao
       <h2 id={idTitulo} className={estilos.subtitulo}>
         Situação comercial
       </h2>
-      <form
-        className={estilos.formulario}
-        noValidate
-        aria-busy={enviando || undefined}
-        onSubmit={(e) => {
-          e.preventDefault();
-          salvar();
-        }}
-      >
+      <Formulario aoEnviar={salvar} enviando={enviando}>
         <CampoSeletor
           rotulo="Situação comercial"
           rotuloOculto
@@ -74,7 +67,7 @@ export function SituacaoComercial({ grupo, errosDoServidor, enviando, semConexao
             Salvar situação
           </Botao>
         </div>
-      </form>
+      </Formulario>
     </section>
   );
 }

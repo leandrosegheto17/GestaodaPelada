@@ -4,6 +4,8 @@ import { Botao } from '../../componentes/basicos/Botao';
 import { ErroEnvio } from '../../componentes/basicos/ErroEnvio';
 import { Campo } from '../../componentes/campos/Campo';
 import { ResumoErros } from '../../componentes/campos/ResumoErros';
+import { DuasColunas } from '../../componentes/pagina/DuasColunas';
+import { Formulario } from '../../componentes/pagina/Formulario';
 import type { CorpoPesos } from '../../dados/pesos';
 import { deValidacao, type ErrosDeCampos } from '../../dados/errosDeCampos';
 import { ORDEM_PESOS, ROTULO_PESO, type ChavePeso } from '../../rotulos/pesos';
@@ -53,17 +55,9 @@ export function FormularioPesos({ vigente, errosDoServidor, enviando, semConexao
   };
 
   return (
-    <form
-      className={estilos.formulario}
-      noValidate
-      aria-busy={enviando || undefined}
-      onSubmit={(e) => {
-        e.preventDefault();
-        salvar();
-      }}
-    >
+    <Formulario aoEnviar={salvar} enviando={enviando}>
       <ResumoErros erros={itens} />
-      <div className={estilos.duasColunas}>
+      <DuasColunas>
         {ORDEM_PESOS.map((chave) => (
           <Campo
             key={chave}
@@ -87,7 +81,7 @@ export function FormularioPesos({ vigente, errosDoServidor, enviando, semConexao
             )}
           </Campo>
         ))}
-      </div>
+      </DuasColunas>
       <p id={idAjuda} className={estilos.ajuda}>
         Inteiros de {'−'}10 a 10. Partidas anteriores a hoje não mudam.
       </p>
@@ -97,6 +91,6 @@ export function FormularioPesos({ vigente, errosDoServidor, enviando, semConexao
           Salvar nova configuração
         </Botao>
       </div>
-    </form>
+    </Formulario>
   );
 }

@@ -956,3 +956,27 @@ APROVADA — 84/84 testes (aplicação, rota, isolamento) passando; 0 críticos,
 
 ## TP-0198 — QA — 2026-10-17
 APROVADA; 0 críticos, 1 não crítico (RTP-0127: mensagem do 409 sem apelido/mês); vitest lancamentos/excluir 9/9, isolamento 70/70, tsc/eslint limpos.
+
+## RTP-0097 — QA — 2026-10-18
+APROVADA na rodada 3; api 133/133 e contrato 31/31 verdes (incl. 422 de avaliar via rota), uma só definição de idsDaComposicao no contrato; 0 achados.
+
+## RTP-0126 — QA — 2026-10-18
+APROVADA; 8/8 testes e lint ok, quatro casos do plano cobertos; 0 críticos, 1 não crítico (RTP-0129: espião de consultas duplicado em 5 testes).
+
+## RTP-0127 — QA — 2026-10-18
+DEVOLVIDA - rota e aceite OK (4/4), mas 2 testes de aplicacao/lancamentos/excluir.test.ts quebraram (campo mensagem não esperado); 1 crítico, 0 não críticos.
+
+## TP-0165 — QA — 2026-10-18
+APROVADA — 85 testes passando (rota, adaptador, isolamento), lint/tsc/prettier limpos, determinismo, formas do contrato, 422/403/401/404 e log sem dado pessoal verificados; 0 achados.
+
+## TP-0166 — QA — 2026-10-18
+APROVADA; 0 críticos, 1 não crítico (RTP-0128: casos do plano de teste faltando); 137 testes simulador+isolamento passando.
+
+## RTP-0127 — QA — 2026-10-18
+APROVADA (rodada 2) - 88/88 testes de financeiro, tsc/eslint limpos, aceite do 409 com apelido e mês atendido; 0 críticos, 0 não críticos.
+
+## RTP-0128 — QA — 2026-10-18
+APROVADA; 0 críticos, 0 não críticos; vitest simulador-avaliar 14/14 e todos os casos (a)-(f) do plano cobertos.
+
+## RTP-0129 — QA — 2026-10-18
+APROVADA; 0 críticos/0 não críticos; 5 testes usam contarConsultas, nenhum espião pg copiado restante, vitest repositórios+pontuacao 112/112 verde.

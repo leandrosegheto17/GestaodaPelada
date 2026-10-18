@@ -11,10 +11,6 @@
   display: grid;
   gap: var(--esp-6);
 }
-.formulario {
-  display: grid;
-  gap: var(--esp-4);
-}
 .cartao {
   background: var(--cor-superficie);
   border: 1px solid var(--cor-linha);
