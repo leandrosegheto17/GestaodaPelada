@@ -47,7 +47,7 @@ describe('PUT /api/grupos/:g/partidas/:data (workerd)', () => {
 
   it('422: corpo com campo extra, sem choveu, data diferente do caminho e data futura', async () => {
     const { url, corpo, admin } = await base();
-    const { choveu: _choveu, ...semChoveu } = corpo;
+    const semChoveu = Object.fromEntries(Object.entries(corpo).filter(([k]) => k !== 'choveu'));
     const casos = [
       { ...corpo, extra: 1 },
       semChoveu,
