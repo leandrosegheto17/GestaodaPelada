@@ -730,6 +730,7 @@ Colunas lidas pelo `taskplan.py` pelo nome. **Est** em dias-pessoa. **Cria**/**U
 | ID | Lote | Título | Chapéu | Reqs | Aceite | Est | Dep | Par | Arquivos | Testes e diretrizes | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | RTP-0062 | Refatoração Lote-L35 | Teste de escalações: datas e momento derivados do relógio fixo | Backend | CONVENCOES §7; TP-0160 | escalacoes.test.ts sem literal de data/momento: AGORA vem do relogioFixo e as datas são derivadas dele; 13 testes seguem passando | 0,1 d | TP-0160 | Sim | backend/api/test/migracoes/escalacoes.test.ts | vitest migracoes/escalacoes | Concluída · QA ✔ · Sec ✔ |
+| RTP-0126 | Refatoração Lote-L35 | Teste de montarEntradaSimulador: completar casos do plano (nota de outro grupo, idade jan/dez, mesma data, consultas) | Backend | RN-08, RN-12; plano de teste TP-0164 | entrada.test.ts cobre: partida na própria data que inverteria a ordem não conta; nota de outro grupo não altera o nível; idade em janeiro e dezembro da data; no máximo 5 consultas por chamada (espião); testes passando | 0,25 d | TP-0164 | não | backend/api/test/aplicacao/simulador/entrada.test.ts | vitest test/aplicacao/simulador/entrada | Pendente |
 
 ### Refatoração Lote-L07
 | ID | Lote | Título | Chapéu | Reqs | Aceite | Est | Dep | Par | Arquivos | Testes e diretrizes | Status |

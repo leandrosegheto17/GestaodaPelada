@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-17 21:53
+Atualizado: 2026-10-17 22:02
 
-Resumo: Não executada 7 · Em execução 1 · Executada (aguarda teste) 16 · Aprovada 302 · Despriorizada 19 · total 345
+Resumo: Não executada 8 · Em execução 1 · Executada (aguarda teste) 15 · Em teste 1 · Aprovada 302 · Despriorizada 19 · total 346
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -173,7 +173,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 158 | TP-0161 | executor | ✔ | Repositório de escalações | L35 | TP-0014, TP-0016, TP-0017, TP-0160 | Aprovada |
 | 159 | TP-0162 | executor | ✔ | Endpoint GET /api/grupos/:g/simulador/contexto?data= | L35 | TP-0007, TP-0011, TP-0013, TP-0029, TP-0032, TP-0033, TP-0047, TP-0052, TP-0146 | Aprovada |
 | 160 | TP-0163 | executor | ✔ | Endpoint POST /api/grupos/:g/simulador/previa | L35 | TP-0032, TP-0033, TP-0146, TP-0147 | Aprovada |
-| 161 | TP-0164 | executor | ✔ | Extração aplicacao/simulador/entrada (aptos prontos para o domínio) | L35 | TP-0011, TP-0047, TP-0053, TP-0148, TP-0154 | Executada (aguarda teste) |
+| 161 | TP-0164 | executor | ✔ | Extração aplicacao/simulador/entrada (aptos prontos para o domínio) | L35 | TP-0011, TP-0047, TP-0053, TP-0148, TP-0154 | Em teste |
 | 162 | TP-0165 | executor | ✔ | Endpoint POST /api/grupos/:g/simulador/sugerir | L35 | TP-0032, TP-0033, TP-0146, TP-0154, TP-0163, TP-0164 | Não executada |
 | 163 | TP-0166 | executor | ✔ | Endpoint POST /api/grupos/:g/simulador/avaliar | L36 | TP-0032, TP-0033, TP-0146, TP-0150, TP-0153, TP-0164 | Não executada |
 | 164 | TP-0167 | executor | ✔ | Endpoint POST /api/grupos/:g/escalacoes | L36 | TP-0014, TP-0032, TP-0033, TP-0050, TP-0052, TP-0146, TP-0161 | Aprovada |
@@ -282,79 +282,80 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 267 | RTP-0065 | executor | ✔ | auditoria.registrar: recusar chaves sensíveis em qualquer posição do nome | Refatoração Lote-L06 | TP-0030 | Aprovada |
 | 268 | RTP-0066 | executor | ✔ | Teste anti-enumeração: provar também o custo bcrypt do hash fixo | Refatoração Lote-L06 | RTP-0060 | Aprovada |
 | 269 | RTP-0062 | executor | ✔ | Teste de escalações: datas e momento derivados do relógio fixo | Refatoração Lote-L35 | TP-0160 | Aprovada |
-| 270 | RTP-0063 | executor | ✔ | Cookie de sessão duplicado: recusar em vez de usar o primeiro | Refatoração Lote-L07 | TP-0031 | Aprovada |
-| 271 | RTP-0069 | executor | ✔ | Testes dos middlewares de grupo/dono: escopo troca_de_senha, /api/grupos//eco e arquivo... | Refatoração Lote-L07 | TP-0032 | Aprovada |
-| 272 | RTP-0074 | executor | ✔ | Suíte de isolamento: rota ALL visível e conferência de limpeza | L07 | TP-0033 | Aprovada |
-| 273 | RTP-0084 | executor | ✔ | Entrar: bloqueio por e-mail sem atomicidade entre consulta e registro de falha | Refatoração Lote-L07 | TP-0034 | Aprovada |
-| 274 | RTP-0067 | executor | ✔ | Eventos de uso: completar testes do plano (tipos fechados, colunas gravadas, N+1, fábrica) | Refatoração Lote-L10 | TP-0050 | Aprovada |
-| 275 | RTP-0071 | executor | ✔ | Habilidades: usar seViolarUnico de comum.ts | L10 | TP-0047 | Aprovada |
-| 276 | RTP-0075 | executor | ✔ | Repositório de partidas: relógio fixo, fábrica de partidas e seViolarUnico | L10 | TP-0049 | Aprovada |
-| 277 | RTP-0076 | executor | ✔ | Repositório de partidas: criar/substituir exigem Tx | L10 | TP-0049 | Aprovada |
-| 278 | RTP-0080 | executor | ✔ | Seed local: teste duplicado, rollback e trava positiva sem cobertura | L10 | TP-0051 | Aprovada |
-| 279 | RTP-0083 | executor | ✔ | Regra de lint: apagarDadosDoSeed só importável por backend/scripts | L10 | TP-0051 | Aprovada |
-| 280 | RTP-0068 | executor | ✔ | Teste de admin-por-email: asserir auditoria admin_vinculado e e-mail com caixa/espaços | Refatoração Lote-L08 | TP-0038 | Aprovada |
-| 281 | RTP-0072 | executor | ✔ | Checagem de escrita de e_dono: janela de 300 caracteres deixa passar INSERT/values longos | Refatoração Lote-L08 | TP-0041 | Aprovada |
-| 282 | RTP-0077 | executor | ✔ | Checagem de escrita de e_dono: exceção cobre o arquivo contas.ts inteiro, não só criarC... | L08 | TP-0041 | Aprovada |
-| 283 | RTP-0085 | executor | ✔ | Trocar senha: limitar tentativas da senha atual no escopo completo | L08 | TP-0040 | Aprovada |
-| 284 | RTP-0098 | executor | ✔ | Teste de trocar-senha: caso dos 5 erros estoura o timeout padrão de 5 s | L08 | RTP-0085 | Aprovada |
-| 285 | RTP-0105 | executor | ✔ | Trocar senha: serializar a checagem de bloqueio da senha atual (corrida entre consulta... | L08 | RTP-0085 | Aprovada |
-| 286 | RTP-0104 | executor | ✔ | checar-escrita-e-dono: ';' dentro de string ou objeto pré-montado esconde a escrita de... | L08 | RTP-0072 | Aprovada |
-| 287 | RTP-0110 | executor | ✔ | checar-escrita-e-dono: atribuição o.e_dono = v e valor-expressão em chave de objeto esc... | Refatoração Lote-L08 | RTP-0104 | Aprovada |
-| 288 | RTP-0112 | executor | ✔ | checar-escrita-e-dono: '//' ou '--' dentro de literal de texto apaga o resto da linha e... | Refatoração Lote-L08 | RTP-0104 | Aprovada |
-| 289 | RTP-0121 | executor | ✔ | checar-escrita-e-dono: atribuição por colchete, composta (//=) e valor-expressão com ch... | Refatoração Lote-L08 | RTP-0110 | Aprovada |
-| 290 | RTP-0122 | executor | ✔ | checar-escrita-e-dono: atribuição composta bit a bit (/=, &=, ^=, >>=) escapa | Refatoração Lote-L08 | RTP-0121 | Aprovada |
-| 291 | RTP-0070 | executor | ✔ | Teste de partidas: relógio fixo e casos faltantes do plano | Refatoração Lote-L09 | TP-0044 | Aprovada |
-| 292 | RTP-0078 | executor | ✔ | Asserção automática do limite de 4 consultas em carregarHistoricoGrupo | L11 | TP-0053 | Aprovada |
-| 293 | RTP-0086 | executor | ✔ | Completar testes do POST /api/dono/grupos conforme o plano (atomicidade por passo, corr... | Refatoração Lote-L11 | TP-0056 | Aprovada |
-| 294 | RTP-0089 | executor | ✔ | Teste do painel do dono: forma contra dono-painel*.json e 403 de troca_de_senha | L11 | TP-0054 | Aprovada |
-| 295 | RTP-0081 | executor | ✔ | Teste de ordem por nome em GET /api/grupos/:g/admins | Refatoração Lote-L14 | TP-0063 | Aprovada |
-| 296 | RTP-0082 | executor | ✔ | Testes de aplicação com db-worker rodam no projeto node do vitest | L15 | TP-0069 | Aprovada |
-| 297 | RTP-0106 | executor | ✔ | montarCenario usa e-mail de dono fixo: testes de aplicação colidem em contas_email_unic... | Refatoração Lote-L15 | RTP-0082 | Aprovada |
-| 298 | RTP-0111 | executor | ✔ | montarCenario chamado duas vezes no mesmo teste colide em contas_email_unico (pagamento... | Refatoração Lote-L15 | RTP-0106 | Executada (aguarda teste) |
-| 299 | RTP-0087 | executor | ✔ | Testes da rota GET /api/grupos/:g: cobrir sexta, saídas, mês/semana e grupo B | Refatoração Lote-L13 | TP-0061 | Aprovada |
-| 300 | RTP-0099 | executor | ✔ | ler.test.ts: jogadoresEPartidas reutiliza o helper criarPartida | Refatoração Lote-L13 | RTP-0087 | Aprovada |
-| 301 | RTP-0088 | executor | ✔ | Testes de partidas/nova: cobrir lacunas do plano da TP-0078 | Refatoração Lote-L17 | TP-0078 | Aprovada |
-| 302 | RTP-0091 | executor | ✔ | Remover teste duplicado de GET partidas (partidas/listar.test.ts) | L17 | TP-0077 | Aprovada |
-| 303 | RTP-0090 | executor | ✔ | Teste de reativar: acumulado mantido e ativosNaData | Refatoração Lote-L16 | TP-0073 | Aprovada |
-| 304 | RTP-0092 | executor | ✔ | Testes de inativar: cobrir bordas e efeito do plano do TP-0072 | Refatoração Lote-L16 | TP-0072 | Aprovada |
-| 305 | RTP-0093 | executor | ✔ | Testes de partida nova: inativado depois e 409 com escalação (TP-0168) | Refatoração Lote-L36 | TP-0168 | Aprovada |
-| 306 | RTP-0097 | executor | ✔ | Unificar a enumeração de ids da composição (idsDaComposicao duplicada em 3 lugares) | L36 | TP-0167 | Executada (aguarda teste) |
-| 307 | RTP-0108 | executor | ✔ | Confirmar escalação: recusar id repetido na composição (422) | Refatoração Lote-L36 | TP-0167 | Executada (aguarda teste) |
-| 308 | RTP-0094 | executor | ✔ | Testes do ranking público: cobrir o plano do TP-0084 em publico-ranking.test.ts | L19 | TP-0084 | Aprovada |
-| 309 | RTP-0103 | executor | ✔ | limite-taxa.test: idempotência do login e lacunas do plano (IP distinto, no-store, POST... | Refatoração Lote-L19 | TP-0087 | Aprovada |
-| 310 | RTP-0109 | executor | ✔ | Limitador de taxa: binding ausente em produção desliga o limite sem aviso | Refatoração Lote-L19 | TP-0087 | Aprovada |
-| 311 | RTP-0100 | executor | ✔ | Testes do POST partidas: concorrência, falha no evento e 422 de corpo | Refatoração Lote-L18 | TP-0081 | Executada (aguarda teste) |
-| 312 | RTP-0101 | executor | ✔ | Teste do PUT partidas: 404 de :data malformada sem consulta ao banco | L18 | TP-0082 | Aprovada |
-| 313 | RTP-0107 | executor | ✔ | sw.ts: validade máxima (maxAgeSeconds) no cache do ranking público | L23 | TP-0108 | Aprovada |
-| 314 | RTP-0116 | executor | ✔ | Teste de ícones PWA falha: public/icones diferem do mockup byte a byte | Refatoração Lote-L23 | TP-0108 | Executada (aguarda teste) |
-| 315 | RTP-0113 | executor | ✔ | Alinhar o nome do branch de produção do Neon (production) em deploy.yml, SDD e tarefas... | Refatoração Lote-L29 | TP-0132 | Executada (aguarda teste) |
-| 316 | RTP-0115 | executor | ✔ | Ignorar .pnpm-store/ e .tmp-out.txt no .gitignore | Refatoração Lote-L29 | TP-0132 | Aprovada |
-| 317 | RTP-0117 | executor | ✔ | Faixa 'Jogador salvo' não aparece após cadastrar jogador (state não lido) | Refatoração Lote-L30 | TP-0124 | Aprovada |
-| 318 | RTP-0118 | executor | ✔ | Trace do e2e de integração guarda a senha temporária (resposta de POST /api/dono/grupos) | Refatoração Lote-L30 | TP-0138 | Aprovada |
-| 319 | RTP-0119 | executor | ✔ | docker-compose repete o e-mail real do dono em literal | Refatoração Lote-L30 | TP-0138 | Aprovada |
-| 320 | RTP-0120 | executor | ✔ | checar-escrita-e-dono: '--' de código (i--) é tratado como comentário SQL e esconde e_dono | Refatoração Lote-L30 | RTP-0112 | Aprovada |
-| 321 | RTP-0125 | executor | ✔ | Auditoria da config financeira: ler config anterior com trava (FOR UPDATE) | Refatoração Lote-L42 | TP-0191 | Executada (aguarda teste) |
-| 322 | BK-0009 | coordenador | ✔ | Ajustar SDD/ADR-010/URL_PUBLICA/CORS/deploy.yml ao domínio prod-ljs.workers.dev e aos acei | — | — | Não executada |
-| 323 | SPK-0001 | coordenador | ✔ | Spike S-01: transação interativa pg sobre o Hyperdrive | L29 | TP-0014, TP-0133 | Despriorizada |
-| 324 | BK-0010 | coordenador | ✔ | Decidir a cifra do backup: o Coordenador mandou openssl aes-256-cbc/pbkdf2, mas o repo usa | — | — | Não executada |
-| 325 | TP-0136 | executor | ✔ | Workflow de backup diário (backup.yml) | L30 | BK-0010, TP-0134 | Despriorizada |
-| 326 | TP-0135 | executor | ✔ | Workflow de deploy (deploy.yml) | L30 | TP-0003, TP-0013, TP-0015, TP-0133, TP-0134, TP-0136 | Despriorizada |
-| 327 | TP-0137 | executor | ✔ | Runbook backend/DEPLOY.md e ensaio de restauração | L30 | TP-0041, TP-0135, TP-0136 | Despriorizada |
-| 328 | TP-0139 | executor | ✔ | [U] Go-live do I1 | L30 | SPK-0001, TP-0036, TP-0039, TP-0041, TP-0054, TP-0055, TP-0057, TP-0058, TP-0059, TP-0060, TP-0062, TP-0063, TP-0064, TP-0065, TP-0066, TP-0067, TP-0068, TP-0069, TP-0071, TP-0072, TP-0073, TP-0074, TP-0075, TP-0076, TP-0077, TP-0079, TP-0082, TP-0083, TP-0085, TP-0086, TP-0087, TP-0090, TP-0109, TP-0112, TP-0113, TP-0115, TP-0117, TP-0118, TP-0120, TP-0122, TP-0125, TP-0126, TP-0127, TP-0128, TP-0131, TP-0135, TP-0137, TP-0138 | Despriorizada |
-| 329 | TP-0140 | executor | ✔ | [U] Play Console: app com.gestaodapelada.app (PI-5) | L31 | — | Despriorizada |
-| 330 | TP-0141 | executor | ✔ | /.well-known/assetlinks.json servido pelo Worker | L31 | TP-0088, TP-0140 | Despriorizada |
-| 331 | TP-0142 | executor | ✔ | Projeto TWA (Bubblewrap) em frontend/twa | L31 | TP-0006, TP-0108, TP-0139, TP-0140, TP-0141 | Despriorizada |
-| 332 | TP-0143 | executor | ✔ | [U] Teste fechado da Play (12 testadores, 14 dias) | L31 | TP-0139, TP-0141, TP-0142 | Despriorizada |
-| 333 | TP-0144 | executor | ✔ | [U] Publicação da TWA em produção | L31 | TP-0143 | Despriorizada |
-| 334 | SPK-0002 | coordenador | — | Spike S-02: CPU do sugerir no Worker publicado | L36 | TP-0135, TP-0165 | Despriorizada |
-| 335 | TP-0177 | executor | ✔ | E2E de integração do I2 (API real) | L38 | TP-0138, TP-0162, TP-0163, TP-0165, TP-0166, TP-0167, TP-0168, TP-0172, TP-0175 | Despriorizada |
-| 336 | TP-0178 | executor | ✔ | [U] Go-live do I2 | L38 | SPK-0002, TP-0139, TP-0155, TP-0156, TP-0157, TP-0158, TP-0159, TP-0169, TP-0170, TP-0171, TP-0176, TP-0177 | Despriorizada |
-| 337 | TP-0185 | executor | ✔ | [U] Go-live do I3 e início da janela de 8 semanas | L40 | TP-0178, TP-0181, TP-0184 | Despriorizada |
-| 338 | TP-0205 | executor | ✔ | E2E de integração do I4 (API real) | L45 | TP-0138, TP-0190, TP-0191, TP-0192, TP-0193, TP-0195, TP-0199, TP-0200, TP-0201, TP-0202 | Despriorizada |
-| 339 | TP-0206 | executor | ✔ | [U] Go-live do I4 | L45 | TP-0185, TP-0194, TP-0196, TP-0197, TP-0198, TP-0203, TP-0204, TP-0205 | Despriorizada |
-| 340 | BK-0003 | coordenador | ✔ | Exige push da branch ci-prova e PR real no remoto (ação manual/autorização do usuário); ro | — | — | Não executada |
-| 341 | RTP-0014 | executor | ✔ | Executar a prova do CI em PR real (ci-prova) | Refatoração Lote-L01 | BK-0003, TP-0003 | Despriorizada |
-| 342 | BK-0005 | coordenador | ✔ | Item (b) feito; item (a) exige PR real com job e2e verde (push/PR autorizado pelo usuário) | — | — | Não executada |
-| 343 | RTP-0017 | executor | ✔ | Provar job e2e verde em PR real e cobrir dist/ ausente em visual.mjs | Refatoração Lote-L20 | BK-0005, TP-0089 | Despriorizada |
-| 344 | BK-0007 | coordenador | ✔ | Rotacionar senhas pelada_app/pelada_backup no console do Neon (ALTER ROLE nos branches pro | — | — | Não executada |
-| 345 | RTP-0114 | executor | ✔ | Rotacionar senhas de pelada_app/pelada_backup do Neon antes do primeiro uso real | Refatoração Lote-L29 | BK-0007, TP-0132 | Despriorizada |
+| 270 | RTP-0126 | executor | ✔ | Teste de montarEntradaSimulador: completar casos do plano (nota de outro grupo, idade j... | Refatoração Lote-L35 | TP-0164 | Não executada |
+| 271 | RTP-0063 | executor | ✔ | Cookie de sessão duplicado: recusar em vez de usar o primeiro | Refatoração Lote-L07 | TP-0031 | Aprovada |
+| 272 | RTP-0069 | executor | ✔ | Testes dos middlewares de grupo/dono: escopo troca_de_senha, /api/grupos//eco e arquivo... | Refatoração Lote-L07 | TP-0032 | Aprovada |
+| 273 | RTP-0074 | executor | ✔ | Suíte de isolamento: rota ALL visível e conferência de limpeza | L07 | TP-0033 | Aprovada |
+| 274 | RTP-0084 | executor | ✔ | Entrar: bloqueio por e-mail sem atomicidade entre consulta e registro de falha | Refatoração Lote-L07 | TP-0034 | Aprovada |
+| 275 | RTP-0067 | executor | ✔ | Eventos de uso: completar testes do plano (tipos fechados, colunas gravadas, N+1, fábrica) | Refatoração Lote-L10 | TP-0050 | Aprovada |
+| 276 | RTP-0071 | executor | ✔ | Habilidades: usar seViolarUnico de comum.ts | L10 | TP-0047 | Aprovada |
+| 277 | RTP-0075 | executor | ✔ | Repositório de partidas: relógio fixo, fábrica de partidas e seViolarUnico | L10 | TP-0049 | Aprovada |
+| 278 | RTP-0076 | executor | ✔ | Repositório de partidas: criar/substituir exigem Tx | L10 | TP-0049 | Aprovada |
+| 279 | RTP-0080 | executor | ✔ | Seed local: teste duplicado, rollback e trava positiva sem cobertura | L10 | TP-0051 | Aprovada |
+| 280 | RTP-0083 | executor | ✔ | Regra de lint: apagarDadosDoSeed só importável por backend/scripts | L10 | TP-0051 | Aprovada |
+| 281 | RTP-0068 | executor | ✔ | Teste de admin-por-email: asserir auditoria admin_vinculado e e-mail com caixa/espaços | Refatoração Lote-L08 | TP-0038 | Aprovada |
+| 282 | RTP-0072 | executor | ✔ | Checagem de escrita de e_dono: janela de 300 caracteres deixa passar INSERT/values longos | Refatoração Lote-L08 | TP-0041 | Aprovada |
+| 283 | RTP-0077 | executor | ✔ | Checagem de escrita de e_dono: exceção cobre o arquivo contas.ts inteiro, não só criarC... | L08 | TP-0041 | Aprovada |
+| 284 | RTP-0085 | executor | ✔ | Trocar senha: limitar tentativas da senha atual no escopo completo | L08 | TP-0040 | Aprovada |
+| 285 | RTP-0098 | executor | ✔ | Teste de trocar-senha: caso dos 5 erros estoura o timeout padrão de 5 s | L08 | RTP-0085 | Aprovada |
+| 286 | RTP-0105 | executor | ✔ | Trocar senha: serializar a checagem de bloqueio da senha atual (corrida entre consulta... | L08 | RTP-0085 | Aprovada |
+| 287 | RTP-0104 | executor | ✔ | checar-escrita-e-dono: ';' dentro de string ou objeto pré-montado esconde a escrita de... | L08 | RTP-0072 | Aprovada |
+| 288 | RTP-0110 | executor | ✔ | checar-escrita-e-dono: atribuição o.e_dono = v e valor-expressão em chave de objeto esc... | Refatoração Lote-L08 | RTP-0104 | Aprovada |
+| 289 | RTP-0112 | executor | ✔ | checar-escrita-e-dono: '//' ou '--' dentro de literal de texto apaga o resto da linha e... | Refatoração Lote-L08 | RTP-0104 | Aprovada |
+| 290 | RTP-0121 | executor | ✔ | checar-escrita-e-dono: atribuição por colchete, composta (//=) e valor-expressão com ch... | Refatoração Lote-L08 | RTP-0110 | Aprovada |
+| 291 | RTP-0122 | executor | ✔ | checar-escrita-e-dono: atribuição composta bit a bit (/=, &=, ^=, >>=) escapa | Refatoração Lote-L08 | RTP-0121 | Aprovada |
+| 292 | RTP-0070 | executor | ✔ | Teste de partidas: relógio fixo e casos faltantes do plano | Refatoração Lote-L09 | TP-0044 | Aprovada |
+| 293 | RTP-0078 | executor | ✔ | Asserção automática do limite de 4 consultas em carregarHistoricoGrupo | L11 | TP-0053 | Aprovada |
+| 294 | RTP-0086 | executor | ✔ | Completar testes do POST /api/dono/grupos conforme o plano (atomicidade por passo, corr... | Refatoração Lote-L11 | TP-0056 | Aprovada |
+| 295 | RTP-0089 | executor | ✔ | Teste do painel do dono: forma contra dono-painel*.json e 403 de troca_de_senha | L11 | TP-0054 | Aprovada |
+| 296 | RTP-0081 | executor | ✔ | Teste de ordem por nome em GET /api/grupos/:g/admins | Refatoração Lote-L14 | TP-0063 | Aprovada |
+| 297 | RTP-0082 | executor | ✔ | Testes de aplicação com db-worker rodam no projeto node do vitest | L15 | TP-0069 | Aprovada |
+| 298 | RTP-0106 | executor | ✔ | montarCenario usa e-mail de dono fixo: testes de aplicação colidem em contas_email_unic... | Refatoração Lote-L15 | RTP-0082 | Aprovada |
+| 299 | RTP-0111 | executor | ✔ | montarCenario chamado duas vezes no mesmo teste colide em contas_email_unico (pagamento... | Refatoração Lote-L15 | RTP-0106 | Executada (aguarda teste) |
+| 300 | RTP-0087 | executor | ✔ | Testes da rota GET /api/grupos/:g: cobrir sexta, saídas, mês/semana e grupo B | Refatoração Lote-L13 | TP-0061 | Aprovada |
+| 301 | RTP-0099 | executor | ✔ | ler.test.ts: jogadoresEPartidas reutiliza o helper criarPartida | Refatoração Lote-L13 | RTP-0087 | Aprovada |
+| 302 | RTP-0088 | executor | ✔ | Testes de partidas/nova: cobrir lacunas do plano da TP-0078 | Refatoração Lote-L17 | TP-0078 | Aprovada |
+| 303 | RTP-0091 | executor | ✔ | Remover teste duplicado de GET partidas (partidas/listar.test.ts) | L17 | TP-0077 | Aprovada |
+| 304 | RTP-0090 | executor | ✔ | Teste de reativar: acumulado mantido e ativosNaData | Refatoração Lote-L16 | TP-0073 | Aprovada |
+| 305 | RTP-0092 | executor | ✔ | Testes de inativar: cobrir bordas e efeito do plano do TP-0072 | Refatoração Lote-L16 | TP-0072 | Aprovada |
+| 306 | RTP-0093 | executor | ✔ | Testes de partida nova: inativado depois e 409 com escalação (TP-0168) | Refatoração Lote-L36 | TP-0168 | Aprovada |
+| 307 | RTP-0097 | executor | ✔ | Unificar a enumeração de ids da composição (idsDaComposicao duplicada em 3 lugares) | L36 | TP-0167 | Executada (aguarda teste) |
+| 308 | RTP-0108 | executor | ✔ | Confirmar escalação: recusar id repetido na composição (422) | Refatoração Lote-L36 | TP-0167 | Executada (aguarda teste) |
+| 309 | RTP-0094 | executor | ✔ | Testes do ranking público: cobrir o plano do TP-0084 em publico-ranking.test.ts | L19 | TP-0084 | Aprovada |
+| 310 | RTP-0103 | executor | ✔ | limite-taxa.test: idempotência do login e lacunas do plano (IP distinto, no-store, POST... | Refatoração Lote-L19 | TP-0087 | Aprovada |
+| 311 | RTP-0109 | executor | ✔ | Limitador de taxa: binding ausente em produção desliga o limite sem aviso | Refatoração Lote-L19 | TP-0087 | Aprovada |
+| 312 | RTP-0100 | executor | ✔ | Testes do POST partidas: concorrência, falha no evento e 422 de corpo | Refatoração Lote-L18 | TP-0081 | Executada (aguarda teste) |
+| 313 | RTP-0101 | executor | ✔ | Teste do PUT partidas: 404 de :data malformada sem consulta ao banco | L18 | TP-0082 | Aprovada |
+| 314 | RTP-0107 | executor | ✔ | sw.ts: validade máxima (maxAgeSeconds) no cache do ranking público | L23 | TP-0108 | Aprovada |
+| 315 | RTP-0116 | executor | ✔ | Teste de ícones PWA falha: public/icones diferem do mockup byte a byte | Refatoração Lote-L23 | TP-0108 | Executada (aguarda teste) |
+| 316 | RTP-0113 | executor | ✔ | Alinhar o nome do branch de produção do Neon (production) em deploy.yml, SDD e tarefas... | Refatoração Lote-L29 | TP-0132 | Executada (aguarda teste) |
+| 317 | RTP-0115 | executor | ✔ | Ignorar .pnpm-store/ e .tmp-out.txt no .gitignore | Refatoração Lote-L29 | TP-0132 | Aprovada |
+| 318 | RTP-0117 | executor | ✔ | Faixa 'Jogador salvo' não aparece após cadastrar jogador (state não lido) | Refatoração Lote-L30 | TP-0124 | Aprovada |
+| 319 | RTP-0118 | executor | ✔ | Trace do e2e de integração guarda a senha temporária (resposta de POST /api/dono/grupos) | Refatoração Lote-L30 | TP-0138 | Aprovada |
+| 320 | RTP-0119 | executor | ✔ | docker-compose repete o e-mail real do dono em literal | Refatoração Lote-L30 | TP-0138 | Aprovada |
+| 321 | RTP-0120 | executor | ✔ | checar-escrita-e-dono: '--' de código (i--) é tratado como comentário SQL e esconde e_dono | Refatoração Lote-L30 | RTP-0112 | Aprovada |
+| 322 | RTP-0125 | executor | ✔ | Auditoria da config financeira: ler config anterior com trava (FOR UPDATE) | Refatoração Lote-L42 | TP-0191 | Executada (aguarda teste) |
+| 323 | BK-0009 | coordenador | ✔ | Ajustar SDD/ADR-010/URL_PUBLICA/CORS/deploy.yml ao domínio prod-ljs.workers.dev e aos acei | — | — | Não executada |
+| 324 | SPK-0001 | coordenador | ✔ | Spike S-01: transação interativa pg sobre o Hyperdrive | L29 | TP-0014, TP-0133 | Despriorizada |
+| 325 | BK-0010 | coordenador | ✔ | Decidir a cifra do backup: o Coordenador mandou openssl aes-256-cbc/pbkdf2, mas o repo usa | — | — | Não executada |
+| 326 | TP-0136 | executor | ✔ | Workflow de backup diário (backup.yml) | L30 | BK-0010, TP-0134 | Despriorizada |
+| 327 | TP-0135 | executor | ✔ | Workflow de deploy (deploy.yml) | L30 | TP-0003, TP-0013, TP-0015, TP-0133, TP-0134, TP-0136 | Despriorizada |
+| 328 | TP-0137 | executor | ✔ | Runbook backend/DEPLOY.md e ensaio de restauração | L30 | TP-0041, TP-0135, TP-0136 | Despriorizada |
+| 329 | TP-0139 | executor | ✔ | [U] Go-live do I1 | L30 | SPK-0001, TP-0036, TP-0039, TP-0041, TP-0054, TP-0055, TP-0057, TP-0058, TP-0059, TP-0060, TP-0062, TP-0063, TP-0064, TP-0065, TP-0066, TP-0067, TP-0068, TP-0069, TP-0071, TP-0072, TP-0073, TP-0074, TP-0075, TP-0076, TP-0077, TP-0079, TP-0082, TP-0083, TP-0085, TP-0086, TP-0087, TP-0090, TP-0109, TP-0112, TP-0113, TP-0115, TP-0117, TP-0118, TP-0120, TP-0122, TP-0125, TP-0126, TP-0127, TP-0128, TP-0131, TP-0135, TP-0137, TP-0138 | Despriorizada |
+| 330 | TP-0140 | executor | ✔ | [U] Play Console: app com.gestaodapelada.app (PI-5) | L31 | — | Despriorizada |
+| 331 | TP-0141 | executor | ✔ | /.well-known/assetlinks.json servido pelo Worker | L31 | TP-0088, TP-0140 | Despriorizada |
+| 332 | TP-0142 | executor | ✔ | Projeto TWA (Bubblewrap) em frontend/twa | L31 | TP-0006, TP-0108, TP-0139, TP-0140, TP-0141 | Despriorizada |
+| 333 | TP-0143 | executor | ✔ | [U] Teste fechado da Play (12 testadores, 14 dias) | L31 | TP-0139, TP-0141, TP-0142 | Despriorizada |
+| 334 | TP-0144 | executor | ✔ | [U] Publicação da TWA em produção | L31 | TP-0143 | Despriorizada |
+| 335 | SPK-0002 | coordenador | — | Spike S-02: CPU do sugerir no Worker publicado | L36 | TP-0135, TP-0165 | Despriorizada |
+| 336 | TP-0177 | executor | ✔ | E2E de integração do I2 (API real) | L38 | TP-0138, TP-0162, TP-0163, TP-0165, TP-0166, TP-0167, TP-0168, TP-0172, TP-0175 | Despriorizada |
+| 337 | TP-0178 | executor | ✔ | [U] Go-live do I2 | L38 | SPK-0002, TP-0139, TP-0155, TP-0156, TP-0157, TP-0158, TP-0159, TP-0169, TP-0170, TP-0171, TP-0176, TP-0177 | Despriorizada |
+| 338 | TP-0185 | executor | ✔ | [U] Go-live do I3 e início da janela de 8 semanas | L40 | TP-0178, TP-0181, TP-0184 | Despriorizada |
+| 339 | TP-0205 | executor | ✔ | E2E de integração do I4 (API real) | L45 | TP-0138, TP-0190, TP-0191, TP-0192, TP-0193, TP-0195, TP-0199, TP-0200, TP-0201, TP-0202 | Despriorizada |
+| 340 | TP-0206 | executor | ✔ | [U] Go-live do I4 | L45 | TP-0185, TP-0194, TP-0196, TP-0197, TP-0198, TP-0203, TP-0204, TP-0205 | Despriorizada |
+| 341 | BK-0003 | coordenador | ✔ | Exige push da branch ci-prova e PR real no remoto (ação manual/autorização do usuário); ro | — | — | Não executada |
+| 342 | RTP-0014 | executor | ✔ | Executar a prova do CI em PR real (ci-prova) | Refatoração Lote-L01 | BK-0003, TP-0003 | Despriorizada |
+| 343 | BK-0005 | coordenador | ✔ | Item (b) feito; item (a) exige PR real com job e2e verde (push/PR autorizado pelo usuário) | — | — | Não executada |
+| 344 | RTP-0017 | executor | ✔ | Provar job e2e verde em PR real e cobrir dist/ ausente em visual.mjs | Refatoração Lote-L20 | BK-0005, TP-0089 | Despriorizada |
+| 345 | BK-0007 | coordenador | ✔ | Rotacionar senhas pelada_app/pelada_backup no console do Neon (ALTER ROLE nos branches pro | — | — | Não executada |
+| 346 | RTP-0114 | executor | ✔ | Rotacionar senhas de pelada_app/pelada_backup do Neon antes do primeiro uso real | Refatoração Lote-L29 | BK-0007, TP-0132 | Despriorizada |
