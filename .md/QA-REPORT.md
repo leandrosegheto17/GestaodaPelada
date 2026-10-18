@@ -914,3 +914,45 @@ APROVADA — aceite cumprido, 38/38 testes passando; 0 críticos, 1 não crític
 
 ## TP-0190 — QA — 2026-10-17
 APROVADA: mes.test 7/7, saldo-atual 4/4 e isolamento 70/70 passam, tsc ok; diff sem achados (0 críticos, 0 não críticos).
+
+## RTP-0097 — QA — 2026-10-17
+BLOQUEIO por ambiente (montarCenario sem pesos quebra 9 testes de rota do simulador, reconfirmado na rodada 2); código correto, uma só definição, contrato 31/31, confirmar-escalacao e partidas verdes; 0 achados.
+
+## RTP-0100 — QA — 2026-10-17
+APROVADA; 12/12 testes de partidas/escrever passando cobrindo concorrência 201/409, rollback no evento e 422 de corpo; 0 achados.
+
+## RTP-0108 — QA — 2026-10-17
+APROVADA; 0 achados; vitest confirmar-escalacao + rota 16/16 com matriz de id repetido -> 422 e nada gravado.
+
+## RTP-0111 — QA — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; pagamentos-marcar 8/8 verde 3x seguidas, um cenário por teste.
+
+## RTP-0113 — QA — 2026-10-17
+APROVADA; 0 achados; grep/actionlint/yaml ok, pai=production, branch Git main preservado.
+
+## RTP-0116 — QA — 2026-10-17
+APROVADA; pwa-config 9/9 verde e 4 PNGs idênticos ao mockup; 0 críticos, 0 não críticos.
+
+## RTP-0123 — QA — 2026-10-17
+APROVADA — tsc backend/api limpo e excluir.test.ts 5/5; diff de 1 linha ao tipo boolean, 0 achados.
+
+## RTP-0124 — QA — 2026-10-17
+APROVADA — pagamentos-marcar 8/8 verde, causa era o default do helper do teste; 0 achados.
+
+## RTP-0125 — QA — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; teste de concorrência 2/2 em 3 execuções e lock advisory dentro de emTransacao confirmado.
+
+## TP-0194 — QA — 2026-10-17
+APROVADA: 11/11 testes verdes com banco limpo, tsc limpo, aceite (com/sem permissão, sem config, isolamento) coberto; 0 achados.
+
+## TP-0195 — QA — 2026-10-17
+APROVADA — 90/90 testes (rota, caso de uso, isolamento) e tsc ok; critério de aceite e auditoria sem descrição verificados; 0 achados.
+
+## TP-0196 — QA — 2026-10-17
+APROVADA (rodada 3): 74 testes de lancamentos/ler+isolamento verdes, tsc e biome limpos; 0 achados.
+
+## TP-0197 — QA — 2026-10-17
+APROVADA — 84/84 testes (aplicação, rota, isolamento) passando; 0 críticos, 0 não críticos; vínculo da mensalidade, 422 de tipo e auditoria atômica confirmados.
+
+## TP-0198 — QA — 2026-10-17
+APROVADA; 0 críticos, 1 não crítico (RTP-0127: mensagem do 409 sem apelido/mês); vitest lancamentos/excluir 9/9, isolamento 70/70, tsc/eslint limpos.
