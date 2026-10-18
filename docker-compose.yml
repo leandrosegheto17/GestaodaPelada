@@ -45,11 +45,17 @@ services:
       pnpm migrar &&
       pnpm seed &&
       pnpm --filter @pelada/api exec wrangler dev -c ../../wrangler.jsonc --ip 0.0.0.0 --port 8787 --var URL_PUBLICA:http://localhost:5173 --var DONO_EMAIL:$$(pnpm --silent exec tsx -e \"import { EMAIL_DONO } from './backend/scripts/seed-local/ids'; process.stdout.write(EMAIL_DONO)\")"
+    healthcheck:
+      test: ['CMD', 'node', '-e', "fetch('http://127.0.0.1:8787/').then(() => process.exit(0), () => process.exit(1))"]
+      interval: 5s
+      timeout: 5s
+      retries: 180
 
   frontend:
     <<: *node
     depends_on:
-      - backend
+      backend:
+        condition: service_started
     environment:
       ALVO_API_DEV: http://backend:8787
       CHOKIDAR_USEPOLLING: 'true'
@@ -59,6 +65,11 @@ services:
       sh -c "corepack enable &&
       pnpm install --frozen-lockfile &&
       pnpm --filter @pelada/web dev --host 0.0.0.0 --port 5173 --strictPort"
+    healthcheck:
+      test: ['CMD', 'node', '-e', "fetch('http://127.0.0.1:5173/').then(() => process.exit(0), () => process.exit(1))"]
+      interval: 5s
+      timeout: 5s
+      retries: 180
 
 volumes:
   dados_db:
