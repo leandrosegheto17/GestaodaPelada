@@ -7,14 +7,15 @@ import * as habilidades from '../../../src/infraestrutura/db/repositorios/habili
 import * as jogadores from '../../../src/infraestrutura/db/repositorios/jogadores.js';
 import * as partidas from '../../../src/infraestrutura/db/repositorios/partidas.js';
 import * as pesos from '../../../src/infraestrutura/db/repositorios/pesos.js';
+import { contarConsultas } from '../../apoio/contar-consultas.js';
 import { usarDb } from '../../apoio/db-teste.js';
 import { criarJogador } from '../../apoio/fabricas/jogadores.js';
 import { usarFabrica } from '../../apoio/fabrica.js';
+import { AGORA_TESTE as AGORA, diaRelativo, HOJE_TESTE } from '../../apoio/relogio.js';
 import { criarBase } from '../../apoio/sql-dados.js';
 
 const fabrica = usarFabrica();
 const abrir = usarDb(fabrica);
-const AGORA = new Date('2026-10-16T12:00:00Z');
 
 async function cenario() {
   const db = await abrir();
@@ -92,6 +93,59 @@ describe('montarEntradaSimulador', () => {
     expect(ana).toEqual({ id: a, so1oTempo: true, nivel: 683, semNota: false, idade: 37 });
     expect(bia).toEqual({ id: b, so1oTempo: false, nivel: 550, semNota: true, idade: 47 });
     expect(r.apelidos.get(a)).toBe('Ana');
+  });
+
+  it('partida na própria data não conta, mesmo quando contá-la inverteria a ordem', async () => {
+    const { db, base, g } = await cenario();
+    const data = diaRelativo(-1);
+    const ana = await criarJogador(db, g, base.contaId, { apelido: 'Ana', ano: 1990 });
+    const bia = await criarJogador(db, g, base.contaId, { apelido: 'Bia', ano: 1990 });
+    await lancar(db, g, base.contaId, diaRelativo(-2), [bia]);
+    await lancar(db, g, base.contaId, data, [ana]);
+    const r = await montarEntradaSimulador(db, g, dois(data, [{ id: ana }, { id: bia }]));
+    // contando a partida de `data`, as duas teriam 1 ponto e Ana (apelido) viria primeiro
+    expect(r.aptos.map((x) => x.id)).toEqual([bia, ana]);
+    expect(r.historico.partidas.every((p) => p.data < data)).toBe(true);
+  });
+
+  it('nota de outro grupo não interfere no nível', async () => {
+    const { db, base, g } = await cenario();
+    const ana = await criarJogador(db, g, base.contaId, { apelido: 'Ana', ano: 1990 });
+    const bia = await criarJogador(db, g, base.contaId, { apelido: 'Bia', ano: 1990 });
+    const outro = await criarJogador(db, base.outroGrupo.id, base.contaId);
+    for (const [i, nota] of [8, 7, 6, 7, 8, 5].entries()) {
+      const h = await habilidades.criar(db, g, `Hab ${i}`);
+      await habilidades.gravarNota(db, g, ana, h, nota);
+    }
+    for (const i of [0, 1, 2]) {
+      const h = await habilidades.criar(db, base.outroGrupo.id, `Hab ${i}`);
+      await habilidades.gravarNota(db, base.outroGrupo.id, outro, h, 10);
+    }
+    const r = await montarEntradaSimulador(db, g, dois(diaRelativo(3), [{ id: ana }, { id: bia }]));
+    expect(r.aptos.find((x) => x.id === ana)).toMatchObject({ nivel: 683, semNota: false });
+    expect(r.aptos.find((x) => x.id === bia)).toMatchObject({ nivel: 550, semNota: true });
+    expect(r.aptos.map((x) => x.id)).not.toContain(outro);
+  });
+
+  it('idade usa só o ano da data: igual em janeiro e em dezembro', async () => {
+    const { db, base, g } = await cenario();
+    const ano = Number(HOJE_TESTE.slice(0, 4)) + 1;
+    const a = await criarJogador(db, g, base.contaId, { apelido: 'Ana', ano: 1990 });
+    for (const data of [`${ano}-01-01`, `${ano}-12-31`]) {
+      const r = await montarEntradaSimulador(db, g, dois(data, [{ id: a }]));
+      expect(r.aptos[0]?.idade).toBe(ano - 1990);
+    }
+  });
+
+  it('faz no máximo 5 consultas, independentemente do número de aptos', async () => {
+    const { db, base, g } = await cenario();
+    const ids: string[] = [];
+    for (let i = 0; i < 8; i++) ids.push(await criarJogador(db, g, base.contaId));
+    await lancar(db, g, base.contaId, diaRelativo(-1), ids.slice(0, 4));
+    const entrada = dois(diaRelativo(3), ids.map((id) => ({ id })));
+    const consultas = await contarConsultas(() => montarEntradaSimulador(db, g, entrada));
+    expect(consultas).toBeGreaterThan(0);
+    expect(consultas).toBeLessThanOrEqual(5);
   });
 
   it('em vários times, so1oTempo é sempre falso', async () => {
