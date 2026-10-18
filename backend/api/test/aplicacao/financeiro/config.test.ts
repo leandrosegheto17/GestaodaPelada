@@ -1,4 +1,6 @@
+import { sql } from 'kysely';
 import { describe, expect, it, vi } from 'vitest';
+import { kyselyDe } from '../../../src/infraestrutura/db/cliente.js';
 import { salvarConfigFinanceira } from '../../../src/aplicacao/financeiro/config.js';
 import * as financeiro from '../../../src/infraestrutura/db/repositorios/financeiro.js';
 import { usarDb } from '../../apoio/db-teste.js';
@@ -35,5 +37,25 @@ describe('salvarConfigFinanceira', () => {
       falha.auditoria = false;
     }
     expect(await financeiro.lerConfig(db, base.grupo.id)).toBeNull();
+  });
+
+  it('gravações concorrentes no mesmo grupo geram auditorias com o anterior encadeado', async () => {
+    const db = await abrir();
+    const outraConexao = await abrir();
+    const base = await criarBase(db, fabrica);
+    const contexto = { autorContaId: base.contaId, hoje: relogio.hoje(), agora: new Date(relogio.agoraIso()) };
+    const primeira = { ...CORPO, mensalidadeCentavos: 1_000 };
+    const segunda = { ...CORPO, mensalidadeCentavos: 2_000 };
+    await Promise.all([
+      salvarConfigFinanceira(db, base.grupo.id, primeira, contexto),
+      salvarConfigFinanceira(outraConexao, base.grupo.id, segunda, contexto),
+    ]);
+    const r = await sql<{ resumo: Record<string, unknown> }>`
+      SELECT resumo FROM auditoria WHERE entidade = 'config_financeira' AND entidade_id = ${base.grupo.id} ORDER BY id
+    `.execute(kyselyDe(db));
+    expect(r.rows).toHaveLength(2);
+    const [a, b] = r.rows.map((l) => l.resumo);
+    expect(a?.antesMensalidade).toBeNull();
+    expect(b?.antesMensalidade).toBe(a?.depoisMensalidade);
   });
 });

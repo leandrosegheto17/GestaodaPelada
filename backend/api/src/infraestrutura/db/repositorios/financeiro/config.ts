@@ -16,12 +16,17 @@ export async function lerConfig(ex: ExecutorDb, grupoId: string): Promise<Config
   return l ? { mensalidadeCentavos: l.mensalidade, saldoInicialCentavos: l.saldo, dataSaldoInicial: l.data } : null;
 }
 
-/** Grava a configuração (uma por grupo) e devolve a anterior, se havia. */
+/**
+ * Grava a configuração (uma por grupo) e devolve a anterior, se havia. Serializa as gravações do mesmo grupo com
+ * lock advisory da transação (FOR UPDATE não trava quando ainda não há linha), então o "anterior" é sempre o último
+ * gravado. Deve rodar dentro de uma transação.
+ */
 export async function salvarConfig(
   ex: ExecutorDb,
   grupoId: string,
   dados: ConfigFinanceira,
 ): Promise<ConfigFinanceira | null> {
+  await sql`SELECT pg_advisory_xact_lock(hashtext(${'config_financeira:' + grupoId}))`.execute(kyselyDe(ex));
   const anterior = await lerConfig(ex, grupoId);
   await sql`
     INSERT INTO config_financeira (grupo_id, mensalidade_centavos, saldo_inicial_centavos, data_saldo_inicial)
