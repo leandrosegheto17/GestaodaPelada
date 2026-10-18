@@ -923,3 +923,24 @@ APROVADA — revisão do diff sem achados (0 críticos, 0 não críticos); grupo
 
 ## TP-0198 — DevSecOps — 2026-10-17
 APROVADA em segurança; 0 críticos, 0 novos não críticos (RTP-0127 já aberta pelo QA); revisão do diff: grupo_id no WHERE, 404 sem revelar existência, FK->409 atômico, auditoria sem texto livre.
+
+## RTP-0097 — DevSecOps — 2026-10-18
+APROVADA em segurança; refatoração preserva a validação de entrada (id repetido e fora dos aptos → 422) com uma só `idsDaComposicao`, sem dependências alteradas; 0 achados.
+
+## RTP-0126 — DevSecOps — 2026-10-18
+APROVADA; revisão do diff de testes sem segredo/dado sensível, G-03 coberto por teste discriminante; 0 críticos, 0 não críticos (duplicação do espião já na RTP-0129).
+
+## TP-0165 — DevSecOps — 2026-10-18
+APROVADA — revisão do diff sem achados (vínculo/isolamento, entrada limitada, log sem dado pessoal, sem dependência nova); 0 críticos, 0 não críticos.
+
+## TP-0166 — DevSecOps — 2026-10-18
+APROVADA em segurança; 0 críticos, 0 não críticos novos; revisão do diff (isolamento por grupo, limites antes do banco, resposta sem dado pessoal, no-store), sem dependências alteradas.
+
+## RTP-0127 — DevSecOps — 2026-10-18
+APROVADA (revisão do diff) - mensagem com apelido e mês só atrás de exigirFinanceiro, releitura filtrada por grupo_id, fora de log/auditoria, dado mínimo; 0 críticos, 0 não críticos.
+
+## RTP-0128 — DevSecOps — 2026-10-18
+APROVADA (revisão do diff, só teste); 0 críticos, 0 não críticos; G-03 (422 sem vazar id) e G-12 (limites de contrato) com asserção real, nada de produção alterado.
+
+## RTP-0129 — DevSecOps — 2026-10-18
+APROVADA; 0 críticos/0 não críticos; revisão do diff (só testes de repositórios, sem src/dependência/segredo), nada executado por este chapéu.
