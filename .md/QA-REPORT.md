@@ -908,3 +908,9 @@ APROVADA, 0 críticos/0 não críticos, 14/14 testes de config e 70/70 de isolam
 
 ## TP-0154 — QA — 2026-10-17
 APROVADA — 0 críticos, 0 não críticos; orçamento 6/6 isoladas e 4/4 sob carga verdes (2x11 mediana 0,47 ms, p99 até 1,72; 6x5 mediana 0,78, p99 até 2,19; limiar 4 ms), 215/215 simulador, tsc/eslint limpos, reescrita equivalente.
+
+## TP-0164 — QA — 2026-10-17
+APROVADA — aceite cumprido, 38/38 testes passando; 0 críticos, 1 não crítico (RTP-0126: casos do plano sem teste).
+
+## TP-0190 — QA — 2026-10-17
+APROVADA: mes.test 7/7, saldo-atual 4/4 e isolamento 70/70 passam, tsc ok; diff sem achados (0 críticos, 0 não críticos).
