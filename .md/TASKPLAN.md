@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-18 15:48
+Atualizado: 2026-10-18 16:33
 
-Resumo: Não executada 7 · Em execução 1 · Aprovada 328 · Despriorizada 18 · total 354
+Resumo: Não executada 3 · Em execução 2 · Executada (aguarda teste) 3 · Aprovada 328 · Despriorizada 18 · total 354
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -341,10 +341,10 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 326 | RTP-0120 | executor | ✔ | checar-escrita-e-dono: '--' de código (i--) é tratado como comentário SQL e esconde e_dono | Refatoração Lote-L30 | RTP-0112 | Aprovada |
 | 327 | RTP-0125 | executor | ✔ | Auditoria da config financeira: ler config anterior com trava (FOR UPDATE) | Refatoração Lote-L42 | TP-0191 | Aprovada |
 | 328 | RTP-0127 | executor | ✔ | DELETE lançamento: 409 sem apelido e mês na mensagem (decidido na §1.4) | Refatoração Lote-L43 | TP-0198 | Aprovada |
-| 329 | RTP-0130 | executor | ✔ | T16 Ficha do jogador (sem-habilidades): voltar ao mockup (seção de habilidades 1 px des... | Refatoração Revisão 2026-10-18 | — | Não executada |
-| 330 | RTP-0131 | executor | ✔ | Formulários de tela usam o Formulario compartilhado e um só .formulario/.duasColunas [M... | Refatoração Revisão 2026-10-18 | — | Não executada |
-| 331 | RTP-0132 | executor | ✔ | ResultadoDois/ResultadoVarios: extrair confirmação, faixas de erro e diálogo de refazer... | Refatoração Revisão 2026-10-18 | — | Não executada |
-| 332 | RTP-0133 | executor | ✔ | Hook único useMesDaUrl para ?mes= malformado (Ranking, Partidas, Financeiro) [Média] | Refatoração Revisão 2026-10-18 | — | Não executada |
+| 329 | RTP-0130 | executor | ✔ | T16 Ficha do jogador (sem-habilidades): voltar ao mockup (seção de habilidades 1 px des... | Refatoração Revisão 2026-10-18 | — | Executada (aguarda teste) |
+| 330 | RTP-0131 | executor | ✔ | Formulários de tela usam o Formulario compartilhado e um só .formulario/.duasColunas [M... | Refatoração Revisão 2026-10-18 | — | Executada (aguarda teste) |
+| 331 | RTP-0132 | executor | ✔ | ResultadoDois/ResultadoVarios: extrair confirmação, faixas de erro e diálogo de refazer... | Refatoração Revisão 2026-10-18 | — | Executada (aguarda teste) |
+| 332 | RTP-0133 | executor | ✔ | Hook único useMesDaUrl para ?mes= malformado (Ranking, Partidas, Financeiro) [Média] | Refatoração Revisão 2026-10-18 | — | Em execução |
 | 333 | RTP-0134 | executor | ✔ | eslint.config.mjs e checar-grupo-id.mjs abaixo de 300 linhas [Baixa] | Refatoração Revisão 2026-10-18 | — | Não executada |
 | 334 | BK-0009 | coordenador | ✔ | Ajustar SDD/ADR-010/URL_PUBLICA/CORS/deploy.yml ao domínio prod-ljs.workers.dev e aos acei | — | — | Em execução |
 | 335 | SPK-0001 | coordenador | ✔ | Spike S-01: transação interativa pg sobre o Hyperdrive | L29 | TP-0014, TP-0133 | Despriorizada |
