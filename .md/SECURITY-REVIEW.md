@@ -878,3 +878,48 @@ APROVADA — 0 críticos/0 não críticos; revisão do diff confirma grupoId do 
 
 ## TP-0154 — DevSecOps — 2026-10-17
 APROVADA — 0 críticos, 0 não críticos; função pura, busca local com teto de 200 trocas, sem relógio/aleatório/import externo/ID de tarefa (greps e eslint executados), limiar 4 ms mantido.
+
+## RTP-0100 — DevSecOps — 2026-10-17
+APROVADA; diff só de testes, sem superfície de segurança nova nem dependências; 0 achados.
+
+## RTP-0108 — DevSecOps — 2026-10-17
+APROVADA; 0 achados; repetido barrado no contrato (422 antes do jsonb), sem dependência nova nem exposição de dado.
+
+## RTP-0111 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos/0 não críticos; alteração só em teste, sem superfície de segurança nem dependência.
+
+## RTP-0113 — DevSecOps — 2026-10-17
+APROVADA; 0 achados; troca de literal em deploy.yml sem impacto em segredos/permissões/injeção (leitura do diff, nada executado).
+
+## RTP-0116 — DevSecOps — 2026-10-17
+APROVADA em segurança; só 4 PNGs estáticos, sem metadados nem código/dependências; 0 críticos, 0 não críticos.
+
+## RTP-0123 — DevSecOps — 2026-10-17
+APROVADA — diff de 1 linha em teste, sem superfície de segurança nem dependências; 0 achados.
+
+## RTP-0124 — DevSecOps — 2026-10-17
+APROVADA — diff só de teste, sem superfície de segurança nem dependências; 0 achados.
+
+## RTP-0125 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; lock advisory parametrizado e com prefixo próprio por grupo, sem injeção nem vazamento entre grupos (revisão do diff; sem dependência nova).
+
+## TP-0164 — DevSecOps — 2026-10-17
+APROVADA em segurança — 422 uniforme sem vazar ids, checagem de grupo/atividade correta, sem dado pessoal extra, sem dependência nova; 0 críticos, 0 não críticos.
+
+## TP-0190 — DevSecOps — 2026-10-17
+APROVADA: rota sob exigirFinanceiro, escopo por grupo_id/vínculo, mes validado, resposta só com apelido+valores e no-store; sem dependências novas; 0 críticos, 0 não críticos.
+
+## TP-0194 — DevSecOps — 2026-10-17
+APROVADA: saldo só com acessaFinanceiro do vínculo, consultas por grupo_id parametrizadas, sem dependência nova, sem dado sensível exposto; 0 achados.
+
+## TP-0195 — DevSecOps — 2026-10-17
+APROVADA em segurança (revisão do diff) — escopo por grupo do vínculo, corpo strict em centavos, auditoria transacional sem descrição; 0 achados.
+
+## TP-0196 — DevSecOps — 2026-10-17
+APROVADA em segurança: isolamento por grupo, 404 uniforme, permissão do financeiro, resposta mínima e no-store verificados no diff; 0 achados.
+
+## TP-0197 — DevSecOps — 2026-10-17
+APROVADA — revisão do diff sem achados (0 críticos, 0 não críticos); grupo_id no WHERE, schema estrito, auditoria atômica sem descrição; nenhuma dependência nova; nada executado por este chapéu.
+
+## TP-0198 — DevSecOps — 2026-10-17
+APROVADA em segurança; 0 críticos, 0 novos não críticos (RTP-0127 já aberta pelo QA); revisão do diff: grupo_id no WHERE, 404 sem revelar existência, FK->409 atômico, auditoria sem texto livre.

@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-17 22:31
+Atualizado: 2026-10-17 22:39
 
-Resumo: Não executada 9 · Em execução 1 · Executada (aguarda teste) 1 · Testada (aguarda segurança) 15 · Aprovada 302 · Despriorizada 19 · total 347
+Resumo: Não executada 9 · Em execução 1 · Executada (aguarda teste) 1 · Aprovada 317 · Despriorizada 19 · total 347
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -173,7 +173,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 158 | TP-0161 | executor | ✔ | Repositório de escalações | L35 | TP-0014, TP-0016, TP-0017, TP-0160 | Aprovada |
 | 159 | TP-0162 | executor | ✔ | Endpoint GET /api/grupos/:g/simulador/contexto?data= | L35 | TP-0007, TP-0011, TP-0013, TP-0029, TP-0032, TP-0033, TP-0047, TP-0052, TP-0146 | Aprovada |
 | 160 | TP-0163 | executor | ✔ | Endpoint POST /api/grupos/:g/simulador/previa | L35 | TP-0032, TP-0033, TP-0146, TP-0147 | Aprovada |
-| 161 | TP-0164 | executor | ✔ | Extração aplicacao/simulador/entrada (aptos prontos para o domínio) | L35 | TP-0011, TP-0047, TP-0053, TP-0148, TP-0154 | Testada (aguarda segurança) |
+| 161 | TP-0164 | executor | ✔ | Extração aplicacao/simulador/entrada (aptos prontos para o domínio) | L35 | TP-0011, TP-0047, TP-0053, TP-0148, TP-0154 | Aprovada |
 | 162 | TP-0165 | executor | ✔ | Endpoint POST /api/grupos/:g/simulador/sugerir | L35 | TP-0032, TP-0033, TP-0146, TP-0154, TP-0163, TP-0164 | Não executada |
 | 163 | TP-0166 | executor | ✔ | Endpoint POST /api/grupos/:g/simulador/avaliar | L36 | TP-0032, TP-0033, TP-0146, TP-0150, TP-0153, TP-0164 | Não executada |
 | 164 | TP-0167 | executor | ✔ | Endpoint POST /api/grupos/:g/escalacoes | L36 | TP-0014, TP-0032, TP-0033, TP-0050, TP-0052, TP-0146, TP-0161 | Aprovada |
@@ -197,16 +197,16 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 182 | TP-0187 | executor | ✔ | dominio/caixa: saldos e entrada vinculada | L41 | TP-0007 | Aprovada |
 | 183 | TP-0188 | executor | ✔ | Migração do financeiro | L41 | TP-0015, TP-0016, TP-0042 | Aprovada |
 | 184 | TP-0189 | executor | ✔ | Repositório do financeiro (e histórico do jogador com pagamentos) | L41 | TP-0014, TP-0016, TP-0017, TP-0046, TP-0074, TP-0188 | Aprovada |
-| 185 | TP-0190 | executor | ✔ | Endpoint GET /api/grupos/:g/financeiro/mes?mes= | L42 | TP-0013, TP-0032, TP-0033, TP-0052, TP-0186, TP-0187, TP-0189 | Testada (aguarda segurança) |
+| 185 | TP-0190 | executor | ✔ | Endpoint GET /api/grupos/:g/financeiro/mes?mes= | L42 | TP-0013, TP-0032, TP-0033, TP-0052, TP-0186, TP-0187, TP-0189 | Aprovada |
 | 186 | TP-0191 | executor | ✔ | Endpoint PUT /api/grupos/:g/financeiro/config | L42 | TP-0030, TP-0032, TP-0033, TP-0186, TP-0189 | Aprovada |
 | 187 | TP-0192 | executor | ✔ | Endpoint POST /api/grupos/:g/financeiro/pagamentos (marcar) | L42 | TP-0014, TP-0030, TP-0032, TP-0033, TP-0186, TP-0187, TP-0189 | Aprovada |
 | 188 | TP-0193 | executor | ✔ | Endpoint DELETE /api/grupos/:g/financeiro/pagamentos/:jogadorId/:mes (desmarcar) | L42 | TP-0014, TP-0030, TP-0032, TP-0033, TP-0186, TP-0189 | Aprovada |
 | 189 | BK-0011 | coordenador | ✔ | Banco pelada_teste com conta residual (contas_email_unico em montarCenario): ler.test.ts f | — | — | Em execução |
-| 190 | TP-0194 | executor | ✔ | Resumo do início com o saldo atual | L42 | BK-0011, TP-0061, TP-0187, TP-0189 | Testada (aguarda segurança) |
-| 191 | TP-0195 | executor | ✔ | Endpoint POST /api/grupos/:g/financeiro/lancamentos | L43 | TP-0030, TP-0032, TP-0033, TP-0186, TP-0189 | Testada (aguarda segurança) |
-| 192 | TP-0196 | executor | ✔ | Endpoint GET /api/grupos/:g/financeiro/lancamentos/:id | L43 | TP-0032, TP-0033, TP-0186, TP-0189 | Testada (aguarda segurança) |
-| 193 | TP-0197 | executor | ✔ | Endpoint PUT /api/grupos/:g/financeiro/lancamentos/:id | L43 | TP-0030, TP-0032, TP-0033, TP-0186, TP-0189 | Testada (aguarda segurança) |
-| 194 | TP-0198 | executor | ✔ | Endpoint DELETE /api/grupos/:g/financeiro/lancamentos/:id | L43 | TP-0030, TP-0032, TP-0033, TP-0186, TP-0189 | Testada (aguarda segurança) |
+| 190 | TP-0194 | executor | ✔ | Resumo do início com o saldo atual | L42 | BK-0011, TP-0061, TP-0187, TP-0189 | Aprovada |
+| 191 | TP-0195 | executor | ✔ | Endpoint POST /api/grupos/:g/financeiro/lancamentos | L43 | TP-0030, TP-0032, TP-0033, TP-0186, TP-0189 | Aprovada |
+| 192 | TP-0196 | executor | ✔ | Endpoint GET /api/grupos/:g/financeiro/lancamentos/:id | L43 | TP-0032, TP-0033, TP-0186, TP-0189 | Aprovada |
+| 193 | TP-0197 | executor | ✔ | Endpoint PUT /api/grupos/:g/financeiro/lancamentos/:id | L43 | TP-0030, TP-0032, TP-0033, TP-0186, TP-0189 | Aprovada |
+| 194 | TP-0198 | executor | ✔ | Endpoint DELETE /api/grupos/:g/financeiro/lancamentos/:id | L43 | TP-0030, TP-0032, TP-0033, TP-0186, TP-0189 | Aprovada |
 | 195 | TP-0199 | executor | ✔ | Tela T22: Financeiro do mês | L44 | TP-0089, TP-0092, TP-0095, TP-0101, TP-0106, TP-0186, TP-0207 | Aprovada |
 | 196 | TP-0200 | executor | ✔ | Tela T22: marcar e desmarcar pagamento | L44 | TP-0097, TP-0100, TP-0199 | Aprovada |
 | 197 | TP-0201 | executor | ✔ | Tela T23: Lançamento | L44 | TP-0089, TP-0095, TP-0096, TP-0097, TP-0098, TP-0100, TP-0106, TP-0186, TP-0207 | Aprovada |
@@ -274,8 +274,8 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 259 | RTP-0096 | executor | ✔ | pdf.test.ts: cobrir lacunas do plano de teste de GET publico/:slug/pdf | Refatoração Lote-L39 | TP-0181 | Aprovada |
 | 260 | RTP-0051 | executor | ✔ | dominio/caixa: unificar testes duplicados | Refatoração Lote-L41 | TP-0187 | Aprovada |
 | 261 | RTP-0102 | executor | ✔ | Dividir repositorios/financeiro.ts (319 linhas) em config, pagamentos e lançamentos | Refatoração Lote-L41 | TP-0189 | Aprovada |
-| 262 | RTP-0123 | executor | ✔ | Corrigir tsc em excluir.test.ts:80 (mensalidade: null vs boolean) | Refatoração Lote-L41 | RTP-0102 | Testada (aguarda segurança) |
-| 263 | RTP-0124 | executor | ✔ | pagamentos-marcar.test.ts:57 falha: 'sem configuração financeira' gera lançamento de me... | Refatoração Lote-L41 | RTP-0102 | Testada (aguarda segurança) |
+| 262 | RTP-0123 | executor | ✔ | Corrigir tsc em excluir.test.ts:80 (mensalidade: null vs boolean) | Refatoração Lote-L41 | RTP-0102 | Aprovada |
+| 263 | RTP-0124 | executor | ✔ | pagamentos-marcar.test.ts:57 falha: 'sem configuração financeira' gera lançamento de me... | Refatoração Lote-L41 | RTP-0102 | Aprovada |
 | 264 | RTP-0056 | executor | ✔ | Documentar no banco que auditoria.resumo nunca recebe senha/token | Refatoração Lote-L06 | TP-0025 | Aprovada |
 | 265 | RTP-0059 | executor | ✔ | sessoes: teste de uma consulta por chamada em buscarValidaEDeslizar | Refatoração Lote-L06 | TP-0028 | Aprovada |
 | 266 | RTP-0060 | executor | ✔ | Teste de custo igual (e-mail existente vs inexistente) robusto sob carga | Refatoração Lote-L06 | TP-0027 | Aprovada |
@@ -311,7 +311,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 296 | RTP-0081 | executor | ✔ | Teste de ordem por nome em GET /api/grupos/:g/admins | Refatoração Lote-L14 | TP-0063 | Aprovada |
 | 297 | RTP-0082 | executor | ✔ | Testes de aplicação com db-worker rodam no projeto node do vitest | L15 | TP-0069 | Aprovada |
 | 298 | RTP-0106 | executor | ✔ | montarCenario usa e-mail de dono fixo: testes de aplicação colidem em contas_email_unic... | Refatoração Lote-L15 | RTP-0082 | Aprovada |
-| 299 | RTP-0111 | executor | ✔ | montarCenario chamado duas vezes no mesmo teste colide em contas_email_unico (pagamento... | Refatoração Lote-L15 | RTP-0106 | Testada (aguarda segurança) |
+| 299 | RTP-0111 | executor | ✔ | montarCenario chamado duas vezes no mesmo teste colide em contas_email_unico (pagamento... | Refatoração Lote-L15 | RTP-0106 | Aprovada |
 | 300 | RTP-0087 | executor | ✔ | Testes da rota GET /api/grupos/:g: cobrir sexta, saídas, mês/semana e grupo B | Refatoração Lote-L13 | TP-0061 | Aprovada |
 | 301 | RTP-0099 | executor | ✔ | ler.test.ts: jogadoresEPartidas reutiliza o helper criarPartida | Refatoração Lote-L13 | RTP-0087 | Aprovada |
 | 302 | RTP-0088 | executor | ✔ | Testes de partidas/nova: cobrir lacunas do plano da TP-0078 | Refatoração Lote-L17 | TP-0078 | Aprovada |
@@ -320,21 +320,21 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 305 | RTP-0092 | executor | ✔ | Testes de inativar: cobrir bordas e efeito do plano do TP-0072 | Refatoração Lote-L16 | TP-0072 | Aprovada |
 | 306 | RTP-0093 | executor | ✔ | Testes de partida nova: inativado depois e 409 com escalação (TP-0168) | Refatoração Lote-L36 | TP-0168 | Aprovada |
 | 307 | RTP-0097 | executor | ✔ | Unificar a enumeração de ids da composição (idsDaComposicao duplicada em 3 lugares) | L36 | TP-0167 | Executada (aguarda teste) |
-| 308 | RTP-0108 | executor | ✔ | Confirmar escalação: recusar id repetido na composição (422) | Refatoração Lote-L36 | TP-0167 | Testada (aguarda segurança) |
+| 308 | RTP-0108 | executor | ✔ | Confirmar escalação: recusar id repetido na composição (422) | Refatoração Lote-L36 | TP-0167 | Aprovada |
 | 309 | RTP-0094 | executor | ✔ | Testes do ranking público: cobrir o plano do TP-0084 em publico-ranking.test.ts | L19 | TP-0084 | Aprovada |
 | 310 | RTP-0103 | executor | ✔ | limite-taxa.test: idempotência do login e lacunas do plano (IP distinto, no-store, POST... | Refatoração Lote-L19 | TP-0087 | Aprovada |
 | 311 | RTP-0109 | executor | ✔ | Limitador de taxa: binding ausente em produção desliga o limite sem aviso | Refatoração Lote-L19 | TP-0087 | Aprovada |
-| 312 | RTP-0100 | executor | ✔ | Testes do POST partidas: concorrência, falha no evento e 422 de corpo | Refatoração Lote-L18 | TP-0081 | Testada (aguarda segurança) |
+| 312 | RTP-0100 | executor | ✔ | Testes do POST partidas: concorrência, falha no evento e 422 de corpo | Refatoração Lote-L18 | TP-0081 | Aprovada |
 | 313 | RTP-0101 | executor | ✔ | Teste do PUT partidas: 404 de :data malformada sem consulta ao banco | L18 | TP-0082 | Aprovada |
 | 314 | RTP-0107 | executor | ✔ | sw.ts: validade máxima (maxAgeSeconds) no cache do ranking público | L23 | TP-0108 | Aprovada |
-| 315 | RTP-0116 | executor | ✔ | Teste de ícones PWA falha: public/icones diferem do mockup byte a byte | Refatoração Lote-L23 | TP-0108 | Testada (aguarda segurança) |
-| 316 | RTP-0113 | executor | ✔ | Alinhar o nome do branch de produção do Neon (production) em deploy.yml, SDD e tarefas... | Refatoração Lote-L29 | TP-0132 | Testada (aguarda segurança) |
+| 315 | RTP-0116 | executor | ✔ | Teste de ícones PWA falha: public/icones diferem do mockup byte a byte | Refatoração Lote-L23 | TP-0108 | Aprovada |
+| 316 | RTP-0113 | executor | ✔ | Alinhar o nome do branch de produção do Neon (production) em deploy.yml, SDD e tarefas... | Refatoração Lote-L29 | TP-0132 | Aprovada |
 | 317 | RTP-0115 | executor | ✔ | Ignorar .pnpm-store/ e .tmp-out.txt no .gitignore | Refatoração Lote-L29 | TP-0132 | Aprovada |
 | 318 | RTP-0117 | executor | ✔ | Faixa 'Jogador salvo' não aparece após cadastrar jogador (state não lido) | Refatoração Lote-L30 | TP-0124 | Aprovada |
 | 319 | RTP-0118 | executor | ✔ | Trace do e2e de integração guarda a senha temporária (resposta de POST /api/dono/grupos) | Refatoração Lote-L30 | TP-0138 | Aprovada |
 | 320 | RTP-0119 | executor | ✔ | docker-compose repete o e-mail real do dono em literal | Refatoração Lote-L30 | TP-0138 | Aprovada |
 | 321 | RTP-0120 | executor | ✔ | checar-escrita-e-dono: '--' de código (i--) é tratado como comentário SQL e esconde e_dono | Refatoração Lote-L30 | RTP-0112 | Aprovada |
-| 322 | RTP-0125 | executor | ✔ | Auditoria da config financeira: ler config anterior com trava (FOR UPDATE) | Refatoração Lote-L42 | TP-0191 | Testada (aguarda segurança) |
+| 322 | RTP-0125 | executor | ✔ | Auditoria da config financeira: ler config anterior com trava (FOR UPDATE) | Refatoração Lote-L42 | TP-0191 | Aprovada |
 | 323 | RTP-0127 | executor | ✔ | DELETE lançamento: 409 sem apelido e mês na mensagem (decidido na §1.4) | Refatoração Lote-L43 | TP-0198 | Não executada |
 | 324 | BK-0009 | coordenador | ✔ | Ajustar SDD/ADR-010/URL_PUBLICA/CORS/deploy.yml ao domínio prod-ljs.workers.dev e aos acei | — | — | Não executada |
 | 325 | SPK-0001 | coordenador | ✔ | Spike S-01: transação interativa pg sobre o Hyperdrive | L29 | TP-0014, TP-0133 | Despriorizada |
