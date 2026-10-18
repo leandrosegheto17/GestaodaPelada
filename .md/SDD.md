@@ -64,7 +64,7 @@ As regras de negócio (ranking, pontuação, atividade, simulador e saldos) mora
 
 | Ambiente | Worker | Hyperdrive | Banco |
 |---|---|---|---|
-| **Produção** (`https://pelada.gestaodapelada.workers.dev`, ADR-010) | `pelada` | `pelada-prod` | branch `main` do Neon |
+| **Produção** (`https://pelada.gestaodapelada.workers.dev`, ADR-010) | `pelada` | `pelada-prod` | branch `production` do Neon |
 | **Homologação** (disparo manual; `pelada-teste.gestaodapelada.workers.dev`) | `pelada-teste` | `pelada-teste` | branch `teste` do Neon, **nunca** o de produção |
 | **Local** | `docker compose` com `wrangler dev` (workerd) | `localConnectionString` | Postgres do Docker |
 
@@ -338,7 +338,7 @@ entrada (worker.ts, rotas Hono, middlewares) ─▶ aplicacao (casos de uso) ─
 
 | # | Pré-requisito | Quem | Observação |
 |---|---|---|---|
-| PI-1 | **Projeto novo no Neon**, região **`aws-sa-east-1` (São Paulo)**, plano grátis, Postgres 16 ou 17, com a extensão `pgcrypto` habilitada | Usuário | A região é fixa por projeto. Criar os branches `main` (produção) e `teste` (homologação), um usuário de aplicação e um **usuário só de leitura** para o backup |
+| PI-1 | **Projeto novo no Neon**, região **`aws-sa-east-1` (São Paulo)**, plano grátis, Postgres 16 ou 17, com a extensão `pgcrypto` habilitada | Usuário | A região é fixa por projeto. Criar os branches `production` (produção) e `teste` (homologação), um usuário de aplicação e um **usuário só de leitura** para o backup |
 | PI-2 | Conta Cloudflare com o subdomínio `workers.dev` definido como **`gestaodapelada`** (ou alternativa, ADR-010) | Usuário | Confirmar antes do 1º deploy. O nome compõe a URL pública |
 | PI-3 | Configurações do Hyperdrive `pelada-prod` e `pelada-teste`, **com cache desligado**, apontando para a string **direta** do Neon de cada branch | Executor, com credenciais do usuário | ADR-014 |
 | PI-4 | Secrets do GitHub: `CLOUDFLARE_API_TOKEN` (escopo mínimo), as strings diretas do Neon (migração e backup só de leitura) e a chave do backup (também no gerenciador de senhas) | Usuário | ADR-011, ADR-014 |
