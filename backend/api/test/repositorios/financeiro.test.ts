@@ -206,8 +206,8 @@ describe('consultas', () => {
   it('marcar exige transação (não compila com o executor comum)', async () => {
     const { db, a, conta } = await cenario();
     const ana = await criarJogador(db, a, conta, { apelido: 'Ana' });
-    // @ts-expect-error marcar só aceita Tx
     const chamada = () =>
+      // @ts-expect-error marcar só aceita Tx
       financeiro.marcar(db, a, { jogadorId: ana, mes: '2026-10', lancamento: null, autor: conta, agora: AGORA });
     expect(typeof chamada).toBe('function');
   });
