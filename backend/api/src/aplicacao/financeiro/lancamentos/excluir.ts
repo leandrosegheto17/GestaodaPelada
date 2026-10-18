@@ -2,10 +2,13 @@ import { emTransacao, type Db } from '../../../infraestrutura/db/index.js';
 import * as auditoria from '../../../infraestrutura/db/repositorios/auditoria.js';
 import * as financeiro from '../../../infraestrutura/db/repositorios/financeiro.js';
 
-export const MSG_LANCAMENTO_VINCULADO =
-  'Esta entrada é a mensalidade de um jogador. Desmarque o pagamento no mês para removê-la.';
+export type ResultadoExcluir = { tipo: 'ok' } | { tipo: 'nao_encontrado' } | { tipo: 'vinculado'; mensagem: string };
 
-export type ResultadoExcluir = { tipo: 'ok' } | { tipo: 'nao_encontrado' } | { tipo: 'vinculado' };
+/** Só apelido e mês do pagamento vinculado; sem o vínculo (já desmarcado na corrida), o texto fica genérico. */
+function mensagemVinculado(vinculo: { apelido: string; mes: string } | null): string {
+  const quem = vinculo ? `${vinculo.apelido} ${vinculo.mes.slice(5, 7)}/${vinculo.mes.slice(0, 4)}` : 'um jogador';
+  return `Esta entrada é a mensalidade de ${quem}. Desmarque o pagamento no mês para removê-la.`;
+}
 
 /**
  * Exclui o lançamento e audita na mesma transação. A entrada vinculada a um pagamento só sai desmarcando o
@@ -21,7 +24,10 @@ export async function excluirLancamento(
     return await emTransacao(db, async (tx): Promise<ResultadoExcluir> => {
       const atual = await financeiro.buscarLancamento(tx, grupoId, id);
       if (!atual) return { tipo: 'nao_encontrado' };
-      if (atual.mensalidade) return { tipo: 'vinculado' };
+      if (atual.mensalidade) {
+        const vinculo = await financeiro.pagamentoDoLancamento(tx, grupoId, id);
+        return { tipo: 'vinculado', mensagem: mensagemVinculado(vinculo) };
+      }
       await financeiro.excluirLancamento(tx, grupoId, id);
       await auditoria.registrar(tx, grupoId, {
         autor: { tipo: 'conta', contaId: contexto.autorContaId },
@@ -34,7 +40,10 @@ export async function excluirLancamento(
       return { tipo: 'ok' };
     });
   } catch (erro) {
-    if (erro instanceof financeiro.LancamentoVinculado) return { tipo: 'vinculado' };
+    if (erro instanceof financeiro.LancamentoVinculado) {
+      const vinculo = await financeiro.pagamentoDoLancamento(db, grupoId, id);
+      return { tipo: 'vinculado', mensagem: mensagemVinculado(vinculo) };
+    }
     throw erro;
   }
 }

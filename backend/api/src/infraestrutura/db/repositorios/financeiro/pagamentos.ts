@@ -25,6 +25,20 @@ export async function pagamentosDoMes(
   return r.rows.map((l) => ({ jogadorId: l.jogador_id, lancamentoId: l.lancamento_id }));
 }
 
+/** Jogador e mês (`aaaa-mm`) do pagamento a que o lançamento está vinculado, ou `null` se não há. */
+export async function pagamentoDoLancamento(
+  ex: ExecutorDb,
+  grupoId: string,
+  lancamentoId: string,
+): Promise<{ apelido: string; mes: string } | null> {
+  const r = await sql<{ apelido: string; mes: string }>`
+    SELECT j.apelido, p.mes::text AS mes
+    FROM pagamentos_mes p JOIN jogadores j ON j.id = p.jogador_id AND j.grupo_id = p.grupo_id
+    WHERE p.grupo_id = ${grupoId} AND p.lancamento_id = ${lancamentoId}
+  `.execute(kyselyDe(ex));
+  return r.rows[0] ?? null;
+}
+
 /**
  * Marca o pagamento do mês, com o lançamento de entrada vinculado quando há mensalidade. As duas gravações
  * andam juntas: exige transação.

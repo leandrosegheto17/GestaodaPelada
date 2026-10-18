@@ -58,7 +58,9 @@ describe('DELETE /api/grupos/:g/financeiro/lancamentos/:id (workerd)', () => {
     const r = await cliente(cen.adminA.cookie).delete(`/api/grupos/${g}/financeiro/lancamentos/${lancamentoId}`);
     expect(r.status).toBe(409);
     expect(erroLancamentoVinculado.safeParse(r.corpo).success).toBe(true);
-    expect(r.texto).toContain('Desmarque o pagamento');
+    expect(r.texto).toContain(
+      'Esta entrada é a mensalidade de Ana 10/2026. Desmarque o pagamento no mês para removê-la.',
+    );
     expect(await financeiro.buscarLancamento(db, g, lancamentoId as string)).not.toBeNull();
     expect(await financeiro.pagamentosDoMes(db, g, '2026-10')).toHaveLength(1);
     expect(await kyselyDe(db).selectFrom('auditoria').select('id').where('grupo_id', '=', g).execute()).toEqual([]);
