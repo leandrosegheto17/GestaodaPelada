@@ -850,7 +850,7 @@ Colunas lidas pelo `taskplan.py` pelo nome. **Est** em dias-pessoa. **Cria**/**U
 ### Refatoração Lote-L42
 | ID | Lote | Título | Chapéu | Reqs | Aceite | Est | Dep | Par | Arquivos | Testes e diretrizes | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| RTP-0125 | Refatoração Lote-L42 | Auditoria da config financeira: ler config anterior com trava (FOR UPDATE) | Backend | RNF-12 | Duas gravações concorrentes da config do mesmo grupo geram auditorias com 'anterior' encadeado (a 2ª enxerga o novo da 1ª); teste de concorrência passa | 0,25 d | TP-0191 |  | backend/api/src/aplicacao/financeiro/config.ts, backend/api/src/infraestrutura/db/repositorios/financeiro.ts | backend/api/test/aplicacao/financeiro/config.test.ts | Pendente |
+| RTP-0125 | Refatoração Lote-L42 | Auditoria da config financeira: ler config anterior com trava (FOR UPDATE) | Backend | RNF-12 | Duas gravações concorrentes da config do mesmo grupo geram auditorias com 'anterior' encadeado (a 2ª enxerga o novo da 1ª); teste de concorrência passa | 0,25 d | TP-0191 |  | backend/api/src/aplicacao/financeiro/config.ts, backend/api/src/infraestrutura/db/repositorios/financeiro.ts | backend/api/test/aplicacao/financeiro/config.test.ts | Em andamento |
 
 
 

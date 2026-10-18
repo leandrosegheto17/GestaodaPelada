@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-17 21:41
+Atualizado: 2026-10-17 21:42
 
-Resumo: Não executada 8 · Em execução 3 · Executada (aguarda teste) 13 · Aprovada 302 · Despriorizada 19 · total 345
+Resumo: Não executada 7 · Em execução 4 · Executada (aguarda teste) 13 · Aprovada 302 · Despriorizada 19 · total 345
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -333,7 +333,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 318 | RTP-0118 | executor | ✔ | Trace do e2e de integração guarda a senha temporária (resposta de POST /api/dono/grupos) | Refatoração Lote-L30 | TP-0138 | Aprovada |
 | 319 | RTP-0119 | executor | ✔ | docker-compose repete o e-mail real do dono em literal | Refatoração Lote-L30 | TP-0138 | Aprovada |
 | 320 | RTP-0120 | executor | ✔ | checar-escrita-e-dono: '--' de código (i--) é tratado como comentário SQL e esconde e_dono | Refatoração Lote-L30 | RTP-0112 | Aprovada |
-| 321 | RTP-0125 | executor | ✔ | Auditoria da config financeira: ler config anterior com trava (FOR UPDATE) | Refatoração Lote-L42 | TP-0191 | Não executada |
+| 321 | RTP-0125 | executor | ✔ | Auditoria da config financeira: ler config anterior com trava (FOR UPDATE) | Refatoração Lote-L42 | TP-0191 | Em execução |
 | 322 | BK-0009 | coordenador | ✔ | Ajustar SDD/ADR-010/URL_PUBLICA/CORS/deploy.yml ao domínio prod-ljs.workers.dev e aos acei | — | — | Não executada |
 | 323 | SPK-0001 | coordenador | ✔ | Spike S-01: transação interativa pg sobre o Hyperdrive | L29 | TP-0014, TP-0133 | Despriorizada |
 | 324 | BK-0010 | coordenador | ✔ | Decidir a cifra do backup: o Coordenador mandou openssl aes-256-cbc/pbkdf2, mas o repo usa | — | — | Não executada |
