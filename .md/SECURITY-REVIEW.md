@@ -866,3 +866,12 @@ APROVADA — 14/14 filtros de grupo_id preservados nas consultas movidas (leitur
 
 ## RTP-0122 — DevSecOps — 2026-10-17
 APROVADA; 0 críticos/0 não críticos; só amplia detecção (LIDO), sonda da regex e checagem real com saída 0 em 532 arquivos (EXECUTADO).
+
+## TP-0193 — DevSecOps — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; remoção filtrada por grupo, params validados antes do banco, auditoria transacional, CSRF e financeiro exigidos; pagamentos-desmarcar 6/6 verde.
+
+## TP-0191 — DevSecOps — 2026-10-17
+APROVADA, 0 críticos/0 não críticos; isolamento, CSRF, limite de corpo, SQL parametrizado e auditoria transacional com autor da sessão conferidos por leitura de diff (testes executados apenas pelo QA).
+
+## TP-0192 — DevSecOps — 2026-10-17
+APROVADA — 0 críticos/0 não críticos; revisão do diff confirma grupoId do vínculo, IDOR do jogadorId contra o grupo, corpo strict, valor da config, auditoria na mesma transação; isolamento 70/70 executado.

@@ -884,3 +884,24 @@ APROVADA — financeiro.ts dividido (35/197/93 linhas), exportações e testes i
 
 ## RTP-0122 — QA — 2026-10-17
 APROVADA; 0 críticos/0 não críticos; vitest 53 verdes, checagem real sai 0, sonda confirma bit a bit casa e leituras não.
+
+## TP-0194 — QA — 2026-10-17
+BLOQUEIO de ambiente (contas_email_unico em pelada_teste): código e testes conforme o plano na revisão, tsc limpo, 0 achados; reexecutar ler.test.ts com o banco limpo.
+
+## TP-0196 — QA — 2026-10-17
+BLOQUEIO de ambiente (rodada 2): pelada_teste com 25 contas residuais derruba os 4 testes por contas_email_unico; 0 achados, reexecutar após limpar o banco.
+
+## TP-0154 — QA — 2026-10-17
+DEVOLVIDA — 1 crítico (orçamento de CPU 2 times de 11 falha no p99 em 6/6 rodadas isoladas, mediana 3,3-3,75 ms, p99 4,2-5,3 ms vs 4 ms), 0 não críticos; sugerir.test 7/7, tsc e eslint do domínio limpos.
+
+## TP-0190 — QA — 2026-10-17
+BLOQUEIO de ambiente (conta Dono órfã, contas_email_unico): tsc ok e saldo-atual 4/4; mes.test 0/7 executados; diff sem achados (0 críticos, 0 não críticos); reexecutar após limpar o banco.
+
+## TP-0192 — QA — 2026-10-17
+APROVADA — 0 críticos/0 não críticos; pagamentos-marcar 8/8 e isolamento 70/70 verdes (falhas iniciais só por concorrência no pelada_teste); 204 em vez de 201 aceito (contrato sem resposta de sucesso, frontend espera 204).
+
+## TP-0193 — QA — 2026-10-17
+APROVADA; 0 críticos, 0 não críticos; pagamentos-desmarcar 6/6 e isolamento 63/63 verdes, tsc/eslint limpos, rollback da auditoria coberto.
+
+## TP-0191 — QA — 2026-10-17
+APROVADA, 0 críticos/0 não críticos, 14/14 testes de config e 70/70 de isolamento passando (falhas intermitentes só por colisão de banco compartilhado entre sessões).

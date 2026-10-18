@@ -89,3 +89,12 @@
 - Impacto se não resolvido: —
 - Sugestão: Manter age (mais forte) e ajustar o texto da tarefa, ou liberar a troca para openssl
 - Status: Em aberto
+
+## Bloqueio 011 — 2026-10-17 (BK-0011)
+- Reportado por: QA
+- Escalado para: usuário
+- Artefato/trecho afetado: TP-0194
+- Descrição: Banco pelada_teste com conta residual (contas_email_unico em montarCenario): ler.test.ts falha 7/7 sem nenhum processo node ativo; apagar a conta órfã e rodar de novo /testar --tarefa TP-0194
+- Impacto se não resolvido: QA não consegue rodar a suíte de rota; código revisado sem achados
+- Sugestão: delete da conta órfã do dono em pelada_teste e reexecutar
+- Status: Em aberto
