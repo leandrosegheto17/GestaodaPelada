@@ -87,6 +87,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/preparar-node
       - run: pnpm --filter @pelada/web exec playwright install --with-deps chromium
+      - run: pnpm --filter @pelada/web build
       - run: docker compose up -d --build --wait
       - run: pnpm --filter @pelada/web e2e:integracao
       - name: Logs do compose
