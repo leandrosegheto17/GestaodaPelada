@@ -1,5 +1,5 @@
 import { sugestaoDois, sugestaoVarios } from '@pelada/contrato';
-import { sugerir, type JogadorSim } from '@pelada/dominio';
+import { PESOS_PADRAO, sugerir, type JogadorSim } from '@pelada/dominio';
 import { describe, expect, it } from 'vitest';
 import { centesimosParaDecimal } from '../../../src/aplicacao/elenco/nivel.js';
 import type { EntradaMontada } from '../../../src/aplicacao/simulador/entrada.js';
@@ -36,7 +36,7 @@ function montar(
       })),
       partidas: [],
       presencas: [],
-      configsPesos: [],
+      configsPesos: [{ ...PESOS_PADRAO, vigenteDesde: '2026-01-01', registradoEm: '2026-01-01T00:00:00Z' }],
     },
     apelidos: new Map(aptos.map((a, i) => [a.id, NOMES[i] ?? `J${i}`])),
   };
