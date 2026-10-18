@@ -1,6 +1,6 @@
 # ADR-010: Fase 1 inteira no subdomínio gratuito *.workers.dev, preparando desde já uma troca barata de domínio
 
-- **Status:** Accepted (decisão do usuário, rodada 3 do Loop B: opção (c))
+- **Status:** Superseded by ADR-020
 - **Data:** 2026-10-16
 - **Decisores:** usuário (ficar sem domínio próprio na Fase 1); Coordenador (nome do host e preparação da troca)
 - **Requisitos:** RF-29, RF-34, RF-53, RF-55, RNF-08, RNF-11; ADR-003, ADR-009, ADR-014, ADR-016

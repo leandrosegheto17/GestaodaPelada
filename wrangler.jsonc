@@ -20,33 +20,10 @@
     { "name": "LIMITE_ENTRAR", "namespace_id": "1001", "simple": { "limit": 10, "period": 60 } },
     { "name": "LIMITE_PUBLICO", "namespace_id": "1002", "simple": { "limit": 60, "period": 60 } }
   ],
+  // URL_PUBLICA fica em localhost (dev e testes); o deploy injeta o endereço público
+  // pelo `--var` (variável URL_PUBLICA do environment `producao` do GitHub). Sem homologação (ADR-020).
   "vars": {
     "URL_PUBLICA": "http://localhost:8787",
     "DONO_EMAIL": "dono@exemplo.invalid"
-  },
-  "env": {
-    "teste": {
-      "name": "pelada-teste",
-      "assets": {
-        "directory": "frontend/web/dist",
-        "not_found_handling": "single-page-application",
-        "run_worker_first": ["/api/*"]
-      },
-      "hyperdrive": [
-        {
-          "binding": "HYPERDRIVE",
-          "id": "00000000000000000000000000000000",
-          "localConnectionString": "postgres://pelada:pelada@localhost:5432/pelada"
-        }
-      ],
-      "ratelimits": [
-        { "name": "LIMITE_ENTRAR", "namespace_id": "2001", "simple": { "limit": 10, "period": 60 } },
-        { "name": "LIMITE_PUBLICO", "namespace_id": "2002", "simple": { "limit": 60, "period": 60 } }
-      ],
-      "vars": {
-        "URL_PUBLICA": "http://localhost:8787",
-        "DONO_EMAIL": "dono@exemplo.invalid"
-      }
-    }
   }
 }

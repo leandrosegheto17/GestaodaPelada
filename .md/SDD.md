@@ -17,7 +17,7 @@
 | Superados | 001 e 002 → 014; 004 → 015. O §5 do 014 foi substituído pelo 017 |
 
 **Mudanças da rodada 3** (respostas do usuário):
-1. **Domínio:** a Fase 1 inteira fica em `pelada.gestaodapelada.workers.dev` (ADR-010, aceito). O custo de uma troca futura (T-18) é **risco aceito pelo usuário**. O que barateia a troca entra desde já:
+1. **Domínio:** a Fase 1 inteira fica em `pelada.prod-ljs.workers.dev` (ADR-020, que substitui o ADR-010). O custo de uma troca futura (T-18) é **risco aceito pelo usuário**. O que barateia a troca entra desde já:
    - nenhuma URL absoluta no código ou no banco;
    - a variável `URL_PUBLICA`;
    - o sinal `enderecoNovo` e a saída de emergência do service worker;
@@ -53,19 +53,18 @@ As regras de negócio (ranking, pontuação, atividade, simulador e saldos) mora
 2. **Um desenvolvedor, em horas de lazer:** uma linguagem, um repositório e um deploy (`wrangler deploy` pelo CI), sem servidor para administrar.
 3. **Lógica densa e sob medida:** auth sem e-mail, simulador com objetivo lexicográfico e pesos por vigência. Fica mais simples e testável em TypeScript puro.
 4. **Sessão estável no iPhone** (PR-06): a tela e a API ficam no mesmo host por construção, e o cookie `HttpOnly` é definido pelo servidor (ADR-003).
-5. **Custo de R$ 0 por mês, com uso comercial permitido** (RNF-08 e Fase 2), mais o domínio (ADR-010).
+5. **Custo de R$ 0 por mês, com uso comercial permitido** (RNF-08 e Fase 2), mais o domínio (ADR-020).
 
 **Restrição de projeto que vem da plataforma:** **10 ms de CPU por requisição** no Workers Free (ADR-014 §5). A espera por rede e por banco não conta. Por isso:
 - o hash de senha roda no Postgres (ADR-015);
 - o simulador tem orçamento de CPU testado (ADR-007 + ADR-014);
 - o PDF é desenhado no navegador (ADR-008).
 
-**Ambientes:**
+**Ambientes** (sem homologação, ADR-020; se voltar, abre-se novo BK):
 
 | Ambiente | Worker | Hyperdrive | Banco |
 |---|---|---|---|
-| **Produção** (`https://pelada.gestaodapelada.workers.dev`, ADR-010) | `pelada` | `pelada-prod` | branch `production` do Neon |
-| **Homologação** (disparo manual; `pelada-teste.gestaodapelada.workers.dev`) | `pelada-teste` | `pelada-teste` | branch `teste` do Neon, **nunca** o de produção |
+| **Produção** (`https://pelada.prod-ljs.workers.dev`, ADR-020) | `pelada` | `pelada-prod` | branch `production` do Neon |
 | **Local** | `docker compose` com `wrangler dev` (workerd) | `localConnectionString` | Postgres do Docker |
 
 **Princípios que valem para todo o projeto:**
@@ -125,7 +124,7 @@ Dependências entre contextos, só por função de aplicação:
 | Navegador: instalação de PWA, service worker, armazenamento local | C1 + C2 (ADR-009) |
 | Folha de compartilhamento (Web Share com arquivos) | C3, com alternativa de download (ADR-008) |
 | Google Play Console e vínculo de domínio (TWA) | C12 + `/.well-known/assetlinks.json` como arquivo estático do Worker |
-| Hospedagem, banco e domínio | Cloudflare Workers + Hyperdrive (C1, C4, C7); Neon (C8); `pelada.gestaodapelada.workers.dev` na Fase 1 inteira (ADR-010) |
+| Hospedagem, banco e domínio | Cloudflare Workers + Hyperdrive (C1, C4, C7); Neon (C8); `pelada.prod-ljs.workers.dev` na Fase 1 inteira (ADR-020) |
 | WhatsApp | Sem integração; só destino do compartilhamento e do link copiado |
 | Gateway de pagamento / Pix | **Nenhuma** na Fase 1 |
 | Serviço de e-mail | **Nenhum** (P-25) |
@@ -236,7 +235,7 @@ O contrato detalhado (OpenAPI) nasce por endpoint no `API-CONTRACT.yaml`, durant
 | Prefixo | Autorização | Rotas principais |
 |---|---|---|
 | `/api/publico/:slug` | nenhuma (somente leitura, projeção pública) | `GET ranking?mes=` (linhas com `ptsInicial`, `rodadas[{situacao, pontos}]`, `ptsFinal`), `GET pdf?mes=` (até 12 `colunas`, mesmas linhas), `POST eventos` (só `ranking_aberto` e `pdf_exportado`). Formato de referência: `.md/mockup/respostas/publico-*.json` |
-| `/api/sessao` | — / sessão | `POST entrar`, `POST sair`, `POST esqueci-senha`, `POST trocar-senha`, `GET eu` (conta, papel, grupos, escopo, aviso de privacidade visto, `enderecoNovo` opcional, ADR-010) |
+| `/api/sessao` | — / sessão | `POST entrar`, `POST sair`, `POST esqueci-senha`, `POST trocar-senha`, `GET eu` (conta, papel, grupos, escopo, aviso de privacidade visto, `enderecoNovo` opcional, ADR-020) |
 | `/api/grupos/:grupoId` | sessão completa + vínculo (404 se não houver) | `GET/PATCH /` (o GET traz `permissoes` e o resumo `inicio` da T09); `admins`; `partidas?mes=`, `partidas/:data`; `jogadores` (CRUD, inativar, reativar, notas); `habilidades`; `pesos`; `partidas` (`nova?data=`, CRUD); `simulador/contexto?data=`, `simulador/previa`, `simulador/sugerir`, `simulador/avaliar`, `escalacoes`; `uso` |
 | `/api/grupos/:grupoId/financeiro` | vínculo + `acessa_financeiro` (403 se faltar) | `mes?mes=` (config, saldos, pagamentos e lançamentos do mês), `config`, `pagamentos`, `lancamentos`, `lancamentos/:id` |
 | `/api/dono` | sessão completa + `e_dono` (404 se não for) | `painel` (pedidos + grupos), `grupos/:id`, `pedidos-reset`, `grupos` (listar metadados, criar com 1º admin e slug, situação comercial, arquivar, reativar), `contas/:id/redefinir-senha` |
@@ -331,18 +330,18 @@ entrada (worker.ts, rotas Hono, middlewares) ─▶ aplicacao (casos de uso) ─
 | TWA | **Bubblewrap CLI** | RF-55 | PWABuilder | — |
 
 **Escolhas já feitas pelo usuário:**
-- `workers.dev` na Fase 1 (ADR-010);
+- `workers.dev` na Fase 1 (ADR-020);
 - Lightsail, não Workers Paid, como contingência do simulador (ADR-017). O Workers Paid (US$ 5 por mês) só entra se o usuário mudar de ideia.
 
 ### Pré-requisitos de infraestrutura (antes da 1ª tarefa de deploy)
 
 | # | Pré-requisito | Quem | Observação |
 |---|---|---|---|
-| PI-1 | **Projeto novo no Neon**, região **`aws-sa-east-1` (São Paulo)**, plano grátis, Postgres 16 ou 17, com a extensão `pgcrypto` habilitada | Usuário | A região é fixa por projeto. Criar os branches `production` (produção) e `teste` (homologação), um usuário de aplicação e um **usuário só de leitura** para o backup |
-| PI-2 | Conta Cloudflare com o subdomínio `workers.dev` definido como **`gestaodapelada`** (ou alternativa, ADR-010) | Usuário | Confirmar antes do 1º deploy. O nome compõe a URL pública |
-| PI-3 | Configurações do Hyperdrive `pelada-prod` e `pelada-teste`, **com cache desligado**, apontando para a string **direta** do Neon de cada branch | Executor, com credenciais do usuário | ADR-014 |
+| PI-1 | **Projeto novo no Neon**, região **`aws-sa-east-1` (São Paulo)**, plano grátis, Postgres 16 ou 17, com a extensão `pgcrypto` habilitada | Usuário | A região é fixa por projeto. Criar o branch `production` (produção; sem branch de homologação, ADR-020), um usuário de aplicação e um **usuário só de leitura** para o backup |
+| PI-2 | Conta Cloudflare com o subdomínio `workers.dev` definido como **`prod-ljs`** (ADR-020) | Usuário | Confirmar antes do 1º deploy. O nome compõe a URL pública |
+| PI-3 | Configuração do Hyperdrive `pelada-prod`, **com cache desligado**, apontando para a string **direta** do Neon do branch `production` | Executor, com credenciais do usuário | ADR-014 |
 | PI-4 | Secrets do GitHub: `CLOUDFLARE_API_TOKEN` (escopo mínimo), as strings diretas do Neon (migração e backup só de leitura) e a chave do backup (também no gerenciador de senhas) | Usuário | ADR-011, ADR-014 |
-| PI-5 | App na Play Console com o nome de pacote **`com.gestaodapelada.app`** e Play App Signing ativado (só no I1-TWA) | Usuário | ADR-009, ADR-010 |
+| PI-5 | App na Play Console com o nome de pacote **`com.gestaodapelada.app`** e Play App Signing ativado (só no I1-TWA) | Usuário | ADR-009, ADR-020 |
 | PI-6 | **Só se o ADR-017 for acionado:** hostname com TLS na Lightsail, Caddy, firewall só com a 443 e o segredo HMAC | Usuário + Executor | Não é feito agora |
 
 **Custo de caixa estimado (Fase 1):**
@@ -353,7 +352,7 @@ entrada (worker.ts, rotas Hono, middlewares) ─▶ aplicacao (casos de uso) ─
 | Neon Free | R$ 0 |
 | GitHub (repositório privado, Actions) | R$ 0 |
 | Lightsail | não usada; se a contingência for acionada, sem custo novo (já é paga) |
-| Domínio (ADR-010) | R$ 0 (`workers.dev` na Fase 1) |
+| Domínio (ADR-020) | R$ 0 (`workers.dev` na Fase 1) |
 | Conta Google Play | já paga |
 | **Total** | **R$ 0 na Fase 1** (teto de R$ 180) |
 
@@ -381,7 +380,7 @@ O workerd local **não impõe o limite de 10 ms de CPU**. O orçamento é verifi
 | Workflow | Gatilho | Passos |
 |---|---|---|
 | `ci.yml` | PR | lint, tipos; testes de domínio (inclui orçamento de CPU); testes de API e suíte de isolamento (workerd + Postgres de serviço); build; e2e com Playwright |
-| `deploy.yml` | push em `main` (produção) / manual (teste) | 1) dump cifrado + branch de restauração no Neon (API do Neon); 2) `migrar.ts` (conexão direta, uma transação por migração); 3) `wrangler deploy` (build do Vite + Worker). Em caso de falha depois da migração: `wrangler rollback` + restauração do branch (§6) |
+| `deploy.yml` | push em `main` (só produção, com aprovação manual no environment `producao`; sem homologação) | 1) dump cifrado + branch de restauração no Neon (API do Neon); 2) `migrar.ts` (conexão direta, uma transação por migração); 3) `wrangler deploy` (build do Vite + Worker). Em caso de falha depois da migração: `wrangler rollback` + restauração do branch (§6) |
 | `backup.yml` | cron diário às 04:00 de São Paulo + manual | `pg_dump` com usuário só de leitura, cifrado, artefato com retenção de 30 dias (ADR-011) |
 
 ---
@@ -399,7 +398,8 @@ O workerd local **não impõe o limite de 10 ms de CPU**. O orçamento é verifi
 | [007](adr/007-simulador-deterministico-no-servidor-com-busca-local.md) | Simulador determinístico no servidor; ajuste reavaliado pela API (orçamento de CPU no ADR-014) | Accepted (rascunho) |
 | [008](adr/008-pdf-gerado-no-cliente-a-partir-de-projecao-da-api.md) | PDF desenhado no navegador a partir de projeção da API | Accepted (rascunho) |
 | [009](adr/009-pwa-com-service-worker-e-twa-empacotada-por-bubblewrap.md) | PWA com service worker; TWA por Bubblewrap | Accepted (rascunho) |
-| [010](adr/010-dominio-proprio-desde-o-i1.md) | Fase 1 inteira em `pelada.gestaodapelada.workers.dev`, com a troca futura preparada | Accepted (decisão do usuário) |
+| [010](adr/010-dominio-proprio-desde-o-i1.md) | Fase 1 inteira em `pelada.gestaodapelada.workers.dev`, com a troca futura preparada | Superseded by ADR-020 |
+| [020](adr/020-host-prod-ljs-workers-dev-sem-homologacao.md) | Host `pelada.prod-ljs.workers.dev`, sem homologação, mesma preparação de troca futura de domínio | Accepted (decisão do usuário) |
 | [011](adr/011-backup-diario-cifrado-por-github-actions.md) | Backup diário cifrado por GitHub Actions + histórico do Neon | Accepted (rascunho) |
 | [012](adr/012-datas-no-fuso-de-sao-paulo-e-dinheiro-em-centavos.md) | Datas de São Paulo decididas no servidor; dinheiro em centavos | Accepted (rascunho) |
 | [013](adr/013-conta-do-dono-criada-e-recuperada-por-script.md) | Conta do dono criada e recuperada só por script | Accepted (rascunho) |
@@ -486,14 +486,14 @@ erDiagram
 | **T-15** | **Transação interativa sobre o Hyperdrive** se comportar diferente do esperado (pool em modo transação) | C4, C7 | **Média** no impacto (escrita parcial), baixa na probabilidade | **Spike S-01** no primeiro deploy: `BEGIN`/`COMMIT`, rollback em erro e conexão liberada. Saída: driver serverless do Neon (WebSocket `Pool`) só nos casos de uso transacionais |
 | **T-16** | **Senha em claro até o banco** (o hash é calculado no Postgres) | C4, C7, C8 | **Baixa** (TLS em todo o caminho; sem log de parâmetros) | ADR-015; revisão do Validador (DevSecOps) |
 | **T-17** | **Dependência incompatível com workerd** (APIs de Node ausentes) | C4 | **Baixa** | `nodejs_compat`; testes de API rodando no pool de Workers (workerd) no CI |
-| **T-18** | **Troca do `workers.dev` por um domínio próprio** (provável na Fase 2): reinstalação do app pelos jogadores, novo login dos admins, nova versão da TWA, M2 distorcida na semana | C1, C2, C12 | **Média**, só quando a troca acontecer. **Risco aceito pelo usuário** (rodada 3) | ADR-010, já preparado no código: sem URL absoluta, `URL_PUBLICA`, sinal `enderecoNovo` com faixa no app, saída de emergência do service worker, 301 que preserva caminho, pacote da TWA independente do domínio |
+| **T-18** | **Troca do `workers.dev` por um domínio próprio** (provável na Fase 2): reinstalação do app pelos jogadores, novo login dos admins, nova versão da TWA, M2 distorcida na semana | C1, C2, C12 | **Média**, só quando a troca acontecer. **Risco aceito pelo usuário** (rodada 3) | ADR-020 (ex-ADR-010), já preparado no código: sem URL absoluta, `URL_PUBLICA`, sinal `enderecoNovo` com faixa no app, saída de emergência do service worker, 301 que preserva caminho, pacote da TWA independente do domínio |
 | **T-19** | **Contingência do simulador acionada** (ADR-017): a Lightsail entra no caminho de uma função (disponibilidade, TLS, segredo HMAC) | C4 + Lightsail | **Baixa** (só se o S-02 falhar). Uma falha afeta só o simulador | Serviço sem estado e sem banco; HMAC com janela de 60 s; firewall só na 443; erro tratado em T13/T14; o resto do app segue no Worker |
 
 ### Spikes técnicos identificados (entram no TASK.md, Loop C)
 
 | Spike | Pergunta | Critério de saída |
 |---|---|---|
-| S-01 | Transação interativa com `pg` sobre o Hyperdrive funciona (commit, rollback, liberação da conexão)? | Teste no Worker de homologação contra o branch `teste`: 3 casos passam |
+| S-01 | Transação interativa com `pg` sobre o Hyperdrive funciona (commit, rollback, liberação da conexão)? | Teste no Worker de produção (sem homologação) ou em `wrangler dev` contra um Postgres descartável: 3 casos passam |
 | S-02 | O `sugerir` cabe em 10 ms de CPU no Worker publicado (30 aptos; 2 times e 6 times de 5)? | Medição da CPU (painel ou `wrangler tail`) abaixo de 7 ms no p99 de 50 execuções, sem nenhum erro 1102. Se não, aplicar o ADR-017 na ordem: otimizar → Lightsail → Workers Paid só por decisão do usuário |
 
 ### Dívida técnica aceita
@@ -508,7 +508,7 @@ erDiagram
 | **Aparência do PDF pode variar levemente** entre aparelhos | Gesto do Web Share; CPU do Worker (ADR-008) | Reclamação real |
 | **Hash de senha no banco** (senha trafega até o Postgres) | Limite de 10 ms de CPU do Worker gratuito (ADR-015) | Se o projeto passar a Workers Paid: avaliar mover o hash para o Worker |
 | **Enumeração de grupos pelo slug** | Escolha do usuário pela legibilidade (ADR-016) | Fase 2 |
-| **Endereço `workers.dev` na Fase 1** (troca futura com custo, T-18) | Custo zero; escolha do usuário (ADR-010) | Decisão de abrir a Fase 2, ou pedido do usuário |
+| **Endereço `workers.dev` na Fase 1** (troca futura com custo, T-18) | Custo zero; escolha do usuário (ADR-020) | Decisão de abrir a Fase 2, ou pedido do usuário |
 | **Exclusão de dados de jogador com histórico (LGPD) fora do app** | Decisão do usuário: Fase 2. Até lá, script de anonimização manual sob pedido | Abertura da Fase 2 |
 
 A dívida da rodada 1, "Vercel Hobby não comercial", **foi eliminada** pela mudança para a Cloudflare.

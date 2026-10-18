@@ -30,7 +30,7 @@
   - no aviso de privacidade, "colocação" substitui "posição".
 
 **Mudanças da rodada 3:**
-- O endereço da Fase 1 é `pelada.gestaodapelada.workers.dev` (ADR-010).
+- O endereço da Fase 1 é `pelada.prod-ljs.workers.dev` (ADR-020).
 - Nova faixa "O app mudou de endereço" em T01 e T09, que **só aparece** se um dia houver troca de domínio (campo `enderecoNovo`). Na Fase 1, nunca aparece.
 - O simulador pode, em contingência, demorar mais (ADR-017). Os estados de T13/T14 já cobrem isso.
 
@@ -448,7 +448,7 @@ Lista de habilidades, cada uma com nome editável no próprio lugar e o botão "
 
 ### T20 Dados do grupo e link
 - Formulário: Nome (3 a 60), Dia da semana, Frequência (semanal, quinzenal, mensal) e Horário (HH:MM). Ação principal: **"Salvar"**.
-- **Cartão "Link do ranking"**: a URL completa (ex.: `https://pelada.gestaodapelada.workers.dev/g/pelada-de-quinta`), com os botões "Copiar link" e "Compartilhar" (folha do sistema). Abaixo do campo Nome, a ajuda ⓘ "Mudar o nome não muda o link do ranking." (ADR-016).
+- **Cartão "Link do ranking"**: a URL completa (ex.: `https://pelada.prod-ljs.workers.dev/g/pelada-de-quinta`), com os botões "Copiar link" e "Compartilhar" (folha do sistema). Abaixo do campo Nome, a ajuda ⓘ "Mudar o nome não muda o link do ranking." (ADR-016).
 
 ### T21 Uso do app
 Tabela por semana (as mais recentes no topo), com as colunas:

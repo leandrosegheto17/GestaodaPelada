@@ -6,7 +6,7 @@ opera. Nenhuma senha, chave ou string de conexão vai neste arquivo.
 ## Deploy
 
 - **Produção:** merge na `main` e aprovação manual no environment `producao` do GitHub.
-- **Homologação:** disparo manual do workflow `deploy` (ambiente `teste`).
+- **Sem homologação** (ADR-020). Host: `https://pelada.prod-ljs.workers.dev`.
 - O que o [`deploy.yml`](../.github/workflows/deploy.yml) faz, nesta ordem: cria o branch de restauração no Neon
   (`restauracao-<ambiente>-<run_id>`), gera o dump cifrado (artefato `dump-predeploy-<ambiente>-<run_id>`), roda
   `backend/scripts/migrar.ts --alvo`, confere que o cache do Hyperdrive está desligado e publica com
@@ -15,7 +15,7 @@ opera. Nenhuma senha, chave ou string de conexão vai neste arquivo.
 
 ## Voltar atrás
 
-1. **Só o código:** `wrangler rollback` (e `--env teste` na homologação). O workflow já faz isso quando o deploy ou a
+1. **Só o código:** `wrangler rollback`. O workflow já faz isso quando o deploy ou a
    checagem de saúde falha depois da migração.
 2. **Se a migração estragou dado:** restaure o branch `restauracao-*` pelo console ou pela API do Neon e troque a
    origem do Hyperdrive para ele:
@@ -63,7 +63,7 @@ COMMIT;
 
 - `gh run list --workflow backup.yml -L 1` deve mostrar o último run verde; confirme que o workflow está ativo.
 - Revise o painel de uso da Cloudflare e do Neon (limites do plano gratuito).
-- A cada 3 meses, repita o ensaio de restauração com um dump do `teste` (nunca de produção) num Postgres local, num
+- A cada 3 meses, repita o ensaio de restauração com um dump de produção (artefato cifrado do backup) num Postgres local, num
   banco novo (`pelada_restauracao`), e compare as contagens.
 
 ## Troca de domínio
