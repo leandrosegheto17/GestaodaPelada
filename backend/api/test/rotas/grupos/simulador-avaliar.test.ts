@@ -1,5 +1,7 @@
 import { avaliacaoSimulador } from '@pelada/contrato';
+import { PESOS_PADRAO } from '@pelada/dominio';
 import { describe, expect, it } from 'vitest';
+import * as pesos from '../../../src/infraestrutura/db/repositorios/pesos.js';
 import { montarCenario } from '../../apoio/cenario-acesso.js';
 import { clienteTeste } from '../../apoio/cliente.js';
 import { usarDbDoWorker } from '../../apoio/db-worker.js';
@@ -15,6 +17,12 @@ const cliente = (cookie?: string, semCsrf = false) =>
 async function cenario(quantos: number) {
   const db = await abrir();
   const cen = await montarCenario(db, fabrica);
+  await pesos.criarPadrao(db, cen.grupoA.id, {
+    pesos: PESOS_PADRAO,
+    vigenteDesde: '2026-01-01',
+    registradoPor: cen.adminA.id,
+    agora: new Date('2026-10-16T12:00:00Z'),
+  });
   const ids: string[] = [];
   for (let i = 0; i < quantos; i += 1) {
     ids.push(await criarJogador(db, cen.grupoA.id, cen.adminA.id, { apelido: `Jog${i}`, ano: 1980 + i }));
