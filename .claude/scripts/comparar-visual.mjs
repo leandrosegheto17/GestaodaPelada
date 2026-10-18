@@ -165,6 +165,13 @@ async function capturar(navegador, viewport, url, opcoes) {
     // Folha: captura só o elemento; a página de fundo (real no app, vazia no mockup) fica de fora.
     const alvo = pagina.locator(opcoes.recorte).first();
     await alvo.waitFor({ state: "visible", timeout: 15000 });
+    // O conteúdo acima do elemento difere entre mockup e app e deixa o topo dele em frações de pixel
+    // diferentes; o texto é rasterizado conforme essa fração. Alinha o topo a um pixel inteiro nos dois lados.
+    await alvo.evaluate((el) => {
+      const topo = el.getBoundingClientRect().top + window.scrollY;
+      const folga = Math.ceil(topo - 0.001) - topo;
+      if (folga > 0.001) document.documentElement.style.paddingTop = `${folga}px`;
+    });
     png = await alvo.screenshot();
   } else {
     png = await pagina.screenshot({ fullPage: true });

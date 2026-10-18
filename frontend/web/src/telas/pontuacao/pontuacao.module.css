@@ -19,14 +19,6 @@
   padding-top: var(--esp-4);
   border-top: 1px solid var(--cor-linha);
 }
-.formulario {
-  display: grid;
-  gap: var(--esp-4);
-}
-.duasColunas {
-  display: grid;
-  gap: var(--esp-4);
-}
 .ajuda {
   font-size: var(--texto-sm);
   color: var(--cor-texto-sec);
@@ -39,8 +31,5 @@
   .estreito {
     box-sizing: border-box;
     padding-inline: var(--esp-6);
-  }
-  .duasColunas {
-    grid-template-columns: 1fr 1fr;
   }
 }

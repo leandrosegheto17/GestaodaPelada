@@ -7,6 +7,7 @@ import { ErroRede } from '../../componentes/basicos/ErroRede';
 import { Esqueleto } from '../../componentes/basicos/Esqueleto';
 import { EstadoVazio } from '../../componentes/basicos/EstadoVazio';
 import { Voltar } from '../../componentes/basicos/Voltar';
+import { CamposEmGrade, Formulario } from '../../componentes/pagina/Formulario';
 import { TituloPagina } from '../../componentes/pagina/TituloPagina';
 import { useContextoSimulador, usePrevia } from '../../dados/simulador';
 import { usarValorAtrasado } from '../../dados/usarValorAtrasado';
@@ -98,18 +99,16 @@ export function Component() {
       <Voltar para={base} rotulo="Início" />
       <TituloPagina>Simulador</TituloPagina>
       {erroAnterior ? <Faixa tipo="erro">{erroAnterior}</Faixa> : null}
-      <form
-        noValidate
+      <Formulario
         className={estilos.ladoALado}
-        onSubmit={(e) => {
-          e.preventDefault();
+        aoEnviar={() => {
           if (entrada && !bloqueado) void navegar(`${base}/simulador/resultado`, { state: { entrada } });
         }}
       >
-        <div className={estilos.formulario}>
+        <CamposEmGrade>
           <FormEntradas estado={estado} data={data} dataSugerida={contexto.data.dataSugerida} despachar={despachar} />
           <CartaoPrevia situacao={situacao} />
-        </div>
+        </CamposEmGrade>
         <ListaAptos jogadores={jogadores} estado={estado} marcados={marcados} despachar={despachar} />
         <BarraAcao>
           <Botao
@@ -121,7 +120,7 @@ export function Component() {
             Sugerir times
           </Botao>
         </BarraAcao>
-      </form>
+      </Formulario>
     </div>
   );
 }

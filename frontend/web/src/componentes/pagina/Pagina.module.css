@@ -70,6 +70,11 @@
   display: grid;
   gap: var(--esp-4);
 }
+@media (min-width: 600px) {
+  .duasColunas {
+    grid-template-columns: 1fr 1fr;
+  }
+}
 .ferramentasLista {
   display: flex;
   flex-wrap: wrap;

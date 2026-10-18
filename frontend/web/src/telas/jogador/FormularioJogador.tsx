@@ -8,11 +8,12 @@ import { CampoData } from '../../componentes/campos/CampoData';
 import { CampoSeletor } from '../../componentes/campos/CampoSeletor';
 import { CampoTexto } from '../../componentes/campos/CampoTexto';
 import { ResumoErros } from '../../componentes/campos/ResumoErros';
+import { DuasColunas } from '../../componentes/pagina/DuasColunas';
+import { Formulario } from '../../componentes/pagina/Formulario';
 import { deValidacao, type ErrosDeCampos } from '../../dados/errosDeCampos';
 import type { CorpoJogador } from '../../dados/elenco';
 import { digitosDoTelefone, formatarTelefone, mascararTelefone } from '../../formatacao/telefone';
 import { ORDEM_POSICAO, rotuloPosicao } from '../../rotulos';
-import estilos from './jogador.module.css';
 
 interface Props {
   /** Dados atuais (edição); `undefined` = novo jogador. */
@@ -78,15 +79,7 @@ export function FormularioJogador({ jogador, hoje, errosDoServidor, enviando, se
   };
 
   return (
-    <form
-      className={estilos.formulario}
-      noValidate
-      aria-busy={enviando || undefined}
-      onSubmit={(e) => {
-        e.preventDefault();
-        salvar();
-      }}
-    >
+    <Formulario aoEnviar={salvar} enviando={enviando}>
       <ResumoErros erros={itens} />
       <CampoTexto
         id="apelido"
@@ -98,7 +91,7 @@ export function FormularioJogador({ jogador, hoje, errosDoServidor, enviando, se
         valor={apelido}
         aoMudar={setApelido}
       />
-      <div className={estilos.duasColunas}>
+      <DuasColunas>
         <Campo id="ano" rotulo="Ano de nascimento" erro={erros.anoNascimento} erroComoAlerta={umSoErro}>
           {(entradaProps) => (
             <input
@@ -122,8 +115,8 @@ export function FormularioJogador({ jogador, hoje, errosDoServidor, enviando, se
           aoMudar={setPosicao}
           opcoes={OPCOES_POSICAO}
         />
-      </div>
-      <div className={estilos.duasColunas}>
+      </DuasColunas>
+      <DuasColunas>
         <Campo id="tel" rotulo="Telefone (opcional)" erro={erros.telefone} erroComoAlerta={umSoErro}>
           {(entradaProps) => (
             <input
@@ -144,7 +137,7 @@ export function FormularioJogador({ jogador, hoje, errosDoServidor, enviando, se
           erro={erros.dataEntrada}
           erroComoAlerta={umSoErro}
         />
-      </div>
+      </DuasColunas>
       {semConexao ? <ErroEnvio /> : null}
       {jogador ? (
         <div>
@@ -159,6 +152,6 @@ export function FormularioJogador({ jogador, hoje, errosDoServidor, enviando, se
           </Botao>
         </BarraAcao>
       )}
-    </form>
+    </Formulario>
   );
 }

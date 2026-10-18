@@ -1,8 +1,8 @@
 import { randomBytes } from 'node:crypto';
-import pg from 'pg';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import * as sessoes from '../../src/infraestrutura/db/repositorios/sessoes.js';
 import { DURACAO_SESSAO } from '../../src/infraestrutura/db/repositorios/sessoes.js';
+import { contarConsultas } from '../apoio/contar-consultas.js';
 import { usarDb } from '../apoio/db-teste.js';
 import { criarConta } from '../apoio/fabricas/contas.js';
 import { usarFabrica } from '../apoio/fabrica.js';
@@ -91,22 +91,19 @@ describe('repositório de sessões', () => {
       escopo: 'completo',
       agora: base,
     });
-    const espiao = vi.spyOn(pg.Client.prototype, 'query');
-    try {
-      const casos: [string, Uint8Array, Date, boolean][] = [
-        ['válida', hash, depois(HORA), true],
-        ['renovada', hash, depois(25 * HORA), true],
-        ['expirada', hash, new Date(expiraEm.getTime() + 40 * 24 * HORA), false],
-        ['hash inexistente', novoHash(), base, false],
-      ];
-      for (const [nome, h, agora, existe] of casos) {
-        espiao.mockClear();
-        const sessao = await sessoes.buscarValidaEDeslizar(db, h, agora);
-        expect(sessao !== null, nome).toBe(existe);
-        expect(espiao, nome).toHaveBeenCalledTimes(1);
-      }
-    } finally {
-      espiao.mockRestore();
+    const casos: [string, Uint8Array, Date, boolean][] = [
+      ['válida', hash, depois(HORA), true],
+      ['renovada', hash, depois(25 * HORA), true],
+      ['expirada', hash, new Date(expiraEm.getTime() + 40 * 24 * HORA), false],
+      ['hash inexistente', novoHash(), base, false],
+    ];
+    for (const [nome, h, agora, existe] of casos) {
+      let sessao = null as Awaited<ReturnType<typeof sessoes.buscarValidaEDeslizar>> | null;
+      const consultas = await contarConsultas(async () => {
+        sessao = await sessoes.buscarValidaEDeslizar(db, h, agora);
+      });
+      expect(sessao !== null, nome).toBe(existe);
+      expect(consultas, nome).toBe(1);
     }
   });
 

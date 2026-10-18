@@ -1,6 +1,5 @@
-import { type MesFinanceiro, mes as esquemaMes } from '@pelada/contrato';
-import { useEffect } from 'react';
-import { useParams, useSearchParams } from 'react-router';
+import type { MesFinanceiro } from '@pelada/contrato';
+import { useParams } from 'react-router';
 import { BarraAcao } from '../../componentes/barras/BarraAcao';
 import { BotaoLink } from '../../componentes/basicos/BotaoLink';
 import { ErroRede } from '../../componentes/basicos/ErroRede';
@@ -13,6 +12,7 @@ import { NavegadorMes } from '../../componentes/listas/NavegadorMes';
 import { TituloPagina } from '../../componentes/pagina/TituloPagina';
 import { ErroApi } from '../../dados/erros';
 import { useFinanceiroMes } from '../../dados/financeiro';
+import { useMesDaUrl } from '../../dados/useMesDaUrl';
 import { mesPorExtenso } from '../../formatacao';
 import { CartaoSaldos } from './CartaoSaldos';
 import { SecaoLancamentos } from './SecaoLancamentos';
@@ -25,23 +25,8 @@ import estilos from './financeiro.module.css';
 export function Component() {
   const { grupoId = '' } = useParams();
   const base = `/admin/${encodeURIComponent(grupoId)}`;
-  const [parametros, definirParametros] = useSearchParams();
-  const mesDaUrl = parametros.get('mes');
-  const mesValido = mesDaUrl === null || esquemaMes.safeParse(mesDaUrl).success;
+  const { mesDaUrl, mesValido, definirMes } = useMesDaUrl();
   const financeiro = useFinanceiroMes(grupoId, mesValido ? (mesDaUrl ?? undefined) : undefined);
-
-  // Mês malformado na URL: tira o parâmetro e segue com o mês corrente.
-  useEffect(() => {
-    if (mesValido) return;
-    definirParametros(
-      (atuais) => {
-        const novos = new URLSearchParams(atuais);
-        novos.delete('mes');
-        return novos;
-      },
-      { replace: true },
-    );
-  }, [mesValido, definirParametros]);
 
   if (financeiro.error instanceof ErroApi && financeiro.error.status === 403) {
     return <SemAcessoFinanceiro base={base} />;
@@ -97,7 +82,7 @@ export function Component() {
         resumoMes: dados.resumoMes,
         saldoAtualCentavos: dados.saldoAtualCentavos,
       }}
-      aoTrocarMes={(mes) => definirParametros({ mes })}
+      aoTrocarMes={definirMes}
     />
   );
 }

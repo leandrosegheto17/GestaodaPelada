@@ -1,25 +1,16 @@
 import type { EntradaSimulador, SugestaoDois } from '@pelada/contrato';
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router';
-import {
-  destinoAtual,
-  MoverJogador,
-  paraCorpoEscalacao,
-  TrocarCom,
-  useAjusteSimulador,
-} from '../../componentes/ajuste-simulador';
-import { Botao } from '../../componentes/basicos/Botao';
-import { Faixa } from '../../componentes/basicos/Faixa';
+import { destinoAtual, MoverJogador, useAjusteSimulador } from '../../componentes/ajuste-simulador';
 import { Voltar } from '../../componentes/basicos/Voltar';
 import { CartaoTime, JogadorTime, ListaAvisos, TabelaComparativa } from '../../componentes/cartao-time';
-import { DialogoConfirmacao, textosConfirmacao } from '../../componentes/dialogos-padrao';
 import { TituloPagina } from '../../componentes/pagina/TituloPagina';
-import { estadoRetorno } from '../../dados/retorno';
-import { useConfirmarEscalacao } from '../../dados/simulador';
 import { BarraResultado } from './BarraResultado';
-import { gruposParaTrocar } from './gruposParaTrocar';
+import { FaixasDoResultado } from './FaixasDoResultado';
 import { LinhaContexto } from './LinhaContexto';
 import estilos from './resultado.module.css';
+import { TrocarJogador } from './TrocarJogador';
+import { useConfirmacaoEscalacao } from './useConfirmacaoEscalacao';
+import { useRefazer } from './useRefazer';
 
 interface Props {
   grupoId: string;
@@ -28,17 +19,14 @@ interface Props {
   aoRefazer: () => void;
 }
 
-export const MENSAGEM_FALHA_CONFIRMAR = 'Não foi possível confirmar a escalação. Tente de novo.';
-
 /** T13: sugestão para 2 times (1º e 2º tempo), com ajuste manual, confirmação e refazer. */
 export function ResultadoDois({ grupoId, entrada, sugestao, aoRefazer }: Props) {
   const base = `/admin/${encodeURIComponent(grupoId)}`;
-  const navegar = useNavigate();
   const ajuste = useAjusteSimulador({ grupoId, entrada, sugestao });
-  const confirmar = useConfirmarEscalacao(grupoId);
+  const composicao = ajuste.composicao;
+  const { aoConfirmar, confirmando, falhouAoConfirmar } = useConfirmacaoEscalacao({ grupoId, entrada, composicao });
+  const { aoPedirRefazer, dialogoRefazer } = useRefazer(ajuste.houveAjuste, aoRefazer);
   const [alvo, setAlvo] = useState<{ id: string; modo: 'mover' | 'trocar' } | null>(null);
-  const [descartando, setDescartando] = useState(false);
-  const [falhouAoConfirmar, setFalhouAoConfirmar] = useState(false);
   const [atualizado, setAtualizado] = useState(false);
 
   const estavaRecalculando = useRef(false);
@@ -54,27 +42,7 @@ export function ResultadoDois({ grupoId, entrada, sugestao, aoRefazer }: Props) 
 
   const exibicao = ajuste.exibicao;
   if (exibicao.formato !== 'dois_times') return null;
-  const composicao = ajuste.composicao;
   const [timeA, timeB] = exibicao.times;
-
-  const aoConfirmar = () => {
-    const corpo = paraCorpoEscalacao(entrada, composicao);
-    if (!corpo) {
-      setFalhouAoConfirmar(true);
-      return;
-    }
-    setFalhouAoConfirmar(false);
-    confirmar.mutate(corpo, {
-      onSuccess: () =>
-        void navegar(base, { state: estadoRetorno({ tipo: 'escalacao-confirmada', data: entrada.data }) }),
-      onError: () => setFalhouAoConfirmar(true),
-    });
-  };
-
-  const aoPedirRefazer = () => {
-    if (ajuste.houveAjuste) setDescartando(true);
-    else aoRefazer();
-  };
 
   const jogadorDoAlvo = alvo
     ? [
@@ -94,25 +62,11 @@ export function ResultadoDois({ grupoId, entrada, sugestao, aoRefazer }: Props) 
       <Voltar para={`${base}/simulador`} rotulo="Simulador" />
       <TituloPagina>Times sugeridos</TituloPagina>
       <LinhaContexto entrada={entrada} />
-      {ajuste.erroRecalculo ? (
-        <div className={estilos.faixa}>
-          <Faixa
-            tipo="erro"
-            acao={
-              <Botao variante="texto" onClick={ajuste.tentarDeNovo}>
-                Tentar de novo
-              </Botao>
-            }
-          >
-            {ajuste.erroRecalculo}
-          </Faixa>
-        </div>
-      ) : null}
-      {falhouAoConfirmar ? (
-        <div className={estilos.faixa}>
-          <Faixa tipo="erro">{MENSAGEM_FALHA_CONFIRMAR}</Faixa>
-        </div>
-      ) : null}
+      <FaixasDoResultado
+        erroRecalculo={ajuste.erroRecalculo}
+        tentarDeNovo={ajuste.tentarDeNovo}
+        falhouAoConfirmar={falhouAoConfirmar}
+      />
       <ListaAvisos avisos={exibicao.avisos} />
       <TabelaComparativa times={[timeA, timeB]} recalculando={ajuste.recalculando} />
       {atualizado ? (
@@ -164,7 +118,7 @@ export function ResultadoDois({ grupoId, entrada, sugestao, aoRefazer }: Props) 
       </details>
       <BarraResultado
         confirmarDesabilitado={!ajuste.podeConfirmar}
-        confirmando={confirmar.isPending}
+        confirmando={confirmando}
         aoConfirmar={aoConfirmar}
         aoRefazer={aoPedirRefazer}
         destinoEditar={`${base}/simulador`}
@@ -183,25 +137,8 @@ export function ResultadoDois({ grupoId, entrada, sugestao, aoRefazer }: Props) 
           aoFechar={() => setAlvo(null)}
         />
       ) : null}
-      {alvo && jogadorDoAlvo && alvo.modo === 'trocar' ? (
-        <TrocarCom
-          apelido={jogadorDoAlvo.apelido}
-          grupos={gruposParaTrocar(exibicao, alvo.id)}
-          aoEscolher={(outro) => ajuste.trocar(alvo.id, outro)}
-          aoVoltar={() => setAlvo({ id: alvo.id, modo: 'mover' })}
-          aoFechar={() => setAlvo(null)}
-        />
-      ) : null}
-      {descartando ? (
-        <DialogoConfirmacao
-          {...textosConfirmacao.refazerSugestao()}
-          aoConfirmar={() => {
-            setDescartando(false);
-            aoRefazer();
-          }}
-          aoCancelar={() => setDescartando(false)}
-        />
-      ) : null}
+      <TrocarJogador alvo={alvo} jogador={jogadorDoAlvo} exibicao={exibicao} ajuste={ajuste} definirAlvo={setAlvo} />
+      {dialogoRefazer}
     </div>
   );
 }

@@ -1,6 +1,7 @@
-import { avaliacaoSimulador } from '@pelada/contrato';
+import { avaliacaoSimulador, sugestaoDois, sugestaoVarios } from '@pelada/contrato';
 import { PESOS_PADRAO } from '@pelada/dominio';
 import { describe, expect, it } from 'vitest';
+import * as jogadoresRepo from '../../../src/infraestrutura/db/repositorios/jogadores.js';
 import * as pesos from '../../../src/infraestrutura/db/repositorios/pesos.js';
 import { montarCenario } from '../../apoio/cenario-acesso.js';
 import { clienteTeste } from '../../apoio/cliente.js';
@@ -145,5 +146,112 @@ describe('POST /api/grupos/:g/simulador/avaliar (workerd)', () => {
     expect((await cliente(cen.adminA.cookie, true).post(url, corpo)).status).toBe(403);
     expect((await cliente().post(url, corpo)).status).toBe(401);
     expect((await cliente(cen.adminB.cookie).post(url, corpo)).status).toBe(404);
+  });
+
+  it('404 para grupoId malformado', async () => {
+    const { cen, ids } = await cenario(10);
+    const r = await cliente(cen.adminA.cookie).post(
+      '/api/grupos/nao-e-uuid/simulador/avaliar',
+      corpoVarios(ids, [4, 4, 2]),
+    );
+    expect(r.status).toBe(404);
+  });
+});
+
+describe('POST /api/grupos/:g/simulador/avaliar: casos do plano (workerd)', () => {
+  it('dois times: a composição da própria sugestão devolve os mesmos indicadores e pares', async () => {
+    const { cen, ids, url } = await cenario(10);
+    const c = cliente(cen.adminA.cookie);
+    const entrada = {
+      formato: 'dois_times',
+      data: '2026-10-22',
+      n: 4,
+      k: 'ilimitado',
+      aptos: ids.map((id, i) => ({ id, so1oTempo: i === 3 })),
+    };
+    const sugerida = sugestaoDois.parse((await c.post(url.replace('avaliar', 'sugerir'), entrada)).corpo);
+    const corpo = {
+      ...entrada,
+      composicao: {
+        times: sugerida.times.map((t) => ({
+          titulares: t.titulares.map((j) => ({ id: j.id, so1oTempo: j.so1oTempo })),
+          entramNo2oTempo: t.entramNo2oTempo.map((j) => ({ id: j.id, so1oTempo: j.so1oTempo })),
+        })),
+        naoEntra: sugerida.naoEntra.map((j) => j.id),
+      },
+    };
+    const r = await c.post(url, corpo);
+    expect(r.status).toBe(200);
+    const avaliada = avaliacaoSimulador.parse(r.corpo);
+    if (avaliada.formato !== 'dois_times') throw new Error('esperava dois times');
+    expect(avaliada.times.map((t) => t.indicadores)).toEqual(sugerida.times.map((t) => t.indicadores));
+    expect(avaliada.times.map((t) => t.trocas)).toEqual(sugerida.times.map((t) => t.trocas));
+    expect(avaliada.avisos).toEqual(sugerida.avisos);
+  });
+
+  it('vários times: a composição da própria sugestão devolve os mesmos indicadores', async () => {
+    const { cen, ids, url } = await cenario(10);
+    const c = cliente(cen.adminA.cookie);
+    const entrada = corpoVarios(ids, [4, 4, 2]);
+    const paraSugerir = { formato: entrada.formato, data: entrada.data, n: entrada.n, aptos: entrada.aptos };
+    const sugerida = sugestaoVarios.parse((await c.post(url.replace('avaliar', 'sugerir'), paraSugerir)).corpo);
+    const corpo = {
+      ...entrada,
+      composicao: { times: sugerida.times.map((t) => ({ jogadores: t.jogadores.map((j) => j.id) })) },
+    };
+    const avaliada = avaliacaoSimulador.parse((await c.post(url, corpo)).corpo);
+    if (avaliada.formato !== 'varios_times') throw new Error('esperava vários times');
+    expect(avaliada.times.map((t) => t.indicadores)).toEqual(sugerida.times.map((t) => t.indicadores));
+    expect(avaliada.avisos).toEqual(sugerida.avisos);
+  });
+
+  it('trocar um titular entre os times muda os indicadores e mantém o resto', async () => {
+    const { cen, ids, url } = await cenario(8);
+    const c = cliente(cen.adminA.cookie);
+    const base = corpoDois(ids);
+    // Troca o primeiro titular do time 1 com o primeiro do time 2 (posições 0 e 3 dos ids).
+    const trocado = corpoDois([ids[3]!, ids[1]!, ids[2]!, ids[0]!, ...ids.slice(4)]);
+    const antes = avaliacaoSimulador.parse((await c.post(url, base)).corpo);
+    const depois = avaliacaoSimulador.parse((await c.post(url, trocado)).corpo);
+    if (antes.formato !== 'dois_times' || depois.formato !== 'dois_times') throw new Error('esperava dois times');
+    expect(depois.times.map((t) => t.indicadores)).not.toEqual(antes.times.map((t) => t.indicadores));
+    expect(depois.times.map((t) => t.titulares.length)).toEqual(antes.times.map((t) => t.titulares.length));
+    expect(depois.avisos).toEqual(antes.avisos);
+    expect(depois.n).toBe(antes.n);
+  });
+
+  it('aviso (d): incompleto menor que N/2 gera incompleto_pequeno; incompleto de metade não gera', async () => {
+    const { cen, ids, url } = await cenario(10);
+    const c = cliente(cen.adminA.cookie);
+    const pequeno = avaliacaoSimulador.parse((await c.post(url, corpoVarios(ids.slice(0, 9), [4, 4, 1]))).corpo);
+    expect(pequeno.avisos.map((a) => a.tipo)).toContain('incompleto_pequeno');
+    const meio = avaliacaoSimulador.parse((await c.post(url, corpoVarios(ids, [4, 4, 2]))).corpo);
+    expect(meio.avisos.map((a) => a.tipo)).not.toContain('incompleto_pequeno');
+  });
+
+  it('apto inativo na data: 422 em aptos, sem revelar o id', async () => {
+    const { db, cen, ids, url } = await cenario(10);
+    await jogadoresRepo.inativar(db, cen.grupoA.id, ids[9]!, '2026-10-20');
+    const r = await cliente(cen.adminA.cookie).post(url, corpoVarios(ids, [4, 4, 2]));
+    expect(r.status).toBe(422);
+    const { erro } = r.corpo as { erro: { campos: Record<string, string> } };
+    expect(Object.keys(erro.campos)).toEqual(['aptos']);
+    expect(JSON.stringify(r.corpo)).not.toContain(ids[9]!);
+  });
+
+  it('422 no contrato: 3 times no formato dois, N 12, 61 aptos e campo extra', async () => {
+    const { cen, ids, url } = await cenario(8);
+    const c = cliente(cen.adminA.cookie);
+    const base = corpoDois(ids);
+    const tres = {
+      ...base,
+      composicao: { ...base.composicao, times: [...base.composicao.times, base.composicao.times[0]] },
+    };
+    expect((await c.post(url, tres)).status).toBe(422);
+    expect((await c.post(url, { ...base, n: 12 })).status).toBe(422);
+    const muitos = Array.from({ length: 61 }, (_, i) => `00000000-0000-4000-8000-${String(i).padStart(12, '0')}`);
+    const r61 = await c.post(url, { ...corpoVarios(ids, [4, 4]), aptos: muitos.map((id) => ({ id })) });
+    expect(r61.status).toBe(422);
+    expect((await c.post(url, { ...base, extra: 1 })).status).toBe(422);
   });
 });

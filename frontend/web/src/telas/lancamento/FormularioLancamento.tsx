@@ -8,6 +8,7 @@ import { CampoMoeda } from '../../componentes/campos/CampoMoeda';
 import { CampoTexto } from '../../componentes/campos/CampoTexto';
 import { ResumoErros } from '../../componentes/campos/ResumoErros';
 import { Segmentado } from '../../componentes/escolhas/Segmentado';
+import { Formulario } from '../../componentes/pagina/Formulario';
 import { deValidacao, type ErrosDeCampos } from '../../dados/errosDeCampos';
 import { ORDEM_TIPO_LANCAMENTO, rotuloTipoLancamento } from '../../rotulos';
 import estilos from './lancamento.module.css';
@@ -78,15 +79,7 @@ export function FormularioLancamento({
   };
 
   return (
-    <form
-      className={estilos.formulario}
-      noValidate
-      aria-busy={enviando || undefined}
-      onSubmit={(e) => {
-        e.preventDefault();
-        salvar();
-      }}
-    >
+    <Formulario aoEnviar={salvar} enviando={enviando}>
       <ResumoErros erros={itens} />
       <Segmentado legenda="Tipo" opcoes={OPCOES_TIPO} valor={tipo} aoMudar={setTipo} />
       <CampoData id="data" rotulo="Data" valor={data} aoMudar={setData} erro={erros.data} erroComoAlerta={umSoErro} />
@@ -126,6 +119,6 @@ export function FormularioLancamento({
           </Botao>
         )}
       </BarraAcao>
-    </form>
+    </Formulario>
   );
 }

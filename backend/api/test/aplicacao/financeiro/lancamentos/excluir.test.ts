@@ -58,10 +58,25 @@ describe('excluirLancamento', () => {
   it('vinculado a pagamento: vinculado, nada apagado e sem auditoria', async () => {
     const { db, grupo, ctx, existe, acoes, vinculado } = await cenario();
     const id = await vinculado();
-    expect(await excluirLancamento(db, grupo.id, id, ctx)).toEqual({ tipo: 'vinculado' });
+    expect(await excluirLancamento(db, grupo.id, id, ctx)).toEqual({
+      tipo: 'vinculado',
+      mensagem: 'Esta entrada é a mensalidade de Ana 10/2026. Desmarque o pagamento no mês para removê-la.',
+    });
     expect(await existe(id)).toBe(true);
     expect(await financeiro.pagamentosDoMes(db, grupo.id, '2026-10')).toHaveLength(1);
     expect(await acoes()).toEqual([]);
+  });
+
+  it('vinculado sem pagamento encontrado: mensagem genérica "um jogador"', async () => {
+    const { db, grupo, ctx, vinculado } = await cenario();
+    const id = await vinculado();
+    const espiao = vi.spyOn(financeiro, 'pagamentoDoLancamento').mockResolvedValueOnce(null);
+    const r = await excluirLancamento(db, grupo.id, id, ctx);
+    espiao.mockRestore();
+    expect(r).toEqual({
+      tipo: 'vinculado',
+      mensagem: 'Esta entrada é a mensalidade de um jogador. Desmarque o pagamento no mês para removê-la.',
+    });
   });
 
   it('inexistente e segunda exclusão: nao_encontrado', async () => {
@@ -78,7 +93,10 @@ describe('excluirLancamento', () => {
     const espiao = vi
       .spyOn(financeiro, 'buscarLancamento')
       .mockImplementationOnce(async (...args) => ({ ...(await real(...args))!, mensalidade: false }));
-    expect(await excluirLancamento(db, grupo.id, id, ctx)).toEqual({ tipo: 'vinculado' });
+    expect(await excluirLancamento(db, grupo.id, id, ctx)).toMatchObject({
+      tipo: 'vinculado',
+      mensagem: expect.stringContaining('mensalidade de Ana 10/2026'),
+    });
     espiao.mockRestore();
     expect(await existe(id)).toBe(true);
     expect(await financeiro.pagamentosDoMes(db, grupo.id, '2026-10')).toHaveLength(1);

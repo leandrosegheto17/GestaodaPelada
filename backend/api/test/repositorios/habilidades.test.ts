@@ -1,8 +1,8 @@
 import { HABILIDADES_INICIAIS } from '@pelada/dominio';
-import pg from 'pg';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import * as habilidades from '../../src/infraestrutura/db/repositorios/habilidades.js';
 import { NomeHabilidadeEmUso } from '../../src/infraestrutura/db/repositorios/habilidades.js';
+import { contarConsultas } from '../apoio/contar-consultas.js';
 import { usarDb } from '../apoio/db-teste.js';
 import { criarJogador } from '../apoio/fabricas/jogadores.js';
 import { usarFabrica } from '../apoio/fabrica.js';
@@ -113,13 +113,11 @@ describe('repositório de habilidades', () => {
       const jogador = await criarJogador(db, base.grupo.id, base.contaId);
       for (const h of catalogo) await habilidades.gravarNota(db, base.grupo.id, jogador, h.id, 5);
     }
-    const espiao = vi.spyOn(pg.Client.prototype, 'query');
-    try {
-      const notas = await habilidades.notasDoGrupo(db, base.grupo.id);
-      expect(notas).toHaveLength(18);
-      expect(espiao).toHaveBeenCalledTimes(1);
-    } finally {
-      espiao.mockRestore();
-    }
+    let notas: Awaited<ReturnType<typeof habilidades.notasDoGrupo>> = [];
+    const consultas = await contarConsultas(async () => {
+      notas = await habilidades.notasDoGrupo(db, base.grupo.id);
+    });
+    expect(notas).toHaveLength(18);
+    expect(consultas).toBe(1);
   });
 });

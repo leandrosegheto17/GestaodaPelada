@@ -7,10 +7,11 @@ import { CampoSeletor } from '../../componentes/campos/CampoSeletor';
 import { CampoTexto } from '../../componentes/campos/CampoTexto';
 import { ResumoErros } from '../../componentes/campos/ResumoErros';
 import { Segmentado } from '../../componentes/escolhas/Segmentado';
+import { DuasColunas } from '../../componentes/pagina/DuasColunas';
+import { Formulario } from '../../componentes/pagina/Formulario';
 import type { CorpoGrupo } from '../../dados/grupo';
 import { deValidacao, type ErrosDeCampos } from '../../dados/errosDeCampos';
 import { ORDEM_DIA_SEMANA, ORDEM_FREQUENCIA, ROTULO_DIA_SEMANA, ROTULO_FREQUENCIA } from '../../rotulos';
-import estilos from './grupo.module.css';
 
 type Dados = GrupoDetalhe['grupo'];
 
@@ -49,15 +50,7 @@ export function FormularioGrupo({ grupo, errosDoServidor, enviando, semConexao, 
   };
 
   return (
-    <form
-      className={estilos.formulario}
-      noValidate
-      aria-busy={enviando || undefined}
-      onSubmit={(e) => {
-        e.preventDefault();
-        salvar();
-      }}
-    >
+    <Formulario aoEnviar={salvar} enviando={enviando}>
       <ResumoErros erros={itens} />
       <CampoTexto
         id="grupo-nome"
@@ -69,7 +62,7 @@ export function FormularioGrupo({ grupo, errosDoServidor, enviando, semConexao, 
         valor={nome}
         aoMudar={setNome}
       />
-      <div className={estilos.duasColunas}>
+      <DuasColunas>
         <CampoSeletor rotulo="Dia da semana" valor={dia} aoMudar={setDia} opcoes={DIAS} />
         <CampoHora
           id="grupo-horario"
@@ -79,7 +72,7 @@ export function FormularioGrupo({ grupo, errosDoServidor, enviando, semConexao, 
           erro={erros.horario}
           erroComoAlerta={itens.length === 1}
         />
-      </div>
+      </DuasColunas>
       <Segmentado legenda="Frequência" legendaVisivel valor={frequencia} aoMudar={setFrequencia} opcoes={FREQUENCIAS} />
       {semConexao ? <ErroEnvio /> : null}
       <div>
@@ -87,6 +80,6 @@ export function FormularioGrupo({ grupo, errosDoServidor, enviando, semConexao, 
           Salvar
         </Botao>
       </div>
-    </form>
+    </Formulario>
   );
 }
