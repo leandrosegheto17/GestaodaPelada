@@ -853,6 +853,12 @@ Colunas lidas pelo `taskplan.py` pelo nome. **Est** em dias-pessoa. **Cria**/**U
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | RTP-0125 | Refatoração Lote-L42 | Auditoria da config financeira: ler config anterior com trava (FOR UPDATE) | Backend | RNF-12 | Duas gravações concorrentes da config do mesmo grupo geram auditorias com 'anterior' encadeado (a 2ª enxerga o novo da 1ª); teste de concorrência passa | 0,25 d | TP-0191 |  | backend/api/src/aplicacao/financeiro/config.ts, backend/api/src/infraestrutura/db/repositorios/financeiro.ts | backend/api/test/aplicacao/financeiro/config.test.ts | Concluída · aguarda QA |
 
+### Refatoração Lote-L43
+| ID | Lote | Título | Chapéu | Reqs | Aceite | Est | Dep | Par | Arquivos | Testes e diretrizes | Status |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| RTP-0127 | Refatoração Lote-L43 | DELETE lançamento: 409 sem apelido e mês na mensagem (decidido na §1.4) | Backend | RF-62, RN-15; L-7; QA do TP-0198 | o 409 lancamento_vinculado traz a mensagem 'Esta entrada é a mensalidade de <apelido> <mm/aaaa>. Desmarque o pagamento no mês para removê-la.' com apelido e mês do pagamento vinculado (de buscarLancamento.mensalidade), inclusive no caminho da corrida (FK); teste de rota confere o texto; passando | 0,2 d | TP-0198 | sim | backend/api/src/aplicacao/financeiro/lancamentos/excluir.ts; backend/api/src/entrada/rotas/grupos/financeiro/lancamentos/excluir.ts; backend/api/test/rotas/grupos/financeiro/lancamentos/excluir.test.ts | pnpm --filter @pelada/api test -- lancamentos/excluir | Pendente |
+
+
 
 
 
