@@ -207,7 +207,8 @@ describe('consultas', () => {
     const { db, a, conta } = await cenario();
     const ana = await criarJogador(db, a, conta, { apelido: 'Ana' });
     // @ts-expect-error marcar só aceita Tx
-    const chamada = () => financeiro.marcar(db, a, { jogadorId: ana, mes: '2026-10', lancamento: null, autor: conta, agora: AGORA });
+    const chamada = () =>
+      financeiro.marcar(db, a, { jogadorId: ana, mes: '2026-10', lancamento: null, autor: conta, agora: AGORA });
     expect(typeof chamada).toBe('function');
   });
 });

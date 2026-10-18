@@ -13,10 +13,12 @@ const BANCO_TESTE = process.env['DATABASE_URL_TESTE'] ?? 'postgres://postgres:po
 
 // Dois projetos: `rotas` e `isolamento` rodam o Worker em workerd; o restante roda em Node.
 export default defineConfig({
-  resolve: { alias: [
+  resolve: {
+    alias: [
       { find: /^pg-protocol$/, replacement: PG_PROTOCOL_CJS },
       { find: /^pg-cloudflare$/, replacement: PG_CLOUDFLARE_CJS },
-    ] },
+    ],
+  },
   test: {
     // Todos os arquivos compartilham o mesmo Postgres de teste: um por vez.
     fileParallelism: false,

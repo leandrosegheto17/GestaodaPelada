@@ -106,7 +106,11 @@ describe('POST /api/grupos/:g/escalacoes (workerd)', () => {
       expect(Object.keys((r.corpo as { erro: { campos: object } }).erro.campos)).toEqual(['composicao']);
     }
     expect(await escalacoes.porData(db, cen.grupoA.id, D1)).toBeNull();
-    const eventos = await kyselyDe(db).selectFrom('eventos_uso').select('tipo').where('grupo_id', '=', cen.grupoA.id).execute();
+    const eventos = await kyselyDe(db)
+      .selectFrom('eventos_uso')
+      .select('tipo')
+      .where('grupo_id', '=', cen.grupoA.id)
+      .execute();
     expect(eventos).toEqual([]);
   });
 

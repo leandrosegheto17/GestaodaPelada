@@ -38,10 +38,14 @@ describe('orçamento de CPU de sugerir', () => {
   it.each([
     ['2 times de 11 (K ilimitado)', { ...base, formato: 'dois_times', n: 11, k: 'ilimitado' }],
     ['6 times de 5', { ...base, formato: 'varios_times', n: 5, k: 0 }],
-  ] as const)('%s: mediana e p99 abaixo do limiar', (nome, entrada) => {
-    const { mediana, p99 } = medir(entrada);
-    const relato = `${nome}: mediana ${mediana.toFixed(2)} ms, p99 ${p99.toFixed(2)} ms (limiar ${LIMIAR_MS} ms)`;
-    expect(mediana, relato).toBeLessThan(LIMIAR_MS);
-    expect(p99, relato).toBeLessThan(LIMIAR_MS);
-  }, TIMEOUT_MS);
+  ] as const)(
+    '%s: mediana e p99 abaixo do limiar',
+    (nome, entrada) => {
+      const { mediana, p99 } = medir(entrada);
+      const relato = `${nome}: mediana ${mediana.toFixed(2)} ms, p99 ${p99.toFixed(2)} ms (limiar ${LIMIAR_MS} ms)`;
+      expect(mediana, relato).toBeLessThan(LIMIAR_MS);
+      expect(p99, relato).toBeLessThan(LIMIAR_MS);
+    },
+    TIMEOUT_MS,
+  );
 });

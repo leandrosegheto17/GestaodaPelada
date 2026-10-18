@@ -25,7 +25,11 @@ function saldoPelosMovimentos(movs: MovimentoCaixa[], hoje: string): number {
 
 describe('intervaloDoSaldo e saldoAtual', () => {
   it('equivalente ao SQL: entradas somam, saídas subtraem desde a data do saldo inicial', () => {
-    const movs = [mov('entrada', '2026-02-05', 5000), mov('saida', '2026-03-01', 12000), mov('entrada', '2026-10-01', 10000)];
+    const movs = [
+      mov('entrada', '2026-02-05', 5000),
+      mov('saida', '2026-03-01', 12000),
+      mov('entrada', '2026-10-01', 10000),
+    ];
     expect(saldoPelosMovimentos(movs, '2026-10-17')).toBe(35000 + 15000 - 12000);
   });
 
@@ -109,7 +113,11 @@ describe('totais e resumoDoMes', () => {
 
   it('virada de ano com entradas e saídas mistas', () => {
     const r = resumoDoMes({
-      movimentosDoMes: [mov('entrada', '2027-01-02', 5000), mov('entrada', '2027-01-31', 5000), mov('saida', '2027-01-15', 3000)],
+      movimentosDoMes: [
+        mov('entrada', '2027-01-02', 5000),
+        mov('entrada', '2027-01-31', 5000),
+        mov('saida', '2027-01-15', 3000),
+      ],
       ativosNoMes: ['a', 'b'],
       pagos: ['a', 'b'],
     });

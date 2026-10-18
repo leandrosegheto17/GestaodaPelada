@@ -30,9 +30,9 @@ async function cenario() {
         .executeTakeFirstOrThrow()
     ).acessa_financeiro;
   const acoes = async () =>
-    (await kyselyDe(db).selectFrom('auditoria').select('acao').where('grupo_id', '=', grupo.id).orderBy('id').execute()).map(
-      (a) => a.acao,
-    );
+    (
+      await kyselyDe(db).selectFrom('auditoria').select('acao').where('grupo_id', '=', grupo.id).orderBy('id').execute()
+    ).map((a) => a.acao);
   return { db, autor, alvo, grupo, estado, acoes };
 }
 

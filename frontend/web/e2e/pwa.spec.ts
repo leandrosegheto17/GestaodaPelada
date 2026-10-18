@@ -64,7 +64,11 @@ test.describe('PWA', () => {
     await page.reload();
     await page.evaluate(() => fetch('/api/sessao/eu').then(() => undefined));
     await expect
-      .poll(() => page.evaluate(async () => (await caches.has('pelada-sinais')) && (await (await caches.open('pelada-sinais')).keys()).length))
+      .poll(() =>
+        page.evaluate(
+          async () => (await caches.has('pelada-sinais')) && (await (await caches.open('pelada-sinais')).keys()).length,
+        ),
+      )
       .toBe(1);
     let documentosNaRede = 0;
     await context.route('**/*', (rota) => {

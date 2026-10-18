@@ -82,13 +82,35 @@ describe('indicadoresDois', () => {
   });
 
   it('exemplo do mockup (19 aptos, N 7, K 2, Juninho só 1º tempo): pares por time', () => {
-    const ordem = ['Toninho', 'Bigode', 'Careca', 'Juninho', 'Marcão', 'Paulinho', 'Zé Carlos', 'Dudu', 'Gordo',
-      'Tiago', 'Neném', 'Rafinha', 'Alemão', 'Pedrão', 'Cabeça', 'Vini', 'Japa', 'Léo Baiano', 'Serginho'];
+    const ordem = [
+      'Toninho',
+      'Bigode',
+      'Careca',
+      'Juninho',
+      'Marcão',
+      'Paulinho',
+      'Zé Carlos',
+      'Dudu',
+      'Gordo',
+      'Tiago',
+      'Neném',
+      'Rafinha',
+      'Alemão',
+      'Pedrão',
+      'Cabeça',
+      'Vini',
+      'Japa',
+      'Léo Baiano',
+      'Serginho',
+    ];
     const js = ordem.map((id, i) => sim(id, 900 - i * 10, 40, id === 'Juninho'));
     const jogadores = mapa(js);
     const rank = rankDe(ordem);
     const timeA = indicadoresDois(
-      { titulares: ['Toninho', 'Careca', 'Marcão', 'Zé Carlos', 'Gordo', 'Rafinha', 'Pedrão'], entram: ['Cabeça', 'Japa'] },
+      {
+        titulares: ['Toninho', 'Careca', 'Marcão', 'Zé Carlos', 'Gordo', 'Rafinha', 'Pedrão'],
+        entram: ['Cabeça', 'Japa'],
+      },
       jogadores,
       rank,
     );
@@ -97,7 +119,10 @@ describe('indicadoresDois', () => {
       { sai: 'Rafinha', entra: 'Japa' },
     ]);
     const timeB = indicadoresDois(
-      { titulares: ['Bigode', 'Juninho', 'Paulinho', 'Dudu', 'Tiago', 'Neném', 'Alemão'], entram: ['Vini', 'Léo Baiano'] },
+      {
+        titulares: ['Bigode', 'Juninho', 'Paulinho', 'Dudu', 'Tiago', 'Neném', 'Alemão'],
+        entram: ['Vini', 'Léo Baiano'],
+      },
       jogadores,
       rank,
     );

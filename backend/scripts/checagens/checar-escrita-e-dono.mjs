@@ -17,10 +17,14 @@ const LITERAL = /(['"`])(?:\\[\s\S]|(?!\1)[^\\])*\1/g;
 // montado antes de uma escrita. Projeção de leitura (`eDono: conta.eDono`, `z.boolean()`) não casa.
 // O valor também pode ser `!!x` ou um ternário `a ? b : c`.
 const VALOR_DE_CHAVE = String.raw`(?:true|false|[01]|!{1,2}\s*[A-Za-z_$][\w$.]*|[A-Za-z_$][\w$.]*\s*\?[^,}\n]*|(?!z\.)[A-Za-z_$][\w$.]*\([^,}\n]*\)|[A-Za-z_$][\w$.]*\s*(?:\|\||&&)[^,}\n]+|[A-Za-z_$][\w$]*)`;
-const CHAVE_DE_OBJETO = new RegExp(String.raw`[{,]\s*['"\`]?e_?dono['"\`]?\s*:\s*${VALOR_DE_CHAVE}\s*(?=[,}\n]|$)`, 'i');
+const CHAVE_DE_OBJETO = new RegExp(
+  String.raw`[{,]\s*['"\`]?e_?dono['"\`]?\s*:\s*${VALOR_DE_CHAVE}\s*(?=[,}\n]|$)`,
+  'i',
+);
 // Atribuição de membro (`o.e_dono = v`, `o["e_dono"] = v`, `o.eDono ||= v`, `o.eDono += v`); `===`, `==` e
 // `=>` são leitura.
-const ATRIBUICAO_DE_MEMBRO = /(?:\.\s*|\[\s*['"`])e_?dono(?:['"`]\s*\])?\s*(?:\|\||&&|\?\?|\*\*|>>>|>>|<<|[-+*/%|&^])?=(?![=>])/i;
+const ATRIBUICAO_DE_MEMBRO =
+  /(?:\.\s*|\[\s*['"`])e_?dono(?:['"`]\s*\])?\s*(?:\|\||&&|\?\?|\*\*|>>>|>>|<<|[-+*/%|&^])?=(?![=>])/i;
 
 // Uma única passada da esquerda para a direita: `//` e `--` dentro de literal de texto (URL, `a--b`) não
 // são comentário e não podem apagar o resto da linha. Aspas simples e duplas não atravessam linha.
