@@ -4,8 +4,8 @@ import { Botao } from '../../componentes/basicos/Botao';
 import { ErroEnvio } from '../../componentes/basicos/ErroEnvio';
 import { CampoTexto } from '../../componentes/campos/CampoTexto';
 import { ResumoErros } from '../../componentes/campos/ResumoErros';
+import { Formulario } from '../../componentes/pagina/Formulario';
 import { deValidacao, type ErrosDeCampos } from '../../dados/errosDeCampos';
-import estilos from './admins.module.css';
 
 interface Props {
   errosDoServidor: ErrosDeCampos;
@@ -50,15 +50,7 @@ function Campos({ errosDoServidor, enviando, semConexao, aoAdicionar }: Omit<Pro
   };
 
   return (
-    <form
-      className={estilos.formulario}
-      noValidate
-      aria-busy={enviando || undefined}
-      onSubmit={(e) => {
-        e.preventDefault();
-        enviar();
-      }}
-    >
+    <Formulario aoEnviar={enviar} enviando={enviando}>
       <ResumoErros erros={itens} />
       <CampoTexto
         id="admin-nome"
@@ -85,6 +77,6 @@ function Campos({ errosDoServidor, enviando, semConexao, aoAdicionar }: Omit<Pro
           Adicionar admin
         </Botao>
       </div>
-    </form>
+    </Formulario>
   );
 }

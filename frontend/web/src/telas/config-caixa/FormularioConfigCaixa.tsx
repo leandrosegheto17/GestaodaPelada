@@ -6,8 +6,9 @@ import { ErroEnvio } from '../../componentes/basicos/ErroEnvio';
 import { CampoData } from '../../componentes/campos/CampoData';
 import { CampoMoeda } from '../../componentes/campos/CampoMoeda';
 import { ResumoErros } from '../../componentes/campos/ResumoErros';
+import { DuasColunas } from '../../componentes/pagina/DuasColunas';
+import { Formulario } from '../../componentes/pagina/Formulario';
 import { deValidacao, type ErrosDeCampos } from '../../dados/errosDeCampos';
-import estilos from './config-caixa.module.css';
 
 interface Props {
   /** Configuração atual; `null` = caixa ainda não configurado. */
@@ -67,15 +68,7 @@ export function FormularioConfigCaixa({ atual, hoje, errosDoServidor, enviando, 
   };
 
   return (
-    <form
-      className={estilos.formulario}
-      noValidate
-      aria-busy={enviando || undefined}
-      onSubmit={(e) => {
-        e.preventDefault();
-        salvar();
-      }}
-    >
+    <Formulario aoEnviar={salvar} enviando={enviando}>
       <ResumoErros erros={itens} />
       <CampoMoeda
         id="mens"
@@ -88,7 +81,7 @@ export function FormularioConfigCaixa({ atual, hoje, errosDoServidor, enviando, 
         erro={erros.mensalidadeCentavos}
         erroComoAlerta={umSoErro}
       />
-      <div className={estilos.duasColunas}>
+      <DuasColunas>
         <CampoMoeda
           id="saldo"
           rotulo="Saldo inicial (R$)"
@@ -106,13 +99,13 @@ export function FormularioConfigCaixa({ atual, hoje, errosDoServidor, enviando, 
           erro={erros.dataSaldoInicial}
           erroComoAlerta={umSoErro}
         />
-      </div>
+      </DuasColunas>
       {semConexao ? <ErroEnvio /> : null}
       <BarraAcao>
         <Botao type="submit" variante="principal" carregando={enviando}>
           Salvar
         </Botao>
       </BarraAcao>
-    </form>
+    </Formulario>
   );
 }

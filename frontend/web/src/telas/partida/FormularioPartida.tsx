@@ -4,6 +4,7 @@ import { BarraAcao } from '../../componentes/barras/BarraAcao';
 import { Botao } from '../../componentes/basicos/Botao';
 import { EstadoVazio } from '../../componentes/basicos/EstadoVazio';
 import { Faixa } from '../../componentes/basicos/Faixa';
+import { Formulario } from '../../componentes/pagina/Formulario';
 import { ContagemFixa } from '../../componentes/seletor-situacao/ContagemFixa';
 import { contarSituacoes } from '../../componentes/seletor-situacao/contagem';
 import { LinhaJogador, ListaSituacao } from '../../componentes/seletor-situacao/LinhaJogador';
@@ -106,14 +107,7 @@ export function FormularioPartida({
           Não salvou. Suas marcações continuam aqui.
         </Faixa>
       ) : null}
-      <form
-        noValidate
-        aria-busy={enviando || undefined}
-        onSubmit={(evento) => {
-          evento.preventDefault();
-          enviar();
-        }}
-      >
+      <Formulario aoEnviar={enviar} enviando={enviando} className={estilos.corpo}>
         <CabecalhoDaPartida
           data={data}
           max={max}
@@ -176,7 +170,7 @@ export function FormularioPartida({
             </Botao>
           )}
         </BarraAcao>
-      </form>
+      </Formulario>
     </>
   );
 }

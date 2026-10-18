@@ -3,7 +3,7 @@ export { Cartao } from './Cartao';
 export { ConteudoPagina } from './ConteudoPagina';
 export { DuasColunas } from './DuasColunas';
 export { FerramentasLista } from './FerramentasLista';
-export { AjudaDoFormulario, Formulario } from './Formulario';
+export { AjudaDoFormulario, CamposEmGrade, Formulario } from './Formulario';
 export { GrupoBotoes } from './GrupoBotoes';
 export { Paragrafo } from './Paragrafo';
 export { Secao } from './Secao';

@@ -11,6 +11,8 @@ import { CampoTexto } from '../../componentes/campos/CampoTexto';
 import { ResumoErros } from '../../componentes/campos/ResumoErros';
 import { DialogoSenha } from '../../componentes/dialogos-padrao';
 import { Segmentado } from '../../componentes/escolhas/Segmentado';
+import { DuasColunas } from '../../componentes/pagina/DuasColunas';
+import { Formulario } from '../../componentes/pagina/Formulario';
 import { TituloPagina } from '../../componentes/pagina/TituloPagina';
 import { useCriarGrupo } from '../../dados/dono/criar-grupo';
 import { ErroApi } from '../../dados/erros';
@@ -82,14 +84,11 @@ export function Component() {
       <title>Novo grupo</title>
       <Voltar para={caminhoAreaDono} rotulo="Área do dono" />
       <TituloPagina>Novo grupo</TituloPagina>
-      <form
-        className={estilos.formulario}
-        noValidate
-        aria-busy={criar.isPending || undefined}
-        onSubmit={(e) => {
-          e.preventDefault();
+      <Formulario
+        aoEnviar={() => {
           if (!criar.isPending) enviar();
         }}
+        enviando={criar.isPending}
       >
         <ResumoErros erros={itens} />
         <CampoTexto
@@ -102,7 +101,7 @@ export function Component() {
           valor={nome}
           aoMudar={setNome}
         />
-        <div className={estilos.duasColunas}>
+        <DuasColunas>
           <CampoSeletor
             id="ng-dia"
             rotulo="Dia da semana"
@@ -120,7 +119,7 @@ export function Component() {
             valor={horario}
             aoMudar={setHorario}
           />
-        </div>
+        </DuasColunas>
         <Segmentado
           legenda="Frequência"
           legendaVisivel
@@ -153,7 +152,7 @@ export function Component() {
             Criar grupo
           </Botao>
         </BarraAcao>
-      </form>
+      </Formulario>
       {senha ? <DialogoSenha nome={senha.nome} senha={senha.senha} aoFechar={aoFecharSenha} /> : null}
     </div>
   );

@@ -30,14 +30,6 @@
     max-width: calc(var(--largura-formulario) - 2 * var(--esp-6));
   }
 }
-.formulario {
-  display: grid;
-  gap: var(--esp-4);
-}
-.duasColunas {
-  display: grid;
-  gap: var(--esp-4);
-}
 .cartao {
   background: var(--cor-superficie);
   border: 1px solid var(--cor-linha);
@@ -67,9 +59,4 @@
   font-size: var(--texto-sm);
   color: var(--cor-texto-sec);
   margin: 0;
-}
-@media (min-width: 600px) {
-  .duasColunas {
-    grid-template-columns: 1fr 1fr;
-  }
 }
