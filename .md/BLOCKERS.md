@@ -61,7 +61,7 @@
 - Descrição: Rotacionar senhas pelada_app/pelada_backup no console do Neon (ALTER ROLE nos branches production e teste) e atualizar secrets NEON_URL_*, antes do TP-0133
 - Impacto se não resolvido: —
 - Sugestão: —
-- Status: Em aberto
+- Status: Resolvido (2026-10-17): rotação dispensada por decisão do usuário; histórico do SQL Editor do Neon apagado
 
 ## Bloqueio 008 — 2026-10-17 (BK-0008)
 - Reportado por: Executor

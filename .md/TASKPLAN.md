@@ -358,5 +358,5 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 343 | RTP-0014 | executor | ✔ | Executar a prova do CI em PR real (ci-prova) | Refatoração Lote-L01 | BK-0003, TP-0003 | Despriorizada |
 | 344 | BK-0005 | coordenador | ✔ | Item (b) feito; item (a) exige PR real com job e2e verde (push/PR autorizado pelo usuário) | — | — | Não executada |
 | 345 | RTP-0017 | executor | ✔ | Provar job e2e verde em PR real e cobrir dist/ ausente em visual.mjs | Refatoração Lote-L20 | BK-0005, TP-0089 | Despriorizada |
-| 346 | BK-0007 | coordenador | ✔ | Rotacionar senhas pelada_app/pelada_backup no console do Neon (ALTER ROLE nos branches pro | — | — | Não executada |
-| 347 | RTP-0114 | executor | ✔ | Rotacionar senhas de pelada_app/pelada_backup do Neon antes do primeiro uso real | Refatoração Lote-L29 | BK-0007, TP-0132 | Despriorizada |
+| 346 | BK-0007 | coordenador | ✔ | Rotacionar senhas pelada_app/pelada_backup no console do Neon (ALTER ROLE nos branches pro | — | — | Aprovada |
+| 347 | RTP-0114 | executor | ✔ | Rotacionar senhas de pelada_app/pelada_backup do Neon antes do primeiro uso real | Refatoração Lote-L29 | BK-0007, TP-0132 | Aprovada |
