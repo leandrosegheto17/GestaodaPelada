@@ -38,7 +38,7 @@ jobs:
           RUN_ID: ${{ github.run_id }}
         run: |
           set -euo pipefail
-          pai="main"
+          pai="production"
           if [ "$AMBIENTE" = "teste" ]; then pai="teste"; fi
           api="https://console.neon.tech/api/v2/projects/${NEON_PROJECT_ID}/branches"
           cabecalho="Authorization: Bearer ${NEON_API_KEY}"
