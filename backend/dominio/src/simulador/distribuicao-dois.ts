@@ -1,7 +1,7 @@
 import type { ClassificacaoDois } from './classificacao.js';
 import { dividirMeioParaCima } from '../elenco/nivel.js';
-import { agregar, trocarNoAgregado, type Agregado, type Jogadores } from './indicadores.js';
-import type { ComposicaoDois, JogadorSim, TimeDois } from './tipos.js';
+import type { Jogadores } from './indicadores.js';
+import type { ComposicaoDois, TimeDois } from './tipos.js';
 
 /** Teto de trocas aceitas na busca local (ADR-007 §2): garante que o laço termina. */
 export const MAX_TROCAS_ACEITAS = 200;
@@ -25,68 +25,84 @@ function menor(a: Chave, b: Chave): boolean {
   return false;
 }
 
-/** Acumulados de um time que a troca atualiza em O(1): nível dos titulares e idade de quem joga. */
-interface Estado {
-  titulares: Agregado;
-  jogam: Agregado;
-}
-
 /**
- * Substituições e nível do 2º tempo do time numa só passada, sem ordenar o time inteiro: sai quem é
- * "só 1º tempo" e, até `max(só 1º tempo, reservas)` saídas, os de pior prioridade (mesma regra de
- * `saidaNoIntervalo`, com empate pelo id decrescente).
+ * Jogadores do elenco como índices numéricos: o índice é a posição na ordem de prioridade (desempate pelo
+ * id), então "pior prioridade" é "índice maior" e a busca local não consulta mapas nem ordena.
  */
-function resumoSegundoTempo(
-  time: TimeDois,
-  jogadores: Jogadores,
-  rank: ReadonlyMap<string, number>,
-): { subs: number; nivel2: number } {
-  let nivel2 = 0;
-  let so1o = 0;
-  const demais: JogadorSim[] = [];
-  for (const id of time.titulares) {
-    const j = jogadores.get(id)!;
-    if (j.so1oTempo) so1o += 1;
-    else {
-      demais.push(j);
-      nivel2 += j.nivel;
-    }
-  }
-  const total = Math.min(Math.max(so1o, time.entram.length), time.titulares.length);
-  const extra = total - so1o;
-  if (extra > 0) {
-    const pos = (j: JogadorSim): number => rank.get(j.id) ?? Number.MAX_SAFE_INTEGER;
-    // pior prioridade primeiro: posição maior; no empate, id maior
-    demais.sort((x, y) => pos(y) - pos(x) || (x.id < y.id ? 1 : x.id > y.id ? -1 : 0));
-    for (let i = 0; i < extra; i += 1) nivel2 -= demais[i]!.nivel;
-  }
-  for (const id of time.entram) nivel2 += jogadores.get(id)!.nivel;
-  return { subs: Math.min(total, time.entram.length), nivel2 };
+interface Elenco {
+  ids: string[];
+  nivel: number[];
+  idade: number[];
+  so1o: boolean[];
 }
 
-const idadeMedia = (e: Estado): number => (e.jogam.n > 0 ? dividirMeioParaCima(100 * e.jogam.somaIdade, e.jogam.n) : 0);
+/** Time em índices do `Elenco`. */
+interface TimeIdx {
+  titulares: number[];
+  entram: number[];
+}
+
+function elencoDe(idsDosTimes: readonly string[], jogadores: Jogadores, rank: ReadonlyMap<string, number>): Elenco {
+  const pos = (id: string): number => rank.get(id) ?? Number.MAX_SAFE_INTEGER;
+  const ids = [...idsDosTimes].sort((x, y) => pos(x) - pos(y) || (x < y ? -1 : x > y ? 1 : 0));
+  const js = ids.map((id) => jogadores.get(id)!);
+  return { ids, nivel: js.map((j) => j.nivel), idade: js.map((j) => j.idade), so1o: js.map((j) => j.so1oTempo) };
+}
+
+const idadeMedia = (soma: number, n: number): number => (n > 0 ? dividirMeioParaCima(100 * soma, n) : 0);
 
 /**
  * Chave lexicográfica da composição, só em inteiros: titulares fora de N, excesso de substituições
  * além de 1 de diferença, diferença de nível (1º + 2º tempo) e diferença de idade média.
+ *
+ * No 2º tempo saem os "só 1º tempo" e, até `max(só 1º tempo, reservas)` saídas, os demais titulares de
+ * pior prioridade (mesma regra de `saidaNoIntervalo`); sai-se do pior índice para o melhor sem ordenar.
  */
-function chaveDe(
-  times: [TimeDois, TimeDois],
-  n: number,
-  [ea, eb]: [Estado, Estado],
-  jogadores: Jogadores,
-  rank: ReadonlyMap<string, number>,
-): Chave {
+function chaveDe(times: readonly [TimeIdx, TimeIdx], n: number, e: Elenco): Chave {
+  const subs: number[] = [0, 0];
+  const nivel1: number[] = [0, 0];
+  const nivel2: number[] = [0, 0];
+  const idades: number[] = [0, 0];
+  const jogam: number[] = [0, 0];
+  for (let t = 0; t < 2; t += 1) {
+    const { titulares, entram } = times[t]!;
+    let n1 = 0;
+    let n2 = 0;
+    let so1o = 0;
+    let idade = 0;
+    for (const i of titulares) {
+      n1 += e.nivel[i]!;
+      idade += e.idade[i]!;
+      if (e.so1o[i]) so1o += 1;
+      else n2 += e.nivel[i]!;
+    }
+    for (const i of entram) {
+      n2 += e.nivel[i]!;
+      idade += e.idade[i]!;
+    }
+    const total = Math.min(Math.max(so1o, entram.length), titulares.length);
+    let teto = Number.MAX_SAFE_INTEGER;
+    for (let k = total - so1o; k > 0; k -= 1) {
+      let pior = -1;
+      for (const i of titulares) if (!e.so1o[i] && i < teto && i > pior) pior = i;
+      n2 -= e.nivel[pior]!;
+      teto = pior;
+    }
+    subs[t] = Math.min(total, entram.length);
+    nivel1[t] = n1;
+    nivel2[t] = n2;
+    idades[t] = idade;
+    jogam[t] = titulares.length + entram.length;
+  }
   const violaN = Number(times[0].titulares.length !== n) + Number(times[1].titulares.length !== n);
-  const ra = resumoSegundoTempo(times[0], jogadores, rank);
-  const rb = resumoSegundoTempo(times[1], jogadores, rank);
-  const excessoSubs = Math.max(0, Math.abs(ra.subs - rb.subs) - 1);
-  const difNivel = Math.abs(ea.titulares.somaNivel - eb.titulares.somaNivel) + Math.abs(ra.nivel2 - rb.nivel2);
-  return [violaN, excessoSubs, difNivel, Math.abs(idadeMedia(ea) - idadeMedia(eb))];
-}
-
-function estadoDe(t: TimeDois, jogadores: Jogadores): Estado {
-  return { titulares: agregar(t.titulares, jogadores), jogam: agregar([...t.titulares, ...t.entram], jogadores) };
+  const excessoSubs = Math.max(0, Math.abs(subs[0]! - subs[1]!) - 1);
+  const difNivel = Math.abs(nivel1[0]! - nivel1[1]!) + Math.abs(nivel2[0]! - nivel2[1]!);
+  return [
+    violaN,
+    excessoSubs,
+    difNivel,
+    Math.abs(idadeMedia(idades[0]!, jogam[0]!) - idadeMedia(idades[1]!, jogam[1]!)),
+  ];
 }
 
 /**
@@ -100,14 +116,19 @@ export function distribuirDoisTimes({
   maxTrocas = MAX_TROCAS_ACEITAS,
 }: EntradaDistribuicaoDois): ComposicaoDois {
   const n = classificacao.titulares.length / 2;
-  const a: TimeDois = { titulares: [], entram: [] };
-  const b: TimeDois = { titulares: [], entram: [] };
-  classificacao.titulares.forEach((t, i) => (SERPENTINA[i % 4] === 0 ? a : b).titulares.push(t.id));
-  classificacao.reservasQueEntram.forEach((r, i) => (i % 2 === 0 ? a : b).entram.push(r.id));
-  const times: [TimeDois, TimeDois] = [a, b];
+  const elenco = elencoDe(
+    [...classificacao.titulares, ...classificacao.reservasQueEntram].map((j) => j.id),
+    jogadores,
+    rank,
+  );
+  const indice = new Map(elenco.ids.map((id, i) => [id, i]));
+  const a: TimeIdx = { titulares: [], entram: [] };
+  const b: TimeIdx = { titulares: [], entram: [] };
+  classificacao.titulares.forEach((t, i) => (SERPENTINA[i % 4] === 0 ? a : b).titulares.push(indice.get(t.id)!));
+  classificacao.reservasQueEntram.forEach((r, i) => (i % 2 === 0 ? a : b).entram.push(indice.get(r.id)!));
+  const times: [TimeIdx, TimeIdx] = [a, b];
 
-  let estado: [Estado, Estado] = [estadoDe(a, jogadores), estadoDe(b, jogadores)];
-  let chave = chaveDe(times, n, estado, jogadores, rank);
+  let chave = chaveDe(times, n, elenco);
   let aceitas = 0;
   let melhorou = true;
   while (melhorou && aceitas < maxTrocas) {
@@ -117,22 +138,10 @@ export function distribuirDoisTimes({
       const lb = b[categoria];
       for (let i = 0; i < la.length && !melhorou; i += 1) {
         for (let j = 0; j < lb.length && !melhorou; j += 1) {
-          const deA = jogadores.get(la[i]!)!;
-          const deB = jogadores.get(lb[j]!)!;
-          const [ta, tb] = trocarNoAgregado(estado[0].jogam, estado[1].jogam, deA, deB);
-          const [na, nb] =
-            categoria === 'titulares'
-              ? trocarNoAgregado(estado[0].titulares, estado[1].titulares, deA, deB)
-              : [estado[0].titulares, estado[1].titulares];
           [la[i], lb[j]] = [lb[j]!, la[i]!];
-          const proximo: [Estado, Estado] = [
-            { titulares: na, jogam: ta },
-            { titulares: nb, jogam: tb },
-          ];
-          const candidata = chaveDe(times, n, proximo, jogadores, rank);
+          const candidata = chaveDe(times, n, elenco);
           if (menor(candidata, chave)) {
             chave = candidata;
-            estado = proximo;
             melhorou = true;
             aceitas += 1;
           } else {
@@ -144,11 +153,10 @@ export function distribuirDoisTimes({
     }
   }
 
-  const porRank = (x: string, y: string): number =>
-    (rank.get(x) ?? Number.MAX_SAFE_INTEGER) - (rank.get(y) ?? Number.MAX_SAFE_INTEGER) || (x < y ? -1 : x > y ? 1 : 0);
-  const ordenado = (t: TimeDois): TimeDois => ({
-    titulares: [...t.titulares].sort(porRank),
-    entram: [...t.entram].sort(porRank),
+  // índices crescentes já são a ordem de prioridade
+  const ordenado = (t: TimeIdx): TimeDois => ({
+    titulares: [...t.titulares].sort((x, y) => x - y).map((i) => elenco.ids[i]!),
+    entram: [...t.entram].sort((x, y) => x - y).map((i) => elenco.ids[i]!),
   });
   return { times: [ordenado(a), ordenado(b)], naoEntra: classificacao.naoEntra.map((x) => x.id) };
 }
@@ -160,11 +168,12 @@ export function chaveDaComposicao(
   jogadores: Jogadores,
   rank: ReadonlyMap<string, number>,
 ): readonly number[] {
-  return chaveDe(
-    composicao.times,
-    n,
-    [estadoDe(composicao.times[0], jogadores), estadoDe(composicao.times[1], jogadores)],
-    jogadores,
-    rank,
-  );
+  const todos = composicao.times.flatMap((t) => [...t.titulares, ...t.entram]);
+  const elenco = elencoDe(todos, jogadores, rank);
+  const indice = new Map(elenco.ids.map((id, i) => [id, i]));
+  const emIndices = (t: TimeDois): TimeIdx => ({
+    titulares: t.titulares.map((id) => indice.get(id)!),
+    entram: t.entram.map((id) => indice.get(id)!),
+  });
+  return chaveDe([emIndices(composicao.times[0]), emIndices(composicao.times[1])], n, elenco);
 }
