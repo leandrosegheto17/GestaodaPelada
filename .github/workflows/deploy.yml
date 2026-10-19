@@ -2,6 +2,7 @@ name: deploy
 
 # Único lugar com `wrangler deploy` (conferido por backend/scripts/checagens/checar-wrangler-deploy.mjs).
 # Só produção (ADR-020, sem homologação). Publica pela main, com aprovação manual no environment `producao`.
+# O build do web vem primeiro: uma configuração inválida falha antes de qualquer mudança em produção.
 # Ordem: branch de restauração no Neon -> dump cifrado -> migração -> cache do Hyperdrive -> deploy.
 
 on:
@@ -22,7 +23,14 @@ jobs:
       cancel-in-progress: false
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: ./.github/actions/preparar-node
+
+      - name: Build do web (antes de tocar no banco)
+        env:
+          VITE_RECURSOS_DESLIGADOS: ${{ vars.VITE_RECURSOS_DESLIGADOS }}
+        run: pnpm --filter @pelada/web build
 
       - name: Branch de restauração no Neon
         id: restauracao
@@ -64,13 +72,8 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           set -euo pipefail
-          id="$(node -e 'const t=require("node:fs").readFileSync("wrangler.jsonc","utf8").replace(/\/\*[\s\S]*?\*\/|^\s*\/\/.*$/gm,"");const c=JSON.parse(t);console.log(c.hyperdrive[0].id)')"
-          pnpm --filter @pelada/api exec wrangler hyperdrive get "$id" --json | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const h=JSON.parse(s);if(!(h.caching&&h.caching.disabled===true)){console.error("Cache do Hyperdrive ligado (G-17).");process.exit(1)}})'
-
-      - name: Build do web
-        env:
-          VITE_RECURSOS_DESLIGADOS: ${{ vars.VITE_RECURSOS_DESLIGADOS }}
-        run: pnpm --filter @pelada/web build
+          id="$(pnpm exec tsx backend/scripts/ops/hyperdrive-id.ts)"
+          pnpm --silent --filter @pelada/api exec wrangler hyperdrive get "$id" --json | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const h=JSON.parse(s);if(!(h.caching&&h.caching.disabled===true)){console.error("Cache do Hyperdrive ligado (G-17).");process.exit(1)}})'
 
       - name: Deploy
         id: publicar
@@ -91,8 +94,10 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           RESTAURACAO: ${{ steps.restauracao.outputs.nome }}
+          RESULTADO_DEPLOY: ${{ steps.publicar.outcome }}
+          RUN_ID: ${{ github.run_id }}
         run: |
-          if [ "${{ steps.publicar.outcome }}" = "success" ]; then
-            pnpm --filter @pelada/api exec wrangler rollback -c ../../wrangler.jsonc --message "Falha depois do deploy (run ${{ github.run_id }})" || true
+          if [ "$RESULTADO_DEPLOY" = "success" ]; then
+            pnpm --filter @pelada/api exec wrangler rollback -c ../../wrangler.jsonc --message "Falha depois do deploy (run ${RUN_ID})" || true
           fi
-          echo "A migração já foi aplicada. Para restaurar o banco, use o branch '${RESTAURACAO}' do Neon ou o artefato dump-predeploy-${AMBIENTE}-${{ github.run_id }}. Passo a passo: backend/DEPLOY.md."
+          echo "A migração já foi aplicada. Para restaurar o banco, use o branch '${RESTAURACAO}' do Neon ou o artefato dump-predeploy-${AMBIENTE}-${RUN_ID}. Passo a passo: backend/DEPLOY.md."

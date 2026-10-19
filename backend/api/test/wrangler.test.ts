@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import ts from 'typescript';
 import { describe, expect, it } from 'vitest';
+import { lerWranglerJsonc } from '../../scripts/comum/wrangler-jsonc';
 
 const PERMITIDAS = new Set([
   'name',
@@ -17,9 +17,7 @@ const PERMITIDAS = new Set([
 
 /** Devolve as chaves proibidas de um wrangler.jsonc (raiz e `env.*`); lança se o arquivo não for JSONC. */
 export function chavesForaDaLista(texto: string): string[] {
-  if (texto.trim() === '') throw new Error('wrangler.jsonc vazio');
-  const { config, error } = ts.parseConfigFileTextToJson('wrangler.jsonc', texto);
-  if (error || typeof config !== 'object' || config === null) throw new Error('wrangler.jsonc inválido');
+  const config = lerWranglerJsonc(texto);
   const fora: string[] = [];
   const conferir = (objeto: Record<string, unknown>, prefixo: string): void => {
     for (const chave of Object.keys(objeto)) {
