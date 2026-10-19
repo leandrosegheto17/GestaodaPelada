@@ -974,3 +974,21 @@ APROVADA COM DÉBITO (DevSecOps) — 0 críticos/altos; ordem/falha-fechado, gat
 
 ## TP-0137 — DevSecOps — 2026-10-19
 APROVADA, 0 críticos e 4 não críticos na RTP-0142 (dump/identidade sem .gitignore nem pasta fora do repositório, senha na linha de comando do hyperdrive, aviso de URL_NOVA do pg_restore --clean, host fixo no 301); sem segredo no DEPLOY.md (grep), SQL do dono com bcrypt custo 12 e auditoria corretos, contar-linhas.sql só leitura.
+
+## RTP-0137 — DevSecOps — 2026-10-19
+APROVADA COM DÉBITO — parser só faz parse (sem eval/require), tsx/typescript do lockfile, id com metacaracteres de shell não executa (testado), falha fechada ok; 0 críticos, 1 baixo (id sem validação de formato 32 hex, ABRIR-RTP).
+
+## RTP-0138 — DevSecOps — 2026-10-19
+APROVADA — 0 críticos, 0 não críticos; segredos só em env de passo (job só tem AMBIENTE), build do web só com VITE_RECURSOS_DESLIGADOS e antes de qualquer segredo, rollback por env sem `${{ }}` em run: (grep 0), ordem/G-15/G-16/G-17 e permissions: contents: read preservados, build único sem cache restaurado depois.
+
+## RTP-0139 — DevSecOps — 2026-10-19
+APROVADA em segurança — `--silent` não mascara falha do wrangler, G-17 falha fechada (9 entradas degeneradas testadas: só `caching.disabled===true` passa), sem set -x/eco de segredo, `node -e` só faz JSON.parse; 0 achados, 0 ABRIR-RTP.
+
+## RTP-0140 — DevSecOps — 2026-10-19
+RTP-0140 APROVADA COM DÉBITO: flags antes do subcomando pegas, falha fechada (rc=2 sem git) e sem ReDoS (132 ms com 500 mil repetições); escapam `pages deploy`, `publish`, `triggers deploy` e `wrangler-action` (G-15, média, 1 ABRIR-RTP); 0 críticos.
+
+## RTP-0141 — DevSecOps — 2026-10-19
+APROVADA - persist-credentials:false eficaz no único checkout do deploy.yml, sem git autenticado/dependência git no job, permissions contents:read, pnpm/action-setup pinada por SHA; 0 críticos, 0 não críticos novos; job real não executado; backup.yml/ci.yml já na RTP-0144.
+
+## RTP-0142 — DevSecOps — 2026-10-19
+APROVADA — gitignore provado com check-ignore e add -n (dump.pgdump, .sql.age, identidade-age.txt barrados; nenhum arquivo versionado ignorado), 0 segredos no grep, mitigação de histórico/ps e limite do ps reconhecidos, aviso --clean e Worker 301 de host fixo presentes; 0 críticos, 0 novos (N1-N3 já na RTP-0145).
