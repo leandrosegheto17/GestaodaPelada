@@ -79,7 +79,7 @@
 - Descrição: Ajustar SDD/ADR-010/URL_PUBLICA/CORS/deploy.yml ao domínio prod-ljs.workers.dev e aos aceites de TP-0133/TP-0134/TP-0135 sem homologação (sem pelada-teste)
 - Impacto se não resolvido: —
 - Sugestão: Decidir se env.teste sai do wrangler.jsonc ou fica adormecido; revisar TP-0134 e TP-0135
-- Status: Resolvido (2026-10-17): Host pelada.prod-ljs.workers.dev, sem homologacao: env.teste e caminho teste do deploy.yml removidos; ADR-020 substitui o 010; SDD/UX-SPEC/aceites ajustados
+- Status: Resolvido (2026-10-19): Host pelada.prod-ljs.workers.dev, sem homologacao: env.teste e caminho teste do deploy.yml removidos; ADR-020 substitui o 010; SDD/UX-SPEC/aceites ajustados
 
 ## Bloqueio 010 — 2026-10-17 (BK-0010)
 - Reportado por: Executor
