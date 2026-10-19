@@ -968,3 +968,6 @@ APROVADA; 0 críticos, 0 não críticos; valor AGE-SECRET-KEY-1… rejeitado com
 
 ## RTP-0135 — DevSecOps — 2026-10-19
 APROVADA; 0 críticos, 0 não críticos; stderr de psql/pg_dump/docker vai a mktemp com trap EXIT e nunca ao log, versão validada numérica (stub com payload `17; touch` sem injeção, grep do host = 0), sem dump em claro, RTP-0136 intacta, sem set -x nem ${{ }} em run.
+
+## TP-0135 — DevSecOps — 2026-10-19
+APROVADA COM DÉBITO (DevSecOps) — 0 críticos/altos; ordem/falha-fechado, gatilho só push main, segredos via env, filtro de apagamento do Neon seguro (prefixo restauracao-producao-, lista vazia/erro falha fechado), G-16/G-17 OK, SHA do pnpm/action-setup conferido; 2 baixos novos -> RTP-0140 (checagem não pega flags entre wrangler e deploy), RTP-0141 (persist-credentials); itens que dependem de credencial real não executados.
