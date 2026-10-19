@@ -43,13 +43,13 @@ jobs:
           pai="production"
           api="https://console.neon.tech/api/v2/projects/${NEON_PROJECT_ID}/branches"
           cabecalho="Authorization: Bearer ${NEON_API_KEY}"
-          id_pai="$(curl -fsS -H "$cabecalho" "$api" | node -e 'const n=process.argv[1];let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const b=JSON.parse(s).branches.find(x=>x.name===n);if(!b){process.exit(1)}console.log(b.id)})' "$pai")"
+          id_pai="$(curl -fsS -H "$cabecalho" "$api" | pnpm --silent exec tsx backend/scripts/ops/restauracao-neon-cli.ts pai "$pai" --executar)"
           nome="restauracao-${AMBIENTE}-${RUN_ID}"
           curl -fsS -X POST -H "$cabecalho" -H 'Content-Type: application/json' \
             -d "{\"branch\":{\"name\":\"${nome}\",\"parent_id\":\"${id_pai}\"}}" "$api" >/dev/null
           echo "nome=${nome}" >> "$GITHUB_OUTPUT"
           # Mantém só os 2 branches de restauração mais novos (limite do plano gratuito).
-          curl -fsS -H "$cabecalho" "$api" | node -e 'const p="restauracao-"+process.argv[1]+"-";let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const l=JSON.parse(s).branches.filter(x=>x.name.startsWith(p)).sort((a,b)=>a.created_at<b.created_at?1:-1).slice(2);for(const b of l)console.log(b.id)})' "$AMBIENTE" |
+          curl -fsS -H "$cabecalho" "$api" | pnpm --silent exec tsx backend/scripts/ops/restauracao-neon-cli.ts antigos "$AMBIENTE" --executar |
             while read -r antigo; do curl -fsS -X DELETE -H "$cabecalho" "${api}/${antigo}" >/dev/null; done
 
       - name: Dump cifrado antes da migração
