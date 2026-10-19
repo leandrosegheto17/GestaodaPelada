@@ -62,9 +62,17 @@ errada levaria dado pessoal ou a chave privada.
    `%APPDATA%\postgresql\pgpass.conf`, que fica na pasta do seu usuário), com a URL sem a senha, para ela não ir ao
    histórico nem ao `ps`. Cada linha do arquivo tem o formato `host:porta:banco:usuario:senha`, por exemplo
    `<host>:5432:<banco>:<usuario>:<senha>` (`*` vale como curinga nos quatro primeiros campos).
+   Depois do `psql`, limpe a senha da sessão: no PowerShell, `Remove-Variable s, URL -ErrorAction SilentlyContinue`
+   (o `SecureString` e qualquer variável de texto com a URL) e `Remove-Item Env:URL`; no bash, `unset URL`. Confira
+   também o histórico que o PSReadLine já gravou (`(Get-PSReadLineOption).HistorySavePath`, normalmente
+   `ConsoleHost_history.txt`): `SaveNothing` só vale dali para frente, então apague desse arquivo qualquer linha que
+   tenha a URL ou a senha.
 5. Aponte o Hyperdrive para o branch novo (comando da seção anterior). Para voltar atrás, aponte a origem de volta.
 6. Apague `dump.pgdump`, o arquivo `.sql.age` e o arquivo com a identidade ao terminar. O dump tem dados pessoais:
-   decifre só numa máquina do dono.
+   decifre só numa máquina do dono. Apagar o arquivo em NTFS/SSD não é seguro (o conteúdo pode sobrar em blocos
+   livres, no wear leveling e em cópias de sombra), e o dump tem telefone e notas. Por isso restaure numa pasta cifrada
+   (BitLocker no volume ou EFS na pasta, `cipher /e`) ou num volume descartável que você destrói ao terminar, e não
+   conte só com o apagar comum.
 
 ## Conta do dono
 
