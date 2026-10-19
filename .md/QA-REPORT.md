@@ -995,3 +995,6 @@ APROVADA — hook único `useMesDaUrl` usado pelas 3 páginas, saude.py sem o bl
 
 ## RTP-0134 — QA — 2026-10-19
 APROVADA; 0 críticos/0 não críticos; 73 arquivos com print-config idêntico, checar-grupo-id com saída idêntica e mesmo tempo (~1,6 s) antes/depois, lint exit 0, saude §1 sem arquivos acima do limite.
+
+## TP-0136 — QA — 2026-10-19
+APROVADA — 0 críticos, 1 não crítico (RTP-0135: stderr do psql ecoa o host no log); script testado local com age/Postgres (cifra, decifra, chave errada, URL inválida, chave vazia), shellcheck e actionlint 0; run real no GitHub pendente do usuário.
