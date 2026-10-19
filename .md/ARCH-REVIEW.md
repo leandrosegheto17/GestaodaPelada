@@ -1,5 +1,22 @@
 # Revisão de arquitetura
 
+## Revisão 2026-10-19 (2ª) — sob demanda (projeto inteiro, depois da RTP-0162)
+
+Números do saude.py: 0 arquivos acima do limite · 3 blocos duplicados (25 linhas, os mesmos já descartados hoje) · 3 IDs de tarefa (todos em `evidencia/s-01`) · 0 imports indevidos entre aplicações · 0 conversões forçadas · 8 comentários de cópia (falsos positivos). Nada em frontend mudou; a comparação visual e o diff de tokens da primeira revisão de hoje continuam valendo.
+
+**Não há achado de severidade Alta aberto.** Nenhum achado novo; 0 RTP, 0 BK.
+
+Conferido nesta rodada:
+- RTP-0162 (`ops/restauracao-neon.ts`, `-cli.ts`, teste): a lógica de pai e de retenção está em funções puras que falham fechado (JSON inválido, sem lista, sem nome, pai ausente) e só tocam nomes `restauracao-<ambiente>-*`, então `production` nunca é apagado. CLI fina de 1 linha, igual a `verificar-cache-hyperdrive-cli.ts`.
+- Duplicação `ops/` e `checagens/`: `main` de `restauracao-neon.ts` e de `verificar-cache-hyperdrive.ts` repetem só `readFileSync(0)` e o teste de `--executar` (2 cópias de 1-2 linhas); `checagens/` segue concentrada em `arquivos.mjs`. Extrair seria refinamento marginal.
+- `deploy.yml` depois das RTP-0148/0150/0154/0160/0162: ordem build, branch de restauração, dump, migração, cache do Hyperdrive, deploy, saúde e rollback bate com o cabeçalho e com a §6 do SDD. `set -euo pipefail` faz falhar o passo se o `curl`, o CLI ou um `DELETE` falhar; o branch novo entra na lista antes da poda e fica entre os 2 mantidos; o passo de desfazer só roda com a migração concluída.
+
+Descartados: os mesmos blocos duplicados, IDs em `evidencia/s-01`, acesso a dados em `backend/api/src` e comentários de cópia já registrados na primeira revisão de hoje; T18 pc (instabilidade de carga já registrada).
+
+Item 17 (CI/troca de dados em produção): sem pendência; a retenção dos branches agora está em script testado.
+
+Sem achado nos itens: 1 a 18. Itens 11, 13 e 14 por amostragem do relatório.
+
 ## Revisão 2026-10-19 — sob demanda (projeto inteiro, segunda revisão)
 
 Números do saude.py: 0 arquivos acima do limite · 3 blocos duplicados (25 linhas) · 3 IDs de tarefa (todos em `evidencia/s-01`) · 2 pastas com acesso a dados (`backend/api/src`, `evidencia/s-01`) · 0 imports indevidos entre aplicações · 0 conversões forçadas · 8 comentários de cópia (falsos positivos, como ontem). Comparação visual: tudo OK; T18 Pontuação/sucesso/pc divergiu uma vez (39,48%, altura 800 vs 1169) por carregamento incompleto e deu 0,00% ao repetir; `tokens.css` do app idêntico ao do mockup.
