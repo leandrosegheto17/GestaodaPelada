@@ -1007,3 +1007,6 @@ APROVADA; 0 críticos, 0 não críticos; 4 URLs inválidas, falha do pg_dump (pi
 
 ## TP-0135 — QA — 2026-10-19
 DEVOLVIDA — 1 crítico (`pnpm exec wrangler` na raiz não acha o binário, que só existe em @pelada/api: passos hyperdrive/deploy/rollback não executam) e 3 não críticos (parser jsonc duplicado, `${{ }}` em run:, build após migração); Vitest 13/13, checagem rc=0, actionlint limpo; execução real em producao pendente do usuário.
+
+## TP-0135 — QA — 2026-10-19
+APROVADA (rodada 2) — C1 resolvido (wrangler via `pnpm --filter @pelada/api exec`, `-c ../../wrangler.jsonc` provado por `deploy --dry-run`), Vitest 16/16, checagem rc=0, actionlint limpo; pipe do `hyperdrive get` seguro no CI (Node 22) mas frágil a avisos do pnpm no stdout -> RTP-0139 (não crítico); RTP-0137/0138 seguem abertas; execução real em producao pendente do usuário.
