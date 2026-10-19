@@ -1,4 +1,5 @@
 import { spawnSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { cacheDoHyperdriveDesligado, main } from '../verificar-cache-hyperdrive';
@@ -71,6 +72,28 @@ describe('módulo importado sem a CLI', () => {
     expect(r.status).toBe(0);
     expect(r.stdout).toContain('importado-ok');
     expect(r.stderr).toBe('');
+  });
+});
+
+describe('ponto de entrada sem condição por ambiente (texto dos arquivos)', () => {
+  const lerTexto = (nome: string) => readFileSync(fileURLToPath(new URL(`../${nome}`, import.meta.url)), 'utf8');
+  const arquivos = ['verificar-cache-hyperdrive-cli.ts', 'verificar-cache-hyperdrive.ts'];
+
+  it.each(arquivos)('%s não usa import.meta.main nem process.argv[1]', (nome) => {
+    const texto = lerTexto(nome);
+    expect(texto).not.toMatch(/import\.meta\.main/);
+    expect(texto).not.toMatch(/process\.argv\s*\[\s*1\s*\]/);
+  });
+
+  it.each(arquivos)('%s não condiciona process.exit( a um if', (nome) => {
+    expect(lerTexto(nome)).not.toMatch(/\bif\b[^;]*?process\.exit\s*\(/);
+  });
+
+  it('a CLI chama process.exit(main(process.argv.slice(2))) incondicionalmente', () => {
+    const codigo = lerTexto('verificar-cache-hyperdrive-cli.ts')
+      .split('\n')
+      .filter((linha) => !linha.trim().startsWith('//'));
+    expect(codigo.filter((linha) => linha.trim() === 'process.exit(main(process.argv.slice(2)));')).toHaveLength(1);
   });
 });
 
