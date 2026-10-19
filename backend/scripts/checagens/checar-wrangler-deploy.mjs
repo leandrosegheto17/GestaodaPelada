@@ -10,7 +10,7 @@ const RAIZ = process.argv[2] ?? process.cwd();
 const FORA =
   /^(\.md|\.claude)\/|\/node_modules\/|^\.github\/workflows\/deploy\.yml$|^backend\/scripts\/checagens\/(checar-wrangler-deploy\.mjs|test\/checar-wrangler-deploy\.test\.mjs)$/;
 const EXECUTAVEL =
-  /(^\.github\/.*\.ya?ml$)|(^|\/)package\.json$|\.(sh|js|mjs|cjs|ts|ps1|cmd|bat|py)$|(^|\/)(Dockerfile(\.[^/]*)?|[^/]*\.Dockerfile|Makefile|justfile)$/;
+  /(^\.github\/.*\.ya?ml$)|(^|\/)package\.json$|\.(sh|js|mjs|cjs|ts|ps1|cmd|bat|py)$|(^|\/)(Dockerfile(\.[^/]*)?|[^/]*\.Dockerfile|(GNU)?Makefile|justfile)$/i;
 // Aceita flags globais (e o valor delas) entre `wrangler` e o subcomando: `wrangler -c x.jsonc deploy`.
 // Subcomandos de publicação: `deploy`, `versions|pages|triggers deploy` e o alias legado `publish`.
 // O valor de uma flag pode vir entre aspas (`--config "a b"`).

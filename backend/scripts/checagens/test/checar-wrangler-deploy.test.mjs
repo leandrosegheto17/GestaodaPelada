@@ -63,6 +63,13 @@ describe('checar-wrangler-deploy', () => {
     ['scripts/q.sh', 'wrangler.cmd -c x.jsonc pages deploy dist\n'],
     ['.github/workflows/outro.yml', '      - uses: cloudflare/pages-action@v1\n'],
     ['.github/workflows/outro.yml', '      - uses: "cloudflare/pages-action@v1"\n'],
+    ['scripts/P.BAT', 'wrangler deploy\n'],
+    ['scripts/p.PS1', 'wrangler deploy\n'],
+    ['.github/workflows/x.YML', '      - uses: cloudflare/pages-action@v1\n'],
+    ['dockerfile', 'RUN wrangler deploy\n'],
+    ['Justfile', 'publicar:\n  wrangler deploy\n'],
+    ['GNUmakefile', 'publicar:\n\twrangler deploy\n'],
+    ['.github/workflows/Deploy.yml', '      - run: wrangler deploy\n'],
   ])('falha: %s', (nome, texto) => {
     expect(rodar(repositorio({ [nome]: texto }))).toBe(1);
   });

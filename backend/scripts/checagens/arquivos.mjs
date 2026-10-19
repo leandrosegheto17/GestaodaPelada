@@ -4,7 +4,7 @@ import { join } from 'node:path';
 
 const EXTENSOES = /\.(ts|tsx|mjs|cjs|js|jsx|json|jsonc|yml|yaml|css|html|sql|toml|sh|ps1|cmd|bat|py)$/i;
 // Arquivos sem extensão (ou com a extensão no meio) que também executam comandos.
-const NOMES = /(^|\/)(Dockerfile(\.[^/]*)?|[^/]*\.Dockerfile|Makefile|justfile)$/;
+const NOMES = /(^|\/)(Dockerfile(\.[^/]*)?|[^/]*\.Dockerfile|(GNU)?Makefile|justfile)$/i;
 
 /** Termina o processo com código 2 (falha fechado: ferramenta ausente ou entrada vazia). */
 export function falharFechado(mensagem) {
