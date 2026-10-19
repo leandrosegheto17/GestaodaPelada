@@ -22,7 +22,7 @@ opera. Nenhuma senha, chave ou string de conexão vai neste arquivo.
    migração (o workflow mantém os 2 mais novos). Use-o como origem, ou restaure o artefato
    `dump-predeploy-producao-<run_id>` num branch novo (seção seguinte). Depois troque a origem do Hyperdrive (o `id`
    está em `hyperdrive[0].id` do `wrangler.jsonc`):
-   `pnpm --filter @pelada/api exec wrangler hyperdrive update <id> --origin-host <host> --origin-user <usuario> --origin-password <senha> --origin-database <banco> --caching-disabled`
+   `pnpm --filter @pelada/api exec wrangler hyperdrive update <id> --origin-host <host> --origin-user <usuario> --origin-password <senha> --database <banco> --caching-disabled`
    (digite a senha só no terminal; mantenha `--caching-disabled`, G-17).
 3. Confira com `GET /api/saude` e com a contagem de linhas (seção seguinte).
 
@@ -54,7 +54,8 @@ DONO_EMAIL=<e-mail do dono> DATABASE_URL=<conexão direta> pnpm exec tsx backend
 
 Pelo SQL Editor do Neon, quando o script não puder rodar: o mesmo que o script faz (hash com `crypt` custo 12, senha
 temporária, sessões encerradas, auditoria). Troque `<SENHA>` pela senha provisória **só no console** (não cole em chat,
-e-mail nem arquivo) e peça a troca no primeiro login. Rode **um** dos dois blocos.
+e-mail nem arquivo) e peça a troca no primeiro login. A senha não pode ter apóstrofo (`'`). O histórico do SQL Editor
+guarda o texto executado: apague a entrada depois de rodar. Rode **um** dos dois blocos.
 
 Criar (primeira vez):
 
