@@ -6,7 +6,7 @@ inputs:
     description: Conexão direta com o Postgres (usuário só de leitura no backup).
     required: true
   chave:
-    description: Identidade age (AGE-SECRET-KEY-1...).
+    description: Destinatário público age (age1...). Nunca a identidade privada.
     required: true
   nome-artefato:
     description: Nome do artefato.

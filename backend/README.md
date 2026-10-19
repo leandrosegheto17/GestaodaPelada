@@ -57,8 +57,11 @@ trava de host (`--alvo producao` para o banco remoto). Nenhuma rota escreve o pa
 ## Backup
 
 O workflow `backup.yml` roda todo dia às 07:00 UTC (04:00 em São Paulo) e sob demanda. Ele faz `pg_dump` com o usuário
-só de leitura, cifra o dump com `age` (`BACKUP_CHAVE` é uma identidade `AGE-SECRET-KEY-1…`) e guarda só o arquivo
-cifrado como artefato por 30 dias.
+só de leitura, cifra o dump com `age` e guarda só o arquivo cifrado como artefato por 30 dias.
+
+`BACKUP_CHAVE` guarda só o destinatário público (`age1…`); a identidade privada (`AGE-SECRET-KEY-1…`) nunca vai para o
+GitHub. Para criar o par: `age-keygen -o identidade.txt`, guarde o arquivo no gerenciador de senhas, grave no secret só
+a linha `Public key` (`gh secret set BACKUP_CHAVE`, colando quando pedido) e apague `identidade.txt` do disco.
 
 - A falha do workflow agendado avisa por e-mail pelo GitHub: confira que as notificações de Actions estão ligadas.
 - Para decifrar e restaurar, veja o `DEPLOY.md`.
