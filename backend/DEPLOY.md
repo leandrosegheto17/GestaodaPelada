@@ -9,53 +9,77 @@ opera. Nenhuma senha, chave ou string de conexão vai neste arquivo.
 - **Sem homologação** (ADR-020). Host: `https://pelada.prod-ljs.workers.dev`.
 - O que o [`deploy.yml`](../.github/workflows/deploy.yml) faz, nesta ordem: cria o branch de restauração no Neon
   (`restauracao-<ambiente>-<run_id>`), gera o dump cifrado (artefato `dump-predeploy-<ambiente>-<run_id>`), roda
-  `backend/scripts/migrar.ts --alvo`, confere que o cache do Hyperdrive está desligado e publica com
+  `backend/scripts/migrar.ts --alvo producao`, confere que o cache do Hyperdrive está desligado e publica com
   `wrangler deploy`. Depois confere `GET /api/saude`.
 - Só esse workflow chama `wrangler deploy` (conferido no CI por `checar-wrangler-deploy.mjs`).
 
 ## Voltar atrás
 
-1. **Só o código:** `wrangler rollback`. O workflow já faz isso quando o deploy ou a
+1. **Só o código:** `pnpm --filter @pelada/api exec wrangler rollback -c ../../wrangler.jsonc` (com
+   `CLOUDFLARE_API_TOKEN` e `CLOUDFLARE_ACCOUNT_ID` no ambiente). O workflow já faz isso quando o deploy ou a
    checagem de saúde falha depois da migração.
-2. **Se a migração estragou dado:** restaure o branch `restauracao-*` pelo console ou pela API do Neon e troque a
-   origem do Hyperdrive para ele:
-   `wrangler hyperdrive update <id> --origin-host <host> --origin-user <usuario> --origin-password <senha> --origin-database <banco> --caching-disabled`
-   (digite a senha só no terminal; mantenha `--caching-disabled`).
+2. **Se a migração estragou dado:** o branch `restauracao-producao-<run_id>` do Neon é uma cópia do banco de antes da
+   migração (o workflow mantém os 2 mais novos). Use-o como origem, ou restaure o artefato
+   `dump-predeploy-producao-<run_id>` num branch novo (seção seguinte). Depois troque a origem do Hyperdrive (o `id`
+   está em `hyperdrive[0].id` do `wrangler.jsonc`):
+   `pnpm --filter @pelada/api exec wrangler hyperdrive update <id> --origin-host <host> --origin-user <usuario> --origin-password <senha> --origin-database <banco> --caching-disabled`
+   (digite a senha só no terminal; mantenha `--caching-disabled`, G-17).
 3. Confira com `GET /api/saude` e com a contagem de linhas (seção seguinte).
 
 ## Restaurar um backup
 
-1. Baixe o artefato: `gh run download <run_id> -n <nome-do-artefato>` (backup diário: `backup-AAAA-MM-DD-<run_id>`).
-2. Decifre: `age -d -i <arquivo-da-chave> -o dump.pgdump <arquivo>.sql.age`. A chave (`AGE-SECRET-KEY-1…`) fica só no
-   gerenciador de senhas.
+1. Baixe o artefato: `gh run download <run_id> -n <nome-do-artefato>` (backup diário `backup-AAAA-MM-DD-<run_id>`,
+   do `backup.yml`; antes da migração `dump-predeploy-producao-<run_id>`, do `deploy.yml`). Sai um `<nome>.sql.age`.
+2. Decifre: `age -d -i <arquivo-com-a-identidade> -o dump.pgdump <nome>.sql.age`. O secret `BACKUP_CHAVE` guarda só o
+   destinatário público (`age1…`); a identidade privada (`AGE-SECRET-KEY-1…`) fica só no gerenciador de senhas:
+   grave-a num arquivo temporário para o comando e apague-o depois.
 3. Crie um branch novo no Neon (ou, no ensaio, um banco novo no Postgres local) e restaure com o `pg_restore` da
    versão do servidor: `pg_restore --no-owner --clean --if-exists -d "$URL_NOVA" dump.pgdump`.
+   O `pg_restore` pode avisar de objetos que não existem (`--if-exists`); erros de verdade fazem o comando sair com
+   código diferente de zero.
 4. Compare as contagens no banco antigo e no restaurado: `psql "$URL" -f backend/scripts/ops/contar-linhas.sql`.
 5. Aponte o Hyperdrive para o branch novo (comando da seção anterior). Para voltar atrás, aponte a origem de volta.
-6. Apague `dump.pgdump` e qualquer arquivo decifrado ao terminar.
+6. Apague `dump.pgdump`, o arquivo `.sql.age` e o arquivo com a identidade ao terminar. O dump tem dados pessoais:
+   decifre só numa máquina do dono.
 
 ## Conta do dono
 
-Pelo script (usa a trava de host; confirma o e-mail):
+Pelo script, na raiz do repositório (usa a trava de host; pede para digitar o e-mail do dono; imprime a senha
+temporária uma única vez). `DATABASE_URL` é a conexão direta de migração de produção, digitada só no terminal:
 
 ```
-pnpm exec tsx backend/scripts/dono.ts criar --alvo producao
-pnpm exec tsx backend/scripts/dono.ts redefinir-senha --alvo producao
+DONO_EMAIL=<e-mail do dono> DATABASE_URL=<conexão direta> pnpm exec tsx backend/scripts/dono.ts criar --alvo producao
+DONO_EMAIL=<e-mail do dono> DATABASE_URL=<conexão direta> pnpm exec tsx backend/scripts/dono.ts redefinir-senha --alvo producao
 ```
 
-Pelo SQL Editor do Neon, quando o script não puder rodar. Troque `:'senha'` pela senha provisória **só no console** e
-peça a troca no primeiro login (`senha_temporaria = true`):
+Pelo SQL Editor do Neon, quando o script não puder rodar: o mesmo que o script faz (hash com `crypt` custo 12, senha
+temporária, sessões encerradas, auditoria). Troque `<SENHA>` pela senha provisória **só no console** (não cole em chat,
+e-mail nem arquivo) e peça a troca no primeiro login. Rode **um** dos dois blocos.
+
+Criar (primeira vez):
 
 ```sql
 BEGIN;
--- criar (primeira vez):
-INSERT INTO contas (email, nome, senha_hash, senha_temporaria, e_dono, criada_em)
-VALUES ('leandrosegheto17@gmail.com', 'Dono', crypt(:'senha', gen_salt('bf', 12)), true, true, now());
--- ou redefinir:
-UPDATE contas SET senha_hash = crypt(:'senha', gen_salt('bf', 12)), senha_temporaria = true WHERE e_dono;
+WITH nova AS (
+  INSERT INTO contas (email, nome, senha_hash, senha_temporaria, e_dono, criada_em)
+  VALUES ('leandrosegheto17@gmail.com', 'Dono', crypt('<SENHA>', gen_salt('bf', 12)), true, true, now())
+  RETURNING id
+)
+INSERT INTO auditoria (autor_tipo, acao, entidade, entidade_id, momento)
+SELECT 'infraestrutura', 'dono_criado', 'conta', id::text, now() FROM nova;
+COMMIT;
+```
+
+Redefinir a senha:
+
+```sql
+BEGIN;
+UPDATE contas SET senha_hash = crypt('<SENHA>', gen_salt('bf', 12)), senha_temporaria = true WHERE e_dono;
 DELETE FROM sessoes WHERE conta_id = (SELECT id FROM contas WHERE e_dono);
-INSERT INTO auditoria (autor_tipo, acao, entidade, entidade_id, momento, resumo)
-SELECT 'infraestrutura', 'dono.senha_redefinida', 'conta', id::text, now(), '{}'::jsonb FROM contas WHERE e_dono;
+UPDATE pedidos_reset SET resolvido_em = now()
+  WHERE resolvido_em IS NULL AND conta_id = (SELECT id FROM contas WHERE e_dono);
+INSERT INTO auditoria (autor_tipo, acao, entidade, entidade_id, momento)
+SELECT 'infraestrutura', 'senha_redefinida', 'conta', id::text, now() FROM contas WHERE e_dono;
 COMMIT;
 ```
 
