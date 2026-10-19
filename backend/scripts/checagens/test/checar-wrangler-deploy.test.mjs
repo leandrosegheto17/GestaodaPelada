@@ -33,12 +33,21 @@ describe('checar-wrangler-deploy', () => {
     ['scripts/a.sh', 'npx wrangler@3 deploy\n'],
     ['.github/workflows/outro.yml', '      - run: pnpm exec wrangler  deploy --env teste\n'],
     ['scripts/b.mjs', "execSync('wrangler versions deploy');\n"],
+    [
+      '.github/workflows/ci.yml',
+      '      - run: pnpm --filter @pelada/api exec wrangler deploy -c ../../wrangler.jsonc\n',
+    ],
+    ['scripts/d.sh', 'pnpm --filter @pelada/api exec wrangler versions deploy -c ../../wrangler.jsonc\n'],
   ])('falha: %s', (nome, texto) => {
     expect(rodar(repositorio({ [nome]: texto }))).toBe(1);
   });
 
   it.each([
     ['.github/workflows/deploy.yml', '      - run: pnpm exec wrangler deploy\n'],
+    [
+      '.github/workflows/deploy.yml',
+      '      - run: pnpm --filter @pelada/api exec wrangler deploy -c ../../wrangler.jsonc\n',
+    ],
     ['backend/DEPLOY.md', 'Rode `wrangler deploy` no workflow.\n'],
     ['README.md', 'wrangler deploy\n'],
     ['package.json', '{ "scripts": { "local": "wrangler dev" } }\n'],
