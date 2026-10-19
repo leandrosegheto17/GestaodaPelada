@@ -983,3 +983,15 @@ APROVADA; 0 críticos/0 não críticos; 5 testes usam contarConsultas, nenhum es
 
 ## RTP-0130 — QA — 2026-10-18
 APROVADA — alinhamento do recorte a pixel inteiro é correção legítima da medição (T16 sem-habilidades 4,60%/5,98% -> 0,00%), demais telas com recorte inalteradas e controles positivos (4 px, texto) ainda detectados; 0 críticos, 0 não críticos.
+
+## RTP-0131 — QA — 2026-10-19
+APROVADA; 0 críticos, 0 não críticos; sem `<form>` à mão fora de Formulario.tsx, `.formulario`/`.duasColunas` únicos, saude.py sem blocos Formulario*, visual 36/36 OK (máx. 0,65%), typecheck/eslint/stylelint ok, 316 testes passando.
+
+## RTP-0132 — QA — 2026-10-19
+APROVADA; 0 críticos/0 não críticos; ResultadoDois 144 linhas, saude.py sem blocos, typecheck/eslint/stylelint ok, vitest 45/45 sem asserção alterada; e2e T13/T14 não reexecutado (porta compartilhada).
+
+## RTP-0133 — QA — 2026-10-19
+APROVADA — hook único `useMesDaUrl` usado pelas 3 páginas, saude.py sem o bloco, tsc/eslint 0 e vitest 46/46; 0 achados.
+
+## RTP-0134 — QA — 2026-10-19
+APROVADA; 0 críticos/0 não críticos; 73 arquivos com print-config idêntico, checar-grupo-id com saída idêntica e mesmo tempo (~1,6 s) antes/depois, lint exit 0, saude §1 sem arquivos acima do limite.
