@@ -89,11 +89,21 @@ describe('ponto de entrada sem condição por ambiente (texto dos arquivos)', ()
     expect(lerTexto(nome)).not.toMatch(/\bif\b[^;]*?process\.exit\s*\(/);
   });
 
+  const semComentarios = (texto: string) => texto.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '');
+  const instrucaoFinal = 'process.exit(main(process.argv.slice(2)));';
+
   it('a CLI chama process.exit(main(process.argv.slice(2))) incondicionalmente', () => {
-    const codigo = lerTexto('verificar-cache-hyperdrive-cli.ts')
-      .split('\n')
-      .filter((linha) => !linha.trim().startsWith('//'));
-    expect(codigo.filter((linha) => linha.trim() === 'process.exit(main(process.argv.slice(2)));')).toHaveLength(1);
+    const codigo = semComentarios(lerTexto('verificar-cache-hyperdrive-cli.ts')).replace(/\s+/g, ' ').trim();
+    expect(codigo).toBe(`import { main } from './verificar-cache-hyperdrive'; ${instrucaoFinal}`);
+  });
+
+  it('a CLI não tem bloco, palavra de controle, import.meta nem process.argv fora da instrução final', () => {
+    const codigo = semComentarios(lerTexto('verificar-cache-hyperdrive-cli.ts'))
+      .replace("import { main } from './verificar-cache-hyperdrive';", '')
+      .replace(instrucaoFinal, '');
+    expect(codigo.trim()).toBe('');
+    expect(codigo).not.toMatch(/[{}]|\bimport\s*\.\s*meta\b|\bprocess\b|\bargv\b/);
+    expect(codigo).not.toMatch(/\b(if|else|try|catch|switch|for|while|do|case)\b/);
   });
 });
 
