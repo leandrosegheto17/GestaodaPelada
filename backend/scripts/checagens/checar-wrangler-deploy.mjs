@@ -6,7 +6,8 @@ const RAIZ = process.argv[2] ?? process.cwd();
 const FORA =
   /^(\.md|\.claude)\/|\/node_modules\/|^\.github\/workflows\/deploy\.yml$|^backend\/scripts\/checagens\/(checar-wrangler-deploy\.mjs|test\/checar-wrangler-deploy\.test\.mjs)$/;
 const EXECUTAVEL = /(^\.github\/.*\.ya?ml$)|(^|\/)package\.json$|\.(sh|js|mjs|cjs|ts)$/;
-const DEPLOY = /\bwrangler(?:@[\w.^~<>=*-]+)?\s+(?:versions\s+)?deploy\b/;
+// Aceita flags globais (e o valor delas) entre `wrangler` e o subcomando: `wrangler -c x.jsonc deploy`.
+const DEPLOY = /\bwrangler(?:@[\w.^~<>=*-]+)?(?:\s+-\S+(?:\s+[^\s-]\S*)?)*\s+(?:versions\s+)?deploy\b/;
 const CONTINUA = /\\\s*$/;
 
 const arquivos = arquivosVersionados(RAIZ, (c) => EXECUTAVEL.test(c) && !FORA.test(c));
