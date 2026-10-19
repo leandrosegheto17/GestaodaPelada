@@ -12,3 +12,7 @@ frontend/web/e2e/resultado/
 
 .pnpm-store
 .tmp-out.txt
+
+# Evidência visual gerada pelas comparações (comparar-visual.mjs)
+.md/.visual/
+.md/.revisao/visual-*/*.png
