@@ -71,7 +71,7 @@ jobs:
         run: |
           set -euo pipefail
           id="$(pnpm exec tsx backend/scripts/ops/hyperdrive-id.ts)"
-          pnpm --filter @pelada/api exec wrangler hyperdrive get "$id" --json | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const h=JSON.parse(s);if(!(h.caching&&h.caching.disabled===true)){console.error("Cache do Hyperdrive ligado (G-17).");process.exit(1)}})'
+          pnpm --silent --filter @pelada/api exec wrangler hyperdrive get "$id" --json | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const h=JSON.parse(s);if(!(h.caching&&h.caching.disabled===true)){console.error("Cache do Hyperdrive ligado (G-17).");process.exit(1)}})'
 
       - name: Deploy
         id: publicar
