@@ -38,6 +38,9 @@ describe('checar-wrangler-deploy', () => {
       '      - run: pnpm --filter @pelada/api exec wrangler deploy -c ../../wrangler.jsonc\n',
     ],
     ['scripts/d.sh', 'pnpm --filter @pelada/api exec wrangler versions deploy -c ../../wrangler.jsonc\n'],
+    ['scripts/e.sh', 'wrangler -c x.jsonc deploy\n'],
+    ['.github/workflows/outro.yml', '      - run: wrangler --env p deploy\n'],
+    ['scripts/f.sh', 'pnpm exec wrangler --config c deploy\n'],
   ])('falha: %s', (nome, texto) => {
     expect(rodar(repositorio({ [nome]: texto }))).toBe(1);
   });
