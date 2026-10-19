@@ -28,6 +28,16 @@ export async function carregarHistoricoGrupo(ex: ExecutorDb, grupoId: string, at
     jogadores: lista.map(paraJogadorDominio),
     partidas: historico.partidas.map(paraPartidaDominio),
     presencas: historico.presencas.map(paraPresencaDominio),
-    configsPesos: configs.filter((c) => c.vigenteDesde <= ate).map(paraConfigPesosDominio),
+    configsPesos: pesosAte(configs, ate).map(paraConfigPesosDominio),
   };
+}
+
+/**
+ * Configurações de pesos vigentes até `ate`. Se todas começam depois (grupo criado hoje e simulação
+ * para hoje, com `ate` na véspera), fica a mais antiga: o domínio usa a primeira para datas anteriores a ela.
+ */
+function pesosAte<T extends { vigenteDesde: string }>(configs: readonly T[], ate: string): T[] {
+  const vigentes = configs.filter((c) => c.vigenteDesde <= ate);
+  if (vigentes.length > 0 || configs.length === 0) return vigentes;
+  return [configs.reduce((a, b) => (b.vigenteDesde < a.vigenteDesde ? b : a))];
 }

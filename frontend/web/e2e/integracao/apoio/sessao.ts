@@ -5,7 +5,12 @@ export async function entrarComo(page: Page, email: string, senha: string): Prom
   await page.goto('/entrar');
   await page.getByLabel('E-mail').fill(email);
   await page.getByLabel('Senha', { exact: true }).fill(senha);
+  // Espera a resposta do login: sem ela, um `goto` ou `request` logo depois sai antes de o cookie existir.
+  const resposta = page.waitForResponse(
+    (r) => r.request().method() === 'POST' && new URL(r.url()).pathname === '/api/sessao/entrar',
+  );
   await page.getByRole('button', { name: 'Entrar' }).click();
+  await resposta;
 }
 
 /**

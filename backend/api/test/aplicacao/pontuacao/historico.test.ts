@@ -29,6 +29,19 @@ function contarConsultas() {
 }
 
 describe('carregarHistoricoGrupo', () => {
+  it('grupo cujos pesos começam depois da data pedida mantém a configuração mais antiga', async () => {
+    const db = await abrir();
+    const base = await criarBase(db, fabrica);
+    await pesos.criarPadrao(db, base.grupo.id, {
+      pesos: PESOS_PADRAO,
+      vigenteDesde: '2026-10-16',
+      registradoPor: base.contaId,
+      agora: AGORA,
+    });
+    const historico = await carregarHistoricoGrupo(embrulhar(kyselyDe(db), false), base.grupo.id, '2026-10-15');
+    expect(historico.configsPesos.map((c) => c.vigenteDesde)).toEqual(['2026-10-16']);
+  });
+
   it('traz o grupo até a data (inclusive), sem dados de outro grupo, e alimenta o ranking', async () => {
     const db = await abrir();
     const base = await criarBase(db, fabrica);
