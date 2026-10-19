@@ -1,13 +1,12 @@
 name: deploy
 
 # Único lugar com `wrangler deploy` (conferido por backend/scripts/checagens/checar-wrangler-deploy.mjs).
-# Só produção (ADR-020, sem homologação). Publica pela main, com aprovação manual no environment `producao`.
+# Só produção (ADR-020, sem homologação). Disparo manual (`/deploy` ou Actions → Run workflow), sempre pela main; o push não dispara deploy.
 # O build do web vem primeiro: uma configuração inválida falha antes de qualquer mudança em produção.
 # Ordem: branch de restauração no Neon -> dump cifrado -> migração -> cache do Hyperdrive -> deploy.
 
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read

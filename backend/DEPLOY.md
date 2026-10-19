@@ -5,7 +5,7 @@ opera. Nenhuma senha, chave ou string de conexão vai neste arquivo.
 
 ## Deploy
 
-- **Produção:** merge na `main` e aprovação manual no environment `producao` do GitHub.
+- **Produção:** disparo manual do `deploy.yml` a partir da `main` (`gh workflow run deploy.yml --ref main`). O push não dispara deploy.
 - **Sem homologação** (ADR-020). Host: `https://pelada.prod-ljs.workers.dev`.
 - O que o [`deploy.yml`](../.github/workflows/deploy.yml) faz, nesta ordem: cria o branch de restauração no Neon
   (`restauracao-<ambiente>-<run_id>`), gera o dump cifrado (artefato `dump-predeploy-<ambiente>-<run_id>`), roda
