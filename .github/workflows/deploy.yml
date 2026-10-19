@@ -72,8 +72,12 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           set -euo pipefail
-          id="$(pnpm exec tsx backend/scripts/ops/hyperdrive-id.ts)"
-          pnpm --silent --filter @pelada/api exec wrangler hyperdrive get "$id" --json | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const h=JSON.parse(s);if(!(h.caching&&h.caching.disabled===true)){console.error("Cache do Hyperdrive ligado (G-17).");process.exit(1)}})'
+          id="$(pnpm --silent exec tsx backend/scripts/ops/hyperdrive-id.ts)"
+          # O token vai por stdin do curl (não aparece em argumentos); a regra do G-17 fica no script testado.
+          printf 'header = "Authorization: Bearer %s"\n' "$CLOUDFLARE_API_TOKEN" |
+            curl --fail-with-body -sS --config - \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/hyperdrive/configs/${id}" |
+            pnpm --silent exec tsx backend/scripts/ops/verificar-cache-hyperdrive.ts
 
       - name: Deploy
         id: publicar
