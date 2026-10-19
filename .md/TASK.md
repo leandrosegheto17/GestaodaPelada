@@ -900,6 +900,12 @@ Colunas lidas pelo `taskplan.py` pelo nome. **Est** em dias-pessoa. **Cria**/**U
 | RTP-0160 | Refatoração Lote-30 | consultar-hyperdrive: validar a base da API (https e host da Cloudflare) antes de enviar o token Bearer | Backend | G-21; G-18; DevSecOps da RTP-0154 | Com CLOUDFLARE_API_BASE fora de https ou com host diferente de api.cloudflare.com, o script sai rc 1 antes de qualquer requisição, sem eco do token nem do valor; o caminho de produção não é afrouxável por variável do repositório; testes locais seguem possíveis; checar-urls-absolutas.mjs intacta (sem exceção nova) | 0,1 d | RTP-0154 | nao | backend/scripts/ops/consultar-hyperdrive.sh, backend/scripts/ops/test/consultar-hyperdrive.test.mjs | vitest do consultar-hyperdrive (casos http, host alheio, userinfo@, porta); shellcheck -x; checar-urls-absolutas sem achado no script | Concluída · QA ✔ · Sec ✔ |
 | RTP-0161 | Refatoração Lote-30 | DEPLOY.md: alternativa tmpfs do passo 6 avisar de swap em disco e Device Encryption sem escrow | Backend | G-21; RNF-06 (LGPD); DevSecOps da RTP-0156 | No backend/DEPLOY.md, passo 6 de Restaurar um backup, a alternativa tmpfs diz que só protege com swap desligado ou cifrado, e o Device Encryption cita que a chave de recuperação fica em conta/AD e deve ser guardada; prettier --check --end-of-line auto e checar-ids-tarefa em 0 | 0,05 d | RTP-0156 | nao | backend/DEPLOY.md | prettier --check --end-of-line auto backend/DEPLOY.md; checar-ids-tarefa.mjs | Concluída · QA ✔ · Sec ✔ |
 
+### Refatoração Revisão 2026-10-19
+| ID | Lote | Título | Chapéu | Reqs | Aceite | Est | Dep | Par | Arquivos | Testes e diretrizes | Status |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| RTP-0162 | Refatoração Revisão 2026-10-19 | deploy.yml: lógica do branch de restauração do Neon em script testado (hoje node -e inline) | Backend | ADR-011; SDD §6 | os dois node -e do passo Branch de restauração no Neon saem do deploy.yml; pai e branches restauracao-<ambiente>-* a apagar (manter os 2 mais novos) viram função pura testada em backend/scripts/ops/ + CLI fina; testes cobrem pai ausente, JSON inválido, 0/1/2/3+ branches e ordenação | 0,4 d | - | - | .github/workflows/deploy.yml; backend/scripts/ops/restauracao-neon.ts (novo); backend/scripts/ops/restauracao-neon-cli.ts (novo) | backend/scripts/ops/test/restauracao-neon.test.ts (novo) | Pendente |
+
+
 
 
 

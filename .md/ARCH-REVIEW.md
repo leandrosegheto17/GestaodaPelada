@@ -1,5 +1,27 @@
 # Revisão de arquitetura
 
+## Revisão 2026-10-19 — sob demanda (projeto inteiro, segunda revisão)
+
+Números do saude.py: 0 arquivos acima do limite · 3 blocos duplicados (25 linhas) · 3 IDs de tarefa (todos em `evidencia/s-01`) · 2 pastas com acesso a dados (`backend/api/src`, `evidencia/s-01`) · 0 imports indevidos entre aplicações · 0 conversões forçadas · 8 comentários de cópia (falsos positivos, como ontem). Comparação visual: tudo OK; T18 Pontuação/sucesso/pc divergiu uma vez (39,48%, altura 800 vs 1169) por carregamento incompleto e deu 0,00% ao repetir; `tokens.css` do app idêntico ao do mockup.
+
+**Não há achado de severidade Alta aberto.** A Alta da revisão anterior (RTP-0130, T16) está Aprovada, assim como RTP-0131 a RTP-0134; nenhuma tela divergiu do mockup nesta rodada.
+
+| # | Achado | Item do checklist | Severidade | Onde | Destino |
+|---|---|---|---|---|---|
+| 1 | O passo "Branch de restauração no Neon" decide o branch pai e **quais branches são apagados** com dois `node -e` inline, sem teste; o resto do workflow já põe a regra em script testado (`ops/`) | 17 | Média | `.github/workflows/deploy.yml:46,52` | RTP-0162 |
+
+Descartados:
+- Instabilidade da T18 Pontuação/sucesso/pc na comparação visual: nota, não regressão. A tela repetida deu 0,00% com a mesma altura; a primeira leitura pegou a página antes de terminar de carregar. Se voltar a aparecer, vale esperar o fim do carregamento antes de capturar (ajuste da ferramenta de comparação, não do app).
+- IDs de tarefa e acesso a dados em `evidencia/s-01`: pasta de evidência do spike, fora do código de produção (igual à revisão anterior).
+- Comentários "que admitem cópia" (8): falam de partida duplicada/repetida e do espelho do PWA; nenhum diz que o código foi copiado (igual à anterior).
+- Acesso a dados em `backend/api/src` (89): o `saude.py` agrupa por pasta de partida; o G-02 é verificado por ESLint e `checar-grupo-id.mjs` (igual à anterior). Imports entre pacotes conformes ao SDD.
+- Blocos duplicados do §2: `AreaDono`/`GrupoDono` (9 linhas, `DialogoSenha` com `aoFechar`), `PaginaGrupo`/`PaginaPontuacao` (8 linhas, timer do aviso "salvo") e dois `EXISTS` de `temPresencaAntesDe`/`temPresencaDesde` em `jogadores.ts`. Cada um tem 2 cópias de poucas linhas; extrair seria refinamento marginal.
+- Lote-30 (scripts `ops`/`checagens`): sem duplicação relevante (`arquivos.mjs` já concentra `git ls-files`, `falharFechado`, `procurar` e `encerrar` e todos os `checar-*` o usam; `ops/` tem funções puras + CLI fina), nenhum arquivo perto do limite de 300 linhas, `consultar-hyperdrive.sh` valida token e base antes de enviar.
+
+Troca de dados em produção (item 17): a tabela da §6 do SDD bate com o `deploy.yml` (branch do Neon e dump antes da migração, migração aditiva, cache do Hyperdrive conferido, `wrangler rollback` e instrução de restauração em falha). Único ponto aberto é a lógica de retenção dos branches (RTP-0162).
+
+Sem achado nos itens: 1 a 16 e 18. Itens 11, 13 e 14 foram olhados por amostragem do relatório, sem leitura exaustiva de cabeçalhos.
+
 ## Revisão 2026-10-18 — sob demanda (projeto inteiro, primeira revisão)
 
 Números do saude.py: 3 arquivos acima do limite (2 código, 1 componente) · 24 blocos duplicados (250 linhas) · 3 IDs de tarefa (todos em `evidencia/`) · 2 pastas com acesso a dados (`backend/api/src`, `evidencia/s-01`) · 0 imports indevidos entre aplicações (web importa só `@pelada/contrato`) · 0 conversões forçadas. Comparação visual: 115 OK, 2 DIVERGE (T16 sem-habilidades); `tokens.css` do app idêntico ao do mockup.
