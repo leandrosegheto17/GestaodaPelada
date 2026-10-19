@@ -1049,3 +1049,15 @@ RTP-0147 APROVADA: pages/triggers deploy, publish, flag entre aspas e wrangler-a
 
 ## RTP-0148 — QA — 2026-10-19
 APROVADA - 0 críticos, 1 não crítico (aceite 5 só falha o teste sob Node < 22.18; ABRIR-RTP de teste estático); fail-closed provado em Node 24 e 22.12 (11 entradas, só válido rc 0), sem --executar rc 1, CLI renomeada rc 1, curl falho para o passo; vitest 28, tsc/eslint/prettier/actionlint/wrangler/ids rc 0.
+
+## RTP-0149 — QA — 2026-10-19
+APROVADA, 0 críticos e 0 não críticos; prettier e checar-ids-tarefa em 0, icacls de uma linha executado com exit 0, pgpass.conf citado com formato sem segredo.
+
+## RTP-0150 — QA — 2026-10-19
+APROVADA; 0 críticos, 1 não crítico (RTP-0154: checar-urls-absolutas G-18 reprova a URL padrão no .sh); token hostil rc 1 sem arquivo nem requisição, actionlint e shellcheck rc 0, 3 testes passando.
+
+## RTP-0151 — QA — 2026-10-19
+APROVADA; 0 críticos, 0 não críticos; prettier e checar-ids em 0, limpeza PowerShell confirmada (variável e Env:URL deixam de existir).
+
+## RTP-0152 — QA — 2026-10-19
+APROVADA; 0 críticos, 1 não crítico (RTP-0155, prettier em arquivos.mjs); 51 testes passando, raiz rc 0, aceite e risco residual conferidos.
