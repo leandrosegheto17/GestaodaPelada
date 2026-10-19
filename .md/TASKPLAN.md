@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-19 12:05
+Atualizado: 2026-10-19 12:14
 
-Resumo: Não executada 19 · Aprovada 341 · Bloqueada 2 · total 362
+Resumo: Não executada 13 · Executada (aguarda teste) 6 · Aprovada 341 · Bloqueada 2 · total 362
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -365,12 +365,12 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 350 | RTP-0134 | executor | ✔ | eslint.config.mjs e checar-grupo-id.mjs abaixo de 300 linhas [Baixa] | Refatoração Revisão 2026-10-18 | — | Aprovada |
 | 351 | RTP-0135 | executor | ✔ | dump-cifrado: não deixar o psql/pg_dump ecoar o host do Neon no log público | Refatoração Lote-30 | TP-0136 | Aprovada |
 | 352 | RTP-0136 | executor | ✔ | backup: guardar só o destinatário público age no secret (não a identidade privada) | Refatoração Lote-30 | TP-0136 | Aprovada |
-| 353 | RTP-0137 | executor | ✔ | deploy.yml: ler o id do Hyperdrive com o parser do teste de configuração (sem duplicar) | Refatoração Lote-30 | TP-0135 | Não executada |
-| 354 | RTP-0138 | executor | ✔ | deploy.yml: rollback sem interpolação em run: e build do web antes da migração | Refatoração Lote-30 | TP-0135 | Não executada |
-| 355 | RTP-0139 | executor | ✔ | deploy.yml: saída do hyperdrive get sem ruído do pnpm antes do JSON.parse | Refatoração Lote-30 | TP-0135 | Não executada |
-| 356 | RTP-0140 | executor | ✔ | checar-wrangler-deploy: reconhecer wrangler com flags antes do subcomando deploy | Refatoração Lote-30 | TP-0135 | Não executada |
-| 357 | RTP-0141 | executor | ✔ | deploy.yml: checkout com persist-credentials false | Refatoração Lote-30 | TP-0135 | Não executada |
-| 358 | RTP-0142 | executor | ✔ | DEPLOY.md: higiene de segredo e dado pessoal nos comandos do runbook | Refatoração Lote-30 | TP-0137 | Não executada |
+| 353 | RTP-0137 | executor | ✔ | deploy.yml: ler o id do Hyperdrive com o parser do teste de configuração (sem duplicar) | Refatoração Lote-30 | TP-0135 | Executada (aguarda teste) |
+| 354 | RTP-0138 | executor | ✔ | deploy.yml: rollback sem interpolação em run: e build do web antes da migração | Refatoração Lote-30 | TP-0135 | Executada (aguarda teste) |
+| 355 | RTP-0139 | executor | ✔ | deploy.yml: saída do hyperdrive get sem ruído do pnpm antes do JSON.parse | Refatoração Lote-30 | TP-0135 | Executada (aguarda teste) |
+| 356 | RTP-0140 | executor | ✔ | checar-wrangler-deploy: reconhecer wrangler com flags antes do subcomando deploy | Refatoração Lote-30 | TP-0135 | Executada (aguarda teste) |
+| 357 | RTP-0141 | executor | ✔ | deploy.yml: checkout com persist-credentials false | Refatoração Lote-30 | TP-0135 | Executada (aguarda teste) |
+| 358 | RTP-0142 | executor | ✔ | DEPLOY.md: higiene de segredo e dado pessoal nos comandos do runbook | Refatoração Lote-30 | TP-0137 | Executada (aguarda teste) |
 | 359 | BK-0009 | coordenador | ✔ | Ajustar SDD/ADR-010/URL_PUBLICA/CORS/deploy.yml ao domínio prod-ljs.workers.dev e aos acei | — | — | Aprovada |
 | 360 | RTP-0014 | executor | ✔ | Executar a prova do CI em PR real (ci-prova) | Refatoração Lote-L01 | BK-0003, TP-0003 | Bloqueada |
 | 361 | BK-0005 | coordenador | ✔ | Item (b) feito; item (a) exige PR real com job e2e verde (push/PR autorizado pelo usuário) | — | — | Não executada |
