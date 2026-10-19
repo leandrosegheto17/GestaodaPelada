@@ -1,5 +1,13 @@
+import { spawnSync } from 'node:child_process';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { cacheDoHyperdriveDesligado } from '../verificar-cache-hyperdrive';
+import { cacheDoHyperdriveDesligado, main } from '../verificar-cache-hyperdrive';
+
+const script = fileURLToPath(new URL('../verificar-cache-hyperdrive-cli.ts', import.meta.url));
+const tsxCli = fileURLToPath(import.meta.resolve('tsx/cli'));
+
+const rodar = (stdin: string, ...args: string[]) =>
+  spawnSync(process.execPath, [tsxCli, script, ...args], { input: stdin, encoding: 'utf8', timeout: 60_000 });
 
 const resposta = (result: unknown, success: unknown = true) => JSON.stringify({ success, errors: [], result });
 
@@ -40,5 +48,55 @@ describe('cacheDoHyperdriveDesligado', () => {
     } catch (e) {
       expect((e as Error).message).not.toContain('segredo-xyz');
     }
+  });
+});
+
+describe('main', () => {
+  it('sem --executar devolve 1 sem ler o stdin', () => {
+    const lerStdin = () => {
+      throw new Error('não deveria ler');
+    };
+    expect(main([], lerStdin)).toBe(1);
+  });
+});
+
+describe('módulo importado sem a CLI', () => {
+  it('não executa nada nem chama process.exit', () => {
+    const modulo = fileURLToPath(new URL('../verificar-cache-hyperdrive.ts', import.meta.url));
+    const r = spawnSync(
+      process.execPath,
+      [tsxCli, '-e', `import(${JSON.stringify(pathToFileURL(modulo).href)}).then(() => console.log('importado-ok'))`],
+      { input: '', encoding: 'utf8', timeout: 60_000 },
+    );
+    expect(r.status).toBe(0);
+    expect(r.stdout).toContain('importado-ok');
+    expect(r.stderr).toBe('');
+  });
+});
+
+describe('script como processo', () => {
+  const valido = resposta({ caching: { disabled: true } });
+
+  it.each([
+    ['cache ligado', resposta({ caching: { disabled: false } })],
+    ['lixo', '<html>502</html>'],
+    ['vazio', ''],
+    ['objeto vazio', '{}'],
+  ])('com --executar e stdin %s sai com 1', (_nome, stdin) => {
+    expect(rodar(stdin, '--executar').status).toBe(1);
+  });
+
+  it('com --executar e stdin válido sai com 0', () => {
+    expect(rodar(valido, '--executar').status).toBe(0);
+  });
+
+  it.each([
+    ['válido', valido],
+    ['cache ligado', resposta({ caching: { disabled: false } })],
+    ['vazio', ''],
+  ])('sem --executar nunca sai com 0 (stdin %s)', (_nome, stdin) => {
+    const r = rodar(stdin);
+    expect(r.status).toBe(1);
+    expect(r.stderr).toContain('Uso:');
   });
 });

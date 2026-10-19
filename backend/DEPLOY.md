@@ -12,6 +12,8 @@ opera. Nenhuma senha, chave ou string de conexão vai neste arquivo.
   `backend/scripts/migrar.ts --alvo producao`, confere que o cache do Hyperdrive está desligado e publica com
   `wrangler deploy`. Depois confere `GET /api/saude`.
 - Só esse workflow chama `wrangler deploy` (conferido no CI por `checar-wrangler-deploy.mjs`).
+- **Token da Cloudflare** (`CLOUDFLARE_API_TOKEN`): precisa de Workers (edição) para publicar e de
+  `Account > Hyperdrive: Read` para a conferência do cache. Sem a segunda, o passo falha fechado e o deploy não segue.
 
 ## Voltar atrás
 
