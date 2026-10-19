@@ -1004,3 +1004,6 @@ APROVADA; 0 críticos, 0 não críticos; shellcheck/actionlint 0, dump cifrado s
 
 ## RTP-0135 — QA — 2026-10-19
 APROVADA; 0 críticos, 0 não críticos; 4 URLs inválidas, falha do pg_dump (pipefail) e caminho feliz com age/pg_restore comprovados, grep de host/credenciais = 0, trap e SAIDA parcial limpos, shellcheck e actionlint em 0.
+
+## TP-0135 — QA — 2026-10-19
+DEVOLVIDA — 1 crítico (`pnpm exec wrangler` na raiz não acha o binário, que só existe em @pelada/api: passos hyperdrive/deploy/rollback não executam) e 3 não críticos (parser jsonc duplicado, `${{ }}` em run:, build após migração); Vitest 13/13, checagem rc=0, actionlint limpo; execução real em producao pendente do usuário.
