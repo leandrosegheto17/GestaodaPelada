@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-19 13:36
+Atualizado: 2026-10-19 13:51
 
-Resumo: Não executada 18 · Aprovada 352 · Bloqueada 2 · total 372
+Resumo: Não executada 17 · Executada (aguarda teste) 1 · Aprovada 352 · Bloqueada 2 · total 372
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -376,7 +376,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 361 | RTP-0145 | executor | ✔ | DEPLOY.md: comandos da restauração sem caminho quebrado e com opção para PowerShell | Refatoração Lote-30 | RTP-0142 | Aprovada |
 | 362 | RTP-0146 | executor | ✔ | hyperdrive-id: validar o formato do id (32 hex) antes de imprimir | Refatoração Lote-30 | RTP-0137 | Aprovada |
 | 363 | RTP-0147 | executor | ✔ | checar-wrangler-deploy: cobrir pages deploy, triggers deploy, publish e wrangler-action... | Refatoração Lote-30 | RTP-0140 | Aprovada |
-| 364 | RTP-0148 | executor | ✔ | verificar-cache-hyperdrive: nao depender de import.meta.main (fail-open em Node < 22.18... | Refatoração Lote-30 | RTP-0143 | Não executada |
+| 364 | RTP-0148 | executor | ✔ | verificar-cache-hyperdrive: nao depender de import.meta.main (fail-open em Node < 22.18... | Refatoração Lote-30 | RTP-0143 | Executada (aguarda teste) |
 | 365 | RTP-0149 | executor | ✔ | DEPLOY.md: icacls da identidade em uma linha e equivalente do pgpass no Windows | Refatoração Lote-30 | RTP-0145 | Não executada |
 | 366 | RTP-0150 | executor | ✔ | deploy.yml: enviar o token da Cloudflare ao curl sem poder injetar diretivas | Refatoração Lote-30 | RTP-0143 | Não executada |
 | 367 | RTP-0151 | executor | ✔ | DEPLOY.md: limpar a senha da sessao PowerShell e reconhecer que apagar em NTFS/SSD nao... | Refatoração Lote-30 | RTP-0145 | Não executada |
