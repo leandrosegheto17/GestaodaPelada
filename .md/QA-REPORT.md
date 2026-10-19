@@ -1091,3 +1091,6 @@ APROVADA - passo 6 do DEPLOY.md exige swap desligado (`swapoff -a`) ou cifrado p
 
 ## RTP-0162 — QA — 2026-10-19
 APROVADA — 0 críticos, 0 não críticos; paridade com os node -e antigos confirmada em 16 cenários próprios (única diferença: branch sem name agora falha fechado), pipe/pipefail sem DELETE com lista vazia ou erro, install ocorre antes do passo; vitest 48, tsc, eslint, prettier, actionlint e checar-* em 0.
+
+## TP-0139 — QA — 2026-10-19
+DEVOLVIDA — 2 críticos (build de produção sem VITE_RECURSOS_DESLIGADOS: recursos desligados aparecem; itens 2-6 só declarados, campos de evidência em branco) e 2 não críticos (docs desatualizados → RTP-0163; reativação da TP-0139 sem `--desfazer`); run 39342078062 verde, saúde 200 e cabeçalhos OK.

@@ -25,7 +25,7 @@
 - Descrição: Exige push da branch ci-prova e PR real no remoto (ação manual/autorização do usuário); rodar a prova do CI e apagar a branch
 - Impacto se não resolvido: —
 - Sugestão: —
-- Status: Resolvido (2026-10-18): prova do CI executada em PR real. Cenário 2 (run 39160230684, falha em checar-ids-tarefa) e cache ("Cache restored", run 39160223511) comprovados; PRs de prova fechados e branches descartáveis apagadas. Cenário 1 (run 100% verde) fica pendente só pelo e2e-integracao: i2 (500 em POST simulador/sugerir) e i4 (clique em Pagou não gera POST). Correções do CI no PR #2 (ci-prova)
+- Status: Resolvido (2026-10-19): ja resolvido; RTP-0014 encerrado por decisao do usuario
 
 ## Bloqueio 004 — 2026-10-17 (BK-0004)
 - Reportado por: Executor
