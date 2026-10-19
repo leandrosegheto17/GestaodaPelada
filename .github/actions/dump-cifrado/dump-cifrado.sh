@@ -16,12 +16,30 @@ case "$CHAVE_AGE" in
     ;;
 esac
 
+# O stderr do psql/pg_dump traz host e IP do servidor e o log do Actions é público: vai para um
+# arquivo temporário descartável e nunca é repassado; na falha só sai mensagem fixa.
+erro="$(mktemp)"
+trap 'rm -f "$erro"' EXIT
+
 # O cliente do runner pode ser mais antigo que o servidor: usa a imagem oficial da versão maior dele.
-numero="$(docker run --rm -e PG_URL postgres:17 sh -c 'psql "$PG_URL" -Atc "show server_version_num"')"
+if ! numero="$(docker run --rm -e PG_URL postgres:17 sh -c 'psql "$PG_URL" -Atc "show server_version_num"' 2>"$erro")"; then
+  echo 'Falha ao consultar a versão do servidor.' >&2
+  exit 1
+fi
+case "$numero" in
+  '' | *[!0-9]*)
+    echo 'Falha ao consultar a versão do servidor.' >&2
+    exit 1
+    ;;
+esac
 maior="$((numero / 10000))"
 
-docker run --rm -e PG_URL "postgres:${maior}" sh -c 'pg_dump --format=custom --no-owner --no-privileges "$PG_URL"' |
-  age -r "$CHAVE_AGE" -o "$SAIDA"
+if ! docker run --rm -e PG_URL "postgres:${maior}" sh -c 'pg_dump --format=custom --no-owner --no-privileges "$PG_URL"' 2>"$erro" |
+  age -r "$CHAVE_AGE" -o "$SAIDA"; then
+  rm -f "$SAIDA"
+  echo 'Falha ao gerar o dump.' >&2
+  exit 1
+fi
 
 [ -s "$SAIDA" ] || {
   echo 'Dump cifrado vazio.' >&2
