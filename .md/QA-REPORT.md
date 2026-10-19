@@ -1076,3 +1076,15 @@ APROVADA; prettier e checar-ids-tarefa em 0; passo 6 de DEPLOY.md cobre EFS só 
 
 ## RTP-0157 — QA — 2026-10-19
 APROVADA — 58/58 vitest, raiz rc 0, 6 casos de caixa mista rc 1 e Deploy.yml rc 1, deploy.yml exato rc 0, sem ReDoS, prettier ok; 0 críticos, 0 não críticos.
+
+## RTP-0158 — QA — 2026-10-19
+APROVADA — checar-urls-absolutas rc 0, `up --wait` e wrangler OK com banco limpo (projeto qa0158), i1 7/7 verde; falha de seed no volume do usuário é de estado, não da tarefa; 0 críticos, 0 não críticos.
+
+## RTP-0159 — QA — 2026-10-19
+APROVADA - 7/7 mutações sob Node 24 falham o teste, CLI sem diff, vitest 34/34, tsc/eslint/prettier 0; 0 achados.
+
+## RTP-0160 — QA — 2026-10-19
+APROVADA; 0 críticos, 0 não críticos; 13 bases hostis rc 1 sem curl nem eco, válida passa, vitest 17/17, shellcheck/actionlint/prettier/urls rc 0.
+
+## RTP-0161 — QA — 2026-10-19
+APROVADA - passo 6 do DEPLOY.md exige swap desligado (`swapoff -a`) ou cifrado para tmpfs e cita a guarda da chave de recuperação do Device Encryption; prettier e checar-ids em 0; RTP-0160 preservada; 0 achados.

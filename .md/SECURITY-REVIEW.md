@@ -1037,3 +1037,12 @@ OK por revisão do diff (nada executado); texto não induz falsa cifra no Home e
 
 ## RTP-0157 — DevSecOps — 2026-10-19
 APROVADA — flag `i` sem enfraquecer: 7 variações de caixa rc 1, FORA/deploy.yml isento só por caminho exato (Deploy.yml, .GITHUB, subpasta rc 1), sem git rc 2, sem ReDoS (~0,1 s); 0 achados.
+
+## RTP-0159 — DevSecOps — 2026-10-19
+OK - G-17 endurecido; 9/9 contornos novos (string com `/*`/`//`, globalThis, process["argv"], import.meta via variável, escape unicode etc.) falham o teste; 0 achados acionáveis, só residual de defesa em profundidade.
+
+## RTP-0160 — DevSecOps — 2026-10-19
+APROVADA; 0 críticos, 0 não críticos; 26 bases hostis/válidas executadas com stub de curl: todas as de host/esquema alheio rc 1 sem chamada nem eco, token fora de argv, produção sem bypass.
+
+## RTP-0161 — DevSecOps — 2026-10-19
+APROVADA - passo 6 do DEPLOY.md correto e sem falsa sensação de proteção (tmpfs só com swap desligado/cifrado; chave de recuperação do Device Encryption guardada), sem segredo; revisão de leitura, 0 achados.

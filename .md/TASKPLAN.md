@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-19 14:53
+Atualizado: 2026-10-19 15:19
 
-Resumo: Não executada 6 · Aprovada 362 · Bloqueada 2 · Despriorizada 11 · total 381
+Resumo: Não executada 2 · Aprovada 366 · Bloqueada 2 · Despriorizada 11 · total 381
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -374,10 +374,10 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 359 | RTP-0153 | executor | ✔ | verificar-cache-hyperdrive: teste estatico que impede import.meta.main e guarda condici... | Refatoração Lote-30 | RTP-0148 | Aprovada |
 | 360 | RTP-0156 | executor | ✔ | DEPLOY.md: avisar que EFS não existe no Windows Home e dar alternativa para o dump deci... | Refatoração Lote-30 | RTP-0151 | Aprovada |
 | 361 | RTP-0157 | executor | ✔ | checar-wrangler-deploy: ignorar maiúsculas em extensões e nomes (.BAT, .PS1, .YML, dock... | Refatoração Lote-30 | RTP-0152 | Aprovada |
-| 362 | RTP-0158 | executor | ✔ | docker-compose.yml:47 reprovado por checar-urls-absolutas (URL_PUBLICA com URL literal,... | 30 | TP-0094 | Não executada |
-| 363 | RTP-0159 | executor | ✔ | verificar-cache-hyperdrive: endurecer teste estatico da CLI contra guarda em bloco e im... | 30 | RTP-0153 | Não executada |
-| 364 | RTP-0160 | executor | ✔ | consultar-hyperdrive: validar a base da API (https e host da Cloudflare) antes de envia... | Refatoração Lote-30 | RTP-0154 | Não executada |
-| 365 | RTP-0161 | executor | ✔ | DEPLOY.md: alternativa tmpfs do passo 6 avisar de swap em disco e Device Encryption sem... | Refatoração Lote-30 | RTP-0156 | Não executada |
+| 362 | RTP-0158 | executor | ✔ | docker-compose.yml:47 reprovado por checar-urls-absolutas (URL_PUBLICA com URL literal,... | 30 | TP-0094 | Aprovada |
+| 363 | RTP-0159 | executor | ✔ | verificar-cache-hyperdrive: endurecer teste estatico da CLI contra guarda em bloco e im... | 30 | RTP-0153 | Aprovada |
+| 364 | RTP-0160 | executor | ✔ | consultar-hyperdrive: validar a base da API (https e host da Cloudflare) antes de envia... | Refatoração Lote-30 | RTP-0154 | Aprovada |
+| 365 | RTP-0161 | executor | ✔ | DEPLOY.md: alternativa tmpfs do passo 6 avisar de swap em disco e Device Encryption sem... | Refatoração Lote-30 | RTP-0156 | Aprovada |
 | 366 | BK-0009 | coordenador | ✔ | Ajustar SDD/ADR-010/URL_PUBLICA/CORS/deploy.yml ao domínio prod-ljs.workers.dev e aos acei | — | — | Aprovada |
 | 367 | RTP-0014 | executor | ✔ | Executar a prova do CI em PR real (ci-prova) | Refatoração Lote-L01 | BK-0003, TP-0003 | Bloqueada |
 | 368 | BK-0005 | coordenador | ✔ | Item (b) feito; item (a) exige PR real com job e2e verde (push/PR autorizado pelo usuário) | — | — | Não executada |
