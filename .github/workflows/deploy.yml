@@ -77,7 +77,7 @@ jobs:
           printf 'header = "Authorization: Bearer %s"\n' "$CLOUDFLARE_API_TOKEN" |
             curl --fail-with-body -sS --config - \
               "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/hyperdrive/configs/${id}" |
-            pnpm --silent exec tsx backend/scripts/ops/verificar-cache-hyperdrive.ts
+            pnpm --silent exec tsx backend/scripts/ops/verificar-cache-hyperdrive.ts --executar
 
       - name: Deploy
         id: publicar
