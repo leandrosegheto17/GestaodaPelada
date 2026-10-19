@@ -41,6 +41,15 @@ describe('checar-wrangler-deploy', () => {
     ['scripts/e.sh', 'wrangler -c x.jsonc deploy\n'],
     ['.github/workflows/outro.yml', '      - run: wrangler --env p deploy\n'],
     ['scripts/f.sh', 'pnpm exec wrangler --config c deploy\n'],
+    ['scripts/g.sh', 'wrangler pages deploy dist --project-name x\n'],
+    ['.github/workflows/outro.yml', '      - run: pnpm exec wrangler triggers deploy\n'],
+    ['scripts/h.sh', 'wrangler publish\n'],
+    ['scripts/i.sh', 'wrangler -c x.jsonc publish\n'],
+    ['scripts/j.sh', 'wrangler pages publish dist\n'],
+    ['scripts/k.sh', 'wrangler --config "a b" deploy\n'],
+    ['scripts/l.sh', "wrangler --config 'a b' pages deploy dist\n"],
+    ['.github/workflows/outro.yml', '      - uses: cloudflare/wrangler-action@v3\n'],
+    ['.github/workflows/outro.yml', '      - uses: "cloudflare/wrangler-action@v3"\n'],
   ])('falha: %s', (nome, texto) => {
     expect(rodar(repositorio({ [nome]: texto }))).toBe(1);
   });
@@ -55,8 +64,19 @@ describe('checar-wrangler-deploy', () => {
     ['README.md', 'wrangler deploy\n'],
     ['package.json', '{ "scripts": { "local": "wrangler dev" } }\n'],
     ['scripts/c.sh', 'wrangler deployments list\n'],
+    ['scripts/m.sh', 'wrangler versions upload\n'],
+    ['scripts/n.sh', 'wrangler -c x.jsonc versions upload --tag a\n'],
+    ['scripts/o.sh', 'wrangler pages project list\n'],
+    ['.github/workflows/deploy.yml', '      - uses: cloudflare/wrangler-action@v3\n'],
   ])('passa: %s', (nome, texto) => {
     expect(rodar(repositorio({ [nome]: texto, 'src/ok.ts': 'export {};\n' }))).toBe(0);
+  });
+
+  it('linha longa e patológica não trava (sem ReDoS)', () => {
+    const linha = `wrangler ${'-a b '.repeat(20000)}x\n${'wrangler "'.repeat(5000)}\n`;
+    const inicio = Date.now();
+    expect(rodar(repositorio({ 'scripts/p.sh': linha }))).toBe(0);
+    expect(Date.now() - inicio).toBeLessThan(5000);
   });
 
   it('sem git no PATH falha fechado com código 2', () => {
