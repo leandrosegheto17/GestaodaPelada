@@ -1010,3 +1010,6 @@ DEVOLVIDA — 1 crítico (`pnpm exec wrangler` na raiz não acha o binário, que
 
 ## TP-0135 — QA — 2026-10-19
 APROVADA (rodada 2) — C1 resolvido (wrangler via `pnpm --filter @pelada/api exec`, `-c ../../wrangler.jsonc` provado por `deploy --dry-run`), Vitest 16/16, checagem rc=0, actionlint limpo; pipe do `hyperdrive get` seguro no CI (Node 22) mas frágil a avisos do pnpm no stdout -> RTP-0139 (não crítico); RTP-0137/0138 seguem abertas; execução real em producao pendente do usuário.
+
+## TP-0137 — QA — 2026-10-19
+APROVADA, 0 críticos e 2 não críticos corrigidos na via rápida (flag `--origin-database` inexistente no `hyperdrive update`; aviso de senha/histórico no SQL do dono); ensaio local independente com 20 tabelas e contagens iguais, SQL do dono OK (bcrypt custo 12); ensaio com dump real de produção pendente do usuário.
