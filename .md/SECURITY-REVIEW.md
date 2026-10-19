@@ -944,3 +944,18 @@ APROVADA (revisão do diff, só teste); 0 críticos, 0 não críticos; G-03 (422
 
 ## RTP-0129 — DevSecOps — 2026-10-18
 APROVADA; 0 críticos/0 não críticos; revisão do diff (só testes de repositórios, sem src/dependência/segredo), nada executado por este chapéu.
+
+## RTP-0130 — DevSecOps — 2026-10-19
+APROVADA — diff de 7 linhas em ferramenta de desenvolvimento, sem injeção, sem rede nova, sem segredo, sem I/O novo (revisão de leitura, nada executado); 0 críticos, 0 não críticos.
+
+## RTP-0131 — DevSecOps — 2026-10-19
+APROVADA; 0 críticos, 0 não críticos; revisão do diff: atributos de senha/e-mail/inputMode/maxLength intactos, `Formulario` sem spread nem dangerouslySetInnerHTML, `aria-busy`/noValidate/preventDefault centralizados, sem log/URL de dado pessoal; nada executado (só leitura).
+
+## RTP-0132 — DevSecOps — 2026-10-19
+APROVADA; 0 críticos/0 não críticos; revisão de diff (lida, não executada): corpo da confirmação só com ids, proteção de duplo envio e mensagem de erro fixa preservadas, sem dado pessoal em log/URL.
+
+## RTP-0133 — DevSecOps — 2026-10-19
+APROVADA — revisão do diff (LIDO, nada executado): `?mes=` validado por regex ancorada antes de uso em API, sem reflexão, sem redirect, sem exceção; 0 críticos, 0 não críticos.
+
+## RTP-0134 — DevSecOps — 2026-10-19
+APROVADA; 0 críticos/0 não críticos; revisão do diff confirma que as 23 regras de sintaxe (G-06/G-09/unknown/dono) e os predicados fail-closed do checar-grupo-id foram movidos sem mudar seletor, mensagem, escopo ou exceção (lido; execução só a do QA).
