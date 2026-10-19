@@ -1088,3 +1088,6 @@ APROVADA; 0 críticos, 0 não críticos; 13 bases hostis rc 1 sem curl nem eco, 
 
 ## RTP-0161 — QA — 2026-10-19
 APROVADA - passo 6 do DEPLOY.md exige swap desligado (`swapoff -a`) ou cifrado para tmpfs e cita a guarda da chave de recuperação do Device Encryption; prettier e checar-ids em 0; RTP-0160 preservada; 0 achados.
+
+## RTP-0162 — QA — 2026-10-19
+APROVADA — 0 críticos, 0 não críticos; paridade com os node -e antigos confirmada em 16 cenários próprios (única diferença: branch sem name agora falha fechado), pipe/pipefail sem DELETE com lista vazia ou erro, install ocorre antes do passo; vitest 48, tsc, eslint, prettier, actionlint e checar-* em 0.

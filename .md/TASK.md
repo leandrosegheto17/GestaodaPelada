@@ -903,7 +903,7 @@ Colunas lidas pelo `taskplan.py` pelo nome. **Est** em dias-pessoa. **Cria**/**U
 ### Refatoração Revisão 2026-10-19
 | ID | Lote | Título | Chapéu | Reqs | Aceite | Est | Dep | Par | Arquivos | Testes e diretrizes | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| RTP-0162 | Refatoração Revisão 2026-10-19 | deploy.yml: lógica do branch de restauração do Neon em script testado (hoje node -e inline) | Backend | ADR-011; SDD §6 | os dois node -e do passo Branch de restauração no Neon saem do deploy.yml; pai e branches restauracao-<ambiente>-* a apagar (manter os 2 mais novos) viram função pura testada em backend/scripts/ops/ + CLI fina; testes cobrem pai ausente, JSON inválido, 0/1/2/3+ branches e ordenação | 0,4 d | - | - | .github/workflows/deploy.yml; backend/scripts/ops/restauracao-neon.ts (novo); backend/scripts/ops/restauracao-neon-cli.ts (novo) | backend/scripts/ops/test/restauracao-neon.test.ts (novo) | Pendente |
+| RTP-0162 | Refatoração Revisão 2026-10-19 | deploy.yml: lógica do branch de restauração do Neon em script testado (hoje node -e inline) | Backend | ADR-011; SDD §6 | os dois node -e do passo Branch de restauração no Neon saem do deploy.yml; pai e branches restauracao-<ambiente>-* a apagar (manter os 2 mais novos) viram função pura testada em backend/scripts/ops/ + CLI fina; testes cobrem pai ausente, JSON inválido, 0/1/2/3+ branches e ordenação | 0,4 d | - | - | .github/workflows/deploy.yml; backend/scripts/ops/restauracao-neon.ts (novo); backend/scripts/ops/restauracao-neon-cli.ts (novo) | backend/scripts/ops/test/restauracao-neon.test.ts (novo) | Concluída · QA ✔ · Sec ✔ |
 
 
 

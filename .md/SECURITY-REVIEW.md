@@ -1046,3 +1046,6 @@ APROVADA; 0 críticos, 0 não críticos; 26 bases hostis/válidas executadas com
 
 ## RTP-0161 — DevSecOps — 2026-10-19
 APROVADA - passo 6 do DEPLOY.md correto e sem falsa sensação de proteção (tmpfs só com swap desligado/cifrado; chave de recuperação do Device Encryption guardada), sem segredo; revisão de leitura, 0 achados.
+
+## RTP-0162 — DevSecOps — 2026-10-19
+OK DevSecOps — 0 críticos/altos, 0 acionáveis; filtro por prefixo exato nunca lista production/ambiente com metacaracteres (executado com JSON hostil), token fora de argv/eco, falha fechada com pipefail; id do branch não escapado na URL do DELETE é só observação marginal (origem Neon, igual ao código anterior).

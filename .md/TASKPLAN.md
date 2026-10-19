@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-19 15:44
+Atualizado: 2026-10-19 15:50
 
-Resumo: Não executada 3 · Aprovada 366 · Bloqueada 2 · Despriorizada 11 · total 382
+Resumo: Não executada 2 · Aprovada 367 · Bloqueada 2 · Despriorizada 11 · total 382
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -378,7 +378,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 363 | RTP-0159 | executor | ✔ | verificar-cache-hyperdrive: endurecer teste estatico da CLI contra guarda em bloco e im... | 30 | RTP-0153 | Aprovada |
 | 364 | RTP-0160 | executor | ✔ | consultar-hyperdrive: validar a base da API (https e host da Cloudflare) antes de envia... | Refatoração Lote-30 | RTP-0154 | Aprovada |
 | 365 | RTP-0161 | executor | ✔ | DEPLOY.md: alternativa tmpfs do passo 6 avisar de swap em disco e Device Encryption sem... | Refatoração Lote-30 | RTP-0156 | Aprovada |
-| 366 | RTP-0162 | executor | ✔ | deploy.yml: lógica do branch de restauração do Neon em script testado (hoje node -e inl... | Refatoração Revisão 2026-10-19 | — | Não executada |
+| 366 | RTP-0162 | executor | ✔ | deploy.yml: lógica do branch de restauração do Neon em script testado (hoje node -e inl... | Refatoração Revisão 2026-10-19 | — | Aprovada |
 | 367 | BK-0009 | coordenador | ✔ | Ajustar SDD/ADR-010/URL_PUBLICA/CORS/deploy.yml ao domínio prod-ljs.workers.dev e aos acei | — | — | Aprovada |
 | 368 | RTP-0014 | executor | ✔ | Executar a prova do CI em PR real (ci-prova) | Refatoração Lote-L01 | BK-0003, TP-0003 | Bloqueada |
 | 369 | BK-0005 | coordenador | ✔ | Item (b) feito; item (a) exige PR real com job e2e verde (push/PR autorizado pelo usuário) | — | — | Não executada |
