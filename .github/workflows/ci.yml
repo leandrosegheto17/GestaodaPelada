@@ -126,7 +126,6 @@ jobs:
           if-no-files-found: ignore
 
   e2e-integracao:
-    needs: base
     runs-on: ubuntu-latest
     permissions:
       contents: read
