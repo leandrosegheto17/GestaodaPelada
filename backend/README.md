@@ -69,7 +69,7 @@ a linha `Public key` (`gh secret set BACKUP_CHAVE`, colando quando pedido) e apa
 
 ## Deploy
 
-O deploy só roda pelo workflow `deploy.yml` (push na `main` publica `producao`; o disparo manual publica `teste`).
+O deploy só roda pelo workflow `deploy.yml` (push na `main` publica `producao`, depois da aprovação manual do environment; não há disparo manual nem homologação).
 A ordem é fixa: branch de restauração no Neon, dump cifrado, migração (`migrar.ts --alvo`), conferência do cache
 desligado do Hyperdrive e `wrangler deploy`. Se algo falhar depois da migração, o workflow desfaz o deploy
 (`wrangler rollback`) e imprime como restaurar o banco. O runbook completo está em `DEPLOY.md`.
