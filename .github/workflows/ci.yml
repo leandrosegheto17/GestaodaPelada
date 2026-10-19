@@ -37,7 +37,33 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   api:
-    needs: base
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        fatia: [1, 2, 3]
+    env:
+      CI: 'true'
+      DATABASE_URL_TESTE: postgres://postgres:postgres@localhost:5432/pelada_teste
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/preparar-node
+      # Cada fatia tem o seu Postgres: os arquivos de teste seguem em série dentro dela.
+      - run: pnpm --filter @pelada/api test --shard=${{ matrix.fatia }}/3
+
+  checagens:
     runs-on: ubuntu-latest
     env:
       CI: 'true'
@@ -57,7 +83,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/preparar-node
-      - run: pnpm --filter @pelada/api test
       - run: pnpm test:checagens
 
   e2e:
