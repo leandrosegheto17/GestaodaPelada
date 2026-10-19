@@ -88,7 +88,7 @@
 - Descrição: Decidir a cifra do backup: o Coordenador mandou openssl aes-256-cbc/pbkdf2, mas o repo usa age e o classificador marcou a troca como enfraquecimento de segurança; edições do dump-cifrado revertidas (parciais quebravam o deploy.yml)
 - Impacto se não resolvido: —
 - Sugestão: Manter age (mais forte) e ajustar o texto da tarefa, ou liberar a troca para openssl
-- Status: Resolvido (2026-10-17): Manter age; texto do TP-0136 ajustado. Pendência do usuário: gerar identidade com age-keygen, guardar no gerenciador de senhas e regravar BACKUP_CHAVE (hoje é frase-senha)
+- Status: Resolvido (2026-10-19): Manter age; texto do TP-0136 ajustado
 
 ## Bloqueio 011 — 2026-10-17 (BK-0011)
 - Reportado por: QA
