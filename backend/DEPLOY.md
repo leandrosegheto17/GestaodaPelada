@@ -79,9 +79,12 @@ errada levaria dado pessoal ou a chave privada.
    Pro/Enterprise/Education; no Home o comando não cifra a pasta, então não o use como se cifrasse. No Home o que há é
    o Device Encryption (Configurações > Privacidade e segurança > Criptografia de dispositivo), que depende do hardware
    (TPM e requisitos de firmware) e cifra o volume do sistema inteiro, não uma pasta. Se ele estiver ligado, restaurar
-   numa pasta do usuário nesse volume já fica cifrado em repouso. Se não estiver disponível, não há cifra nativa: use
-   uma máquina Pro (BitLocker ou EFS) ou um Linux com a restauração em memória (`tmpfs`, como `/dev/shm`), ou
-   restaure só depois de ligar a cifra do disco. Um VHD/VHDX descartável **só é cifrado se o BitLocker estiver
+   numa pasta do usuário nesse volume já fica cifrado em repouso. A chave de recuperação do Device Encryption é salva
+   na conta Microsoft (ou no AD, em máquina de domínio): confirme que ela existe e guarde-a em lugar seguro, pois sem
+   ela um defeito de hardware ou de firmware pode travar o acesso ao disco. Se ele não estiver disponível, não há cifra
+   nativa: use uma máquina Pro (BitLocker ou EFS) ou um Linux com a restauração em memória (`tmpfs`, como `/dev/shm`),
+   mas só com o swap desligado (`swapoff -a`) ou cifrado, porque páginas de tmpfs podem ir para o swap em disco comum e
+   deixar telefone e notas em claro; ou restaure só depois de ligar a cifra do disco. Um VHD/VHDX descartável **só é cifrado se o BitLocker estiver
    disponível** (Pro ou superior); no Home ele é um arquivo comum, e destruí-lo não apaga os blocos do disco. Registre
    qual caminho você usou antes de decifrar o dump.
 
