@@ -17,6 +17,8 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: Data do backup (São Paulo)
         id: data
         run: echo "dia=$(TZ=America/Sao_Paulo date +%F)" >> "$GITHUB_OUTPUT"
