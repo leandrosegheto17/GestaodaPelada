@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Lê a config do Hyperdrive na API da Cloudflare e a imprime em stdout.
 # Uso: consultar-hyperdrive.sh <id-da-config>
-# Entrada: CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID; CLOUDFLARE_API_BASE é opcional (testes).
+# Entrada: CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID; CLOUDFLARE_API_BASE (obrigatória, base da API).
 set -euo pipefail
 
 if [[ ! "${CLOUDFLARE_API_TOKEN:-}" =~ ^[A-Za-z0-9_-]+$ ]]; then
@@ -9,7 +9,11 @@ if [[ ! "${CLOUDFLARE_API_TOKEN:-}" =~ ^[A-Za-z0-9_-]+$ ]]; then
   exit 1
 fi
 
-base="${CLOUDFLARE_API_BASE:-https://api.cloudflare.com/client/v4}"
+if [[ -z "${CLOUDFLARE_API_BASE:-}" ]]; then
+  echo "CLOUDFLARE_API_BASE ausente." >&2
+  exit 1
+fi
+base="$CLOUDFLARE_API_BASE"
 
 # O token vai por stdin do curl (fora de argv); a validação acima impede que
 # aspas, barra invertida ou quebra de linha injetem diretivas na config.

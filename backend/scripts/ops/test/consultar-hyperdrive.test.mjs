@@ -27,17 +27,16 @@ afterEach(async () => {
   rmSync(pasta, { recursive: true, force: true });
 });
 
-const rodar = (token) =>
+const rodar = (token, { comBase = true } = {}) =>
   new Promise((ok) => {
-    const filho = spawn('bash', [SCRIPT, 'cfg1'], {
-      cwd: pasta,
-      env: {
-        ...process.env,
-        CLOUDFLARE_API_TOKEN: token,
-        CLOUDFLARE_ACCOUNT_ID: 'conta',
-        CLOUDFLARE_API_BASE: `http://127.0.0.1:${servidor.address().port}`,
-      },
-    });
+    const env = {
+      ...process.env,
+      CLOUDFLARE_API_TOKEN: token,
+      CLOUDFLARE_ACCOUNT_ID: 'conta',
+      CLOUDFLARE_API_BASE: `http://127.0.0.1:${servidor.address().port}`,
+    };
+    if (!comBase) delete env.CLOUDFLARE_API_BASE;
+    const filho = spawn('bash', [SCRIPT, 'cfg1'], { cwd: pasta, env });
     let out = '';
     let err = '';
     filho.stdout.on('data', (d) => (out += d));
@@ -58,6 +57,14 @@ describe('consultar-hyperdrive.sh', () => {
   it('token vazio falha fechado', async () => {
     expect((await rodar('')).rc).toBe(1);
     expect(pedidos).toHaveLength(0);
+  });
+
+  it('sem CLOUDFLARE_API_BASE falha fechado com rc 1, sem requisição e sem eco do token', async () => {
+    const r = await rodar('abc_DEF-123', { comBase: false });
+    expect(r.rc).toBe(1);
+    expect(pedidos).toHaveLength(0);
+    expect(r.err).toContain('CLOUDFLARE_API_BASE');
+    expect(r.err + r.out).not.toContain('abc_DEF-123');
   });
 
   it('token válido faz uma requisição com o cabeçalho Bearer', async () => {
