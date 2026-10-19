@@ -1001,3 +1001,6 @@ APROVADA — 0 críticos, 1 não crítico (RTP-0135: stderr do psql ecoa o host 
 
 ## RTP-0136 — QA — 2026-10-19
 APROVADA; 0 críticos, 0 não críticos; shellcheck/actionlint 0, dump cifrado só com age1… decifra e lista contas/grupos/partidas, valor AGE-SECRET-KEY-1…/vazio falha antes de conectar sem imprimir o valor.
+
+## RTP-0135 — QA — 2026-10-19
+APROVADA; 0 críticos, 0 não críticos; 4 URLs inválidas, falha do pg_dump (pipefail) e caminho feliz com age/pg_restore comprovados, grep de host/credenciais = 0, trap e SAIDA parcial limpos, shellcheck e actionlint em 0.
