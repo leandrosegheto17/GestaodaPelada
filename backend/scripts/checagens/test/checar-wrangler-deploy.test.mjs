@@ -50,6 +50,19 @@ describe('checar-wrangler-deploy', () => {
     ['scripts/l.sh', "wrangler --config 'a b' pages deploy dist\n"],
     ['.github/workflows/outro.yml', '      - uses: cloudflare/wrangler-action@v3\n'],
     ['.github/workflows/outro.yml', '      - uses: "cloudflare/wrangler-action@v3"\n'],
+    ['Dockerfile', 'RUN npx wrangler deploy\n'],
+    ['docker/app.Dockerfile', 'RUN wrangler deploy\n'],
+    ['Makefile', 'publicar:\n\twrangler deploy\n'],
+    ['justfile', 'publicar:\n  wrangler deploy\n'],
+    ['scripts/p.ps1', 'wrangler deploy --env p\n'],
+    ['scripts/p.cmd', 'call wrangler deploy\n'],
+    ['scripts/p.bat', 'wrangler deploy\n'],
+    ['scripts/p.py', "subprocess.run(['wrangler deploy'], shell=True)\n"],
+    ['scripts/q.cmd', 'wrangler.cmd deploy\n'],
+    ['scripts/q.ps1', '.\\node_modules\\.bin\\wrangler.exe deploy\n'],
+    ['scripts/q.sh', 'wrangler.cmd -c x.jsonc pages deploy dist\n'],
+    ['.github/workflows/outro.yml', '      - uses: cloudflare/pages-action@v1\n'],
+    ['.github/workflows/outro.yml', '      - uses: "cloudflare/pages-action@v1"\n'],
   ])('falha: %s', (nome, texto) => {
     expect(rodar(repositorio({ [nome]: texto }))).toBe(1);
   });
@@ -68,6 +81,11 @@ describe('checar-wrangler-deploy', () => {
     ['scripts/n.sh', 'wrangler -c x.jsonc versions upload --tag a\n'],
     ['scripts/o.sh', 'wrangler pages project list\n'],
     ['.github/workflows/deploy.yml', '      - uses: cloudflare/wrangler-action@v3\n'],
+    ['.github/workflows/deploy.yml', '      - uses: cloudflare/pages-action@v1\n'],
+    ['docs/guia.txt', 'wrangler deploy\n'],
+    ['Dockerfile', 'RUN npx wrangler versions upload\n'],
+    ['scripts/r.ps1', 'wrangler.exe versions upload\n'],
+    ['scripts/r.py', "print('wrangler deployments list')\n"],
   ])('passa: %s', (nome, texto) => {
     expect(rodar(repositorio({ [nome]: texto, 'src/ok.ts': 'export {};\n' }))).toBe(0);
   });
