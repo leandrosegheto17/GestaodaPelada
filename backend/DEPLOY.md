@@ -72,7 +72,15 @@ errada levaria dado pessoal ou a chave privada.
    decifre só numa máquina do dono. Apagar o arquivo em NTFS/SSD não é seguro (o conteúdo pode sobrar em blocos
    livres, no wear leveling e em cópias de sombra), e o dump tem telefone e notas. Por isso restaure numa pasta cifrada
    (BitLocker no volume ou EFS na pasta, `cipher /e`) ou num volume descartável que você destrói ao terminar, e não
-   conte só com o apagar comum.
+   conte só com o apagar comum. **Confira a edição do Windows antes:** o EFS (`cipher /e`) só existe em Windows
+   Pro/Enterprise/Education; no Home o comando não cifra a pasta, então não o use como se cifrasse. No Home o que há é
+   o Device Encryption (Configurações > Privacidade e segurança > Criptografia de dispositivo), que depende do hardware
+   (TPM e requisitos de firmware) e cifra o volume do sistema inteiro, não uma pasta. Se ele estiver ligado, restaurar
+   numa pasta do usuário nesse volume já fica cifrado em repouso. Se não estiver disponível, não há cifra nativa: use
+   uma máquina Pro (BitLocker ou EFS) ou um Linux com a restauração em memória (`tmpfs`, como `/dev/shm`), ou
+   restaure só depois de ligar a cifra do disco. Um VHD/VHDX descartável **só é cifrado se o BitLocker estiver
+   disponível** (Pro ou superior); no Home ele é um arquivo comum, e destruí-lo não apaga os blocos do disco. Registre
+   qual caminho você usou antes de decifrar o dump.
 
 ## Conta do dono
 
