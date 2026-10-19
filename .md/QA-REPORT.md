@@ -1046,3 +1046,6 @@ APROVADA — 0 críticos / 0 não críticos; 12 ids inválidos rc=1 com stdout v
 
 ## RTP-0147 — QA — 2026-10-19
 RTP-0147 APROVADA: pages/triggers deploy, publish, flag entre aspas e wrangler-action falham rc=1 fora do deploy.yml; versions upload/deployments list/dev/rollback passam; raiz rc=0; ReDoS 0,135 s; Vitest 33/33; 0 críticos, 1 informativo (action com `command: whoami` também bloqueia).
+
+## RTP-0148 — QA — 2026-10-19
+APROVADA - 0 críticos, 1 não crítico (aceite 5 só falha o teste sob Node < 22.18; ABRIR-RTP de teste estático); fail-closed provado em Node 24 e 22.12 (11 entradas, só válido rc 0), sem --executar rc 1, CLI renomeada rc 1, curl falho para o passo; vitest 28, tsc/eslint/prettier/actionlint/wrangler/ids rc 0.
