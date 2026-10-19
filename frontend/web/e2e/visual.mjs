@@ -30,6 +30,10 @@ try {
   falhar(erro.message);
 }
 
+// VISUAL_FATIA=n/m: roda só as telas de índice n-1 (módulo m), para dividir a comparação entre jobs do CI.
+const fatia = /^(\d+)\/(\d+)$/.exec(process.env.VISUAL_FATIA ?? '');
+if (fatia) telas = telas.filter((_, i) => i % Number(fatia[2]) === Number(fatia[1]) - 1);
+
 if (telas.length === 0) {
   console.log('Nenhuma tela ativa: nada a comparar.');
   process.exit(0);
