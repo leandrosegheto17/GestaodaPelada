@@ -965,3 +965,6 @@ APROVADA — 0 críticos/altos, 1 não crítico novo (F1 Baixa: guardar no secre
 
 ## RTP-0136 — DevSecOps — 2026-10-19
 APROVADA; 0 críticos, 0 não críticos; valor AGE-SECRET-KEY-1… rejeitado com mensagem fixa antes de conectar, shellcheck 0 no blob, sem set -x/${{ }} em run:, secret só com age1… não decifra backup (F1 sanado); recomenda gerar par novo ao regravar o secret.
+
+## RTP-0135 — DevSecOps — 2026-10-19
+APROVADA; 0 críticos, 0 não críticos; stderr de psql/pg_dump/docker vai a mktemp com trap EXIT e nunca ao log, versão validada numérica (stub com payload `17; touch` sem injeção, grep do host = 0), sem dump em claro, RTP-0136 intacta, sem set -x nem ${{ }} em run.
