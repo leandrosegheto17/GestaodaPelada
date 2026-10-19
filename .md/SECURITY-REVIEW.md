@@ -1007,3 +1007,18 @@ APROVADA — 0 achados; regex ancorada rejeita \n/ /fullwidth/NUL, objeto e n�
 
 ## RTP-0147 — DevSecOps — 2026-10-19
 RTP-0147 DevSecOps APROVADA: pages/triggers deploy, publish, flag entre aspas e wrangler-action fechados (rc=1), isenção só por caminho exato, rc=2 sem git, sem ReDoS, Vitest 33/33; 0 críticos, 2 não críticos ABRIR-RTP (tipos não varridos: Dockerfile/Makefile/justfile/.ps1/.cmd/.bat/.py; cloudflare/pages-action e wrangler.cmd).
+
+## RTP-0148 — DevSecOps — 2026-10-19
+OK - 0 críticos, 0 não críticos novos; gate G-17 falha fechado (só `disabled:true` + `--executar` dá rc 0; vazio/lixo/ligado/sem argumento rc 1, executado), sem eco de token/corpo (G-21); regressão estática coberta pela RTP-0153 existente.
+
+## RTP-0149 — DevSecOps — 2026-10-19
+OK em segurança, 0 achados; icacls só concede ao usuário atual (lido; execução do QA exit 0), pgpass.conf com placeholders, sem segredo (G-21).
+
+## RTP-0150 — DevSecOps — 2026-10-19
+APROVADA; 0 críticos, 0 não críticos; token validado e por stdin, 9 tokens hostis/inválidos rc 1 sem eco, pipefail propaga falha do curl; URL absoluta segue na RTP-0154.
+
+## RTP-0151 — DevSecOps — 2026-10-19
+OK; 0 críticos, 1 baixo (RTP-0156: EFS/BitLocker não existem no Windows Home, sem aviso no texto); G-21 e LGPD do texto corretos, limpeza de sessão/histórico e NTFS/SSD cobertas (lido; limpeza PowerShell executada pelo QA).
+
+## RTP-0152 — DevSecOps — 2026-10-19
+APROVADA; 0 críticos/altos, 1 baixo (RTP-0157: nomes/extensões sem /i, P.BAT e dockerfile passam rc 0); G-15 conferido: 51 testes, raiz rc 0, sem git rc 2, deploy.yml exato, ReDoS 2 ms, sem regressão de regra anterior.
