@@ -45,8 +45,7 @@ errada levaria dado pessoal ou a chave privada.
    destinatário público (`age1…`); a identidade privada (`AGE-SECRET-KEY-1…`) fica só no gerenciador de senhas:
    grave-a num arquivo temporário (nome `identidade-age.txt`) para o comando. Crie o arquivo já restrito antes de
    colar a chave: `(umask 077; touch identidade-age.txt)` no bash (o `chmod 600` só funciona depois que o arquivo
-   existe), ou `New-Item identidade-age.txt` e depois `icacls identidade-age.txt /inheritance:r /grant:r
-"${env:USERNAME}:F"` no PowerShell. Apague o arquivo depois.
+   existe), ou `New-Item identidade-age.txt` e depois `icacls identidade-age.txt /inheritance:r /grant:r "${env:USERNAME}:F"` no PowerShell (em uma linha só). Apague o arquivo depois.
 3. Crie um branch novo no Neon (ou, no ensaio, um banco novo no Postgres local) e restaure com o `pg_restore` da
    versão do servidor: `pg_restore --no-owner --clean --if-exists -d "$URL_NOVA" dump.pgdump`.
    O `pg_restore` pode avisar de objetos que não existem (`--if-exists`); erros de verdade fazem o comando sair com
@@ -59,8 +58,10 @@ errada levaria dado pessoal ou a chave privada.
    A URL tem senha: guarde-a numa variável de ambiente lida de um prompt (`read -rs URL; export URL`, com
    `HISTCONTROL=ignorespace` e o comando iniciado por espaço; no PowerShell, `$s = Read-Host -AsSecureString` e
    `$env:URL = [System.Net.NetworkCredential]::new('', $s).Password`, com o histórico desligado como no passo 2 da
-   seção anterior) ou use um arquivo de senhas (`~/.pgpass`, `chmod 600`)
-   com a URL sem a senha, para ela não ir ao histórico nem ao `ps`.
+   seção anterior) ou use um arquivo de senhas (`~/.pgpass` com `chmod 600`; no Windows,
+   `%APPDATA%\postgresql\pgpass.conf`, que fica na pasta do seu usuário), com a URL sem a senha, para ela não ir ao
+   histórico nem ao `ps`. Cada linha do arquivo tem o formato `host:porta:banco:usuario:senha`, por exemplo
+   `<host>:5432:<banco>:<usuario>:<senha>` (`*` vale como curinga nos quatro primeiros campos).
 5. Aponte o Hyperdrive para o branch novo (comando da seção anterior). Para voltar atrás, aponte a origem de volta.
 6. Apague `dump.pgdump`, o arquivo `.sql.age` e o arquivo com a identidade ao terminar. O dump tem dados pessoais:
    decifre só numa máquina do dono.
