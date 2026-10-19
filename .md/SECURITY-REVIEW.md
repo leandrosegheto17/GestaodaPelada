@@ -992,3 +992,18 @@ APROVADA - persist-credentials:false eficaz no único checkout do deploy.yml, se
 
 ## RTP-0142 — DevSecOps — 2026-10-19
 APROVADA — gitignore provado com check-ignore e add -n (dump.pgdump, .sql.age, identidade-age.txt barrados; nenhum arquivo versionado ignorado), 0 segredos no grep, mitigação de histórico/ps e limite do ps reconhecidos, aviso --clean e Worker 301 de host fixo presentes; 0 críticos, 0 novos (N1-N3 já na RTP-0145).
+
+## RTP-0143 — DevSecOps — 2026-10-19
+APROVADA, 0 críticos/0 altos, 1 baixo novo (config do curl injetável por `"`/`\n` no token, provado com output/url injetados; risco só do dono do secret; ABRIR-RTP) e fail-open do import.meta.main já coberto pela RTP-0148; token fora do argv, G-17 fecha (success e disabled booleano estritos), sem dependência nova/eval/disco/rede.
+
+## RTP-0144 — DevSecOps — 2026-10-19
+APROVADA, 0 críticos/1 baixo (ABRIR-RTP: pinar actions first-party por SHA); 5 checkouts com persist-credentials false eficaz, gitleaks-action v2.3.9 lido sem uso de credencial git, permissions contents: read, sem pull_request_target; jobs reais não rodados.
+
+## RTP-0145 — DevSecOps — 2026-10-19
+APROVADA COM DÉBITO — ACL (icacls) executada no PowerShell 5.1 deixa só o usuário atual, sem segredo no texto, sem regressão TP-0137/RTP-0142; 0 críticos, 2 baixos (falta limpar $env:URL/$s e checar histórico prévio; apagar em NTFS não é seguro e não é dito), 1 ABRIR-RTP.
+
+## RTP-0146 — DevSecOps — 2026-10-19
+APROVADA — 0 achados; regex ancorada rejeita \n/ /fullwidth/NUL, objeto e não-string falham fechado (rc 1, stdout vazio), erro não ecoa o valor (sem injeção de workflow command), URL da Cloudflare só recebe 32 hex.
+
+## RTP-0147 — DevSecOps — 2026-10-19
+RTP-0147 DevSecOps APROVADA: pages/triggers deploy, publish, flag entre aspas e wrangler-action fechados (rc=1), isenção só por caminho exato, rc=2 sem git, sem ReDoS, Vitest 33/33; 0 críticos, 2 não críticos ABRIR-RTP (tipos não varridos: Dockerfile/Makefile/justfile/.ps1/.cmd/.bat/.py; cloudflare/pages-action e wrangler.cmd).
