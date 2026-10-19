@@ -1031,3 +1031,18 @@ APROVADA - checkout do deploy.yml com persist-credentials:false, sem git autenti
 
 ## RTP-0142 — QA — 2026-10-19
 APROVADA — 4/4 itens do aceite provados (gitignore via check-ignore, mitigação de histórico/ps, aviso --clean, 301 host fixo), TP-0137 sem regressão, prettier e checar-ids ok; 0 críticos, 3 baixos (caminho relativo do contar-linhas.sql após cd, chmod sem touch, comandos bash sem equivalente PowerShell) agrupados em 1 ABRIR-RTP.
+
+## RTP-0143 — QA — 2026-10-19
+APROVADA, 0 críticos e 2 não críticos (import.meta.main fail-open em Node < 22.18, provado com 22.12 rc=0; permissão Hyperdrive: Read sem documentação); 11 entradas do script, pipeline com curl falho/403/inalcançável rc=1 sem vazar token, 18/18 vitest, tsc/eslint/prettier/actionlint/checar-wrangler-deploy 0, `--json` = 0.
+
+## RTP-0144 — QA — 2026-10-19
+APROVADA, 0 críticos/0 não críticos; 5 checkouts (backup 1, ci 4) com persist-credentials false, nenhum passo usa git autenticado, actionlint rc=0, checar-wrangler-deploy rc=0.
+
+## RTP-0145 — QA — 2026-10-19
+APROVADA — 3 itens do aceite e regressão TP-0137/RTP-0142 OK, bash e PowerShell 5.1 executados de verdade (ACL só do usuário, SecureString sem eco), prettier e checar-ids rc=0; 0 críticos, 2 baixos (comando icacls quebrado em 2 linhas; falta equivalente do ~/.pgpass), 1 ABRIR-RTP.
+
+## RTP-0146 — QA — 2026-10-19
+APROVADA — 0 críticos / 0 não críticos; 12 ids inválidos rc=1 com stdout vazio, id real passa, regex ancorada (`\n` final rejeitado), vitest 32/32 + wrangler.test.ts 11/11, tsc/eslint 0.
+
+## RTP-0147 — QA — 2026-10-19
+RTP-0147 APROVADA: pages/triggers deploy, publish, flag entre aspas e wrangler-action falham rc=1 fora do deploy.yml; versions upload/deployments list/dev/rollback passam; raiz rc=0; ReDoS 0,135 s; Vitest 33/33; 0 críticos, 1 informativo (action com `command: whoami` também bloqueia).

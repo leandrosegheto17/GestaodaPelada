@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-19 12:42
+Atualizado: 2026-10-19 13:27
 
-Resumo: Não executada 13 · Executada (aguarda teste) 5 · Aprovada 347 · Bloqueada 2 · total 367
+Resumo: Não executada 15 · Testada (aguarda segurança) 5 · Aprovada 347 · Bloqueada 2 · total 369
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -371,12 +371,14 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 356 | RTP-0140 | executor | ✔ | checar-wrangler-deploy: reconhecer wrangler com flags antes do subcomando deploy | Refatoração Lote-30 | TP-0135 | Aprovada |
 | 357 | RTP-0141 | executor | ✔ | deploy.yml: checkout com persist-credentials false | Refatoração Lote-30 | TP-0135 | Aprovada |
 | 358 | RTP-0142 | executor | ✔ | DEPLOY.md: higiene de segredo e dado pessoal nos comandos do runbook | Refatoração Lote-30 | TP-0137 | Aprovada |
-| 359 | RTP-0143 | executor | ✔ | deploy.yml: passo do Hyperdrive compatível com o wrangler 4.151.0 (sem --json) e id com... | Refatoração Lote-30 | TP-0135 | Executada (aguarda teste) |
-| 360 | RTP-0144 | executor | ✔ | backup.yml e ci.yml: checkout com persist-credentials false | Refatoração Lote-30 | RTP-0141 | Executada (aguarda teste) |
-| 361 | RTP-0145 | executor | ✔ | DEPLOY.md: comandos da restauração sem caminho quebrado e com opção para PowerShell | Refatoração Lote-30 | RTP-0142 | Executada (aguarda teste) |
-| 362 | RTP-0146 | executor | ✔ | hyperdrive-id: validar o formato do id (32 hex) antes de imprimir | Refatoração Lote-30 | RTP-0137 | Executada (aguarda teste) |
-| 363 | RTP-0147 | executor | ✔ | checar-wrangler-deploy: cobrir pages deploy, triggers deploy, publish e wrangler-action... | Refatoração Lote-30 | RTP-0140 | Executada (aguarda teste) |
-| 364 | BK-0009 | coordenador | ✔ | Ajustar SDD/ADR-010/URL_PUBLICA/CORS/deploy.yml ao domínio prod-ljs.workers.dev e aos acei | — | — | Aprovada |
-| 365 | RTP-0014 | executor | ✔ | Executar a prova do CI em PR real (ci-prova) | Refatoração Lote-L01 | BK-0003, TP-0003 | Bloqueada |
-| 366 | BK-0005 | coordenador | ✔ | Item (b) feito; item (a) exige PR real com job e2e verde (push/PR autorizado pelo usuário) | — | — | Não executada |
-| 367 | RTP-0017 | executor | ✔ | Provar job e2e verde em PR real e cobrir dist/ ausente em visual.mjs | Refatoração Lote-L20 | BK-0005, TP-0089 | Bloqueada |
+| 359 | RTP-0143 | executor | ✔ | deploy.yml: passo do Hyperdrive compatível com o wrangler 4.151.0 (sem --json) e id com... | Refatoração Lote-30 | TP-0135 | Testada (aguarda segurança) |
+| 360 | RTP-0144 | executor | ✔ | backup.yml e ci.yml: checkout com persist-credentials false | Refatoração Lote-30 | RTP-0141 | Testada (aguarda segurança) |
+| 361 | RTP-0145 | executor | ✔ | DEPLOY.md: comandos da restauração sem caminho quebrado e com opção para PowerShell | Refatoração Lote-30 | RTP-0142 | Testada (aguarda segurança) |
+| 362 | RTP-0146 | executor | ✔ | hyperdrive-id: validar o formato do id (32 hex) antes de imprimir | Refatoração Lote-30 | RTP-0137 | Testada (aguarda segurança) |
+| 363 | RTP-0147 | executor | ✔ | checar-wrangler-deploy: cobrir pages deploy, triggers deploy, publish e wrangler-action... | Refatoração Lote-30 | RTP-0140 | Testada (aguarda segurança) |
+| 364 | RTP-0148 | executor | ✔ | verificar-cache-hyperdrive: nao depender de import.meta.main (fail-open em Node < 22.18... | Refatoração Lote-30 | RTP-0143 | Não executada |
+| 365 | RTP-0149 | executor | ✔ | DEPLOY.md: icacls da identidade em uma linha e equivalente do pgpass no Windows | Refatoração Lote-30 | RTP-0145 | Não executada |
+| 366 | BK-0009 | coordenador | ✔ | Ajustar SDD/ADR-010/URL_PUBLICA/CORS/deploy.yml ao domínio prod-ljs.workers.dev e aos acei | — | — | Aprovada |
+| 367 | RTP-0014 | executor | ✔ | Executar a prova do CI em PR real (ci-prova) | Refatoração Lote-L01 | BK-0003, TP-0003 | Bloqueada |
+| 368 | BK-0005 | coordenador | ✔ | Item (b) feito; item (a) exige PR real com job e2e verde (push/PR autorizado pelo usuário) | — | — | Não executada |
+| 369 | RTP-0017 | executor | ✔ | Provar job e2e verde em PR real e cobrir dist/ ausente em visual.mjs | Refatoração Lote-L20 | BK-0005, TP-0089 | Bloqueada |
