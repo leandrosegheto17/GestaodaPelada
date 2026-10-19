@@ -15,7 +15,8 @@ opera. Nenhuma senha, chave ou string de conexão vai neste arquivo.
 - **Token da Cloudflare** (`CLOUDFLARE_API_TOKEN`): precisa de Workers (edição) para publicar e de
   `Account > Hyperdrive: Read` para a conferência do cache. Sem a segunda, o passo falha fechado e o deploy não segue.
 - **Variável do repositório** `CLOUDFLARE_API_BASE` = `https://api.cloudflare.com/client/v4` (GitHub > Settings >
-  Secrets and variables > Actions > Variables). O passo do cache do Hyperdrive a exige; sem ela falha fechado.
+  Secrets and variables > Actions > Variables). O passo do cache do Hyperdrive a exige; sem ela falha fechado. O script também
+  recusa (rc 1, antes de enviar o token) qualquer valor que não seja https no host exato `api.cloudflare.com`.
 
 ## Voltar atrás
 
