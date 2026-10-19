@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-19 08:54
+Atualizado: 2026-10-19 09:01
 
-Resumo: Não executada 16 · Aprovada 335 · Bloqueada 3 · total 354
+Resumo: Não executada 15 · Aprovada 336 · Bloqueada 3 · total 354
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -152,7 +152,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 137 | BK-0008 | coordenador | ✔ | Rodar o roteiro Cloudflare (subdomínio, token, wrangler hyperdrive create pelada-prod/pela | — | — | Aprovada |
 | 138 | TP-0133 | executor | ✔ | [U] Cloudflare: subdomínio, token e Hyperdrive (PI-2, PI-3) | L29 | BK-0008, TP-0013, TP-0132 | Aprovada |
 | 139 | TP-0134 | executor | ✔ | [U] GitHub: secrets e environments (PI-4) | L29 | TP-0132, TP-0133 | Aprovada |
-| 140 | SPK-0001 | coordenador | ✔ | Spike S-01: transação interativa pg sobre o Hyperdrive | L29 | TP-0014, TP-0133 | Não executada |
+| 140 | SPK-0001 | coordenador | ✔ | Spike S-01: transação interativa pg sobre o Hyperdrive | L29 | TP-0014, TP-0133 | Aprovada |
 | 141 | BK-0010 | coordenador | ✔ | Decidir a cifra do backup: o Coordenador mandou openssl aes-256-cbc/pbkdf2, mas o repo usa | — | — | Aprovada |
 | 142 | TP-0136 | executor | ✔ | Workflow de backup diário (backup.yml) | L30 | BK-0010, TP-0134 | Bloqueada |
 | 143 | TP-0135 | executor | ✔ | Workflow de deploy (deploy.yml) | L30 | TP-0003, TP-0013, TP-0015, TP-0133, TP-0134, TP-0136 | Não executada |
