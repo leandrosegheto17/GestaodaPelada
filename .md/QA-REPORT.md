@@ -1013,3 +1013,21 @@ APROVADA (rodada 2) — C1 resolvido (wrangler via `pnpm --filter @pelada/api ex
 
 ## TP-0137 — QA — 2026-10-19
 APROVADA, 0 críticos e 2 não críticos corrigidos na via rápida (flag `--origin-database` inexistente no `hyperdrive update`; aviso de senha/histórico no SQL do dono); ensaio local independente com 20 tabelas e contagens iguais, SQL do dono OK (bcrypt custo 12); ensaio com dump real de produção pendente do usuário.
+
+## RTP-0137 — QA — 2026-10-19
+APROVADA — parser único (wrangler-jsonc.ts) usado por teste e deploy.yml, falha fechado verificado, vitest 4+11, tsc/eslint/actionlint em 0; 0 críticos, 1 não crítico (id do hyperdrive sem pnpm --silent, ABRIR-RTP).
+
+## RTP-0138 — QA — 2026-10-19
+APROVADA — 0 críticos, 0 não críticos; sem `${{ }}` em run:, build do web único e antes de Neon/dump/migração (assets em frontend/web/dist intactos até o deploy), VITE inválida falha no build (rc=1) e válida passa, actionlint e checar-wrangler-deploy rc=0.
+
+## RTP-0139 — QA — 2026-10-19
+APROVADA — `--silent` correto (stdout só JSON mesmo com ruído do pnpm, falha do wrangler continua fechada, checar-wrangler 19 testes e actionlint em 0); 0 críticos, 1 não crítico fora do diff (ABRIR-RTP: `hyperdrive get --json` rejeitado pelo wrangler 4.151.0).
+
+## RTP-0140 — QA — 2026-10-19
+RTP-0140 APROVADA: regex tolera flags antes do subcomando, sem falso positivo nem ReDoS (<1 ms com 5000 repetições), repo rc=0, árvore com `wrangler -c x deploy` rc=1, Vitest 19/19, eslint ok; 0 achados.
+
+## RTP-0141 — QA — 2026-10-19
+APROVADA - checkout do deploy.yml com persist-credentials:false, sem git autenticado no job/actions/scripts, actionlint rc=0 e checar-wrangler-deploy rc=0; 0 críticos, 0 não críticos; ABRIR-RTP baixa: mesmo ajuste em backup.yml (tem segredos de produção) e, opcional, ci.yml.
+
+## RTP-0142 — QA — 2026-10-19
+APROVADA — 4/4 itens do aceite provados (gitignore via check-ignore, mitigação de histórico/ps, aviso --clean, 301 host fixo), TP-0137 sem regressão, prettier e checar-ids ok; 0 críticos, 3 baixos (caminho relativo do contar-linhas.sql após cd, chmod sem touch, comandos bash sem equivalente PowerShell) agrupados em 1 ABRIR-RTP.
