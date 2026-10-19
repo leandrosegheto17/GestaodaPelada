@@ -959,3 +959,6 @@ APROVADA — revisão do diff (LIDO, nada executado): `?mes=` validado por regex
 
 ## RTP-0134 — DevSecOps — 2026-10-19
 APROVADA; 0 críticos/0 não críticos; revisão do diff confirma que as 23 regras de sintaxe (G-06/G-09/unknown/dono) e os predicados fail-closed do checar-grupo-id foram movidos sem mudar seletor, mensagem, escopo ou exceção (lido; execução só a do QA).
+
+## TP-0136 — DevSecOps — 2026-10-19
+APROVADA — 0 críticos/altos, 1 não crítico novo (F1 Baixa: guardar no secret só o destinatário age1… em vez da identidade privada, pois os artefatos de repo público são baixáveis) mais RTP-0135 do QA; segredos só por env:/secrets.*, cifra em fluxo sem claro no disco, contents: read, ações oficiais, sem injeção em run:; LIDO no diff, EXECUTADO só o do QA (shellcheck/actionlint/teste local); run real e permissões do usuário de leitura no Neon pendentes.
