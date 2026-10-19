@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-19 09:18
+Atualizado: 2026-10-19 09:19
 
-Resumo: Não executada 16 · Testada (aguarda segurança) 1 · Aprovada 337 · Bloqueada 2 · total 356
+Resumo: Não executada 16 · Aprovada 338 · Bloqueada 2 · total 356
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -364,7 +364,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 349 | RTP-0133 | executor | ✔ | Hook único useMesDaUrl para ?mes= malformado (Ranking, Partidas, Financeiro) [Média] | Refatoração Revisão 2026-10-18 | — | Aprovada |
 | 350 | RTP-0134 | executor | ✔ | eslint.config.mjs e checar-grupo-id.mjs abaixo de 300 linhas [Baixa] | Refatoração Revisão 2026-10-18 | — | Aprovada |
 | 351 | RTP-0135 | executor | ✔ | dump-cifrado: não deixar o psql/pg_dump ecoar o host do Neon no log público | Refatoração Lote-30 | TP-0136 | Não executada |
-| 352 | RTP-0136 | executor | ✔ | backup: guardar só o destinatário público age no secret (não a identidade privada) | Refatoração Lote-30 | TP-0136 | Testada (aguarda segurança) |
+| 352 | RTP-0136 | executor | ✔ | backup: guardar só o destinatário público age no secret (não a identidade privada) | Refatoração Lote-30 | TP-0136 | Aprovada |
 | 353 | BK-0009 | coordenador | ✔ | Ajustar SDD/ADR-010/URL_PUBLICA/CORS/deploy.yml ao domínio prod-ljs.workers.dev e aos acei | — | — | Aprovada |
 | 354 | RTP-0014 | executor | ✔ | Executar a prova do CI em PR real (ci-prova) | Refatoração Lote-L01 | BK-0003, TP-0003 | Bloqueada |
 | 355 | BK-0005 | coordenador | ✔ | Item (b) feito; item (a) exige PR real com job e2e verde (push/PR autorizado pelo usuário) | — | — | Não executada |

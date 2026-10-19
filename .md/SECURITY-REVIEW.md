@@ -962,3 +962,6 @@ APROVADA; 0 críticos/0 não críticos; revisão do diff confirma que as 23 regr
 
 ## TP-0136 — DevSecOps — 2026-10-19
 APROVADA — 0 críticos/altos, 1 não crítico novo (F1 Baixa: guardar no secret só o destinatário age1… em vez da identidade privada, pois os artefatos de repo público são baixáveis) mais RTP-0135 do QA; segredos só por env:/secrets.*, cifra em fluxo sem claro no disco, contents: read, ações oficiais, sem injeção em run:; LIDO no diff, EXECUTADO só o do QA (shellcheck/actionlint/teste local); run real e permissões do usuário de leitura no Neon pendentes.
+
+## RTP-0136 — DevSecOps — 2026-10-19
+APROVADA; 0 críticos, 0 não críticos; valor AGE-SECRET-KEY-1… rejeitado com mensagem fixa antes de conectar, shellcheck 0 no blob, sem set -x/${{ }} em run:, secret só com age1… não decifra backup (F1 sanado); recomenda gerar par novo ao regravar o secret.
