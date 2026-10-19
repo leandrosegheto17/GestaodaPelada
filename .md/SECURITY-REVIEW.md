@@ -971,3 +971,6 @@ APROVADA; 0 críticos, 0 não críticos; stderr de psql/pg_dump/docker vai a mkt
 
 ## TP-0135 — DevSecOps — 2026-10-19
 APROVADA COM DÉBITO (DevSecOps) — 0 críticos/altos; ordem/falha-fechado, gatilho só push main, segredos via env, filtro de apagamento do Neon seguro (prefixo restauracao-producao-, lista vazia/erro falha fechado), G-16/G-17 OK, SHA do pnpm/action-setup conferido; 2 baixos novos -> RTP-0140 (checagem não pega flags entre wrangler e deploy), RTP-0141 (persist-credentials); itens que dependem de credencial real não executados.
+
+## TP-0137 — DevSecOps — 2026-10-19
+APROVADA, 0 críticos e 4 não críticos na RTP-0142 (dump/identidade sem .gitignore nem pasta fora do repositório, senha na linha de comando do hyperdrive, aviso de URL_NOVA do pg_restore --clean, host fixo no 301); sem segredo no DEPLOY.md (grep), SQL do dono com bcrypt custo 12 e auditoria corretos, contar-linhas.sql só leitura.
