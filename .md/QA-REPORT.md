@@ -980,3 +980,6 @@ APROVADA; 0 críticos, 0 não críticos; vitest simulador-avaliar 14/14 e todos 
 
 ## RTP-0129 — QA — 2026-10-18
 APROVADA; 0 críticos/0 não críticos; 5 testes usam contarConsultas, nenhum espião pg copiado restante, vitest repositórios+pontuacao 112/112 verde.
+
+## RTP-0130 — QA — 2026-10-18
+APROVADA — alinhamento do recorte a pixel inteiro é correção legítima da medição (T16 sem-habilidades 4,60%/5,98% -> 0,00%), demais telas com recorte inalteradas e controles positivos (4 px, texto) ainda detectados; 0 críticos, 0 não críticos.
