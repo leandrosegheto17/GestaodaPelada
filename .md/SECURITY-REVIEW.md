@@ -1022,3 +1022,18 @@ OK; 0 críticos, 1 baixo (RTP-0156: EFS/BitLocker não existem no Windows Home, 
 
 ## RTP-0152 — DevSecOps — 2026-10-19
 APROVADA; 0 críticos/altos, 1 baixo (RTP-0157: nomes/extensões sem /i, P.BAT e dockerfile passam rc 0); G-15 conferido: 51 testes, raiz rc 0, sem git rc 2, deploy.yml exato, ReDoS 2 ms, sem regressão de regra anterior.
+
+## RTP-0153 — DevSecOps — 2026-10-19
+APROVADA COM DÉBITO — 0 críticos, 1 baixo (RTP-0159: teste estático contornável por bloco `{ x; \n process.exit }`, `import.meta['main']`, `argv.at(1)`, comentário de bloco); G-17 detectado em qualquer Node para a regressão direta; revisão de diff, sem ferramenta executada.
+
+## RTP-0154 — DevSecOps — 2026-10-19
+APROVADA COM DÉBITO - 0 críticos, 1 baixo (base da API vinda de vars sem validação de https/host permitiria exfiltrar o token Bearer; virou RTP-0160); G-18 intacta, G-21 mantida; revisão de leitura, nada executado.
+
+## RTP-0155 — DevSecOps — 2026-10-19
+OK — só quebra de linha em arquivos.mjs, expressão idêntica, sem segredo/entrada nova; 0 achados (revisão de diff, sem ferramenta executada).
+
+## RTP-0156 — DevSecOps — 2026-10-19
+OK por revisão do diff (nada executado); texto não induz falsa cifra no Home e sem segredo; 0 críticos, 1 baixo (RTP-0161: aviso de swap no tmpfs e chave de recuperação).
+
+## RTP-0157 — DevSecOps — 2026-10-19
+APROVADA — flag `i` sem enfraquecer: 7 variações de caixa rc 1, FORA/deploy.yml isento só por caminho exato (Deploy.yml, .GITHUB, subpasta rc 1), sem git rc 2, sem ReDoS (~0,1 s); 0 achados.

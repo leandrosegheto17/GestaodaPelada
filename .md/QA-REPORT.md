@@ -1061,3 +1061,18 @@ APROVADA; 0 críticos, 0 não críticos; prettier e checar-ids em 0, limpeza Pow
 
 ## RTP-0152 — QA — 2026-10-19
 APROVADA; 0 críticos, 1 não crítico (RTP-0155, prettier em arquivos.mjs); 51 testes passando, raiz rc 0, aceite e risco residual conferidos.
+
+## RTP-0153 — QA — 2026-10-19
+APROVADA — 0 críticos, 0 não críticos; mutação Node 24 (3 variantes) derruba o teste e revertida deixa 33 passando; tsc/eslint/prettier em 0.
+
+## RTP-0154 — QA — 2026-10-19
+APROVADA - 0 críticos, 2 não críticos (doc de CLOUDFLARE_API_BASE corrigida na via rápida; docker-compose.yml:47 virou RTP-0158); vitest 4/4, shellcheck e actionlint rc 0, checagem G-18 intacta.
+
+## RTP-0155 — QA — 2026-10-19
+APROVADA — só formatação do filter em arquivos.mjs; prettier rc 0, vitest 58/58, checagem na raiz rc 0; 0 achados.
+
+## RTP-0156 — QA — 2026-10-19
+APROVADA; prettier e checar-ids-tarefa em 0; passo 6 de DEPLOY.md cobre EFS só Pro+/Device Encryption no Home/VHD sem cifra no Home; 0 críticos, 0 não críticos.
+
+## RTP-0157 — QA — 2026-10-19
+APROVADA — 58/58 vitest, raiz rc 0, 6 casos de caixa mista rc 1 e Deploy.yml rc 1, deploy.yml exato rc 0, sem ReDoS, prettier ok; 0 críticos, 0 não críticos.
