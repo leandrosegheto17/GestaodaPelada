@@ -16,3 +16,8 @@ frontend/web/e2e/resultado/
 # Evidência visual gerada pelas comparações (comparar-visual.mjs)
 .md/.visual/
 .md/.revisao/visual-*/*.png
+
+# Restauração de backup (dados pessoais e chave privada): nunca versionar
+*.pgdump
+*.sql.age
+identidade-age*

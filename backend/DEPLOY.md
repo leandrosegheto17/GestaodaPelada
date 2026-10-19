@@ -23,21 +23,34 @@ opera. Nenhuma senha, chave ou string de conexão vai neste arquivo.
    `dump-predeploy-producao-<run_id>` num branch novo (seção seguinte). Depois troque a origem do Hyperdrive (o `id`
    está em `hyperdrive[0].id` do `wrangler.jsonc`):
    `pnpm --filter @pelada/api exec wrangler hyperdrive update <id> --origin-host <host> --origin-user <usuario> --origin-password <senha> --database <banco> --caching-disabled`
-   (digite a senha só no terminal; mantenha `--caching-disabled`, G-17).
+   (mantenha `--caching-disabled`, G-17). A senha na linha de comando fica no histórico do shell e aparece no `ps`
+   enquanto o comando roda: use um terminal com `HISTCONTROL=ignorespace` e comece o comando por um espaço, e apague
+   a entrada se ela foi gravada. Nunca cole o comando em chat, e-mail ou arquivo do repositório.
 3. Confira com `GET /api/saude` e com a contagem de linhas (seção seguinte).
 
 ## Restaurar um backup
+
+Trabalhe fora do repositório: crie uma pasta temporária própria (por exemplo `mkdir -m 700 ~/restauracao-pelada` e
+`cd` para ela) e grave nela o `.sql.age`, o `dump.pgdump` e o arquivo da identidade. O `.gitignore` também cobre
+`*.pgdump`, `*.sql.age` e `identidade-age*` como rede de proteção, mas não conte só com ele: um `git add -A` na pasta
+errada levaria dado pessoal ou a chave privada.
 
 1. Baixe o artefato: `gh run download <run_id> -n <nome-do-artefato>` (backup diário `backup-AAAA-MM-DD-<run_id>`,
    do `backup.yml`; antes da migração `dump-predeploy-producao-<run_id>`, do `deploy.yml`). Sai um `<nome>.sql.age`.
 2. Decifre: `age -d -i <arquivo-com-a-identidade> -o dump.pgdump <nome>.sql.age`. O secret `BACKUP_CHAVE` guarda só o
    destinatário público (`age1…`); a identidade privada (`AGE-SECRET-KEY-1…`) fica só no gerenciador de senhas:
-   grave-a num arquivo temporário para o comando e apague-o depois.
+   grave-a num arquivo temporário (nome `identidade-age.txt`) para o comando, com `chmod 600 identidade-age.txt`
+   antes de colar a chave, e apague-o depois.
 3. Crie um branch novo no Neon (ou, no ensaio, um banco novo no Postgres local) e restaure com o `pg_restore` da
    versão do servidor: `pg_restore --no-owner --clean --if-exists -d "$URL_NOVA" dump.pgdump`.
    O `pg_restore` pode avisar de objetos que não existem (`--if-exists`); erros de verdade fazem o comando sair com
-   código diferente de zero.
+   código diferente de zero. **Atenção:** `--clean` apaga as tabelas do banco de destino antes de recriá-las. A
+   `URL_NOVA` é sempre a de um branch ou banco novo e vazio, **nunca** a de produção nem a do `DATABASE_URL` de
+   produção; confira o host da URL antes de rodar.
 4. Compare as contagens no banco antigo e no restaurado: `psql "$URL" -f backend/scripts/ops/contar-linhas.sql`.
+   A URL tem senha: guarde-a numa variável de ambiente lida de um prompt (`read -rs URL; export URL`, com
+   `HISTCONTROL=ignorespace` e o comando iniciado por espaço) ou use um arquivo de senhas (`~/.pgpass`, `chmod 600`)
+   com a URL sem a senha, para ela não ir ao histórico nem ao `ps`.
 5. Aponte o Hyperdrive para o branch novo (comando da seção anterior). Para voltar atrás, aponte a origem de volta.
 6. Apague `dump.pgdump`, o arquivo `.sql.age` e o arquivo com a identidade ao terminar. O dump tem dados pessoais:
    decifre só numa máquina do dono.
@@ -94,7 +107,9 @@ COMMIT;
 ## Troca de domínio
 
 1. Defina `ENDERECO_NOVO` com o endereço novo (o app passa a mostrar o aviso e o service worker deixa de servir o shell).
-2. Mantenha o endereço antigo no ar durante a transição com um Worker que responde 301 preservando caminho e query.
+2. Mantenha o endereço antigo no ar durante a transição com um Worker que responde 301 para um **host de destino fixo** (o endereço novo escrito no código ou em variável do
+   próprio Worker, nunca lido de parâmetro, cabeçalho `Host` ou query da requisição: senão vira open redirect),
+   preservando caminho e query.
 3. Publique a nova versão da TWA com o `assetlinks.json` do host novo.
 4. Atualize `URL_PUBLICA` no environment do GitHub e faça um deploy.
 
