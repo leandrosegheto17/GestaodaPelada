@@ -25,13 +25,15 @@ opera. Nenhuma senha, chave ou string de conexão vai neste arquivo.
    `pnpm --filter @pelada/api exec wrangler hyperdrive update <id> --origin-host <host> --origin-user <usuario> --origin-password <senha> --database <banco> --caching-disabled`
    (mantenha `--caching-disabled`, G-17). A senha na linha de comando fica no histórico do shell e aparece no `ps`
    enquanto o comando roda: use um terminal com `HISTCONTROL=ignorespace` e comece o comando por um espaço, e apague
-   a entrada se ela foi gravada. Nunca cole o comando em chat, e-mail ou arquivo do repositório.
+   a entrada se ela foi gravada. No PowerShell, desligue o histórico da sessão antes com
+   `Set-PSReadLineOption -HistorySaveStyle SaveNothing`. Nunca cole o comando em chat, e-mail ou arquivo do repositório.
 3. Confira com `GET /api/saude` e com a contagem de linhas (seção seguinte).
 
 ## Restaurar um backup
 
 Trabalhe fora do repositório: crie uma pasta temporária própria (por exemplo `mkdir -m 700 ~/restauracao-pelada` e
-`cd` para ela) e grave nela o `.sql.age`, o `dump.pgdump` e o arquivo da identidade. O `.gitignore` também cobre
+`cd` para ela; no PowerShell, `New-Item -ItemType Directory $HOME\restauracao-pelada` e depois
+`icacls $HOME\restauracao-pelada /inheritance:r /grant:r "${env:USERNAME}:(OI)(CI)F"` para só você acessar a pasta) e grave nela o `.sql.age`, o `dump.pgdump` e o arquivo da identidade. O `.gitignore` também cobre
 `*.pgdump`, `*.sql.age` e `identidade-age*` como rede de proteção, mas não conte só com ele: um `git add -A` na pasta
 errada levaria dado pessoal ou a chave privada.
 
@@ -39,17 +41,23 @@ errada levaria dado pessoal ou a chave privada.
    do `backup.yml`; antes da migração `dump-predeploy-producao-<run_id>`, do `deploy.yml`). Sai um `<nome>.sql.age`.
 2. Decifre: `age -d -i <arquivo-com-a-identidade> -o dump.pgdump <nome>.sql.age`. O secret `BACKUP_CHAVE` guarda só o
    destinatário público (`age1…`); a identidade privada (`AGE-SECRET-KEY-1…`) fica só no gerenciador de senhas:
-   grave-a num arquivo temporário (nome `identidade-age.txt`) para o comando, com `chmod 600 identidade-age.txt`
-   antes de colar a chave, e apague-o depois.
+   grave-a num arquivo temporário (nome `identidade-age.txt`) para o comando. Crie o arquivo já restrito antes de
+   colar a chave: `(umask 077; touch identidade-age.txt)` no bash (o `chmod 600` só funciona depois que o arquivo
+   existe), ou `New-Item identidade-age.txt` e depois `icacls identidade-age.txt /inheritance:r /grant:r
+"${env:USERNAME}:F"` no PowerShell. Apague o arquivo depois.
 3. Crie um branch novo no Neon (ou, no ensaio, um banco novo no Postgres local) e restaure com o `pg_restore` da
    versão do servidor: `pg_restore --no-owner --clean --if-exists -d "$URL_NOVA" dump.pgdump`.
    O `pg_restore` pode avisar de objetos que não existem (`--if-exists`); erros de verdade fazem o comando sair com
    código diferente de zero. **Atenção:** `--clean` apaga as tabelas do banco de destino antes de recriá-las. A
    `URL_NOVA` é sempre a de um branch ou banco novo e vazio, **nunca** a de produção nem a do `DATABASE_URL` de
    produção; confira o host da URL antes de rodar.
-4. Compare as contagens no banco antigo e no restaurado: `psql "$URL" -f backend/scripts/ops/contar-linhas.sql`.
+4. Compare as contagens no banco antigo e no restaurado: `psql "$URL" -f "<caminho do clone>/backend/scripts/ops/contar-linhas.sql"`
+   (caminho completo do clone, porque você está na pasta fora do repositório; no PowerShell,
+   `psql $env:URL -f "<caminho do clone>\backend\scripts\ops\contar-linhas.sql"`).
    A URL tem senha: guarde-a numa variável de ambiente lida de um prompt (`read -rs URL; export URL`, com
-   `HISTCONTROL=ignorespace` e o comando iniciado por espaço) ou use um arquivo de senhas (`~/.pgpass`, `chmod 600`)
+   `HISTCONTROL=ignorespace` e o comando iniciado por espaço; no PowerShell, `$s = Read-Host -AsSecureString` e
+   `$env:URL = [System.Net.NetworkCredential]::new('', $s).Password`, com o histórico desligado como no passo 2 da
+   seção anterior) ou use um arquivo de senhas (`~/.pgpass`, `chmod 600`)
    com a URL sem a senha, para ela não ir ao histórico nem ao `ps`.
 5. Aponte o Hyperdrive para o branch novo (comando da seção anterior). Para voltar atrás, aponte a origem de volta.
 6. Apague `dump.pgdump`, o arquivo `.sql.age` e o arquivo com a identidade ao terminar. O dump tem dados pessoais:
