@@ -64,7 +64,7 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           set -euo pipefail
-          id="$(node -e 'const t=require("node:fs").readFileSync("wrangler.jsonc","utf8").replace(/\/\*[\s\S]*?\*\/|^\s*\/\/.*$/gm,"");const c=JSON.parse(t);console.log(c.hyperdrive[0].id)')"
+          id="$(pnpm exec tsx backend/scripts/ops/hyperdrive-id.ts)"
           pnpm --filter @pelada/api exec wrangler hyperdrive get "$id" --json | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const h=JSON.parse(s);if(!(h.caching&&h.caching.disabled===true)){console.error("Cache do Hyperdrive ligado (G-17).");process.exit(1)}})'
 
       - name: Build do web
