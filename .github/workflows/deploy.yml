@@ -73,10 +73,8 @@ jobs:
         run: |
           set -euo pipefail
           id="$(pnpm --silent exec tsx backend/scripts/ops/hyperdrive-id.ts)"
-          # O token vai por stdin do curl (não aparece em argumentos); a regra do G-17 fica no script testado.
-          printf 'header = "Authorization: Bearer %s"\n' "$CLOUDFLARE_API_TOKEN" |
-            curl --fail-with-body -sS --config - \
-              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/hyperdrive/configs/${id}" |
+          # A regra do G-17 fica no script testado; o token é validado e vai por stdin do curl.
+          bash backend/scripts/ops/consultar-hyperdrive.sh "$id" |
             pnpm --silent exec tsx backend/scripts/ops/verificar-cache-hyperdrive-cli.ts --executar
 
       - name: Deploy
