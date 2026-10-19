@@ -998,3 +998,6 @@ APROVADA; 0 críticos/0 não críticos; 73 arquivos com print-config idêntico, 
 
 ## TP-0136 — QA — 2026-10-19
 APROVADA — 0 críticos, 1 não crítico (RTP-0135: stderr do psql ecoa o host no log); script testado local com age/Postgres (cifra, decifra, chave errada, URL inválida, chave vazia), shellcheck e actionlint 0; run real no GitHub pendente do usuário.
+
+## RTP-0136 — QA — 2026-10-19
+APROVADA; 0 críticos, 0 não críticos; shellcheck/actionlint 0, dump cifrado só com age1… decifra e lista contas/grupos/partidas, valor AGE-SECRET-KEY-1…/vazio falha antes de conectar sem imprimir o valor.
