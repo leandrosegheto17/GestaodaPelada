@@ -1,9 +1,9 @@
 import { spawnSync } from 'node:child_process';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { cacheDoHyperdriveDesligado, main } from '../verificar-cache-hyperdrive';
 
-const script = fileURLToPath(new URL('../verificar-cache-hyperdrive.ts', import.meta.url));
+const script = fileURLToPath(new URL('../verificar-cache-hyperdrive-cli.ts', import.meta.url));
 const tsxCli = fileURLToPath(import.meta.resolve('tsx/cli'));
 
 const rodar = (stdin: string, ...args: string[]) =>
@@ -57,6 +57,20 @@ describe('main', () => {
       throw new Error('não deveria ler');
     };
     expect(main([], lerStdin)).toBe(1);
+  });
+});
+
+describe('módulo importado sem a CLI', () => {
+  it('não executa nada nem chama process.exit', () => {
+    const modulo = fileURLToPath(new URL('../verificar-cache-hyperdrive.ts', import.meta.url));
+    const r = spawnSync(
+      process.execPath,
+      [tsxCli, '-e', `import(${JSON.stringify(pathToFileURL(modulo).href)}).then(() => console.log('importado-ok'))`],
+      { input: '', encoding: 'utf8', timeout: 60_000 },
+    );
+    expect(r.status).toBe(0);
+    expect(r.stdout).toContain('importado-ok');
+    expect(r.stderr).toBe('');
   });
 });
 
