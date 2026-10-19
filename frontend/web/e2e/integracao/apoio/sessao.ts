@@ -6,9 +6,10 @@ const JANELA_DO_LIMITE_MS = 61_000;
 /** Entra pela tela T04 (a sessão fica no cookie do contexto da página). */
 export async function entrarComo(page: Page, email: string, senha: string): Promise<void> {
   await page.goto('/entrar');
-  await page.getByLabel('E-mail').fill(email);
-  await page.getByLabel('Senha', { exact: true }).fill(senha);
   for (let tentativa = 0; ; tentativa++) {
+    // Preenche a cada tentativa: depois de uma recusa a tela limpa os campos.
+    await page.getByLabel('E-mail').fill(email);
+    await page.getByLabel('Senha', { exact: true }).fill(senha);
     // Espera a resposta do login: sem ela, um `goto` ou `request` logo depois sai antes de o cookie existir.
     const resposta = page.waitForResponse(
       (r) => r.request().method() === 'POST' && new URL(r.url()).pathname === '/api/sessao/entrar',
