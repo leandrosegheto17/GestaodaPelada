@@ -76,7 +76,7 @@ test.describe.serial('I1: do grupo novo ao ranking público', () => {
       await page.getByLabel('Apelido').fill(apelido);
       await page.getByLabel('Data de entrada').fill(dataSugerida);
       await page.getByLabel('Ano de nascimento').fill('1990');
-      await page.getByLabel('Posição').selectOption('meio_campo');
+      await page.getByLabel('Posição').selectOption('meia');
       await page.getByRole('button', { name: 'Salvar' }).click();
       await expect(page.getByRole('heading', { level: 1, name: apelido })).toBeVisible();
       await expect(page.getByRole('status').filter({ hasText: 'Jogador salvo' })).toBeVisible();

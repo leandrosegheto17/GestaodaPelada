@@ -57,7 +57,7 @@ export async function cadastrarJogadores(page: Page, grupoId: string, apelidos: 
   for (const apelido of apelidos) {
     const r = await page.request.post(`/api/grupos/${grupoId}/jogadores`, {
       headers: { 'X-Pelada': '1' },
-      data: { apelido, anoNascimento: 1990, posicao: 'meio_campo', telefone: null },
+      data: { apelido, anoNascimento: 1990, posicao: 'meia', telefone: null },
     });
     if (!r.ok()) throw new Error(`Falha ao cadastrar ${apelido}: ${r.status()}`);
   }
