@@ -593,9 +593,10 @@ A leitura **pública** é deliberadamente aberta a quem souber ou adivinhar o sl
 | Componente exposto | Proteção mínima exigida |
 |---|---|
 | Static Assets (PWA) | HTTPS. Cabeçalhos definidos num arquivo `_headers` dos assets ou pelo Worker: `Content-Security-Policy` restritiva (`default-src 'self'`; sem `unsafe-eval`; `connect-src 'self'`), `X-Content-Type-Options: nosniff`, `Referrer-Policy: same-origin`, `frame-ancestors 'none'`, `Permissions-Policy` mínima |
-| `/api/publico/*` | Só leitura, exceto `POST eventos` (tipos fechados, tamanho máximo, sem dado pessoal). Resposta só com a projeção pública, conferida por teste que procura campos proibidos. Limite de taxa (regra gratuita da Cloudflare) contra varredura de slugs |
-| `/api/sessao/*` | Bloqueio por e-mail + limite de taxa; mensagens genéricas; mesmo custo de hash; nunca registrar a senha |
-| `/api/grupos/*`, `/api/dono/*` | Sessão + vínculo ou papel em toda rota; validação pelo contrato no servidor; CSRF (`SameSite=Lax` + JSON + cabeçalho próprio); `Cache-Control: no-store` |
+| `/api/publico/*` | Só leitura, exceto `POST eventos` (tipos fechados, tamanho máximo, sem dado pessoal). Resposta só com a projeção pública, conferida por teste que procura campos proibidos. Limite de taxa (regra gratuita da Cloudflare) contra varredura de slugs. `X-Content-Type-Options: nosniff` |
+| `/api/sessao/*` | Bloqueio por e-mail + limite de taxa; mensagens genéricas; mesmo custo de hash; nunca registrar a senha; `X-Content-Type-Options: nosniff` |
+| `/api/grupos/*`, `/api/dono/*` | Sessão + vínculo ou papel em toda rota; validação pelo contrato no servidor; CSRF (`SameSite=Lax` + JSON + cabeçalho próprio); `Cache-Control: no-store`; `X-Content-Type-Options: nosniff` |
+| Cadeia de suprimento (CI) | Toda ação do GitHub referenciada por SHA de 40 caracteres, com a tag em comentário. `pnpm-workspace.yaml` com `blockExoticSubdeps`, `trustPolicy` e `minimumReleaseAge` (mínimo 1440, alvo 10080) |
 | Neon | Não exposto ao navegador. As credenciais ficam só no Hyperdrive (aplicação, leitura e escrita) e nos secrets do GitHub (migração; backup só de leitura) |
 | Logs | **Nunca** registrar senha, token, telefone nem corpo de autenticação. A aplicação não persiste o IP. Os logs de plataforma da Cloudflare ficam fora do banco |
 

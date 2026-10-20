@@ -34,6 +34,7 @@ Regras **inegociáveis**: quem precisar violar uma delas pede exceção ao Gesto
 | G-21 | **Segredos nunca versionados** (`.env` real, strings do Neon, chave do backup, token da Cloudflare, chave de upload da Play) | ADR-013; ADR-011; SDD §7 | gitleaks no `ci.yml` + `.gitignore` com `.env`; `python .claude/scripts/seguranca.py` (Fase A) no `/deploy` | TP-0003 |
 | G-22 | **Cabeçalhos de segurança nos arquivos estáticos:** CSP restritiva (`default-src 'self'`, sem `unsafe-eval`, `connect-src 'self'`, `frame-ancestors 'none'`), `X-Content-Type-Options: nosniff`, `Referrer-Policy: same-origin`, `Permissions-Policy` mínima | SDD §7 (Superfície de exposição) | Teste e2e que confere os cabeçalhos servidos pelo Worker com assets | TP-0090 |
 | G-23 | **Sem ID de tarefa, lote ou rodada no código** (`TP-`, `RTP-`, `SPK-`, `BK-`, "Lote N") | CONVENCOES §4 | `node backend/scripts/checagens/checar-ids-tarefa.mjs` no CI | TP-0002 |
+| G-24 | **Ações do GitHub só por SHA e política de pacotes do pnpm ligada:** toda ação referenciada por SHA de 40 caracteres com a tag em comentário; `pnpm-workspace.yaml` com `blockExoticSubdeps`, `trustPolicy` e `minimumReleaseAge` | SDD §7 (Cadeia de suprimento) | `node backend/scripts/checagens/checar-acoes-fixadas.mjs` no CI | RTP-0178 |
 
 ## Fora daqui (de propósito)
 
