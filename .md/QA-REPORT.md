@@ -1154,3 +1154,6 @@ APROVADA, 0 críticos/0 não críticos; vitest pdf+ranking 71 ok, typecheck e pr
 
 ## RTP-0177 — QA — 2026-10-20
 APROVADA; 0 críticos, 0 não críticos; prettier limpo, 3 chaves do pnpm e nosniff em /api/* conferidos, nenhum uses: sem SHA, G-24 aponta o script da RTP-0178.
+
+## RTP-0178 — QA — 2026-10-20
+APROVADA — 0 críticos, 0 não críticos; 20 testes verdes, script sai 0 no repositório e sai 1 com arquivo:linha em cópia adulterada (tag v4 e chave do pnpm removida); lint/prettier/tsc limpos.
