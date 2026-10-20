@@ -36,6 +36,19 @@ describe('app', () => {
   });
 
   it.each([
+    ['200', '/api/saude', 200],
+    ['401', '/api/dono/painel', 401],
+    ['404', '/api/inexistente', 404],
+    ['500', '/api/teste/erro', 500],
+  ])('resposta %s de /api/* traz nosniff', async (_nome, caminho, status) => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    const r = await chamar(caminho);
+    expect(r.status).toBe(status);
+    expect(r.headers.get('X-Content-Type-Options')).toBe('nosniff');
+    vi.restoreAllMocks();
+  });
+
+  it.each([
     [{}, 403],
     [{ 'X-Pelada': '0' }, 403],
     [{ 'X-Pelada': 'true' }, 403],

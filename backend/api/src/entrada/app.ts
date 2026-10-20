@@ -9,6 +9,7 @@ import { criarRelogio, type Relogio } from '../infraestrutura/relogio/index.js';
 import { corpoGrande, erroInterno, naoEncontrado } from './erros.js';
 import { semCache } from './middlewares/cache.js';
 import { exigirCabecalhoPelada } from './middlewares/csrf.js';
+import { semSniff } from './middlewares/sem-sniff.js';
 import { criarLimiteTaxa, type Limitador } from './middlewares/limite-taxa.js';
 import { exigirDono } from './middlewares/dono.js';
 import { exigirFinanceiro, exigirVinculo } from './middlewares/grupo.js';
@@ -40,6 +41,7 @@ export function criarApp(opcoes: OpcoesApp = {}): Hono<AppEnv> {
   const relogio = opcoes.relogio ?? criarRelogio();
 
   app.use('/api/*', semCache);
+  app.use('/api/*', semSniff);
   app.use(
     '/api/sessao/entrar',
     criarLimiteTaxa((c) => opcoes.limitadores?.entrar ?? c.env?.LIMITE_ENTRAR),
