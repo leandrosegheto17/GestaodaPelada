@@ -135,6 +135,15 @@ test.describe.serial('I4: caixa do grupo, do aviso de privacidade aos saldos', (
     await expect(saldos).toContainText(reais(SALDO_INICIAL));
     await expect(page.getByText(/mensalidade de /)).toHaveCount(0);
     expect((await lerMes(page)).lancamentos.filter((l) => l.mensalidade)).toHaveLength(0);
+
+    const repetido = await page.request.delete(
+      `/api/grupos/${grupo().grupoId}/financeiro/pagamentos/${jogador?.jogadorId}/${mes.mes}`,
+      { headers: { 'X-Pelada': '1' } },
+    );
+    expect(repetido.status()).toBe(404);
+    const depois = await lerMes(page);
+    expect(depois.saldoAtualCentavos).toBe(SALDO_INICIAL);
+    expect(depois.lancamentos.filter((l) => l.mensalidade)).toHaveLength(0);
   });
 
   test('lança uma saída: o saldo cai e o resumo do mês mostra a saída', async () => {
