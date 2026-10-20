@@ -27,8 +27,6 @@ jobs:
       - uses: ./.github/actions/preparar-node
 
       - name: Build do web (antes de tocar no banco)
-        env:
-          VITE_RECURSOS_DESLIGADOS: ${{ vars.VITE_RECURSOS_DESLIGADOS }}
         run: pnpm --filter @pelada/web build
 
       - name: Branch de restauração no Neon
