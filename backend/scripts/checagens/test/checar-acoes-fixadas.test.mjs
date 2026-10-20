@@ -47,6 +47,9 @@ describe('checar-acoes-fixadas', () => {
     ['docker sem digest', { '.github/workflows/a.yml': '      - uses: docker://alpine:3\n' }],
     ['action composta com tag', { '.github/actions/x/action.yml': '    - uses: a/b@v2\n' }],
     ['step em chave própria', { '.github/workflows/a.yml': '        uses: a/b@v2\n' }],
+    ['local que sai da raiz', { '.github/workflows/a.yml': '      - uses: ./../x\n' }],
+    ['local com .. dentro de actions', { '.github/workflows/a.yml': '      - uses: ./.github/actions/../../../x\n' }],
+    ['uses em flow style', { '.github/workflows/a.yml': '      - {uses: a/b@v3}\n' }],
   ])('falha: %s', (_nome, arquivos) => {
     const r = rodar(repositorio(arquivos));
     expect(r.status).toBe(1);
