@@ -1124,3 +1124,9 @@ APROVADA; 0 críticos, 0 não críticos; i4 7/7 contra compose real, 2º DELETE 
 
 ## TP-0208 — QA — 2026-10-20
 APROVADA; 0 críticos, 1 não crítico (RTP-0167: PATCH sem pontuacaoInicial zera o valor, baixa); contrato 411, domínio 389, API 994 (+11 pulados), script 101, web 1047 passando; migração aditiva, checagens verdes, T16/T18 8 comparações OK (máx. 0,38%), nenhum dado real no diff.
+
+## RTP-0167 — QA — 2026-10-20
+APROVADA; 0 críticos, 0 não críticos; contrato 412, rota editar 9, tsc/eslint ok, snapshot novo coerente e demais intactos.
+
+## RTP-0168 — QA — 2026-10-20
+APROVADA - --correcoes (chuva/presencas) atende ao aceite; 125 testes, tsc, eslint, prettier e checar-ids verdes; 0 críticos, 0 não críticos.

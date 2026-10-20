@@ -1076,3 +1076,9 @@ APROVADA; 0 críticos, 0 não críticos; diff lido (1 arquivo de teste, X-Pelada
 
 ## TP-0208 — DevSecOps — 2026-10-20
 APROVADA em segurança; 0 críticos/altos/médios e 0 novos baixos (RTP-0167 do QA segue); script sem conexão fora de DATABASE_URL, telefone nunca lido, transação única com recusas, migração aditiva, API admin-only com auditoria; eslint, typecheck e checar-escrita-e-dono verdes, sem segredo nem dado real no diff, sem mudança de dependências.
+
+## RTP-0167 — DevSecOps — 2026-10-20
+APROVADA em segurança; 0 achados; guard/isolamento por grupo e auditoria RNF-12 intactos, validação 0 a 9999 preservada, eslint/tsc/scan de segredos limpos.
+
+## RTP-0168 — DevSecOps — 2026-10-20
+APROVADA - --correcoes validado por esquema sem execução, sem vazar nome/caminho, trava não burlável, G-21/backup/idempotência intactos; eslint, tsc, gitleaks e checar-escrita-e-dono verdes; 0 achados.

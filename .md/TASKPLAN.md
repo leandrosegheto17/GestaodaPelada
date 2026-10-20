@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-20 01:43
+Atualizado: 2026-10-20 08:41
 
-Resumo: Executada (aguarda teste) 2 · Aprovada 382 · Despriorizada 5 · total 389
+Resumo: Aprovada 384 · Despriorizada 5 · total 389
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -394,8 +394,8 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 379 | RTP-0162 | executor | ✔ | deploy.yml: lógica do branch de restauração do Neon em script testado (hoje node -e inl... | Refatoração Revisão 2026-10-19 | — | Aprovada |
 | 380 | RTP-0165 | executor | ✔ | I2: provar a troca do ajuste e a composição enviada ao confirmar | Refatoração Lote-38 | TP-0177 | Aprovada |
 | 381 | RTP-0166 | executor | ✔ | I4: provar que desmarcar duas vezes não duplica a remoção (2º DELETE) | Refatoração Lote-45 | TP-0205 | Aprovada |
-| 382 | RTP-0167 | executor | ✔ | PATCH de jogador sem pontuacaoInicial não zera a pontuação inicial | Refatoração Lote-46 | TP-0208 | Executada (aguarda teste) |
-| 383 | RTP-0168 | executor | ✔ | Importar-legado: arquivo de correções (--correcoes) para chuva em datas e presenças cor... | Refatoração Lote-46 | TP-0208 | Executada (aguarda teste) |
+| 382 | RTP-0167 | executor | ✔ | PATCH de jogador sem pontuacaoInicial não zera a pontuação inicial | Refatoração Lote-46 | TP-0208 | Aprovada |
+| 383 | RTP-0168 | executor | ✔ | Importar-legado: arquivo de correções (--correcoes) para chuva em datas e presenças cor... | Refatoração Lote-46 | TP-0208 | Aprovada |
 | 384 | BK-0009 | coordenador | ✔ | Ajustar SDD/ADR-010/URL_PUBLICA/CORS/deploy.yml ao domínio prod-ljs.workers.dev e aos acei | — | — | Aprovada |
 | 385 | TP-0140 | executor | ✔ | [U] Play Console: app com.gestaodapelada.app (PI-5) | L31 | — | Despriorizada |
 | 386 | TP-0141 | executor | ✔ | /.well-known/assetlinks.json servido pelo Worker | L31 | TP-0088, TP-0140 | Despriorizada |
