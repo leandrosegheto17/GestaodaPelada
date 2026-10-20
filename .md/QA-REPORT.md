@@ -1097,3 +1097,6 @@ DEVOLVIDA — 2 críticos (build de produção sem VITE_RECURSOS_DESLIGADOS: rec
 
 ## TP-0139 — QA — 2026-10-19
 APROVADA — 0 críticos; F1 fechado por decisão, F2 risco aceito por escrito (RNF-03/RNF-07 sem prova; itens 2-6 só declarados); run 39342078062 verde, /api/saude 200; RTP-0163 (docs) e RTP-0164 (variável no aceite/deploy.yml), F4 reativação sem registro explícito.
+
+## RTP-0014 — QA — 2026-10-19
+CI da main verde (run 39355743642) com a prova do cenário 2 e do cache; sem achados.
