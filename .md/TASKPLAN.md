@@ -381,7 +381,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 366 | RTP-0160 | executor | ✔ | consultar-hyperdrive: validar a base da API (https e host da Cloudflare) antes de envia... | Refatoração Lote-30 | RTP-0154 | Aprovada |
 | 367 | RTP-0161 | executor | ✔ | DEPLOY.md: alternativa tmpfs do passo 6 avisar de swap em disco e Device Encryption sem... | Refatoração Lote-30 | RTP-0156 | Aprovada |
 | 368 | RTP-0163 | executor | ✔ | Alinhar docs ao deploy só manual: SDD §3, ADR-020, backend/README, aceite da TP-0135 e... | Refatoração Lote-30 | TP-0139 | Não executada |
-| 369 | RTP-0164 | executor | — | Alinhar ao go-live sem VITE_RECURSOS_DESLIGADOS: remover a variável do deploy.yml/DEPLO... | 30 | TP-0139 | Não executada |
+| 369 | RTP-0164 | executor | ✔ | Alinhar ao go-live sem VITE_RECURSOS_DESLIGADOS: remover a variável do deploy.yml/DEPLO... | 30 | TP-0139 | Não executada |
 | 370 | RTP-0162 | executor | ✔ | deploy.yml: lógica do branch de restauração do Neon em script testado (hoje node -e inl... | Refatoração Revisão 2026-10-19 | — | Aprovada |
 | 371 | BK-0009 | coordenador | ✔ | Ajustar SDD/ADR-010/URL_PUBLICA/CORS/deploy.yml ao domínio prod-ljs.workers.dev e aos acei | — | — | Aprovada |
 | 372 | BK-0005 | coordenador | ✔ | Item (b) feito; item (a) exige PR real com job e2e verde (push/PR autorizado pelo usuário) | — | — | Não executada |
