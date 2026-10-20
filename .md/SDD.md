@@ -255,8 +255,8 @@ A pasta `api/` e o `vercel.json` da rodada 1 **deixaram de existir**.
 | Pacote | Pasta | Depende de | Quem depende dele | Observação |
 |---|---|---|---|---|
 | `@pelada/contrato` | `backend/contrato` | `zod` | `@pelada/api`, `@pelada/web` | Schemas, enums e limites (inclusive senha de 8 a 72 caracteres, ADR-015). **Sem lógica de negócio** |
-| `@pelada/dominio` | `backend/dominio` | nada | `@pelada/api` | Regras puras; não importa `contrato`, `pg`, `hono` nem lê o relógio |
-| `@pelada/api` | `backend/api` | `@pelada/contrato`, `@pelada/dominio`, `hono`, `kysely`, `pg` | `wrangler.jsonc` (entrada do Worker), `backend/scripts` (só os repositórios, as migrações, `infraestrutura/seguranca` e `aplicacao/acesso/senhas`; ajuste aprovado pelo usuário no Loop C, TASK.md L-2, para o `dono.ts` não duplicar a redefinição de senha) | Aplicação HTTP para workerd (`nodejs_compat`) |
+| `@pelada/dominio` | `backend/dominio` | nada | `@pelada/api`, `backend/scripts` (a importação do legado e o seed local reaproveitam o cálculo, como `acumuladoComInicial`, em vez de recalcular) | Regras puras; não importa `contrato`, `pg`, `hono` nem lê o relógio |
+| `@pelada/api` | `backend/api` | `@pelada/contrato`, `@pelada/dominio`, `hono`, `kysely`, `pg` | `wrangler.jsonc` (entrada do Worker), `backend/scripts` (só os repositórios, as migrações, `infraestrutura/db/index.ts` (`emTransacao`, `criarDb`), `infraestrutura/seguranca` e `aplicacao/acesso/senhas`; ajuste aprovado pelo usuário no Loop C, TASK.md L-2, para o `dono.ts` não duplicar a redefinição de senha) | Aplicação HTTP para workerd (`nodejs_compat`) |
 | `@pelada/web` | `frontend/web` | `@pelada/contrato`, `react` etc. | — | **Sem `@pelada/dominio` nem `@pelada/api` nas dependências** (fronteira garantida pela dependência) |
 
 **Camadas dentro de `@pelada/api`** e direção de import (a seta indica "pode importar"):
