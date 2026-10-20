@@ -21,3 +21,10 @@ frontend/web/e2e/resultado/
 *.pgdump
 *.sql.age
 identidade-age*
+
+# Importação do histórico do legado (dados pessoais): arquivos de entrada e brutos da auditoria nunca versionados
+Cadastro.md
+Pontuacoes.md
+correcoes.json
+.md/.seguranca/*/*.json
+.md/.seguranca/*/dast-*/

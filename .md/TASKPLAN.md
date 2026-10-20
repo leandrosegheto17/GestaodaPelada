@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-20 10:32
+Atualizado: 2026-10-20 13:43
 
-Resumo: Não executada 5 · Aprovada 384 · Despriorizada 5 · total 394
+Resumo: Não executada 4 · Executada (aguarda teste) 1 · Aprovada 384 · Despriorizada 5 · total 394
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -399,7 +399,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 384 | RTP-0169 | executor | ✔ | SDD §2: tabela de pacotes diz o que backend/scripts realmente importa (@pelada/dominio... | Refatoração Revisão 2026-10-20 | — | Não executada |
 | 385 | RTP-0170 | executor | ✔ | Adicionar X-Content-Type-Options: nosniff nas respostas JSON de /api/* | Refatoração Segurança 2026-10-20 | — | Não executada |
 | 386 | RTP-0171 | executor | ✔ | Fixar por SHA as ações do GitHub e adotar block-exotic-sub-dependencies, minimum-releas... | Refatoração Segurança 2026-10-20 | — | Não executada |
-| 387 | RTP-0172 | executor | ✔ | Cobrir no .gitignore o arquivo de entrada da importação do legado (dados pessoais) | Refatoração Segurança 2026-10-20 | — | Não executada |
+| 387 | RTP-0172 | executor | ✔ | Cobrir no .gitignore o arquivo de entrada da importação do legado (dados pessoais) | Refatoração Segurança 2026-10-20 | — | Executada (aguarda teste) |
 | 388 | BK-0009 | coordenador | ✔ | Ajustar SDD/ADR-010/URL_PUBLICA/CORS/deploy.yml ao domínio prod-ljs.workers.dev e aos acei | — | — | Aprovada |
 | 389 | BK-0012 | coordenador | ✔ | Quando e onde registrar a contração do CHECK de posicao (tirar defensor/meio_campo de joga | — | — | Não executada |
 | 390 | TP-0140 | executor | ✔ | [U] Play Console: app com.gestaodapelada.app (PI-5) | L31 | — | Despriorizada |
