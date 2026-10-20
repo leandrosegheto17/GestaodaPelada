@@ -299,7 +299,7 @@ entrada (worker.ts, rotas Hono, middlewares) ─▶ aplicacao (casos de uso) ─
 ├─ frontend/
 │  ├─ web/                   @pelada/web: src/{telas,componentes,dados,pdf,pwa,rotulos,formatacao,estilos}; public/ (ícones, .well-known/assetlinks.json); e2e/ (Playwright + comparação visual)
 │  └─ twa/                   projeto Android do Bubblewrap (twa-manifest.json, sem código próprio)
-├─ .github/workflows/        ci.yml (PR), deploy.yml (main e teste), backup.yml (cron)
+├─ .github/workflows/        ci.yml (PR), deploy.yml (disparo manual), backup.yml (cron)
 ├─ docker-compose.yml
 ├─ pnpm-workspace.yaml
 └─ wrangler.jsonc            Worker pelada: main = backend/api/src/entrada/worker.ts; assets = frontend/web/dist (SPA); run_worker_first ["/api/*"]; hyperdrive; nodejs_compat; ambiente "teste"
@@ -380,7 +380,7 @@ O workerd local **não impõe o limite de 10 ms de CPU**. O orçamento é verifi
 | Workflow | Gatilho | Passos |
 |---|---|---|
 | `ci.yml` | PR | lint, tipos; testes de domínio (inclui orçamento de CPU); testes de API e suíte de isolamento (workerd + Postgres de serviço); build; e2e com Playwright |
-| `deploy.yml` | push em `main` (só produção, com aprovação manual no environment `producao`; sem homologação) | 1) dump cifrado + branch de restauração no Neon (API do Neon); 2) `migrar.ts` (conexão direta, uma transação por migração); 3) `wrangler deploy` (build do Vite + Worker). Em caso de falha depois da migração: `wrangler rollback` + restauração do branch (§6) |
+| `deploy.yml` | disparo manual (`gh workflow run deploy.yml --ref main`; o push não dispara deploy), só produção, environment `producao` sem revisor obrigatório; sem homologação | 1) dump cifrado + branch de restauração no Neon (API do Neon); 2) `migrar.ts` (conexão direta, uma transação por migração); 3) `wrangler deploy` (build do Vite + Worker). Em caso de falha depois da migração: `wrangler rollback` + restauração do branch (§6) |
 | `backup.yml` | cron diário às 04:00 de São Paulo + manual | `pg_dump` com usuário só de leitura, cifrado, artefato com retenção de 30 dias (ADR-011) |
 
 ---

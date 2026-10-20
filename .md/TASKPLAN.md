@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-19 23:58
+Atualizado: 2026-10-20 00:59
 
-Resumo: Não executada 8 · Executada (aguarda teste) 1 · Aprovada 371 · Despriorizada 5 · total 385
+Resumo: Em execução 1 · Aprovada 381 · Despriorizada 5 · total 387
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -185,7 +185,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 170 | TP-0167 | executor | ✔ | Endpoint POST /api/grupos/:g/escalacoes | L36 | TP-0014, TP-0032, TP-0033, TP-0050, TP-0052, TP-0146, TP-0161 | Aprovada |
 | 171 | TP-0168 | executor | ✔ | Pré-marcação pela escalação em GET .../partidas/nova | L36 | TP-0078, TP-0161 | Aprovada |
 | 172 | TP-0169 | executor | ✔ | Resumo do início com a escalação confirmada | L36 | TP-0061, TP-0161 | Aprovada |
-| 173 | SPK-0002 | coordenador | — | Spike S-02: CPU do sugerir no Worker publicado | L36 | TP-0135, TP-0165 | Não executada |
+| 173 | SPK-0002 | coordenador | ✔ | Spike S-02: CPU do sugerir no Worker publicado | L36 | TP-0135, TP-0165 | Aprovada |
 | 174 | TP-0170 | executor | ✔ | Tela T17: Habilidades | L37 | TP-0089, TP-0095, TP-0096, TP-0100, TP-0101, TP-0106, TP-0145, TP-0207 | Aprovada |
 | 175 | TP-0171 | executor | ✔ | Tela T16: seção de notas e nível | L37 | TP-0096, TP-0124, TP-0145 | Aprovada |
 | 176 | TP-0172 | executor | ✔ | Tela T12: Simulador (entradas e prévia) | L37 | TP-0089, TP-0095, TP-0096, TP-0097, TP-0098, TP-0101, TP-0106, TP-0146, TP-0207 | Aprovada |
@@ -193,8 +193,8 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 178 | TP-0174 | executor | ✔ | Ajuste manual do simulador: D3 e gancho de reavaliação | L37 | TP-0091, TP-0099, TP-0146 | Aprovada |
 | 179 | TP-0175 | executor | ✔ | Tela T13: resultado com 2 times | L38 | TP-0089, TP-0098, TP-0100, TP-0106, TP-0172, TP-0173, TP-0174 | Aprovada |
 | 180 | TP-0176 | executor | ✔ | Tela T14: resultado com 3 ou mais times | L38 | TP-0089, TP-0098, TP-0100, TP-0106, TP-0172, TP-0173, TP-0174, TP-0175 | Aprovada |
-| 181 | TP-0177 | executor | ✔ | E2E de integração do I2 (API real) | L38 | TP-0138, TP-0162, TP-0163, TP-0165, TP-0166, TP-0167, TP-0168, TP-0172, TP-0175 | Executada (aguarda teste) |
-| 182 | TP-0178 | executor | ✔ | [U] Go-live do I2 | L38 | SPK-0002, TP-0139, TP-0155, TP-0156, TP-0157, TP-0158, TP-0159, TP-0169, TP-0170, TP-0171, TP-0176, TP-0177 | Não executada |
+| 181 | TP-0177 | executor | ✔ | E2E de integração do I2 (API real) | L38 | TP-0138, TP-0162, TP-0163, TP-0165, TP-0166, TP-0167, TP-0168, TP-0172, TP-0175 | Aprovada |
+| 182 | TP-0178 | executor | ✔ | [U] Go-live do I2 | L38 | SPK-0002, TP-0139, TP-0155, TP-0156, TP-0157, TP-0158, TP-0159, TP-0169, TP-0170, TP-0171, TP-0176, TP-0177 | Aprovada |
 | 183 | TP-0179 | executor | ✔ | dominio/pdf: colunas do PDF e PTS INICIAL antes da 1ª coluna | L39 | TP-0010 | Aprovada |
 | 184 | TP-0180 | executor | ✔ | contrato/pdf (estrito) | L39 | TP-0018, TP-0020 | Aprovada |
 | 185 | TP-0181 | executor | ✔ | Endpoint GET /api/publico/:slug/pdf?mes= | L39 | TP-0013, TP-0029, TP-0033, TP-0053, TP-0179, TP-0180 | Aprovada |
@@ -202,7 +202,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 187 | BK-0002 | coordenador | ✔ | Comparação visual do PDF (P01) fica em 3,96% (sucesso) e 4,02% (mes-vazio) contra o limite | — | — | Aprovada |
 | 188 | TP-0183 | executor | ✔ | Gerador de PDF: uma página, legenda e rodapé | L39 | BK-0002, TP-0182 | Aprovada |
 | 189 | TP-0184 | executor | ✔ | T01: Exportar PDF (compartilhar ou baixar) | L39 | TP-0091, TP-0099, TP-0111, TP-0180, TP-0183 | Aprovada |
-| 190 | TP-0185 | executor | ✔ | [U] Go-live do I3 e início da janela de 8 semanas | L40 | TP-0178, TP-0181, TP-0184 | Não executada |
+| 190 | TP-0185 | executor | ✔ | [U] Go-live do I3 e início da janela de 8 semanas | L40 | TP-0178, TP-0181, TP-0184 | Aprovada |
 | 191 | TP-0186 | executor | ✔ | contrato/financeiro | L41 | TP-0005, TP-0018 | Aprovada |
 | 192 | TP-0187 | executor | ✔ | dominio/caixa: saldos e entrada vinculada | L41 | TP-0007 | Aprovada |
 | 193 | TP-0188 | executor | ✔ | Migração do financeiro | L41 | TP-0015, TP-0016, TP-0042 | Aprovada |
@@ -223,9 +223,9 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 208 | TP-0202 | executor | ✔ | Tela T24: Configuração do caixa | L44 | TP-0089, TP-0095, TP-0096, TP-0098, TP-0106, TP-0186, TP-0199, TP-0207 | Aprovada |
 | 209 | TP-0203 | executor | ✔ | Endpoint POST /api/sessao/aviso-privacidade | L45 | TP-0019, TP-0027, TP-0031, TP-0033 | Aprovada |
 | 210 | TP-0204 | executor | ✔ | Tela T07: Aviso de privacidade (página e diálogo do 1º acesso) | L45 | TP-0089, TP-0095, TP-0099, TP-0105, TP-0106, TP-0207 | Aprovada |
-| 211 | TP-0205 | executor | ✔ | E2E de integração do I4 (API real) | L45 | TP-0138, TP-0190, TP-0191, TP-0192, TP-0193, TP-0195, TP-0199, TP-0200, TP-0201, TP-0202 | Não executada |
-| 212 | TP-0206 | executor | ✔ | [U] Go-live do I4 | L45 | TP-0185, TP-0194, TP-0196, TP-0197, TP-0198, TP-0203, TP-0204, TP-0205 | Não executada |
-| 213 | TP-0208 | executor | ✔ | Adequação ao legado | L46 | TP-0008, TP-0010, TP-0023, TP-0024, TP-0042, TP-0044, TP-0046, TP-0047, TP-0048, TP-0049, TP-0051, TP-0070, TP-0071, TP-0076, TP-0084, TP-0124, TP-0125, TP-0148, TP-0179 | Não executada |
+| 211 | TP-0205 | executor | ✔ | E2E de integração do I4 (API real) | L45 | TP-0138, TP-0190, TP-0191, TP-0192, TP-0193, TP-0195, TP-0199, TP-0200, TP-0201, TP-0202 | Aprovada |
+| 212 | TP-0206 | executor | ✔ | [U] Go-live do I4 | L45 | TP-0185, TP-0194, TP-0196, TP-0197, TP-0198, TP-0203, TP-0204, TP-0205 | Aprovada |
+| 213 | TP-0208 | executor | ✔ | Adequação ao legado | L46 | TP-0008, TP-0010, TP-0023, TP-0024, TP-0042, TP-0044, TP-0046, TP-0047, TP-0048, TP-0049, TP-0051, TP-0070, TP-0071, TP-0076, TP-0084, TP-0124, TP-0125, TP-0148, TP-0179 | Em execução |
 | 214 | RTP-0001 | executor | ✔ | Lint: backend/scripts importando @pelada/api por alias fura a zona (e falta o teste do... | L01 | TP-0002 | Aprovada |
 | 215 | RTP-0003 | executor | ✔ | Teste de enums: conferir situacao de presença das respostas contra o enum | Refatoração Lote-L01 | TP-0005 | Aprovada |
 | 216 | BK-0003 | coordenador | ✔ | Exige push da branch ci-prova e PR real no remoto (ação manual/autorização do usuário); ro | — | — | Aprovada |
@@ -389,12 +389,14 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 374 | RTP-0159 | executor | ✔ | verificar-cache-hyperdrive: endurecer teste estatico da CLI contra guarda em bloco e im... | 30 | RTP-0153 | Aprovada |
 | 375 | RTP-0160 | executor | ✔ | consultar-hyperdrive: validar a base da API (https e host da Cloudflare) antes de envia... | Refatoração Lote-30 | RTP-0154 | Aprovada |
 | 376 | RTP-0161 | executor | ✔ | DEPLOY.md: alternativa tmpfs do passo 6 avisar de swap em disco e Device Encryption sem... | Refatoração Lote-30 | RTP-0156 | Aprovada |
-| 377 | RTP-0163 | executor | ✔ | Alinhar docs ao deploy só manual: SDD §3, ADR-020, backend/README, aceite da TP-0135 e... | Refatoração Lote-30 | TP-0139 | Não executada |
-| 378 | RTP-0164 | executor | ✔ | Alinhar ao go-live sem VITE_RECURSOS_DESLIGADOS: remover a variável do deploy.yml/DEPLO... | 30 | TP-0139 | Não executada |
+| 377 | RTP-0163 | executor | ✔ | Alinhar docs ao deploy só manual: SDD §3, ADR-020, backend/README, aceite da TP-0135 e... | Refatoração Lote-30 | TP-0139 | Aprovada |
+| 378 | RTP-0164 | executor | ✔ | Alinhar ao go-live sem VITE_RECURSOS_DESLIGADOS: remover a variável do deploy.yml/DEPLO... | 30 | TP-0139 | Aprovada |
 | 379 | RTP-0162 | executor | ✔ | deploy.yml: lógica do branch de restauração do Neon em script testado (hoje node -e inl... | Refatoração Revisão 2026-10-19 | — | Aprovada |
-| 380 | BK-0009 | coordenador | ✔ | Ajustar SDD/ADR-010/URL_PUBLICA/CORS/deploy.yml ao domínio prod-ljs.workers.dev e aos acei | — | — | Aprovada |
-| 381 | TP-0140 | executor | ✔ | [U] Play Console: app com.gestaodapelada.app (PI-5) | L31 | — | Despriorizada |
-| 382 | TP-0141 | executor | ✔ | /.well-known/assetlinks.json servido pelo Worker | L31 | TP-0088, TP-0140 | Despriorizada |
-| 383 | TP-0142 | executor | ✔ | Projeto TWA (Bubblewrap) em frontend/twa | L31 | TP-0006, TP-0108, TP-0139, TP-0140, TP-0141 | Despriorizada |
-| 384 | TP-0143 | executor | ✔ | [U] Teste fechado da Play (12 testadores, 14 dias) | L31 | TP-0139, TP-0141, TP-0142 | Despriorizada |
-| 385 | TP-0144 | executor | ✔ | [U] Publicação da TWA em produção | L31 | TP-0143 | Despriorizada |
+| 380 | RTP-0165 | executor | ✔ | I2: provar a troca do ajuste e a composição enviada ao confirmar | Refatoração Lote-38 | TP-0177 | Aprovada |
+| 381 | RTP-0166 | executor | ✔ | I4: provar que desmarcar duas vezes não duplica a remoção (2º DELETE) | Refatoração Lote-45 | TP-0205 | Aprovada |
+| 382 | BK-0009 | coordenador | ✔ | Ajustar SDD/ADR-010/URL_PUBLICA/CORS/deploy.yml ao domínio prod-ljs.workers.dev e aos acei | — | — | Aprovada |
+| 383 | TP-0140 | executor | ✔ | [U] Play Console: app com.gestaodapelada.app (PI-5) | L31 | — | Despriorizada |
+| 384 | TP-0141 | executor | ✔ | /.well-known/assetlinks.json servido pelo Worker | L31 | TP-0088, TP-0140 | Despriorizada |
+| 385 | TP-0142 | executor | ✔ | Projeto TWA (Bubblewrap) em frontend/twa | L31 | TP-0006, TP-0108, TP-0139, TP-0140, TP-0141 | Despriorizada |
+| 386 | TP-0143 | executor | ✔ | [U] Teste fechado da Play (12 testadores, 14 dias) | L31 | TP-0139, TP-0141, TP-0142 | Despriorizada |
+| 387 | TP-0144 | executor | ✔ | [U] Publicação da TWA em produção | L31 | TP-0143 | Despriorizada |

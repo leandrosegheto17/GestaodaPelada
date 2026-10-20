@@ -1058,3 +1058,18 @@ diff de script/teste sem superfície de segurança nova; gitleaks sem vazamento.
 
 ## TP-0139 — DevSecOps — 2026-10-19
 OK com risco aceito — sem segredo no registro, cabeçalhos de segurança e limite de taxa conferidos em produção; itens 2-6 só declarados (RNF-03/RNF-07 sem prova); RTP-0163/0164 abertas.
+
+## TP-0177 — DevSecOps — 2026-10-20
+APROVADA; revisão do diff (nada executado por este chapéu; e2e 5/5 do QA): 404 de outro grupo, senha temporária fora de log/trace (trace off), X-Pelada nas escritas, CI sem secrets (contents: read) e só dado fictício; 0 críticos, 0 não críticos, nenhuma RTP.
+
+## TP-0205 — DevSecOps — 2026-10-20
+APROVADA; 0 críticos, 0 não críticos; revisão do diff (nada executado pelo chapéu): 403 só sem financeiro e 404 em grupo alheio conferidos, escritas com X-Pelada, senhas só do seed, trace/screenshot/vídeo desligados (RTP-0118), compose em 127.0.0.1.
+
+## RTP-0163 — DevSecOps — 2026-10-20
+APROVADA; 0 achados; ADR-020 e G-15 explicitam a perda da aprovação e a barreira (disparo manual + branch policy); branch policy só `main` e ausência de revisor confirmadas via `gh api` (executado).
+
+## RTP-0164 — DevSecOps — 2026-10-20
+APROVADA — 0 críticos, 0 não críticos; LIDO: deploy.yml só perdeu o env da flag (permissions contents:read e secrets inalterados), recursos.ts vazio = tudo ligado, telas admin/dono sob RotaProtegida e API com sessão/vínculo/papel independentes da flag; nada executado por mim.
+
+## RTP-0166 — DevSecOps — 2026-10-20
+APROVADA; 0 críticos, 0 não críticos; diff lido (1 arquivo de teste, X-Pelada: 1, dado fictício, sem console.log/route/msw/segredo); nada executado por este chapéu.

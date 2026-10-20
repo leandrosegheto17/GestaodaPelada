@@ -1103,3 +1103,21 @@ CI da main verde (run 39355743642) com a prova do cenário 2 e do cache; sem ach
 
 ## RTP-0017 — QA — 2026-10-19
 e2e verde em PR real (run 39265054416) e teste de dist/ ausente passando (7/7); sem achados.
+
+## TP-0177 — QA — 2026-10-19
+APROVADA; 5/5 e2e do I2 passando no compose real (37 s); 0 críticos, 1 não crítico (RTP-0165: troca do ajuste não provada no corpo de escalacoes).
+
+## TP-0205 — QA — 2026-10-20
+APROVADA; 0 críticos, 2 não críticos (N1 coordenação: e2e só passa com o TP-0208 pendente no HEAD; N2 RTP-0166 2º DELETE não coberto); evidência: i1+i2+i4 19/19 contra o compose real, eslint/tsc/prettier limpos.
+
+## RTP-0163 — QA — 2026-10-20
+APROVADA; 0 achados; docs fiéis ao deploy.yml (workflow_dispatch, environment producao) e ao DEPLOY.md, ADR-020 com a barreira; falhas de seed-local (banco desligado) e banco.test.mjs (timeouts, também isolado) preexistentes.
+
+## RTP-0164 — QA — 2026-10-20
+APROVADA — 0 críticos, 0 não críticos; grep sem `VITE_RECURSOS_DESLIGADOS` em deploy.yml/DEPLOY.md/workflows, build do web sem a variável EXIT=0, recursos.ts (vazio = tudo ligado) garante comportamento inalterado; lógica opcional mantida, sem RTP.
+
+## RTP-0165 — QA — 2026-10-20
+APROVADA; 0 críticos, 0 não críticos; i2 5/5 contra compose real, troca provada via postDataJSON (nomeA no Time B, parceiro no A), eslint/prettier/tsc ok.
+
+## RTP-0166 — QA — 2026-10-20
+APROVADA; 0 críticos, 0 não críticos; i4 7/7 contra compose real, 2º DELETE = 404 (contrato TP-0193), saldo 35000 e sem mensalidade, eslint/prettier/tsc ok.
