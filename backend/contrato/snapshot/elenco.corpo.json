@@ -17,8 +17,14 @@
         "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
         "type": "string"
       },
+      "pontuacaoInicial": {
+        "default": 0,
+        "maximum": 9999,
+        "minimum": 0,
+        "type": "integer"
+      },
       "posicao": {
-        "enum": ["goleiro", "defensor", "meio_campo", "atacante"],
+        "enum": ["zagueiro", "lateral", "volante", "meia", "atacante", "centroavante", "goleiro"],
         "type": "string"
       },
       "telefone": {

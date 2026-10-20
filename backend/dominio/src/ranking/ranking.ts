@@ -1,7 +1,7 @@
 import { ativosEm, type Periodo } from '../atividade/atividade.js';
 import { primeiroDia, somarDias, type Data, type Mes } from '../datas/datas.js';
 import { criarResolvedorDePesos } from '../pontuacao/pesos.js';
-import { acumuladoAte } from '../pontuacao/pontos.js';
+import { acumuladoComInicial } from '../pontuacao/pontos.js';
 import type { ConfigPesos, PresencaDoJogador, SituacaoPresenca } from '../pontuacao/tipos.js';
 import {
   limitesDeMes,
@@ -19,6 +19,8 @@ export interface JogadorDoRanking {
   apelido: string;
   anoNascimento: number;
   periodos: readonly Periodo[];
+  /** Pontos de antes da primeira partida registrada; entram no acumulado de qualquer mês. */
+  pontuacaoInicial: number;
 }
 
 export interface PartidaDoRanking extends PartidaDoMes {
@@ -87,7 +89,10 @@ export function calcularRanking(entrada: EntradaRanking): ResultadoRanking {
 
   const ativos = ativosEm(entrada.jogadores, hoje);
   const acumulados = new Map(
-    ativos.map((j) => [j.id, acumuladoAte(presencasPorJogador.get(j.id) ?? [], resolver, hoje)]),
+    ativos.map((j) => [
+      j.id,
+      acumuladoComInicial(j.pontuacaoInicial, presencasPorJogador.get(j.id) ?? [], resolver, hoje),
+    ]),
   );
   const ordem = ordenarPorRanking(ativos, acumulados);
 
@@ -96,7 +101,7 @@ export function calcularRanking(entrada: EntradaRanking): ResultadoRanking {
 
   const linhas = ordem.map(({ jogador, posicao }): LinhaRanking => {
     const presencas = presencasPorJogador.get(jogador.id) ?? [];
-    const ptsInicial = acumuladoAte(presencas, resolver, vespera);
+    const ptsInicial = acumuladoComInicial(jogador.pontuacaoInicial, presencas, resolver, vespera);
     const rodadas = rodadasDoJogador(
       jogador.periodos,
       doMes,

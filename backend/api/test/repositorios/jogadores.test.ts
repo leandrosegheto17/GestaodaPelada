@@ -26,6 +26,7 @@ const dados = (apelido: string) => ({
   anoNascimento: 1980,
   posicao: 'atacante',
   telefone: null,
+  pontuacaoInicial: 0,
   dataEntrada: ENTRADA,
   autor: '',
   agora: AGORA,
@@ -70,6 +71,7 @@ describe('repositório de jogadores', () => {
       anoNascimento: 1981,
       posicao: 'goleiro',
       telefone: '11987654321',
+      pontuacaoInicial: 120,
       autor: base.contaId,
       agora: AGORA,
     };
@@ -77,7 +79,12 @@ describe('repositório de jogadores', () => {
       emTransacao(db, (tx) => jogadores.editar(tx, grupoId, id, { ...novo, ...extra }));
     expect(await editar(base.grupo.id, { dataEntrada: d(-245) })).toBe(true);
     const j = await jogadores.buscar(db, base.grupo.id, id);
-    expect(j).toMatchObject({ apelido: 'Novo Nome', posicao: 'goleiro', telefone: '11987654321' });
+    expect(j).toMatchObject({
+      apelido: 'Novo Nome',
+      posicao: 'goleiro',
+      telefone: '11987654321',
+      pontuacaoInicial: 120,
+    });
     expect(j?.periodos).toEqual([
       { inicio: d(-245), fim: d(-200) },
       { inicio: d(-150), fim: null },

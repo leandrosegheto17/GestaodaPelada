@@ -13,6 +13,7 @@ export interface EntradaCriarJogador {
   anoNascimento: number;
   posicao: string;
   telefone: string | null;
+  pontuacaoInicial: number;
   dataEntrada?: string | undefined;
 }
 
@@ -30,6 +31,7 @@ export async function criarJogador(
         anoNascimento: entrada.anoNascimento,
         posicao: entrada.posicao,
         telefone: entrada.telefone,
+        pontuacaoInicial: entrada.pontuacaoInicial,
         dataEntrada: entrada.dataEntrada ?? contexto.hoje,
         autor: contexto.autor,
         agora: contexto.agora,

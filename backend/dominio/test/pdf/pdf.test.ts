@@ -138,6 +138,36 @@ describe('calcularPdf: reprodução dos PDFs do mockup', () => {
   });
 });
 
+describe('calcularPdf: pontuação inicial', () => {
+  it('PTS INICIAL inclui a pontuação inicial e a soma com as colunas fecha o ptsFinal', () => {
+    const dias = ['2026-10-01', '2026-10-08'];
+    const pdf = calcularPdf({
+      jogadores: [jogador('a', 'Ana', 1990, undefined, 40)],
+      partidas: partidasEm(dias),
+      presencas: dias.map((d) => presenca('a', d)),
+      configsPesos: CONFIGS,
+      hoje: '2026-10-20',
+      mes: '2026-10',
+    });
+    const linha = pdf.linhas[0]!;
+    expect(linha.ptsInicial).toBe(40);
+    expect(linha.ptsFinal).toBe(42);
+    expect(linha.rodadas.reduce((s, r) => s + (r.pontos ?? 0), linha.ptsInicial)).toBe(linha.ptsFinal);
+  });
+
+  it('sem colunas, ptsInicial = ptsFinal = a inicial', () => {
+    const pdf = calcularPdf({
+      jogadores: [jogador('a', 'Ana', 1990, undefined, 40)],
+      partidas: [],
+      presencas: [],
+      configsPesos: CONFIGS,
+      hoje: '2026-10-20',
+      mes: '2026-10',
+    });
+    expect([pdf.linhas[0]!.ptsInicial, pdf.linhas[0]!.ptsFinal]).toEqual([40, 40]);
+  });
+});
+
 describe('calcularPdf: troca de pesos e mês com mais de 12 partidas', () => {
   it('pontos por data: a mesma chuva vale 1 antes de 01/09 e 2 depois; expulso na chuva vale -1', () => {
     const base = historicoDeTresMeses();

@@ -49,8 +49,13 @@
         },
         "type": "array"
       },
+      "pontuacaoInicial": {
+        "maximum": 9999,
+        "minimum": 0,
+        "type": "integer"
+      },
       "posicao": {
-        "enum": ["goleiro", "defensor", "meio_campo", "atacante"],
+        "enum": ["zagueiro", "lateral", "volante", "meia", "atacante", "centroavante", "goleiro"],
         "type": "string"
       },
       "semNota": {
@@ -82,7 +87,18 @@
         ]
       }
     },
-    "required": ["id", "apelido", "anoNascimento", "posicao", "telefone", "situacao", "nivel", "semNota", "notas"],
+    "required": [
+      "id",
+      "apelido",
+      "anoNascimento",
+      "posicao",
+      "telefone",
+      "pontuacaoInicial",
+      "situacao",
+      "nivel",
+      "semNota",
+      "notas"
+    ],
     "type": "object"
   }
 }

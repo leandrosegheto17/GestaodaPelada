@@ -33,6 +33,7 @@ const CAMPOS: { id: string; chave: string; rotulo: string }[] = [
   { id: 'pos', chave: 'posicao', rotulo: 'Posição' },
   { id: 'tel', chave: 'telefone', rotulo: 'Telefone' },
   { id: 'entrada', chave: 'dataEntrada', rotulo: 'Data de entrada' },
+  { id: 'inicial', chave: 'pontuacaoInicial', rotulo: 'Pontuação inicial' },
 ];
 
 const OPCOES_POSICAO = [
@@ -47,6 +48,7 @@ export function FormularioJogador({ jogador, hoje, errosDoServidor, enviando, se
   const [posicao, setPosicao] = useState<string>(jogador?.posicao ?? '');
   const [telefone, setTelefone] = useState(jogador?.telefone ? formatarTelefone(jogador.telefone) : '');
   const [entrada, setEntrada] = useState(jogador?.situacao.desde ?? hoje);
+  const [inicial, setInicial] = useState(String(jogador?.pontuacaoInicial ?? 0));
   const [errosLocais, setErrosLocais] = useState<ErrosDeCampos>({});
 
   const erros = { ...errosDoServidor, ...errosLocais };
@@ -60,6 +62,7 @@ export function FormularioJogador({ jogador, hoje, errosDoServidor, enviando, se
       anoNascimento: ano === '' ? 0 : Number(ano),
       posicao: posicao || undefined,
       telefone: digitosDoTelefone(telefone),
+      pontuacaoInicial: inicial.trim() === '' ? Number.NaN : Number(inicial),
       dataEntrada: entrada || undefined,
     });
     const invalidos = deValidacao(analise);
@@ -74,6 +77,7 @@ export function FormularioJogador({ jogador, hoje, errosDoServidor, enviando, se
       anoNascimento: analise.data.anoNascimento,
       posicao: analise.data.posicao,
       telefone: analise.data.telefone,
+      pontuacaoInicial: analise.data.pontuacaoInicial,
       dataEntrada: analise.data.dataEntrada,
     });
   };
@@ -137,6 +141,26 @@ export function FormularioJogador({ jogador, hoje, errosDoServidor, enviando, se
           erro={erros.dataEntrada}
           erroComoAlerta={umSoErro}
         />
+        <Campo
+          id="inicial"
+          rotulo="Pontuação inicial"
+          ajuda="Pontos de antes da 1ª partida no app (0 a 9999)."
+          erro={erros.pontuacaoInicial}
+          erroComoAlerta={umSoErro}
+        >
+          {(entradaProps) => (
+            <input
+              {...entradaProps}
+              type="number"
+              inputMode="numeric"
+              min={0}
+              max={9999}
+              step={1}
+              value={inicial}
+              onChange={(e) => setInicial(e.target.value)}
+            />
+          )}
+        </Campo>
       </DuasColunas>
       {semConexao ? <ErroEnvio /> : null}
       {jogador ? (

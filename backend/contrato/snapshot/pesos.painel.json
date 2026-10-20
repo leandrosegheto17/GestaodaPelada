@@ -7,7 +7,12 @@
         "items": {
           "additionalProperties": false,
           "properties": {
-            "expulso": {
+            "expulsoComChuva": {
+              "maximum": 10,
+              "minimum": -10,
+              "type": "integer"
+            },
+            "expulsoSemChuva": {
               "maximum": 10,
               "minimum": -10,
               "type": "integer"
@@ -49,7 +54,8 @@
             "presencaComChuva",
             "lesionadoSemChuva",
             "lesionadoComChuva",
-            "expulso",
+            "expulsoSemChuva",
+            "expulsoComChuva",
             "vigenteDesde",
             "registradoPor",
             "vigenteAte"
@@ -65,7 +71,12 @@
       "vigente": {
         "additionalProperties": false,
         "properties": {
-          "expulso": {
+          "expulsoComChuva": {
+            "maximum": 10,
+            "minimum": -10,
+            "type": "integer"
+          },
+          "expulsoSemChuva": {
             "maximum": 10,
             "minimum": -10,
             "type": "integer"
@@ -103,7 +114,8 @@
           "presencaComChuva",
           "lesionadoSemChuva",
           "lesionadoComChuva",
-          "expulso",
+          "expulsoSemChuva",
+          "expulsoComChuva",
           "vigenteDesde",
           "registradoPor"
         ],

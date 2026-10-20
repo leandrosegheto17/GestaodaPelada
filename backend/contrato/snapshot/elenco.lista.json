@@ -20,7 +20,7 @@
               "type": "number"
             },
             "posicao": {
-              "enum": ["goleiro", "defensor", "meio_campo", "atacante"],
+              "enum": ["zagueiro", "lateral", "volante", "meia", "atacante", "centroavante", "goleiro"],
               "type": "string"
             },
             "semNota": {
@@ -53,7 +53,7 @@
               "type": "number"
             },
             "posicao": {
-              "enum": ["goleiro", "defensor", "meio_campo", "atacante"],
+              "enum": ["zagueiro", "lateral", "volante", "meia", "atacante", "centroavante", "goleiro"],
               "type": "string"
             },
             "semNota": {

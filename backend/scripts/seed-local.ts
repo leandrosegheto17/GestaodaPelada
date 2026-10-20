@@ -83,6 +83,7 @@ async function criarJogadores(
       anoNascimento: j.anoNascimento,
       posicao: j.posicao,
       telefone: null,
+      pontuacaoInicial: j.pontuacaoInicial ?? 0,
       dataEntrada: entrada,
       autor,
       agora,

@@ -35,6 +35,7 @@ export interface CorpoJogador {
   anoNascimento: number;
   posicao: string;
   telefone: string | null;
+  pontuacaoInicial: number;
   dataEntrada?: string | undefined;
 }
 

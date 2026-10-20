@@ -13,7 +13,14 @@ import { AGORA_TESTE, HOJE_TESTE, diaRelativo } from '../../apoio/relogio.js';
 
 const fabrica = usarFabrica();
 const abrir = usarDb(fabrica);
-const NOVOS = { presencaSemChuva: 3, presencaComChuva: 4, lesionadoSemChuva: -10, lesionadoComChuva: 10, expulso: -5 };
+const NOVOS = {
+  presencaSemChuva: 3,
+  presencaComChuva: 4,
+  lesionadoSemChuva: -10,
+  lesionadoComChuva: 10,
+  expulsoSemChuva: -5,
+  expulsoComChuva: -6,
+};
 
 async function cenario() {
   const db = await abrir();
@@ -54,8 +61,12 @@ describe('salvarPesos', () => {
   it('segundo salvamento no mesmo dia substitui e preserva o histórico', async () => {
     const { db, grupo, entrada, acoes, configs } = await cenario();
     await salvarPesos(db, grupo.id, entrada);
-    const painel = await salvarPesos(db, grupo.id, { ...entrada, pesos: { ...NOVOS, expulso: 0 } });
-    expect(painel.vigente.expulso).toBe(0);
+    const painel = await salvarPesos(db, grupo.id, {
+      ...entrada,
+      pesos: { ...NOVOS, expulsoSemChuva: 0, expulsoComChuva: 2 },
+    });
+    expect(painel.vigente.expulsoSemChuva).toBe(0);
+    expect(painel.vigente.expulsoComChuva).toBe(2);
     expect(painel.historico).toHaveLength(1);
     expect(await configs()).toHaveLength(2);
     expect((await acoes()).map((a) => a.acao)).toEqual(['pesos_configurados', 'pesos_substituidos']);

@@ -2,11 +2,11 @@ import { compararDatas, type Data } from '../datas/datas.js';
 import { criarResolvedorDePesos, type ResolvedorDePesos } from './pesos.js';
 import type { ConfigPesos, Pesos, PresencaDoJogador, SituacaoPresenca } from './tipos.js';
 
-/** Pontos de uma presença; expulso tem peso único, com ou sem chuva (RN-01). */
+/** Pontos de uma presença: cada situação tem um peso para partida seca e outro para partida com chuva (RN-01). */
 export function pontosDaPresenca(situacao: SituacaoPresenca, choveu: boolean, pesos: Pesos): number {
   switch (situacao) {
     case 'expulso':
-      return pesos.expulso;
+      return choveu ? pesos.expulsoComChuva : pesos.expulsoSemChuva;
     case 'lesionado':
       return choveu ? pesos.lesionadoComChuva : pesos.lesionadoSemChuva;
     case 'presente':
@@ -41,4 +41,14 @@ export function acumuladoAte(
     }
   }
   return total;
+}
+
+/** Acumulado de um jogador na referência: a pontuação inicial do cadastro mais as partidas até a data. */
+export function acumuladoComInicial(
+  pontuacaoInicial: number,
+  presencas: readonly PresencaDoJogador[],
+  configs: readonly ConfigPesos[] | ResolvedorDePesos,
+  referencia: Data,
+): number {
+  return pontuacaoInicial + acumuladoAte(presencas, configs, referencia);
 }

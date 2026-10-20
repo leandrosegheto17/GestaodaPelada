@@ -9,6 +9,7 @@ export interface ConfigPesosTabela {
   lesionado_sem_chuva: number;
   lesionado_com_chuva: number;
   expulso: number;
+  expulso_com_chuva: Generated<number>;
   registrado_por: string;
   registrado_em: Date;
 }

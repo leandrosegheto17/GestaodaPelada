@@ -91,7 +91,14 @@ export const CASOS: Record<string, Caso> = {
   'GET /api/grupos/:grupoId/pesos': { tipo: 'grupo' },
   'POST /api/grupos/:grupoId/pesos': {
     tipo: 'grupo',
-    corpo: { presencaSemChuva: 1, presencaComChuva: 1, lesionadoSemChuva: 1, lesionadoComChuva: 1, expulso: -1 },
+    corpo: {
+      presencaSemChuva: 1,
+      presencaComChuva: 1,
+      lesionadoSemChuva: 1,
+      lesionadoComChuva: 1,
+      expulsoSemChuva: -1,
+      expulsoComChuva: -1,
+    },
   },
   'GET /api/grupos/:grupoId/partidas': { tipo: 'grupo' },
   'GET /api/grupos/:grupoId/partidas/nova': { tipo: 'grupo' },

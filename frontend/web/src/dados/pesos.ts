@@ -19,10 +19,11 @@ export interface CorpoPesos {
   presencaComChuva: number;
   lesionadoSemChuva: number;
   lesionadoComChuva: number;
-  expulso: number;
+  expulsoSemChuva: number;
+  expulsoComChuva: number;
 }
 
-/** A vigência é sempre o "hoje" do servidor: o corpo leva só os 5 inteiros. */
+/** A vigência é sempre o "hoje" do servidor: o corpo leva só os 6 inteiros. */
 export function useSalvarPesos(grupoId: string) {
   const cliente = useQueryClient();
   return useMutation({

@@ -23,8 +23,9 @@ export function jogador(
   apelido: string,
   anoNascimento = 1990,
   periodos: JogadorDoRanking['periodos'] = [{ inicio: '2026-01-01', fim: null }],
+  pontuacaoInicial = 0,
 ): JogadorDoRanking {
-  return { id, apelido, anoNascimento, periodos };
+  return { id, apelido, anoNascimento, periodos, pontuacaoInicial };
 }
 
 export function partida(data: string, choveu = false): PartidaDoRanking {

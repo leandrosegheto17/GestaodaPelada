@@ -13,7 +13,14 @@ import { relogioFixo } from '../../../apoio/relogio.js';
 const fabrica = usarFabrica();
 const abrir = usarDbDoWorker(fabrica);
 const AGORA = new Date('2026-10-16T12:00:00Z');
-const PESOS = { presencaSemChuva: 1, presencaComChuva: 2, lesionadoSemChuva: 1, lesionadoComChuva: 2, expulso: -1 };
+const PESOS = {
+  presencaSemChuva: 1,
+  presencaComChuva: 2,
+  lesionadoSemChuva: 1,
+  lesionadoComChuva: 2,
+  expulsoSemChuva: -1,
+  expulsoComChuva: -2,
+};
 const cliente = (cookie?: string, semCsrf = false) =>
   clienteTeste({ relogio: relogioFixo('2026-10-22'), ...(cookie ? { cookie } : {}), semCsrf });
 
@@ -34,15 +41,20 @@ async function montar() {
 describe('POST /api/grupos/:g/pesos: bordas e acesso (workerd)', () => {
   it('aceita -10 e 10', async () => {
     const { cen, url } = await montar();
-    const r = await cliente(cen.adminA.cookie).post(url, { ...PESOS, expulso: -10, presencaSemChuva: 10 });
+    const r = await cliente(cen.adminA.cookie).post(url, {
+      ...PESOS,
+      expulsoSemChuva: -10,
+      expulsoComChuva: -10,
+      presencaSemChuva: 10,
+    });
     expect(r.status).toBe(200);
   });
 
   it.each([[null], [undefined]])('422 com %s no campo', async (valor) => {
     const { cen, url, total } = await montar();
-    const r = await cliente(cen.adminA.cookie).post(url, { ...PESOS, expulso: valor });
+    const r = await cliente(cen.adminA.cookie).post(url, { ...PESOS, expulsoSemChuva: valor });
     expect(r.status).toBe(422);
-    expect(Object.keys((r.corpo as { erro: { campos: object } }).erro.campos)).toContain('expulso');
+    expect(Object.keys((r.corpo as { erro: { campos: object } }).erro.campos)).toContain('expulsoSemChuva');
     expect(await total()).toBe(1);
   });
 

@@ -3,7 +3,12 @@
   "esquema": {
     "additionalProperties": false,
     "properties": {
-      "expulso": {
+      "expulsoComChuva": {
+        "maximum": 10,
+        "minimum": -10,
+        "type": "integer"
+      },
+      "expulsoSemChuva": {
         "maximum": 10,
         "minimum": -10,
         "type": "integer"
@@ -29,7 +34,14 @@
         "type": "integer"
       }
     },
-    "required": ["presencaSemChuva", "presencaComChuva", "lesionadoSemChuva", "lesionadoComChuva", "expulso"],
+    "required": [
+      "presencaSemChuva",
+      "presencaComChuva",
+      "lesionadoSemChuva",
+      "lesionadoComChuva",
+      "expulsoSemChuva",
+      "expulsoComChuva"
+    ],
     "type": "object"
   }
 }

@@ -91,6 +91,24 @@ describe('GET /api/publico/:slug/ranking (workerd)', () => {
     );
   });
 
+  it('soma a pontuação inicial ao total e não expõe o campo isolado', async () => {
+    const db = await abrir();
+    const cen = await grupoComHistorico(db);
+    await kyselyDe(db)
+      .updateTable('jogadores')
+      .set({ pontuacao_inicial: 10 })
+      .where('grupo_id', '=', cen.grupoA.id)
+      .where('apelido', '=', 'Beto')
+      .execute();
+    const r = await anonimo().get(`/api/publico/${cen.grupoA.slug}/ranking`);
+    const ranking = rankingPublico.parse(r.corpo);
+    expect(ranking.linhas.map((l) => [l.posicao, l.apelido, l.ptsInicial, l.ptsFinal])).toEqual([
+      [1, 'Beto', 10, 9],
+      [2, 'Ana', 1, 2],
+    ]);
+    expect(chaves(r.corpo).map((k) => k.toLowerCase())).not.toContain('pontuacaoinicial');
+  });
+
   it('enderecoNovo: null sem configuração, URL (sem barra final) com ENDERECO_NOVO', async () => {
     const cen = await grupoComHistorico(await abrir());
     const url = `/api/publico/${cen.grupoA.slug}/ranking`;

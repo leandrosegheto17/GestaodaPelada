@@ -14,6 +14,20 @@ function entrada(sobre: Partial<EntradaPrioridade> = {}): EntradaPrioridade {
   };
 }
 
+describe('ordenarPrioridade com pontuação inicial', () => {
+  it('sem partidas, a pontuação inicial ordena antes do desempate', () => {
+    const jogadores = [jogador('a', 'Ana', 1980), jogador('b', 'Bia', 1991, undefined, 30), jogador('c', 'Cris', 1992)];
+    expect(ordenarPrioridade(entrada({ jogadores }))).toEqual(['b', 'a', 'c']);
+  });
+
+  it('soma a inicial às partidas anteriores à véspera', () => {
+    const jogadores = [jogador('a', 'Ana', 1990), jogador('b', 'Bia', 1991, undefined, 1), jogador('c', 'Cris', 1992)];
+    const partidas = [partida('2026-10-08'), partida('2026-10-15')];
+    const presencas = [presenca('a', '2026-10-08'), presenca('a', '2026-10-15')];
+    expect(ordenarPrioridade(entrada({ jogadores, partidas, presencas }))).toEqual(['a', 'b', 'c']);
+  });
+});
+
 describe('ordenarPrioridade', () => {
   it('sem partidas, a ordem sai do desempate: ano asc e apelido sem acento nem caixa', () => {
     const jogadores = [

@@ -36,6 +36,10 @@ describe('enums cobrem os valores das respostas do mockup', () => {
     for (const valor of usados(campo)) expect(enumeracao as readonly string[]).toContain(valor);
   });
 
+  it('posições do legado, em ordem de exibição', () => {
+    expect(POSICOES).toEqual(['zagueiro', 'lateral', 'volante', 'meia', 'atacante', 'centroavante', 'goleiro']);
+  });
+
   it('situação de presença conhecida', () => {
     expect(SITUACOES_PRESENCA).toEqual(['ausente', 'presente', 'lesionado', 'expulso']);
   });

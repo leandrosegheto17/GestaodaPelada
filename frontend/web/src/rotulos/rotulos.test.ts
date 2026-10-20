@@ -59,8 +59,15 @@ describe('conferência com o mockup', () => {
   it('ordens', () => {
     expect(r.ORDEM_DIA_SEMANA[0]).toBe('domingo');
     expect(r.ORDEM_DIA_SEMANA[6]).toBe('sabado');
-    expect(r.ORDEM_POSICAO[0]).toBe('goleiro');
-    expect(r.ORDEM_POSICAO[3]).toBe('atacante');
+    expect(r.ORDEM_POSICAO.map(r.rotuloPosicao)).toEqual([
+      'Zagueiro',
+      'Lateral',
+      'Volante',
+      'Meia',
+      'Atacante',
+      'Centroavante',
+      'Goleiro',
+    ]);
     expect(r.ORDEM_SITUACAO_COMERCIAL[0]).toBe('uso_proprio');
     expect(r.ORDEM_SITUACAO_COMERCIAL[4]).toBe('cancelado');
   });
@@ -71,6 +78,6 @@ describe('conferência com o mockup', () => {
     expect(r.rotuloSituacaoComercial('uso_proprio')).toBe('Uso próprio');
     expect(r.rotuloTipoLancamento('saida')).toBe('Saída');
     expect(r.rotuloFormatoSimulador('dois_times')).toBe('2 times (1º e 2º tempo)');
-    expect(r.rotuloPosicao('meio_campo')).toBe('Meio-campo');
+    expect(r.rotuloPosicao('meia')).toBe('Meia');
   });
 });

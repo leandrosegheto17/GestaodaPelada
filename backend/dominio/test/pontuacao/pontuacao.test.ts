@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   PESOS_PADRAO,
   acumuladoAte,
+  acumuladoComInicial,
   configVigente,
   criarResolvedorDePesos,
   pontosDaPresenca,
@@ -33,10 +34,37 @@ describe('pontosDaPresenca com pesos padrão', () => {
     expect(pontosDaPresenca(situacao, choveu, PESOS_PADRAO)).toBe(esperado);
   });
 
-  it('expulso ignora a chuva mesmo com pesos distintos', () => {
-    const pesos = { ...PESOS_PADRAO, presencaComChuva: 5, expulso: -3 };
-    expect(pontosDaPresenca('expulso', true, pesos)).toBe(-3);
-    expect(pontosDaPresenca('expulso', false, pesos)).toBe(-3);
+  it('os seis pesos padrão: presença, lesionado e expulso valem 1, 1 e -1 com ou sem chuva', () => {
+    expect(PESOS_PADRAO).toEqual({
+      presencaSemChuva: 1,
+      presencaComChuva: 1,
+      lesionadoSemChuva: 1,
+      lesionadoComChuva: 1,
+      expulsoSemChuva: -1,
+      expulsoComChuva: -1,
+    });
+  });
+
+  it('expulso usa o peso da chuva da partida', () => {
+    const pesos = { ...PESOS_PADRAO, presencaComChuva: 5, expulsoSemChuva: -2, expulsoComChuva: -5 };
+    expect(pontosDaPresenca('expulso', true, pesos)).toBe(-5);
+    expect(pontosDaPresenca('expulso', false, pesos)).toBe(-2);
+  });
+
+  it('pesos do legado: presença 3/6, lesionado 3/6, expulso 2/5', () => {
+    const legado = {
+      presencaSemChuva: 3,
+      presencaComChuva: 6,
+      lesionadoSemChuva: 3,
+      lesionadoComChuva: 6,
+      expulsoSemChuva: 2,
+      expulsoComChuva: 5,
+    };
+    expect(pontosDaPresenca('presente', false, legado)).toBe(3);
+    expect(pontosDaPresenca('presente', true, legado)).toBe(6);
+    expect(pontosDaPresenca('lesionado', true, legado)).toBe(6);
+    expect(pontosDaPresenca('expulso', false, legado)).toBe(2);
+    expect(pontosDaPresenca('expulso', true, legado)).toBe(5);
   });
 });
 
@@ -66,6 +94,19 @@ describe('vigência dos pesos', () => {
   it('aceita resolvedor já criado', () => {
     const resolvedor = criarResolvedorDePesos([antiga, nova]);
     expect(pontosNaData('presente', true, '2026-09-10', resolvedor)).toBe(2);
+  });
+});
+
+describe('acumuladoComInicial', () => {
+  const presencas = [{ data: '2026-08-27', choveu: false, situacao: 'presente' as const }];
+  it('soma a pontuação inicial ao acumulado das partidas, em qualquer referência', () => {
+    expect(acumuladoComInicial(50, presencas, [antiga], '2026-01-01')).toBe(50);
+    expect(acumuladoComInicial(50, presencas, [antiga], '2026-08-27')).toBe(51);
+  });
+  it('inicial 0 reproduz o acumulado só das partidas', () => {
+    expect(acumuladoComInicial(0, presencas, [antiga, nova], '2026-12-31')).toBe(
+      acumuladoAte(presencas, [antiga, nova], '2026-12-31'),
+    );
   });
 });
 

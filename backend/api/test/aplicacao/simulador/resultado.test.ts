@@ -33,6 +33,7 @@ function montar(
         apelido: NOMES[i] ?? `J${i}`,
         anoNascimento: 1980 + i,
         periodos: [{ inicio: '2026-01-01', fim: null }],
+        pontuacaoInicial: 0,
       })),
       partidas: [],
       presencas: [],

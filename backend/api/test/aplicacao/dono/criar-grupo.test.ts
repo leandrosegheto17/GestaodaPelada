@@ -62,11 +62,11 @@ describe('criarGrupo', () => {
     expect(r.primeiroAdmin.senhaTemporaria).toHaveLength(12);
     const g = await grupos.buscarPorId(db, r.grupo.id);
     expect(g?.situacaoComercial).toBe('uso_proprio');
-    const linhas = await executarSql<{ expulso: number; presenca_com_chuva: number }>(
-      'SELECT expulso, presenca_com_chuva FROM config_pesos WHERE grupo_id = $1',
+    const linhas = await executarSql<{ expulso: number; expulso_com_chuva: number; presenca_com_chuva: number }>(
+      'SELECT expulso, expulso_com_chuva, presenca_com_chuva FROM config_pesos WHERE grupo_id = $1',
       [r.grupo.id],
     );
-    expect(linhas).toEqual([{ expulso: -1, presenca_com_chuva: 1 }]);
+    expect(linhas).toEqual([{ expulso: -1, expulso_com_chuva: -1, presenca_com_chuva: 1 }]);
     expect(await executarSql('SELECT 1 FROM habilidades WHERE grupo_id = $1', [r.grupo.id])).toHaveLength(6);
     const vinculo = await executarSql<{ acessa_financeiro: boolean }>(
       'SELECT acessa_financeiro FROM vinculos_admin WHERE grupo_id = $1',
@@ -193,7 +193,7 @@ describe('criarGrupo', () => {
     const r = await criarGrupo(db, e);
     limparCriado(db, r.grupo.id, r.primeiroAdmin.contaId);
     const pesosGravados = await executarSql<Record<string, number | string>>(
-      `SELECT presenca_sem_chuva, presenca_com_chuva, lesionado_sem_chuva, lesionado_com_chuva, expulso,
+      `SELECT presenca_sem_chuva, presenca_com_chuva, lesionado_sem_chuva, lesionado_com_chuva, expulso, expulso_com_chuva,
               to_char(vigente_desde, 'YYYY-MM-DD') AS vigente_desde
          FROM config_pesos WHERE grupo_id = $1`,
       [r.grupo.id],
@@ -205,6 +205,7 @@ describe('criarGrupo', () => {
         lesionado_sem_chuva: 1,
         lesionado_com_chuva: 1,
         expulso: -1,
+        expulso_com_chuva: -1,
         vigente_desde: e.hoje,
       },
     ]);

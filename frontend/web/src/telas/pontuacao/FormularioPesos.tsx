@@ -19,7 +19,7 @@ interface Props {
   aoSalvar: (corpo: CorpoPesos) => void;
 }
 
-/** Os 5 pesos como texto digitado: só vira inteiro na validação pelo contrato. */
+/** Os 6 pesos como texto digitado: só vira inteiro na validação pelo contrato. */
 export function FormularioPesos({ vigente, errosDoServidor, enviando, semConexao, aoSalvar }: Props) {
   const base = useId();
   const [valores, setValores] = useState<Record<ChavePeso, string>>(

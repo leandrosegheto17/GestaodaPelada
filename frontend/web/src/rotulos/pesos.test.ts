@@ -8,7 +8,8 @@ describe('rótulos dos pesos', () => {
       'Presença com chuva',
       'Lesionado sem chuva',
       'Lesionado com chuva',
-      'Expulso',
+      'Expulso sem chuva',
+      'Expulso com chuva',
     ]);
   });
 });

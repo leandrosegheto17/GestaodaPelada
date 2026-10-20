@@ -55,6 +55,28 @@ describe('POST /api/grupos/:g/jogadores (workerd)', () => {
     expect(jogadorDetalhe.parse(passada.corpo).situacao).toMatchObject({ desde: antes });
   });
 
+  it('pontuação inicial: padrão 0, aceita 0 e 9999 e volta no detalhe', async () => {
+    const cen = await montarCenario(await abrir(), fabrica);
+    const g = cen.grupoA.id;
+    const semCampo = await cliente(cen.adminA.cookie).post(url(g), corpo);
+    expect(jogadorDetalhe.parse(semCampo.corpo).pontuacaoInicial).toBe(0);
+    for (const [i, valor] of [0, 9999].entries()) {
+      const r = await cliente(cen.adminA.cookie).post(url(g), {
+        ...corpo,
+        apelido: `Inicial ${i}`,
+        pontuacaoInicial: valor,
+      });
+      expect(r.status).toBe(201);
+      expect(jogadorDetalhe.parse(r.corpo).pontuacaoInicial).toBe(valor);
+    }
+  });
+
+  it('a mensagem do erro de pontuação inicial é a do contrato', async () => {
+    const cen = await montarCenario(await abrir(), fabrica);
+    const r = await cliente(cen.adminA.cookie).post(url(cen.grupoA.id), { ...corpo, pontuacaoInicial: 10000 });
+    expect(campos(r)).toEqual({ pontuacaoInicial: 'Informe um número inteiro de 0 a 9999.' });
+  });
+
   it('o ano máximo é o do hoje do servidor', async () => {
     const db = await abrir();
     const cen = await montarCenario(db, fabrica);
@@ -87,6 +109,10 @@ describe('POST /api/grupos/:g/jogadores (workerd)', () => {
     ['ano 1939', { anoNascimento: 1939 }, 'anoNascimento'],
     ['entrada amanhã', { dataEntrada: diaRelativo(1) }, 'dataEntrada'],
     ['telefone inválido', { telefone: '123' }, 'telefone'],
+    ['pontuação inicial negativa', { pontuacaoInicial: -1 }, 'pontuacaoInicial'],
+    ['pontuação inicial acima de 9999', { pontuacaoInicial: 10000 }, 'pontuacaoInicial'],
+    ['pontuação inicial decimal', { pontuacaoInicial: 1.5 }, 'pontuacaoInicial'],
+    ['pontuação inicial em texto', { pontuacaoInicial: '12' }, 'pontuacaoInicial'],
     ['campo nivel extra', { nivel: 9 }, null],
     ['campo grupoId extra', { grupoId: '00000000-0000-4000-8000-000000000001' }, null],
   ])('422: %s', async (_nome, extra, campo) => {

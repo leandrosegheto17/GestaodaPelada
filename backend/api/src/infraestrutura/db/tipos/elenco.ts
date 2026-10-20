@@ -7,6 +7,7 @@ export interface JogadoresTabela {
   ano_nascimento: number | null;
   posicao: string | null;
   telefone: string | null;
+  pontuacao_inicial: Generated<number>;
   criado_por: string;
   criado_em: Date;
   alterado_por: string;

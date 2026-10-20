@@ -1,6 +1,6 @@
 import { somarDias, type Data } from '../datas/datas.js';
 import { criarResolvedorDePesos } from '../pontuacao/pesos.js';
-import { acumuladoAte } from '../pontuacao/pontos.js';
+import { acumuladoComInicial } from '../pontuacao/pontos.js';
 import type { ConfigPesos } from '../pontuacao/tipos.js';
 import {
   agruparPresencasPorJogador,
@@ -36,7 +36,10 @@ export function ordenarPrioridade(entrada: EntradaPrioridade): string[] {
     return jogador;
   });
   const acumulados = new Map(
-    aptos.map((j) => [j.id, acumuladoAte(presencasPorJogador.get(j.id) ?? [], resolver, referencia)]),
+    aptos.map((j) => [
+      j.id,
+      acumuladoComInicial(j.pontuacaoInicial, presencasPorJogador.get(j.id) ?? [], resolver, referencia),
+    ]),
   );
   return ordenarPorRanking(aptos, acumulados).map(({ jogador }) => jogador.id);
 }

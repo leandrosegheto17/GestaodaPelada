@@ -66,6 +66,63 @@ describe('PATCH /api/grupos/:g/jogadores/:id (editar, workerd)', () => {
     expect(jogadorDetalhe.parse(limpo.corpo).telefone).toBeNull();
   });
 
+  it('editar a pontuação inicial audita o valor anterior e muda o ranking público', async () => {
+    const db = await abrir();
+    const cen = await montarCenario(db, fabrica);
+    const g = cen.grupoA.id;
+    const id = await criarJogador(db, g, cen.adminA.id, { apelido: 'Sigiloso', pontuacaoInicial: 5 });
+    await pesos.criarPadrao(db, g, {
+      pesos: PESOS_PADRAO,
+      vigenteDesde: diaRelativo(-400),
+      registradoPor: cen.adminA.id,
+      agora: AGORA_TESTE,
+    });
+    const mudou = await cliente(cen.adminA.cookie).patch(url(g, id), { ...corpoBase, pontuacaoInicial: 40 });
+    expect(mudou.status).toBe(200);
+    expect(jogadorDetalhe.parse(mudou.corpo).pontuacaoInicial).toBe(40);
+    const eventos = await kyselyDe(db)
+      .selectFrom('auditoria')
+      .select(['acao', 'entidade_id', 'resumo', 'autor_conta_id'])
+      .where('grupo_id', '=', g)
+      .where('acao', '=', 'jogador_pontuacao_inicial_alterada')
+      .execute();
+    expect(eventos).toEqual([
+      {
+        acao: 'jogador_pontuacao_inicial_alterada',
+        entidade_id: id,
+        resumo: { anterior: 5, novo: 40 },
+        autor_conta_id: cen.adminA.id,
+      },
+    ]);
+    const publico = await clienteTeste({ relogio: relogioFixo(HOJE_TESTE) }).get(
+      `/api/publico/${cen.grupoA.slug}/ranking`,
+    );
+    const linha = (publico.corpo as { linhas: { apelido: string; ptsFinal: number }[] }).linhas[0];
+    expect(linha).toMatchObject({ apelido: 'Editado', ptsFinal: 40 });
+    expect(publico.texto).not.toContain('pontuacaoInicial');
+    await cliente(cen.adminA.cookie).patch(url(g, id), { ...corpoBase, pontuacaoInicial: 40 });
+    const depois = await kyselyDe(db)
+      .selectFrom('auditoria')
+      .select('id')
+      .where('acao', '=', 'jogador_pontuacao_inicial_alterada')
+      .where('grupo_id', '=', g)
+      .execute();
+    expect(depois).toHaveLength(1);
+  });
+
+  it('pontuação inicial inválida na edição: 422 no campo, sem gravar', async () => {
+    const db = await abrir();
+    const cen = await montarCenario(db, fabrica);
+    const g = cen.grupoA.id;
+    const id = await criarJogador(db, g, cen.adminA.id, { pontuacaoInicial: 7 });
+    for (const valor of [-1, 10000, 2.5]) {
+      const r = await cliente(cen.adminA.cookie).patch(url(g, id), { ...corpoBase, pontuacaoInicial: valor });
+      expect(r.status).toBe(422);
+      expect(Object.keys(campos(r))).toContain('pontuacaoInicial');
+    }
+    expect((await jogadores.buscar(db, g, id))?.pontuacaoInicial).toBe(7);
+  });
+
   it('nova entrada move só o primeiro período; recusa posterior a presença ou ao fim do período', async () => {
     const db = await abrir();
     const cen = await montarCenario(db, fabrica);

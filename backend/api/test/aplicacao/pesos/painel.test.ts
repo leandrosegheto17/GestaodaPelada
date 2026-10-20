@@ -10,7 +10,14 @@ import { usarFabrica } from '../../apoio/fabrica.js';
 const fabrica = usarFabrica();
 const abrir = usarDb(fabrica);
 const AGORA = new Date('2026-10-16T12:00:00Z');
-const NOVOS = { presencaSemChuva: 1, presencaComChuva: 2, lesionadoSemChuva: 1, lesionadoComChuva: 2, expulso: -1 };
+const NOVOS = {
+  presencaSemChuva: 1,
+  presencaComChuva: 2,
+  lesionadoSemChuva: 1,
+  lesionadoComChuva: 2,
+  expulsoSemChuva: -1,
+  expulsoComChuva: -2,
+};
 
 describe('montarPainelPesos (Postgres)', () => {
   it('vigente = a mais recente; histórico decrescente com a véspera como vigenteAte', async () => {

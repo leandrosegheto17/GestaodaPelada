@@ -14,6 +14,7 @@ describe('adaptadores do histórico', () => {
       anoNascimento: 1978,
       posicao: 'atacante',
       telefone: '11987654321',
+      pontuacaoInicial: 40,
       periodos: [{ inicio: '2026-02-05', fim: null }],
     });
     expect(r).toEqual({
@@ -21,6 +22,7 @@ describe('adaptadores do histórico', () => {
       apelido: 'Toninho',
       anoNascimento: 1978,
       periodos: [{ inicio: '2026-02-05', fim: null }],
+      pontuacaoInicial: 40,
     });
     expect(JSON.stringify(r)).not.toContain('11987654321');
   });
@@ -32,6 +34,7 @@ describe('adaptadores do histórico', () => {
       anoNascimento: null,
       posicao: null,
       telefone: null,
+      pontuacaoInicial: 0,
       periodos: [],
     });
     expect(r.anoNascimento).toBe(9999);
@@ -61,7 +64,8 @@ describe('adaptadores do histórico', () => {
       presencaComChuva: 2,
       lesionadoSemChuva: 1,
       lesionadoComChuva: 1,
-      expulso: -1,
+      expulsoSemChuva: -1,
+      expulsoComChuva: -2,
     });
     expect(r).toEqual({
       vigenteDesde: '2026-09-01',
@@ -70,7 +74,8 @@ describe('adaptadores do histórico', () => {
       presencaComChuva: 2,
       lesionadoSemChuva: 1,
       lesionadoComChuva: 1,
-      expulso: -1,
+      expulsoSemChuva: -1,
+      expulsoComChuva: -2,
     });
   });
 });

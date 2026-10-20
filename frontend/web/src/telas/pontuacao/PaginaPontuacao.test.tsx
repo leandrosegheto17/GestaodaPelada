@@ -57,13 +57,14 @@ describe('PaginaPontuacao (T18)', () => {
     montar();
     expect(await screen.findByRole('heading', { name: 'Vigente desde 01/09/2026' })).toBeInTheDocument();
     const tabela = screen.getByRole('table', { name: 'Pesos vigentes' });
-    expect(within(tabela).getAllByRole('rowheader')).toHaveLength(5);
-    expect(within(tabela).getByText('−1')).toBeInTheDocument();
+    expect(within(tabela).getAllByRole('rowheader')).toHaveLength(6);
+    expect(within(tabela).getAllByText('−1')).toHaveLength(2);
     expect(ORDEM_PESOS.map((c) => (screen.getByLabelText(ROTULO_PESO[c]) as HTMLInputElement).value)).toEqual([
       '1',
       '2',
       '1',
       '1',
+      '-1',
       '-1',
     ]);
     const ajuda = screen.getByText('Inteiros de −10 a 10. Partidas anteriores a hoje não mudam.');
@@ -86,10 +87,10 @@ describe('PaginaPontuacao (T18)', () => {
     expect(envios).toHaveLength(0);
   });
 
-  it('-10 e 10 são aceitos e o corpo leva só os 5 inteiros', async () => {
+  it('-10 e 10 são aceitos e o corpo leva só os 6 inteiros', async () => {
     api();
     montar();
-    const campo = await screen.findByLabelText('Expulso');
+    const campo = await screen.findByLabelText('Expulso sem chuva');
     await userEvent.clear(campo);
     await userEvent.type(campo, '-10');
     const outro = screen.getByLabelText('Presença sem chuva');
@@ -98,7 +99,14 @@ describe('PaginaPontuacao (T18)', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Salvar nova configuração' }));
     await waitFor(() => expect(envios).toHaveLength(1));
     expect(envios[0]).toEqual({
-      corpo: { presencaSemChuva: 10, presencaComChuva: 2, lesionadoSemChuva: 1, lesionadoComChuva: 1, expulso: -10 },
+      corpo: {
+        presencaSemChuva: 10,
+        presencaComChuva: 2,
+        lesionadoSemChuva: 1,
+        lesionadoComChuva: 1,
+        expulsoSemChuva: -10,
+        expulsoComChuva: -1,
+      },
       xPelada: '1',
     });
   });
@@ -106,7 +114,7 @@ describe('PaginaPontuacao (T18)', () => {
   it('2 erros mostram o resumo', async () => {
     api();
     montar();
-    for (const rotulo of ['Presença com chuva', 'Expulso']) {
+    for (const rotulo of ['Presença com chuva', 'Expulso sem chuva']) {
       const campo = await screen.findByLabelText(rotulo);
       await userEvent.clear(campo);
       await userEvent.type(campo, '99');
@@ -154,12 +162,12 @@ describe('PaginaPontuacao (T18)', () => {
   it('falha de rede mantém os valores digitados', async () => {
     api(() => HttpResponse.error());
     montar();
-    const campo = await screen.findByLabelText('Expulso');
+    const campo = await screen.findByLabelText('Expulso com chuva');
     await userEvent.clear(campo);
     await userEvent.type(campo, '-3');
     await userEvent.click(screen.getByRole('button', { name: 'Salvar nova configuração' }));
     expect(await screen.findByRole('alert')).toHaveTextContent('Não foi possível enviar. Verifique a conexão.');
-    expect(screen.getByLabelText('Expulso')).toHaveValue(-3);
+    expect(screen.getByLabelText('Expulso com chuva')).toHaveValue(-3);
   });
 
   it('503 no GET mostra o erro padrão com Tentar de novo', async () => {

@@ -41,10 +41,13 @@ export const ROTULO_SITUACAO_RODADA = {
 export const ORDEM_SITUACAO_RODADA: readonly SituacaoRodada[] = SITUACOES_RODADA;
 
 export const ROTULO_POSICAO = {
-  goleiro: 'Goleiro',
-  defensor: 'Defensor',
-  meio_campo: 'Meio-campo',
+  zagueiro: 'Zagueiro',
+  lateral: 'Lateral',
+  volante: 'Volante',
+  meia: 'Meia',
   atacante: 'Atacante',
+  centroavante: 'Centroavante',
+  goleiro: 'Goleiro',
 } as const satisfies Record<Posicao, string>;
 export const ORDEM_POSICAO: readonly Posicao[] = POSICOES;
 

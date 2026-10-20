@@ -9,6 +9,7 @@ export const LIMITES = {
   anoNascimentoMin: 1940,
   idadeMinima: 10,
   peso: { min: -10, max: 10 },
+  pontuacaoInicial: { min: 0, max: 9999 },
   jogadoresPorTime: { min: 2, max: 11 },
   substituicoes: { min: 0, max: 20 },
   aptosMax: 60,

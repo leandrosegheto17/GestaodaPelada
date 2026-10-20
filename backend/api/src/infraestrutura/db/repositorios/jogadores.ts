@@ -34,6 +34,7 @@ export interface Jogador {
   anoNascimento: number | null;
   posicao: string | null;
   telefone: string | null;
+  pontuacaoInicial: number;
   /** Em ordem de início. */
   periodos: PeriodoDoJogador[];
 }
@@ -44,6 +45,7 @@ interface LinhaJogador {
   ano_nascimento: number | null;
   posicao: string | null;
   telefone: string | null;
+  pontuacao_inicial: number;
   periodos: PeriodoDoJogador[];
 }
 
@@ -53,6 +55,7 @@ const paraJogador = (l: LinhaJogador): Jogador => ({
   anoNascimento: l.ano_nascimento,
   posicao: l.posicao,
   telefone: l.telefone,
+  pontuacaoInicial: l.pontuacao_inicial,
   periodos: l.periodos,
 });
 
@@ -62,7 +65,7 @@ const codigoDe = (erro: unknown): { code?: string; constraint?: string } =>
 async function consultar(ex: ExecutorDb, grupoId: string, jogadorId: string | null): Promise<Jogador[]> {
   const filtro = jogadorId === null ? sql`` : sql`AND j.id = ${jogadorId}`;
   const resultado = await sql<LinhaJogador>`
-    SELECT j.id, j.apelido, j.ano_nascimento, j.posicao, j.telefone,
+    SELECT j.id, j.apelido, j.ano_nascimento, j.posicao, j.telefone, j.pontuacao_inicial,
            coalesce(json_agg(json_build_object('inicio', p.inicio::text, 'fim', p.fim::text) ORDER BY p.inicio)
                     FILTER (WHERE p.id IS NOT NULL), '[]'::json) AS periodos
     FROM jogadores j
@@ -88,6 +91,7 @@ export interface DadosJogador {
   anoNascimento: number;
   posicao: string;
   telefone: string | null;
+  pontuacaoInicial: number;
 }
 
 /** Duas tabelas: exige transação. */
@@ -106,6 +110,7 @@ export async function criar(
         ano_nascimento: dados.anoNascimento,
         posicao: dados.posicao,
         telefone: dados.telefone,
+        pontuacao_inicial: dados.pontuacaoInicial,
         criado_por: dados.autor,
         criado_em: dados.agora,
         alterado_por: dados.autor,
@@ -139,6 +144,7 @@ export async function editar(
         ano_nascimento: dados.anoNascimento,
         posicao: dados.posicao,
         telefone: dados.telefone,
+        pontuacao_inicial: dados.pontuacaoInicial,
         alterado_por: dados.autor,
         alterado_em: dados.agora,
       })

@@ -13,7 +13,14 @@ const fabrica = usarFabrica();
 const abrir = usarDbDoWorker(fabrica);
 const AGORA = new Date('2026-10-16T12:00:00Z');
 const cliente = (cookie: string, data = '2026-10-22') => clienteTeste({ relogio: relogioFixo(data), cookie });
-const NOVOS = { presencaSemChuva: 1, presencaComChuva: 2, lesionadoSemChuva: 1, lesionadoComChuva: 2, expulso: -1 };
+const NOVOS = {
+  presencaSemChuva: 1,
+  presencaComChuva: 2,
+  lesionadoSemChuva: 1,
+  lesionadoComChuva: 2,
+  expulsoSemChuva: -1,
+  expulsoComChuva: -2,
+};
 
 async function comPadrao(db: Awaited<ReturnType<typeof abrir>>, grupoId: string, autor: string) {
   await pesos.criarPadrao(db, grupoId, {
@@ -67,7 +74,7 @@ describe('POST /api/grupos/:g/pesos (workerd)', () => {
     const painel = painelPesos.parse(r.corpo);
     expect(painel.vigente.vigenteDesde).toBe('2026-10-22');
     expect(painel.historico[0]?.vigenteAte).toBe('2026-10-21');
-    const outra = await cliente(cen.adminA.cookie).post(url, { ...NOVOS, expulso: -3 });
+    const outra = await cliente(cen.adminA.cookie).post(url, { ...NOVOS, expulsoSemChuva: -3 });
     expect(painelPesos.parse(outra.corpo).historico).toHaveLength(1);
     const acoes = await kyselyDe(db)
       .selectFrom('auditoria')
@@ -79,8 +86,10 @@ describe('POST /api/grupos/:g/pesos (workerd)', () => {
   });
 
   it.each([
-    [{ ...NOVOS, expulso: 11 }, 'expulso'],
-    [{ ...NOVOS, expulso: -11 }, 'expulso'],
+    [{ ...NOVOS, expulsoSemChuva: 11 }, 'expulsoSemChuva'],
+    [{ ...NOVOS, expulsoComChuva: -11 }, 'expulsoComChuva'],
+    [{ ...NOVOS, expulso: -1 }, 'corpo'],
+    [{ ...NOVOS, expulsoSemChuva: -11 }, 'expulsoSemChuva'],
     [{ ...NOVOS, presencaComChuva: 1.5 }, 'presencaComChuva'],
     [{ ...NOVOS, presencaComChuva: '2' }, 'presencaComChuva'],
     [{ ...NOVOS, vigenteDesde: '2026-01-01' }, 'corpo'],

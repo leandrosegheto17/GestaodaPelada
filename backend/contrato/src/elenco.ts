@@ -10,6 +10,15 @@ export const notaValor = z.number().int().min(LIMITES.nota.min).max(LIMITES.nota
 
 const nivelDecimal = z.number().min(1).max(10);
 
+const MENSAGEM_PONTUACAO_INICIAL = `Informe um número inteiro de ${LIMITES.pontuacaoInicial.min} a ${LIMITES.pontuacaoInicial.max}.`;
+
+/** Pontos de antes da 1ª partida registrada. Só aparece nas rotas de administração. */
+const pontuacaoInicial = z
+  .number(MENSAGEM_PONTUACAO_INICIAL)
+  .int(MENSAGEM_PONTUACAO_INICIAL)
+  .min(LIMITES.pontuacaoInicial.min, MENSAGEM_PONTUACAO_INICIAL)
+  .max(LIMITES.pontuacaoInicial.max, MENSAGEM_PONTUACAO_INICIAL);
+
 export const jogadorItem = z.strictObject({
   id: idResposta,
   apelido: z.string(),
@@ -39,6 +48,7 @@ export const jogadorDetalhe = z.strictObject({
     .string()
     .regex(/^\d{11}$/)
     .nullable(),
+  pontuacaoInicial,
   situacao: z.strictObject({ ativo: z.boolean(), desde: data }),
   nivel: nivelDecimal,
   semNota: z.boolean(),
@@ -92,6 +102,7 @@ export const jogadorCorpoBase = z.strictObject({
   anoNascimento: z.number().int().min(LIMITES.anoNascimentoMin),
   posicao,
   telefone: z.string().nullable().optional(),
+  pontuacaoInicial: pontuacaoInicial.default(0),
   dataEntrada: data.optional(),
 });
 
@@ -107,6 +118,7 @@ export function jogadorCorpo(hoje: string) {
       .max(anoMaximo, `O ano precisa estar entre ${LIMITES.anoNascimentoMin} e ${anoMaximo}.`),
     posicao,
     telefone,
+    pontuacaoInicial: pontuacaoInicial.default(0),
     dataEntrada: data.refine((d) => d <= hoje, 'A data não pode ser no futuro.').optional(),
   });
 }

@@ -11,14 +11,22 @@ export async function criarJogador(
   db: Db,
   grupoId: string,
   autor: string,
-  opcoes: { apelido?: string; dataEntrada?: string; ano?: number; posicao?: string; agora?: Date } = {},
+  opcoes: {
+    apelido?: string;
+    dataEntrada?: string;
+    ano?: number;
+    posicao?: string;
+    pontuacaoInicial?: number;
+    agora?: Date;
+  } = {},
 ): Promise<string> {
   return emTransacao(db, (tx) =>
     jogadores.criar(tx, grupoId, {
       apelido: opcoes.apelido ?? `Jog${randomBytes(4).toString('hex')}`,
       anoNascimento: opcoes.ano ?? 1990,
-      posicao: opcoes.posicao ?? 'meio_campo',
+      posicao: opcoes.posicao ?? 'meia',
       telefone: null,
+      pontuacaoInicial: opcoes.pontuacaoInicial ?? 0,
       dataEntrada: opcoes.dataEntrada ?? diaRelativo(-300),
       autor,
       agora: opcoes.agora ?? AGORA_TESTE,

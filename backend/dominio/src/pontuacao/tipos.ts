@@ -8,7 +8,8 @@ export interface Pesos {
   presencaComChuva: number;
   lesionadoSemChuva: number;
   lesionadoComChuva: number;
-  expulso: number;
+  expulsoSemChuva: number;
+  expulsoComChuva: number;
 }
 
 export interface ConfigPesos extends Pesos {

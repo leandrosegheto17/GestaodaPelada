@@ -14,7 +14,8 @@ const camposDePesos = {
   presencaComChuva: peso,
   lesionadoSemChuva: peso,
   lesionadoComChuva: peso,
-  expulso: peso,
+  expulsoSemChuva: peso,
+  expulsoComChuva: peso,
 };
 
 /** Sem data: a vigência de uma nova configuração é sempre o "hoje" do servidor (RF-23). */

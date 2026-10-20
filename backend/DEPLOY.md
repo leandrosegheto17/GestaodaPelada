@@ -130,6 +130,35 @@ SELECT 'infraestrutura', 'senha_redefinida', 'conta', id::text, now() FROM conta
 COMMIT;
 ```
 
+## Importar o histórico do legado
+
+`backend/scripts/importar-legado.ts` carrega o cadastro e as rodadas do app antigo num grupo **novo** (sem partida),
+numa única transação. Os arquivos de origem têm dado pessoal: ficam fora do repositório e o caminho é passado só na
+linha de comando. O telefone nunca é lido; do nascimento só o ano é gravado. A conexão vem somente de `DATABASE_URL`
+(nenhuma flag de URL é aceita).
+
+Ordem obrigatória:
+
+1. Deploy da etapa 1 (migração `adequacao_legado`, contrato e telas novas) em produção.
+2. Dry-run, que lê, calcula e compara cada total com o "Atual" do legado sem gravar nada. Divergência (diferença
+   diferente do ajuste manual) é erro e impede a execução real; diferença igual ao ajuste aparece como "esperada".
+3. Backup confirmado (branch de restauração e dump, como em "Restaurar um backup").
+4. Execução real, que pede `--confirmo-backup` e a digitação do slug do grupo.
+
+```
+DATABASE_URL=<conexão direta> pnpm exec tsx backend/scripts/importar-legado.ts --grupo <slug> --cadastro <Cadastro.md> --rodadas <Pontuacoes.md> --dry-run --alvo producao
+DATABASE_URL=<conexão direta> pnpm exec tsx backend/scripts/importar-legado.ts --grupo <slug> --cadastro <Cadastro.md> --rodadas <Pontuacoes.md> --confirmo-backup --alvo producao
+```
+
+O script recusa, sem gravar, quando o grupo já tem partida, quando um apelido do arquivo já existe no grupo, quando a
+coluna `pontuacao_inicial` não existe (etapa 1 ausente) ou quando falta `--confirmo-backup`; por isso uma segunda
+execução também é recusada. A configuração de pesos do legado (presença 3/6, lesionado 3/6, expulso 2/5, vigente desde
+03/04/2022) substitui as configurações do grupo: é a única exceção à regra de vigência (RN-24) e existe só no script.
+Rodada com valores simples e em dobro misturados não cabe no modelo do app (a chuva vale para a partida inteira):
+a partida recebe a chuva da maioria, a rodada é contada no relatório e quem destoa aparece como divergência, que
+bloqueia a execução real até a decisão do responsável.
+O relatório com apelidos aparece apenas no terminal; a auditoria guarda só contagens.
+
 ## Checagem mensal do backup
 
 - `gh run list --workflow backup.yml -L 1` deve mostrar o último run verde; confirme que o workflow está ativo.

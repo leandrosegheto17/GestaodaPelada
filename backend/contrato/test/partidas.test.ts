@@ -50,7 +50,8 @@ describe('novosPesosCorpo', () => {
     presencaComChuva: 2,
     lesionadoSemChuva: 1,
     lesionadoComChuva: 1,
-    expulso: -1,
+    expulsoSemChuva: -1,
+    expulsoComChuva: -2,
   };
   it.each([
     [-11, false],
@@ -61,7 +62,13 @@ describe('novosPesosCorpo', () => {
     ['1', false],
     [Number.NaN, false],
   ])('peso %j → %s', (valor, aceito) => {
-    expect(novosPesosCorpo.safeParse({ ...ok, expulso: valor }).success).toBe(aceito);
+    expect(novosPesosCorpo.safeParse({ ...ok, expulsoSemChuva: valor }).success).toBe(aceito);
+    expect(novosPesosCorpo.safeParse({ ...ok, expulsoComChuva: valor }).success).toBe(aceito);
+  });
+  it('o campo antigo "expulso" e a falta de um dos seis pesos são recusados', () => {
+    const { expulsoSemChuva, ...semUm } = ok;
+    expect(novosPesosCorpo.safeParse(semUm).success).toBe(false);
+    expect(novosPesosCorpo.safeParse({ ...semUm, expulso: expulsoSemChuva }).success).toBe(false);
   });
   it('vigenteDesde e eDono são recusados', () => {
     expect(novosPesosCorpo.safeParse({ ...ok, vigenteDesde: HOJE }).success).toBe(false);

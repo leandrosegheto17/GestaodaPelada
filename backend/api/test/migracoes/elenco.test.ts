@@ -19,7 +19,7 @@ describe('migração do elenco', () => {
     ['apelido de 1 caractere', { apelido: 'a' }],
     ['apelido de 31 caracteres', { apelido: 'a'.repeat(31) }],
     ['ano 1939', { ano: 1939 }],
-    ['posição inválida', { posicao: 'lateral' }],
+    ['posição inválida', { posicao: 'ponta' }],
     ['telefone com 10 dígitos', { telefone: '1198765432' }],
     ['telefone com máscara', { telefone: '(11) 98765-4321' }],
   ])('%s é recusado (23514)', async (_nome, extras) => {

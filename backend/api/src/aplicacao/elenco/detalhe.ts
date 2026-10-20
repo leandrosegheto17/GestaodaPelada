@@ -26,6 +26,7 @@ export async function carregarDetalhe(
     anoNascimento: jogador.anoNascimento ?? 0,
     posicao: jogador.posicao ?? POSICAO_PADRAO,
     telefone: jogador.telefone,
+    pontuacaoInicial: jogador.pontuacaoInicial,
     situacao: situacaoAtual(jogador.periodos, hoje),
     ...nivelDaResposta(preenchidas),
     notas,

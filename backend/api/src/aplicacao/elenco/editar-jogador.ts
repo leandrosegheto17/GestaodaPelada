@@ -1,6 +1,7 @@
 import { validarPeriodos } from '@pelada/dominio';
 import type { JogadorDetalhe } from '@pelada/contrato';
 import { emTransacao, type Db } from '../../infraestrutura/db/index.js';
+import * as auditoria from '../../infraestrutura/db/repositorios/auditoria.js';
 import * as jogadores from '../../infraestrutura/db/repositorios/jogadores.js';
 import { ApelidoEmUso, PeriodoInvalido } from '../../infraestrutura/db/repositorios/jogadores.js';
 import { carregarDetalhe } from './detalhe.js';
@@ -41,10 +42,21 @@ export async function editarJogador(
         anoNascimento: entrada.anoNascimento,
         posicao: entrada.posicao,
         telefone: entrada.telefone,
+        pontuacaoInicial: entrada.pontuacaoInicial,
         ...(novaEntrada !== undefined ? { dataEntrada: novaEntrada } : {}),
         autor: contexto.autor,
         agora: contexto.agora,
       });
+      if (atual.pontuacaoInicial !== entrada.pontuacaoInicial) {
+        await auditoria.registrar(tx, grupoId, {
+          autor: { tipo: 'conta', contaId: contexto.autor },
+          acao: 'jogador_pontuacao_inicial_alterada',
+          entidade: 'jogador',
+          entidadeId: jogadorId,
+          resumo: { anterior: atual.pontuacaoInicial, novo: entrada.pontuacaoInicial },
+          agora: contexto.agora,
+        });
+      }
       return null;
     });
     if (recusa) return recusa;

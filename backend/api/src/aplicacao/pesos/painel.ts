@@ -17,7 +17,8 @@ export async function montarPainelPesos(ex: ExecutorDb, grupoId: string, hoje: s
     presencaComChuva: c.presencaComChuva,
     lesionadoSemChuva: c.lesionadoSemChuva,
     lesionadoComChuva: c.lesionadoComChuva,
-    expulso: c.expulso,
+    expulsoSemChuva: c.expulsoSemChuva,
+    expulsoComChuva: c.expulsoComChuva,
   });
   return painelPesos.parse({
     hoje,

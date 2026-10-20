@@ -200,6 +200,7 @@ describe('GET /api/publico/:slug/pdf (workerd)', () => {
         anoNascimento: 1977,
         posicao: 'goleiro',
         telefone: '11987654321',
+        pontuacaoInicial: 0,
         dataEntrada: '2026-01-01',
         autor: cen.adminA.id,
         agora: AGORA,

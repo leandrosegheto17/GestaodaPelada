@@ -4,7 +4,8 @@ export const SITUACOES_PRESENCA = ['ausente', 'presente', 'lesionado', 'expulso'
 export const situacaoPresenca = z.enum(SITUACOES_PRESENCA);
 export type SituacaoPresenca = z.infer<typeof situacaoPresenca>;
 
-export const POSICOES = ['goleiro', 'defensor', 'meio_campo', 'atacante'] as const;
+/** Em ordem de exibição (do fundo do campo para o ataque, goleiro por último). */
+export const POSICOES = ['zagueiro', 'lateral', 'volante', 'meia', 'atacante', 'centroavante', 'goleiro'] as const;
 export const posicao = z.enum(POSICOES);
 export type Posicao = z.infer<typeof posicao>;
 

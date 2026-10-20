@@ -63,7 +63,7 @@ describe('PaginaJogadores (T15)', () => {
     const itens = within(lista).getAllByRole('listitem');
     expect(itens).toHaveLength(20);
     expect(itens[0]).toHaveTextContent('Alemão');
-    expect(itens[0]).toHaveTextContent('Defensor · nível 6,1');
+    expect(itens[0]).toHaveTextContent('Zagueiro · nível 6,1');
     expect(within(itens[0]!).getByRole('link')).toHaveAttribute('href', '/admin/g-quinta/jogadores/j-alemao');
     const leo = itens.find((li) => li.textContent?.includes('Léo Baiano'))!;
     expect(leo).toHaveTextContent('sem nota');

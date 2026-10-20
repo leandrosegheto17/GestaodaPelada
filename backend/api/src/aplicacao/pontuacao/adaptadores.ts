@@ -21,6 +21,7 @@ export function paraJogadorDominio(linha: Jogador): JogadorDoRanking {
     apelido: linha.apelido,
     anoNascimento: linha.anoNascimento ?? ANO_SEM_INFORMACAO,
     periodos: linha.periodos.map((p) => ({ inicio: p.inicio, fim: p.fim })),
+    pontuacaoInicial: linha.pontuacaoInicial,
   };
 }
 
@@ -55,6 +56,7 @@ export function paraConfigPesosDominio(linha: ConfigPesosHistorico): ConfigPesos
     presencaComChuva: linha.presencaComChuva,
     lesionadoSemChuva: linha.lesionadoSemChuva,
     lesionadoComChuva: linha.lesionadoComChuva,
-    expulso: linha.expulso,
+    expulsoSemChuva: linha.expulsoSemChuva,
+    expulsoComChuva: linha.expulsoComChuva,
   };
 }

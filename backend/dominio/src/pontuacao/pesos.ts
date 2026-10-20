@@ -7,7 +7,8 @@ export const PESOS_PADRAO: Readonly<Pesos> = {
   presencaComChuva: 1,
   lesionadoSemChuva: 1,
   lesionadoComChuva: 1,
-  expulso: -1,
+  expulsoSemChuva: -1,
+  expulsoComChuva: -1,
 };
 
 export type ResolvedorDePesos = (data: Data) => ConfigPesos;

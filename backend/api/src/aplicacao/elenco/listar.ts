@@ -9,7 +9,7 @@ import { situacaoAtual } from './situacao.js';
 export type FiltroDeJogadores = 'ativos' | 'inativos';
 
 /** Posição de quem foi anonimizado (o contrato exige uma). */
-export const POSICAO_PADRAO = 'meio_campo';
+export const POSICAO_PADRAO = 'meia';
 
 /** Ativos e inativos do grupo por apelido, com nível; `filtro` esvazia a outra lista. */
 export async function listarJogadores(

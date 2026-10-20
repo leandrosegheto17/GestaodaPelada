@@ -1,0 +1,154 @@
+import { randomBytes } from 'node:crypto';
+import { join } from 'node:path';
+import pg from 'pg';
+import { afterEach, describe, expect, it } from 'vitest';
+import { aplicarMigracoes } from '../../src/infraestrutura/db/migracoes/aplicar.js';
+import { lerMigracoes } from '../../src/infraestrutura/db/migracoes/ler.js';
+import { exigirHostPermitido } from '../../src/infraestrutura/seguranca/trava-host.js';
+import { URL_BANCO_TESTE } from '../apoio/url-teste.js';
+
+const PASTA = join(import.meta.dirname, '../../src/infraestrutura/db/migracoes');
+const NOVA = '202610200000_adequacao_legado.sql';
+
+function urlDe(banco: string): string {
+  const url = new URL(URL_BANCO_TESTE);
+  url.pathname = `/${banco}`;
+  return url.toString();
+}
+
+const criados: string[] = [];
+
+afterEach(async () => {
+  const admin = new pg.Client({ connectionString: urlDe('postgres') });
+  await admin.connect();
+  try {
+    for (const banco of criados.splice(0)) await admin.query(`DROP DATABASE IF EXISTS ${banco} WITH (FORCE)`);
+  } finally {
+    await admin.end();
+  }
+});
+
+/** Banco descartável com todas as migrações menos a nova, para provar a conversão de dados existentes. */
+async function bancoAntesDaMigracao(): Promise<{ cliente: pg.Client; url: string }> {
+  await exigirHostPermitido({ url: URL_BANCO_TESTE });
+  const nome = `pelada_mig_${randomBytes(6).toString('hex')}`;
+  const admin = new pg.Client({ connectionString: urlDe('postgres') });
+  await admin.connect();
+  try {
+    await admin.query(`CREATE DATABASE ${nome}`);
+  } finally {
+    await admin.end();
+  }
+  criados.push(nome);
+  const url = urlDe(nome);
+  await aplicarMigracoes(
+    url,
+    lerMigracoes(PASTA).filter((m) => m.nome !== NOVA),
+  );
+  const cliente = new pg.Client({ connectionString: url });
+  await cliente.connect();
+  return { cliente, url };
+}
+
+describe('migração de adequação ao legado', () => {
+  it('converte posições, zera a pontuação inicial e copia o expulso para o expulso com chuva', async () => {
+    const { cliente, url } = await bancoAntesDaMigracao();
+    try {
+      const conta = (
+        await cliente.query<{ id: string }>(
+          `INSERT INTO contas (email, nome, senha_hash, criada_em) VALUES ('mig@exemplo.test', 'Mig', 'x', now()) RETURNING id`,
+        )
+      ).rows[0]?.id as string;
+      const grupo = (
+        await cliente.query<{ id: string }>(
+          `INSERT INTO grupos (nome, slug, dia_semana, frequencia, horario, criado_por, criado_em)
+           VALUES ('Migracao', 'mig', 'quarta', 'semanal', '20:00', $1, now()) RETURNING id`,
+          [conta],
+        )
+      ).rows[0]?.id as string;
+      for (const [apelido, posicao] of [
+        ['Def', 'defensor'],
+        ['Meio', 'meio_campo'],
+        ['Gol', 'goleiro'],
+        ['Ata', 'atacante'],
+      ] as const) {
+        await cliente.query(
+          `INSERT INTO jogadores (grupo_id, apelido, ano_nascimento, posicao, criado_por, criado_em, alterado_por, alterado_em)
+           VALUES ($1, $2, 1990, $3, $4, now(), $4, now())`,
+          [grupo, apelido, posicao, conta],
+        );
+      }
+      await cliente.query(
+        `INSERT INTO config_pesos (grupo_id, vigente_desde, presenca_sem_chuva, presenca_com_chuva, lesionado_sem_chuva,
+           lesionado_com_chuva, expulso, registrado_por, registrado_em) VALUES ($1, '2026-01-01', 1, 1, 1, 1, -2, $2, now())`,
+        [grupo, conta],
+      );
+
+      await aplicarMigracoes(
+        url,
+        lerMigracoes(PASTA).filter((m) => m.nome === NOVA || m.nome < NOVA),
+      );
+
+      const jogadores = await cliente.query<{ apelido: string; posicao: string; pontuacao_inicial: number }>(
+        'SELECT apelido, posicao, pontuacao_inicial FROM jogadores ORDER BY apelido',
+      );
+      expect(jogadores.rows).toEqual([
+        { apelido: 'Ata', posicao: 'atacante', pontuacao_inicial: 0 },
+        { apelido: 'Def', posicao: 'zagueiro', pontuacao_inicial: 0 },
+        { apelido: 'Gol', posicao: 'goleiro', pontuacao_inicial: 0 },
+        { apelido: 'Meio', posicao: 'meia', pontuacao_inicial: 0 },
+      ]);
+      const pesos = await cliente.query<{ expulso: number; expulso_com_chuva: number }>(
+        'SELECT expulso, expulso_com_chuva FROM config_pesos',
+      );
+      expect(pesos.rows).toEqual([{ expulso: -2, expulso_com_chuva: -2 }]);
+
+      // Segunda aplicação: o runner pula a migração e nada muda.
+      const outra = await aplicarMigracoes(url, lerMigracoes(PASTA));
+      expect(outra.aplicadas).toEqual([]);
+      const antigas = await cliente.query("SELECT 1 FROM jogadores WHERE posicao IN ('defensor', 'meio_campo')");
+      expect(antigas.rowCount).toBe(0);
+    } finally {
+      await cliente.end();
+    }
+  });
+
+  it('aceita as sete posições novas e a pontuação inicial de 0 a 9999; recusa o resto', async () => {
+    const { cliente, url } = await bancoAntesDaMigracao();
+    try {
+      await aplicarMigracoes(url, lerMigracoes(PASTA));
+      const conta = (
+        await cliente.query<{ id: string }>(
+          `INSERT INTO contas (email, nome, senha_hash, criada_em) VALUES ('mig2@exemplo.test', 'Mig', 'x', now()) RETURNING id`,
+        )
+      ).rows[0]?.id as string;
+      const grupo = (
+        await cliente.query<{ id: string }>(
+          `INSERT INTO grupos (nome, slug, dia_semana, frequencia, horario, criado_por, criado_em)
+           VALUES ('Migracao2', 'mig2', 'quarta', 'semanal', '20:00', $1, now()) RETURNING id`,
+          [conta],
+        )
+      ).rows[0]?.id as string;
+      const inserir = async (apelido: string, posicao: string, inicial: number): Promise<string | null> => {
+        try {
+          await cliente.query(
+            `INSERT INTO jogadores (grupo_id, apelido, ano_nascimento, posicao, pontuacao_inicial, criado_por, criado_em, alterado_por, alterado_em)
+             VALUES ($1, $2, 1990, $3, $4, $5, now(), $5, now())`,
+            [grupo, apelido, posicao, inicial, conta],
+          );
+          return null;
+        } catch (erro) {
+          return (erro as { code?: string }).code ?? 'sem-codigo';
+        }
+      };
+      const posicoes = ['zagueiro', 'lateral', 'volante', 'meia', 'atacante', 'centroavante', 'goleiro'];
+      for (const [i, p] of posicoes.entries()) expect(await inserir(`P${i}`, p, 0)).toBeNull();
+      expect(await inserir('Max', 'meia', 9999)).toBeNull();
+      expect(await inserir('Neg', 'meia', -1)).toBe('23514');
+      expect(await inserir('Estouro', 'meia', 10000)).toBe('23514');
+      expect(await inserir('Ponta', 'ponta', 0)).toBe('23514');
+    } finally {
+      await cliente.end();
+    }
+  });
+});

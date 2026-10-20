@@ -19,7 +19,8 @@ const PADRAO: pesos.Pesos = {
   presencaComChuva: 1,
   lesionadoSemChuva: 1,
   lesionadoComChuva: 1,
-  expulso: -1,
+  expulsoSemChuva: -1,
+  expulsoComChuva: -1,
 };
 const D1 = somarDias(HOJE, -30);
 const D2 = somarDias(HOJE, 30);
@@ -77,10 +78,13 @@ describe('repositório de pesos', () => {
     expect(await pesos.historico(db, g)).toEqual([]);
     const futura = { ...nova, vigenteDesde: HOJE };
     expect(await pesos.criar(db, g, futura)).toEqual({ substituiu: false });
-    expect(await pesos.criar(db, g, { ...futura, pesos: { ...PADRAO, expulso: -2 } })).toEqual({ substituiu: true });
+    expect(
+      await pesos.criar(db, g, { ...futura, pesos: { ...PADRAO, expulsoSemChuva: -2, expulsoComChuva: -5 } }),
+    ).toEqual({ substituiu: true });
     const h = await pesos.historico(db, g);
     expect(h).toHaveLength(1);
-    expect(h[0]?.expulso).toBe(-2);
+    expect(h[0]?.expulsoSemChuva).toBe(-2);
+    expect(h[0]?.expulsoComChuva).toBe(-5);
   });
 
   it('isola por grupo', async () => {
@@ -103,10 +107,10 @@ describe('repositório de pesos', () => {
     const nova = { pesos: PADRAO, vigenteDesde: HOJE, hoje: HOJE, registradoPor: base.contaId, agora: AGORA };
     await pesos.criar(db, b, nova);
     const antes = await pesos.historico(db, b);
-    await pesos.criar(db, a, { ...nova, pesos: { ...PADRAO, expulso: -3 } });
-    await pesos.criar(db, a, { ...nova, vigenteDesde: D2, pesos: { ...PADRAO, expulso: -4 } });
+    await pesos.criar(db, a, { ...nova, pesos: { ...PADRAO, expulsoSemChuva: -3 } });
+    await pesos.criar(db, a, { ...nova, vigenteDesde: D2, pesos: { ...PADRAO, expulsoSemChuva: -4 } });
     expect(await pesos.historico(db, b)).toEqual(antes);
-    expect((await pesos.vigenteEm(db, b, D2))?.expulso).toBe(PADRAO.expulso);
+    expect((await pesos.vigenteEm(db, b, D2))?.expulsoSemChuva).toBe(PADRAO.expulsoSemChuva);
   });
 
   it('historico com 3 configurações usa 1 consulta', async () => {

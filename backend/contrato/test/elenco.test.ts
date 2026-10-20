@@ -56,7 +56,8 @@ describe('jogadorCorpo', () => {
     expect(schema.safeParse({ ...ok, dataEntrada: HOJE }).success).toBe(true);
   });
   it('posição fora do enum e campo extra são recusados', () => {
-    expect(schema.safeParse({ ...ok, posicao: 'lateral' }).success).toBe(false);
+    expect(schema.safeParse({ ...ok, posicao: 'ponta' }).success).toBe(false);
+    expect(schema.safeParse({ ...ok, posicao: 'defensor' }).success).toBe(false);
     expect(schema.safeParse({ ...ok, eDono: true }).success).toBe(false);
   });
   it.each([
@@ -77,6 +78,29 @@ describe('jogadorCorpo', () => {
   );
   it('o corpo estático do registro aceita os mesmos campos', () => {
     expect(jogadorCorpoBase.safeParse(ok).success).toBe(true);
+  });
+  it('pontuação inicial: padrão 0, limites 0 e 9999, inteiro obrigatório', () => {
+    expect(schema.parse(ok).pontuacaoInicial).toBe(0);
+    expect(jogadorCorpoBase.parse(ok).pontuacaoInicial).toBe(0);
+    for (const valor of [0, 1, 9999]) expect(schema.safeParse({ ...ok, pontuacaoInicial: valor }).success).toBe(true);
+    for (const valor of [-1, 10000, 1.5, '5', null, Number.NaN]) {
+      const r = schema.safeParse({ ...ok, pontuacaoInicial: valor });
+      expect(r.success).toBe(false);
+      expect(jogadorCorpoBase.safeParse({ ...ok, pontuacaoInicial: valor }).success).toBe(false);
+    }
+  });
+  it('mensagem do campo de pontuação inicial', () => {
+    const r = schema.safeParse({ ...ok, pontuacaoInicial: 10000 });
+    expect(r.success ? '' : r.error.issues[0]?.message).toBe('Informe um número inteiro de 0 a 9999.');
+  });
+  it('o detalhe exige a pontuação inicial e a lista não a carrega', () => {
+    const detalhe = respostas(/^jogador-toninho\.json$/)[0]?.json as Record<string, unknown>;
+    expect(jogadorDetalhe.safeParse(detalhe).success).toBe(true);
+    const sem = { ...detalhe };
+    delete sem['pontuacaoInicial'];
+    expect(jogadorDetalhe.safeParse(sem).success).toBe(false);
+    const item = { id: 'j1', apelido: 'Zé', posicao: 'goleiro', nivel: 5, semNota: false };
+    expect(listaJogadores.safeParse({ ativos: [{ ...item, pontuacaoInicial: 3 }], inativos: [] }).success).toBe(false);
   });
 });
 

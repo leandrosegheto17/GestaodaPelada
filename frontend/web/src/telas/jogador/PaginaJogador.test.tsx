@@ -128,9 +128,48 @@ describe('PaginaJogador (T16): novo', () => {
         anoNascimento: 1990,
         posicao: 'goleiro',
         telefone: '11987654321',
+        pontuacaoInicial: 0,
         dataEntrada: '2026-10-22',
       },
     });
+  });
+
+  it('seletor de posição com as 7 opções do legado, na ordem', async () => {
+    api();
+    montar(NOVO);
+    const seletor = await screen.findByLabelText('Posição');
+    expect(
+      within(seletor)
+        .getAllByRole('option')
+        .map((o) => o.textContent),
+    ).toEqual(['Escolha', 'Zagueiro', 'Lateral', 'Volante', 'Meia', 'Atacante', 'Centroavante', 'Goleiro']);
+  });
+
+  it('pontuação inicial: campo com 0 e a ajuda do mockup; o valor digitado vai no corpo', async () => {
+    api();
+    const { roteador } = montar(NOVO);
+    const campo = await screen.findByLabelText('Pontuação inicial');
+    expect(campo).toHaveValue(0);
+    expect(campo).toHaveAccessibleDescription('Pontos de antes da 1ª partida no app (0 a 9999).');
+    await preencherNovo();
+    await userEvent.clear(campo);
+    await userEvent.type(campo, '123');
+    await userEvent.click(screen.getByRole('button', { name: 'Salvar' }));
+    await waitFor(() => expect(roteador.state.location.pathname).toBe(FICHA));
+    expect(chamadas[0]?.corpo).toMatchObject({ pontuacaoInicial: 123 });
+  });
+
+  it.each([['-1'], ['10000'], ['1.5'], ['']])('pontuação inicial %j é recusada no campo, sem POST', async (valor) => {
+    api();
+    montar(NOVO);
+    await preencherNovo();
+    const campo = screen.getByLabelText('Pontuação inicial');
+    await userEvent.clear(campo);
+    if (valor) await userEvent.type(campo, valor);
+    await userEvent.click(screen.getByRole('button', { name: 'Salvar' }));
+    expect(await screen.findByText('Informe um número inteiro de 0 a 9999.')).toBeInTheDocument();
+    expect(screen.getByLabelText('Pontuação inicial')).toBeInvalid();
+    expect(chamadas).toHaveLength(0);
   });
 
   it('ano 2017 (menos de 10 anos) vira erro do contrato, sem POST', async () => {
@@ -186,6 +225,17 @@ describe('PaginaJogador (T16): ficha', () => {
     expect(await screen.findByRole('heading', { level: 1, name: 'Toninho' })).toBeInTheDocument();
     expect(screen.getByLabelText('Telefone (opcional)')).toHaveValue('(11) 98765-4321');
     expect(screen.getByText('Ativo desde 05/02/2026.')).toBeInTheDocument();
+  });
+
+  it('a edição carrega a pontuação inicial e a envia no PATCH', async () => {
+    const base = fixture('jogador-toninho.json') as Record<string, JsonBodyType>;
+    api({ jogador: { ...base, pontuacaoInicial: 77 } });
+    montar(FICHA);
+    const campo = await screen.findByLabelText('Pontuação inicial');
+    expect(campo).toHaveValue(77);
+    await userEvent.click(screen.getByRole('button', { name: 'Salvar' }));
+    await waitFor(() => expect(chamadas[0]?.metodo).toBe('PATCH'));
+    expect(chamadas[0]?.corpo).toMatchObject({ pontuacaoInicial: 77 });
   });
 
   it('salvar envia PATCH e mostra "Jogador salvo"', async () => {

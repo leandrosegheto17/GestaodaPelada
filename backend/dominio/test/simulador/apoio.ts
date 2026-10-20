@@ -23,6 +23,7 @@ export function historicoSim(aptos: readonly JogadorSim[]): EntradaSugerir['hist
       apelido: `Jogador ${a.id}`,
       anoNascimento: 1980 + (i % 15),
       periodos: [{ inicio: '2026-01-01', fim: null }],
+      pontuacaoInicial: 0,
     })),
     partidas: [
       { id: 'p1', data: '2026-10-01', choveu: false },

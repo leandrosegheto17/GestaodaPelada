@@ -12,6 +12,57 @@ const HOJE = '2026-10-10';
 const base = historicoDeTresMeses();
 const ranking = (mes: string, hoje = HOJE) => calcularRanking({ ...base, hoje, mes });
 
+describe('pontuação inicial', () => {
+  const entrada = (jogadores: ReturnType<typeof jogador>[], mes = '2026-10') => ({
+    hoje: HOJE,
+    mes,
+    jogadores,
+    partidas: [partida('2026-10-01'), partida('2026-10-08')],
+    presencas: [presenca('a', '2026-10-01'), presenca('a', '2026-10-08')],
+    configsPesos: CONFIGS,
+  });
+
+  it('sem partida: ptsInicial e ptsFinal são a pontuação inicial em qualquer mês', () => {
+    const solo = [jogador('z', 'Zeca', 1990, undefined, 50)];
+    for (const mes of ['2026-08', '2026-10', '2027-01']) {
+      const [linha] = calcularRanking({ ...entrada(solo, mes), partidas: [], presencas: [] }).linhas;
+      expect([linha!.ptsInicial, linha!.ptsFinal]).toEqual([50, 50]);
+    }
+  });
+
+  it('com partidas: soma a inicial ao acumulado e ao ptsInicial do mês', () => {
+    const [linha] = calcularRanking(entrada([jogador('a', 'Ana', 1990, undefined, 50)])).linhas;
+    expect([linha!.ptsInicial, linha!.ptsFinal]).toEqual([50, 52]);
+  });
+
+  it('a ordem do RN-05 usa o total com a inicial', () => {
+    const r = calcularRanking(
+      entrada([jogador('a', 'Ana', 1990), jogador('b', 'Bia', 1991, undefined, 10), jogador('c', 'Cris', 1992)]),
+    );
+    expect(r.linhas.map((l) => [l.jogadorId, l.posicao])).toEqual([
+      ['b', 1],
+      ['a', 2],
+      ['c', 3],
+    ]);
+  });
+
+  it('inativar e reativar não muda a inicial (RN-22)', () => {
+    const periodos = [
+      { inicio: '2026-01-01', fim: '2026-09-05' },
+      { inicio: '2026-09-20', fim: null },
+    ];
+    const [linha] = calcularRanking(entrada([jogador('a', 'Ana', 1990, periodos, 50)])).linhas;
+    expect(linha!.ptsFinal).toBe(52);
+  });
+
+  it('ptsFinal(M) = ptsInicial(M+1) com inicial diferente de zero', () => {
+    const j = [jogador('a', 'Ana', 1990, undefined, 7)];
+    const ago = calcularRanking(entrada(j, '2026-09')).linhas[0]!;
+    const out = calcularRanking(entrada(j, '2026-10')).linhas[0]!;
+    expect(out.ptsInicial).toBe(ago.ptsFinal);
+  });
+});
+
 describe('calcularRanking com histórico de 3 meses', () => {
   it('lista só os ativos hoje, na ordem do acumulado', () => {
     const r = ranking('2026-10');

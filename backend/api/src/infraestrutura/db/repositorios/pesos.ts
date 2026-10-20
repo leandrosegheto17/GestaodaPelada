@@ -1,5 +1,5 @@
 import { sql } from 'kysely';
-import { kyselyDe, type ExecutorDb } from '../cliente.js';
+import { kyselyDe, type ExecutorDb, type Tx } from '../cliente.js';
 
 export class VigenciaNoPassado extends Error {
   constructor() {
@@ -12,7 +12,8 @@ export interface Pesos {
   presencaComChuva: number;
   lesionadoSemChuva: number;
   lesionadoComChuva: number;
-  expulso: number;
+  expulsoSemChuva: number;
+  expulsoComChuva: number;
 }
 
 export interface ConfigPesos extends Pesos {
@@ -37,6 +38,7 @@ interface LinhaPesos {
   lesionado_sem_chuva: number;
   lesionado_com_chuva: number;
   expulso: number;
+  expulso_com_chuva: number;
 }
 
 const paraConfig = (l: LinhaPesos): ConfigPesos => ({
@@ -47,14 +49,16 @@ const paraConfig = (l: LinhaPesos): ConfigPesos => ({
   presencaComChuva: l.presenca_com_chuva,
   lesionadoSemChuva: l.lesionado_sem_chuva,
   lesionadoComChuva: l.lesionado_com_chuva,
-  expulso: l.expulso,
+  expulsoSemChuva: l.expulso,
+  expulsoComChuva: l.expulso_com_chuva,
 });
 
 /** Configuração em vigor na data (maior `vigente_desde` ≤ data); `null` antes da primeira. */
 export async function vigenteEm(ex: ExecutorDb, grupoId: string, data: string): Promise<ConfigPesos | null> {
   const r = await sql<LinhaPesos>`
     SELECT c.vigente_desde::text AS vigente_desde, a.nome AS registrado_por, c.registrado_em,
-           c.presenca_sem_chuva, c.presenca_com_chuva, c.lesionado_sem_chuva, c.lesionado_com_chuva, c.expulso
+           c.presenca_sem_chuva, c.presenca_com_chuva, c.lesionado_sem_chuva, c.lesionado_com_chuva, c.expulso,
+           c.expulso_com_chuva
     FROM config_pesos c JOIN contas a ON a.id = c.registrado_por
     WHERE c.grupo_id = ${grupoId} AND c.vigente_desde <= ${data}::date
     ORDER BY c.vigente_desde DESC LIMIT 1
@@ -69,7 +73,8 @@ export async function historico(ex: ExecutorDb, grupoId: string): Promise<Config
     SELECT c.vigente_desde::text AS vigente_desde,
            (lead(c.vigente_desde) OVER (ORDER BY c.vigente_desde) - 1)::text AS vigente_ate,
            a.nome AS registrado_por, c.registrado_em,
-           c.presenca_sem_chuva, c.presenca_com_chuva, c.lesionado_sem_chuva, c.lesionado_com_chuva, c.expulso
+           c.presenca_sem_chuva, c.presenca_com_chuva, c.lesionado_sem_chuva, c.lesionado_com_chuva, c.expulso,
+           c.expulso_com_chuva
     FROM config_pesos c JOIN contas a ON a.id = c.registrado_por
     WHERE c.grupo_id = ${grupoId}
     ORDER BY c.vigente_desde DESC
@@ -89,13 +94,13 @@ export interface NovaConfigPesos {
 async function gravar(ex: ExecutorDb, grupoId: string, c: NovaConfigPesos): Promise<boolean> {
   const r = await sql<{ substituiu: boolean }>`
     INSERT INTO config_pesos (grupo_id, vigente_desde, presenca_sem_chuva, presenca_com_chuva, lesionado_sem_chuva,
-                              lesionado_com_chuva, expulso, registrado_por, registrado_em)
+                              lesionado_com_chuva, expulso, expulso_com_chuva, registrado_por, registrado_em)
     VALUES (${grupoId}, ${c.vigenteDesde}::date, ${c.pesos.presencaSemChuva}, ${c.pesos.presencaComChuva},
-            ${c.pesos.lesionadoSemChuva}, ${c.pesos.lesionadoComChuva}, ${c.pesos.expulso}, ${c.registradoPor}, ${c.agora})
+            ${c.pesos.lesionadoSemChuva}, ${c.pesos.lesionadoComChuva}, ${c.pesos.expulsoSemChuva}, ${c.pesos.expulsoComChuva}, ${c.registradoPor}, ${c.agora})
     ON CONFLICT (grupo_id, vigente_desde) DO UPDATE SET
       presenca_sem_chuva = EXCLUDED.presenca_sem_chuva, presenca_com_chuva = EXCLUDED.presenca_com_chuva,
       lesionado_sem_chuva = EXCLUDED.lesionado_sem_chuva, lesionado_com_chuva = EXCLUDED.lesionado_com_chuva,
-      expulso = EXCLUDED.expulso, registrado_por = EXCLUDED.registrado_por, registrado_em = EXCLUDED.registrado_em
+      expulso = EXCLUDED.expulso, expulso_com_chuva = EXCLUDED.expulso_com_chuva, registrado_por = EXCLUDED.registrado_por, registrado_em = EXCLUDED.registrado_em
     RETURNING (xmax <> 0) AS substituiu
   `.execute(kyselyDe(ex));
   return r.rows[0]?.substituiu ?? false;
@@ -117,4 +122,18 @@ export async function criarPadrao(
   padrao: { pesos: Pesos; vigenteDesde: string; registradoPor: string; agora: Date },
 ): Promise<void> {
   await gravar(ex, grupoId, { ...padrao, hoje: padrao.vigenteDesde });
+}
+
+/**
+ * Troca todas as configurações do grupo por uma só, com a vigência dada (inclusive no passado).
+ * Existe para a importação do legado, que traz o histórico inteiro de uma vez; nenhuma rota a usa.
+ */
+export async function substituirTodas(
+  ex: Tx,
+  grupoId: string,
+  config: { pesos: Pesos; vigenteDesde: string; registradoPor: string; agora: Date },
+): Promise<{ removidas: number }> {
+  const apagadas = await kyselyDe(ex).deleteFrom('config_pesos').where('grupo_id', '=', grupoId).executeTakeFirst();
+  await gravar(ex, grupoId, { ...config, hoje: config.vigenteDesde });
+  return { removidas: Number(apagadas.numDeletedRows) };
 }
