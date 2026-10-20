@@ -1,6 +1,6 @@
 # THREAT-MODEL
 
-Modelo de ameaças enxuto (STRIDE) do Pelada. Atualizado na auditoria de release de 2026-10-20. Evidência executada em
+Modelo de ameaças enxuto (STRIDE) do Pelada. Atualizado na auditoria de release de 2026-10-20 (2ª). Evidência executada em
 `.md/.seguranca/2026-10-20/` e `.md/.seguranca/sondas.json`. Requisitos de origem: `SDD.md` §7, `GUARDRAILS.md`.
 
 ## Ativos
@@ -83,7 +83,7 @@ Operador (máquina local, `DATABASE_URL` própria) -> Neon por script. GitHub Ac
 | S/E: deploy por quem não deve | `workflow_dispatch` manual, `environment: producao`, branch policy só `main` (RTP-0163) | OK |
 | I: segredo no workflow | Todos via `${{ secrets.* }}`; nenhum literal | OK (conferido) |
 | E: token amplo | `permissions: contents: read`; token Cloudflare com escopo mínimo | OK |
-| T: cadeia de suprimentos | Ações por tag mutável (`actions/checkout@v4` etc.) em vez de SHA | Débito Baixo |
+| T: cadeia de suprimentos | Ações do GitHub fixadas por SHA de 40 caracteres; pnpm com `blockExoticSubdeps`, `minimumReleaseAge` e `trustPolicy` | OK (2ª auditoria: grep sem `uses:` por tag; semgrep sem `mutable-action-tag`); resta RTP-0176 (Baixo) |
 | I: dump com dado pessoal | Cifrado com chave simétrica do secret | OK |
 
 ## Riscos aceitos (do usuário)
@@ -92,7 +92,8 @@ T-13 (enumeração de slug), ausência de RLS na Fase 1, sem criptografia por ca
 
 ## Débitos de segurança abertos nesta auditoria
 
-1. Respostas JSON de `/api/*` sem `X-Content-Type-Options: nosniff` (o `_headers` cobre só os assets). Baixo.
-2. Ações do GitHub fixadas por tag, não por SHA. Baixo.
-3. `.gitignore` sem padrão para o arquivo de entrada da importação do legado. Baixo.
-4. Verificação do limite de taxa e dos cabeçalhos no host publicado: obrigatória após o deploy (não aplicável ao ambiente local).
+Resolvidos na 2ª auditoria de 2026-10-20 (RTP-0169 a 0175): nosniff em `/api/*` (30 sondas com o cabeçalho exigido em 200/401/403/404/422), ações do GitHub por SHA, `.gitignore` do legado.
+
+1. `pnpm-missing-minimum-release-age` ainda acusado pelo semgrep (RTP-0176). Baixo.
+2. `braces@3.0.3` dev-only (GHSA-vfj7-8cjw-p6xm), sem versão corrigida. Baixo, monitorado.
+3. Verificação do limite de taxa e dos cabeçalhos no host publicado: obrigatória após o deploy (não aplicável ao ambiente local; sem staging, ADR-020).

@@ -1,5 +1,26 @@
 # SECURITY-REVIEW
 
+## Auditoria de release 2026-10-20 (2ª) — DevSecOps — APROVADA COM DÉBITO
+Escopo: release após as RTP-0169 a 0175 (nosniff em `/api/*`, ações do GitHub por SHA, endurecimento do pnpm, `.gitignore` do legado) e o ajuste do Exportar PDF no front. Só produção (ADR-020): teste ativo só local (127.0.0.1:8787, banco local); nada contra produção. Brutos em `.md/.seguranca/2026-10-20/` (`dast-api3/`, `dast-web2/`, `semgrep.json`, `osv-scanner.json`, `gitleaks.json`).
+
+Executado (Fase A, `seguranca.py`, resumo-ferramentas.md) e o que mudou frente à 1ª auditoria de hoje:
+- `pnpm audit --prod`: 0 (igual).
+- OSV: 1 achado, o mesmo `braces@3.0.3` (GHSA-vfj7-8cjw-p6xm), dev-only via stylelint (igual; débito monitorado, sem versão corrigida).
+- gitleaks (histórico): 36 (igual). Conferido no JSON: commits só `d273d665` (21, JWTs de demonstração do Supabase local), `50b1fa6b` (14, docs de skills) e `bca136ab` (1, texto de TP-0164); nenhum commit das RTP-0169 a 0175 tem achado. Falsos positivos, sem rotação.
+- semgrep: ERROR 13 / WARNING 28 (antes 53/41; a queda vem de o `gitleaks.json` não ser mais varrido: 40 ERROR de JWT sumiram). Contagem por regra no JSON: `github-actions-mutable-action-tag` 0 (antes 13), MEDIUM do pnpm 1 (antes 3: `block-exotic-sub-dependencies` e `trust-policy` resolvidos). Restante igual e sem achado real no produto: 8 `detect-child-process` + 1 `spawn-shell-true` (ferramentas `.claude/`), 2 websocket em Markdown, 1 bcrypt (`HASH_FIXO`, ADR-015), 1 segredo genérico em doc de skill, 14 `path-join`, 6 `non-literal-regexp`, 3 `playwright-evaluate`, md5/sha1/http em scripts de desenvolvimento.
+- `pnpm-missing-minimum-release-age` permanece (1 MEDIUM) mesmo com `minimumReleaseAge: 1440` no `pnpm-workspace.yaml`: é a RTP-0176 (a regra provavelmente espera outra chave/arquivo); não duplicado.
+
+Executado (Fase C, DAST local): `seguranca.py --dast http://127.0.0.1:8787 --sondas .md/.seguranca/sondas.json`: 30 sondas, 0 falhas. Sondas do front (`sondas-web.json`): 3/3, 0 falhas. ZAP baseline: 0 alto, 0 médio, 3 baixos (COEP/COOP/CORP, aceitável, igual).
+- RTP-0169 (nosniff em `/api/*`): o `seguranca.py` exige `X-Content-Type-Options: nosniff` em TODA resposta de cada sonda (`cabecalhos_esperados` global), logo as 30 sondas cobrem 200 (`/api/saude`, ranking, PDF), 401 (rotas de admin/dono, `sessao/eu`), 403 (CSRF), 404 (`/api/inexistente`, slugs) e 422 (login, evento): 0 falhas. Conferência manual com `curl -si`: `/api/saude` 200, `/api/sessao/eu` 401 e `/api/inexistente` 404 trazem `X-Content-Type-Options: nosniff`; `/api/publico/pelada-de-quinta/pdf` 200 `application/json`, `Cache-Control: no-store`, nosniff. Débito (a) da 1ª auditoria: RESOLVIDO.
+- Isolamento, autenticação, validação e CORS: mesmas sondas de antes, todas passando (401 sem cookie e com cookie forjado, 403 sem `X-Pelada`, 404 em grupo alheio já coberto na 1ª auditoria sem mudança de código nessas rotas). `/.env`, `/wrangler.jsonc` e `/.git/config` devolvem 200 com o `index.html` da SPA (`curl` confirmou HTML, sem conteúdo sensível).
+- Front: `/` traz CSP restritiva (`default-src 'self'`, `frame-ancestors 'none'`, `object-src 'none'`), `x-content-type-options: nosniff` e `referrer-policy: same-origin` (`curl -sI`). O ajuste do Exportar PDF não alterou o endpoint (segue JSON sem dado pessoal; o PDF é montado no cliente).
+
+Configuração (executado: grep): `deploy.yml` com `workflow_dispatch`, `environment: producao`, `permissions: contents: read`, `persist-credentials: false`; `uses:` de `ci.yml`, `backup.yml` e `deploy.yml`: todos os 12 externos por SHA de 40 caracteres (`grep -vE "@[0-9a-f]{40}"` não devolve nada) e os restantes são ações locais `./`. SHAs conferidos com `gh api`: checkout `11d5960a` = v4.4.0, gitleaks-action `ff98106e` = v2.3.9, upload-artifact `ea165f8d` = v4.6.2. Débito (b, ações por tag): RESOLVIDO. `pnpm-workspace.yaml`: `blockExoticSubdeps: true`, `minimumReleaseAge: 1440`, `trustPolicy: no-downgrade`. `.gitignore`: padrão do legado presente (linha 25, commit `afb8b424`); `git ls-files` não lista arquivo de entrada do legado. Débito (c): RESOLVIDO. `wrangler.jsonc`: sem segredo (Hyperdrive por binding, `localConnectionString` local, `DONO_EMAIL` `.invalid`). SDD §7 conferido de novo contra os resultados acima: sem divergência.
+
+Não executado: (1) limite de taxa da Cloudflare e cabeçalhos no host publicado (sem staging, ADR-020; não se roda DAST em produção): verificação passiva obrigatória após o deploy (`curl -I` na URL pública, conferir `Set-Cookie`, nosniff e CSP).
+
+Débito aberto (Baixo): RTP-0176 (`minimumReleaseAge` ainda acusado pelo semgrep), `braces` dev-only (monitorado). Nenhum Crítico/Alto. Veredito: APROVADA COM DÉBITO.
+
 ## Auditoria de release 2026-10-20 — DevSecOps — APROVADA COM DÉBITO
 Escopo: release com pontuação inicial, 6 posições, 6 pesos e importação do legado (ADR-021), a publicar em produção pelo `deploy.yml`. Evidência em `.md/.seguranca/2026-10-20/` (brutos), `.md/.seguranca/sondas.json` e `sondas-web.json`; modelo de ameaças em `.md/THREAT-MODEL.md`. Ambiente testado: local (docker compose, banco `pelada` local descartável, 127.0.0.1); nada contra produção (G-21).
 
