@@ -1148,3 +1148,6 @@ APROVADA, 0 achados; diff só de documentação (UX-SPEC), varredura de segredos
 
 ## RTP-0175 — DevSecOps — 2026-10-20
 APROVADA, 0 achados; diff só comentários e títulos de teste (conferido por filtro executado), sem superfície de segurança nova.
+
+## RTP-0177 — DevSecOps — 2026-10-20
+APROVADA; 0 achados; ações de terceiros todas por SHA, 3 chaves do pnpm e nosniff em /api/* conferidos, sem segredo/URL nas linhas adicionadas, texto não afrouxa G-15/G-22.
