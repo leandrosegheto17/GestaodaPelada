@@ -1055,3 +1055,6 @@ diff só de formatação, gitleaks sem vazamento (116 commits); branch remota ci
 
 ## RTP-0017 — DevSecOps — 2026-10-19
 diff de script/teste sem superfície de segurança nova; gitleaks sem vazamento.
+
+## TP-0139 — DevSecOps — 2026-10-19
+OK com risco aceito — sem segredo no registro, cabeçalhos de segurança e limite de taxa conferidos em produção; itens 2-6 só declarados (RNF-03/RNF-07 sem prova); RTP-0163/0164 abertas.
