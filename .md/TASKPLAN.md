@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-20 01:01
+Atualizado: 2026-10-20 01:27
 
-Resumo: Executada (aguarda teste) 1 · Aprovada 381 · Despriorizada 5 · total 387
+Resumo: Não executada 1 · Testada (aguarda segurança) 1 · Aprovada 381 · Despriorizada 5 · total 388
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -225,7 +225,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 210 | TP-0204 | executor | ✔ | Tela T07: Aviso de privacidade (página e diálogo do 1º acesso) | L45 | TP-0089, TP-0095, TP-0099, TP-0105, TP-0106, TP-0207 | Aprovada |
 | 211 | TP-0205 | executor | ✔ | E2E de integração do I4 (API real) | L45 | TP-0138, TP-0190, TP-0191, TP-0192, TP-0193, TP-0195, TP-0199, TP-0200, TP-0201, TP-0202 | Aprovada |
 | 212 | TP-0206 | executor | ✔ | [U] Go-live do I4 | L45 | TP-0185, TP-0194, TP-0196, TP-0197, TP-0198, TP-0203, TP-0204, TP-0205 | Aprovada |
-| 213 | TP-0208 | executor | ✔ | Adequação ao legado | L46 | TP-0008, TP-0010, TP-0023, TP-0024, TP-0042, TP-0044, TP-0046, TP-0047, TP-0048, TP-0049, TP-0051, TP-0070, TP-0071, TP-0076, TP-0084, TP-0124, TP-0125, TP-0148, TP-0179 | Executada (aguarda teste) |
+| 213 | TP-0208 | executor | ✔ | Adequação ao legado | L46 | TP-0008, TP-0010, TP-0023, TP-0024, TP-0042, TP-0044, TP-0046, TP-0047, TP-0048, TP-0049, TP-0051, TP-0070, TP-0071, TP-0076, TP-0084, TP-0124, TP-0125, TP-0148, TP-0179 | Testada (aguarda segurança) |
 | 214 | RTP-0001 | executor | ✔ | Lint: backend/scripts importando @pelada/api por alias fura a zona (e falta o teste do... | L01 | TP-0002 | Aprovada |
 | 215 | RTP-0003 | executor | ✔ | Teste de enums: conferir situacao de presença das respostas contra o enum | Refatoração Lote-L01 | TP-0005 | Aprovada |
 | 216 | BK-0003 | coordenador | ✔ | Exige push da branch ci-prova e PR real no remoto (ação manual/autorização do usuário); ro | — | — | Aprovada |
@@ -394,9 +394,10 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 379 | RTP-0162 | executor | ✔ | deploy.yml: lógica do branch de restauração do Neon em script testado (hoje node -e inl... | Refatoração Revisão 2026-10-19 | — | Aprovada |
 | 380 | RTP-0165 | executor | ✔ | I2: provar a troca do ajuste e a composição enviada ao confirmar | Refatoração Lote-38 | TP-0177 | Aprovada |
 | 381 | RTP-0166 | executor | ✔ | I4: provar que desmarcar duas vezes não duplica a remoção (2º DELETE) | Refatoração Lote-45 | TP-0205 | Aprovada |
-| 382 | BK-0009 | coordenador | ✔ | Ajustar SDD/ADR-010/URL_PUBLICA/CORS/deploy.yml ao domínio prod-ljs.workers.dev e aos acei | — | — | Aprovada |
-| 383 | TP-0140 | executor | ✔ | [U] Play Console: app com.gestaodapelada.app (PI-5) | L31 | — | Despriorizada |
-| 384 | TP-0141 | executor | ✔ | /.well-known/assetlinks.json servido pelo Worker | L31 | TP-0088, TP-0140 | Despriorizada |
-| 385 | TP-0142 | executor | ✔ | Projeto TWA (Bubblewrap) em frontend/twa | L31 | TP-0006, TP-0108, TP-0139, TP-0140, TP-0141 | Despriorizada |
-| 386 | TP-0143 | executor | ✔ | [U] Teste fechado da Play (12 testadores, 14 dias) | L31 | TP-0139, TP-0141, TP-0142 | Despriorizada |
-| 387 | TP-0144 | executor | ✔ | [U] Publicação da TWA em produção | L31 | TP-0143 | Despriorizada |
+| 382 | RTP-0167 | executor | ✔ | PATCH de jogador sem pontuacaoInicial não zera a pontuação inicial | Refatoração Lote-46 | TP-0208 | Não executada |
+| 383 | BK-0009 | coordenador | ✔ | Ajustar SDD/ADR-010/URL_PUBLICA/CORS/deploy.yml ao domínio prod-ljs.workers.dev e aos acei | — | — | Aprovada |
+| 384 | TP-0140 | executor | ✔ | [U] Play Console: app com.gestaodapelada.app (PI-5) | L31 | — | Despriorizada |
+| 385 | TP-0141 | executor | ✔ | /.well-known/assetlinks.json servido pelo Worker | L31 | TP-0088, TP-0140 | Despriorizada |
+| 386 | TP-0142 | executor | ✔ | Projeto TWA (Bubblewrap) em frontend/twa | L31 | TP-0006, TP-0108, TP-0139, TP-0140, TP-0141 | Despriorizada |
+| 387 | TP-0143 | executor | ✔ | [U] Teste fechado da Play (12 testadores, 14 dias) | L31 | TP-0139, TP-0141, TP-0142 | Despriorizada |
+| 388 | TP-0144 | executor | ✔ | [U] Publicação da TWA em produção | L31 | TP-0143 | Despriorizada |

@@ -1121,3 +1121,6 @@ APROVADA; 0 críticos, 0 não críticos; i2 5/5 contra compose real, troca prova
 
 ## RTP-0166 — QA — 2026-10-20
 APROVADA; 0 críticos, 0 não críticos; i4 7/7 contra compose real, 2º DELETE = 404 (contrato TP-0193), saldo 35000 e sem mensalidade, eslint/prettier/tsc ok.
+
+## TP-0208 — QA — 2026-10-20
+APROVADA; 0 críticos, 1 não crítico (RTP-0167: PATCH sem pontuacaoInicial zera o valor, baixa); contrato 411, domínio 389, API 994 (+11 pulados), script 101, web 1047 passando; migração aditiva, checagens verdes, T16/T18 8 comparações OK (máx. 0,38%), nenhum dado real no diff.
