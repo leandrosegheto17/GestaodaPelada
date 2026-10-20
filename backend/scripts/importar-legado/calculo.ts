@@ -10,6 +10,7 @@ import {
   type RodadaLida,
   type ValorDeRodada,
 } from './tipos.ts';
+import { SEM_CORRECOES, type Correcoes } from './correcoes.ts';
 
 /** Pesos do legado (RN-24): vigentes desde a primeira rodada, também no passado; exceção só deste script. */
 export const PESOS_LEGADO: Readonly<Pesos> = {
@@ -42,7 +43,7 @@ export interface JogadorPlano {
 export interface PartidaPlano {
   data: string;
   choveu: boolean;
-  presencas: { apelido: string; situacao: Exclude<SituacaoPresenca, 'lesionado'> }[];
+  presencas: { apelido: string; situacao: SituacaoPresenca }[];
   /** Há valores simples e em dobro na mesma rodada. */
   mista: boolean;
 }
@@ -52,9 +53,11 @@ export interface Conferencia {
   calculado: number;
   atual: number;
   ajustes: number;
+  /** Pontos que as correções do operador somam ao total (0 sem correção). */
+  efeito: number;
   /** `atual - calculado`. */
   diferenca: number;
-  /** A diferença é exatamente o ajuste manual do legado. */
+  /** A diferença é exatamente o ajuste manual do legado menos o efeito das correções. */
   confere: boolean;
 }
 
@@ -64,6 +67,12 @@ export interface PlanoImportacao {
   conferencia: Conferencia[];
   /** Jogadores com "sem registro" entre a primeira e a última rodada com número. */
   comLacuna: number;
+  correcoes: {
+    /** Por data de chuva corrigida: quantos atletas mudam de pontos (0 se a partida já tinha chuva). */
+    chuva: { data: string; atletasAfetados: number }[];
+    presencas: number;
+    atletasComEfeito: number;
+  };
 }
 
 const ehChuva = (valor: ValorDeRodada): boolean => valor === 5 || valor === 6;
@@ -153,20 +162,66 @@ function jogadorDe(c: LinhaClassificacao, cadastro: CadastroLido, periodo: { ent
   } satisfies JogadorPlano;
 }
 
+const chaveDaPresenca = (data: string, chave: string): string => `${data}|${chave}`;
+
+/** Confere as correções contra as rodadas e a classificação; a mensagem cita só a posição do item. */
+function validarCorrecoes(correcoes: Correcoes, lidas: PontuacoesLidas): void {
+  const datas = new Set(lidas.rodadas.map((r) => r.data));
+  const conhecidos = new Set(lidas.classificacao.map((c) => chaveDe(c.apelido)));
+  correcoes.chuva.forEach((data, i) => {
+    if (!datas.has(data)) throw new ErroLegado(`Correção de chuva nº ${i + 1}: data fora das rodadas.`);
+  });
+  const vistas = new Set<string>();
+  correcoes.presencas.forEach((c, i) => {
+    if (!datas.has(c.data)) throw new ErroLegado(`Correção de presença nº ${i + 1}: data fora das rodadas.`);
+    if (!conhecidos.has(chaveDe(c.atleta)))
+      throw new ErroLegado(`Correção de presença nº ${i + 1}: atleta inexistente.`);
+    const chave = chaveDaPresenca(c.data, chaveDe(c.atleta));
+    if (vistas.has(chave))
+      throw new ErroLegado(`Correção de presença nº ${i + 1}: repete data e atleta de outra correção.`);
+    vistas.add(chave);
+  });
+}
+
 /**
  * Plano completo da importação a partir dos dois arquivos já lidos: jogadores, partidas, presenças e a
  * conferência de cada total contra o "Atual" do legado. Não toca em banco; o dry-run para aqui.
+ *
+ * As correções do operador valem sobre o arquivo lido: o total esperado de cada atleta passa a ser
+ * "Atual − Ajustes + efeito das correções" (efeito = total corrigido − total sem correção).
  */
-export function calcularPlano(lidas: PontuacoesLidas, cadastro: CadastroLido, hoje: string): PlanoImportacao {
+export function calcularPlano(
+  lidas: PontuacoesLidas,
+  cadastro: CadastroLido,
+  hoje: string,
+  correcoes: Correcoes = SEM_CORRECOES,
+): PlanoImportacao {
   conferirElenco(lidas.classificacao, cadastro);
   conferirRodadas(lidas.rodadas, lidas.classificacao);
+  validarCorrecoes(correcoes, lidas);
 
+  const datasDeChuva = new Set(correcoes.chuva);
+  const trocas = new Map(correcoes.presencas.map((c) => [chaveDaPresenca(c.data, chaveDe(c.atleta)), c.situacao]));
+  const apelidoDe = new Map(lidas.classificacao.map((c) => [chaveDe(c.apelido), c.apelido]));
+
+  const choveuSemCorrecao = new Map<string, boolean>();
   const partidas = lidas.rodadas.map((r): PartidaPlano => {
-    const presencas = [...r.valores.values()].flatMap(({ apelido, valor }) => {
-      const situacao = situacaoDe(valor);
-      return situacao ? [{ apelido, situacao }] : [];
-    });
-    return { data: r.data, ...chuvaDaRodada(r), presencas };
+    const presencas: PartidaPlano['presencas'] = [];
+    for (const [chave, { apelido, valor }] of r.valores) {
+      const troca = trocas.get(chaveDaPresenca(r.data, chave));
+      const situacao = troca === undefined ? situacaoDe(valor) : troca === 'ausente' ? null : troca;
+      if (situacao) presencas.push({ apelido, situacao });
+    }
+    for (const [chave, troca] of trocas) {
+      const [data, atleta] = chave.split('|') as [string, string];
+      if (data === r.data && !r.valores.has(atleta) && troca !== 'ausente') {
+        presencas.push({ apelido: apelidoDe.get(atleta) as string, situacao: troca });
+      }
+    }
+    const bruta = chuvaDaRodada(r);
+    choveuSemCorrecao.set(r.data, bruta.choveu);
+    const corrigida = datasDeChuva.has(r.data);
+    return { data: r.data, choveu: bruta.choveu || corrigida, mista: corrigida ? false : bruta.mista, presencas };
   });
   const choveuEm = new Map(partidas.map((p) => [p.data, p.choveu]));
   const config: ConfigPesos = {
@@ -187,19 +242,41 @@ export function calcularPlano(lidas: PontuacoesLidas, cadastro: CadastroLido, ho
     const periodo = periodoDe(c, serie, lidas.rodadas, hoje);
     if (periodo.lacuna) comLacuna++;
     jogadores.push(jogadorDe(c, cadastro, periodo));
-    const presencas = lidas.rodadas.flatMap((r, i) => {
-      const situacao = situacaoDe(serie[i] ?? null);
-      return situacao ? [{ data: r.data, choveu: choveuEm.get(r.data) ?? false, situacao }] : [];
-    });
-    const calculado = acumuladoComInicial(c.inicial, presencas, [config], hoje);
+    const total = (comCorrecao: boolean): number => {
+      const presencas = lidas.rodadas.flatMap((r, i) => {
+        const troca = comCorrecao ? trocas.get(chaveDaPresenca(r.data, chave)) : undefined;
+        const situacao = troca === undefined ? situacaoDe(serie[i] ?? null) : troca === 'ausente' ? null : troca;
+        const choveu = comCorrecao ? (choveuEm.get(r.data) ?? false) : (choveuSemCorrecao.get(r.data) ?? false);
+        return situacao ? [{ data: r.data, choveu, situacao }] : [];
+      });
+      return acumuladoComInicial(c.inicial, presencas, [config], hoje);
+    };
+    const calculado = total(true);
+    const efeito = calculado - total(false);
     conferencia.push({
       apelido: c.apelido,
       calculado,
       atual: c.atual,
       ajustes: c.ajustes,
+      efeito,
       diferenca: c.atual - calculado,
-      confere: c.atual - calculado === c.ajustes,
+      confere: c.atual - calculado === c.ajustes - efeito,
     });
   }
-  return { jogadores, partidas, conferencia, comLacuna };
+  return {
+    jogadores,
+    partidas,
+    conferencia,
+    comLacuna,
+    correcoes: {
+      chuva: correcoes.chuva.map((data) => ({
+        data,
+        atletasAfetados: choveuSemCorrecao.get(data)
+          ? 0
+          : (partidas.find((p) => p.data === data)?.presencas.length ?? 0),
+      })),
+      presencas: correcoes.presencas.length,
+      atletasComEfeito: conferencia.filter((c) => c.efeito !== 0).length,
+    },
+  };
 }

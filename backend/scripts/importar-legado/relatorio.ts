@@ -12,6 +12,7 @@ export interface ContagensDoPlano {
   jogadoresComLacuna: number;
   diferencasEsperadas: number;
   divergencias: number;
+  diferencasPorCorrecao: number;
 }
 
 export function contarPlano(plano: PlanoImportacao): ContagensDoPlano {
@@ -26,7 +27,8 @@ export function contarPlano(plano: PlanoImportacao): ContagensDoPlano {
     notas: plano.jogadores.reduce((soma, j) => soma + (j.notas?.length ?? 0), 0),
     rodadasMistas: plano.partidas.filter((p) => p.mista).length,
     jogadoresComLacuna: plano.comLacuna,
-    diferencasEsperadas: plano.conferencia.filter((c) => c.confere && c.ajustes !== 0).length,
+    diferencasEsperadas: plano.conferencia.filter((c) => c.confere && c.efeito === 0 && c.ajustes !== 0).length,
+    diferencasPorCorrecao: plano.conferencia.filter((c) => c.confere && c.efeito !== 0).length,
     divergencias: plano.conferencia.filter((c) => !c.confere).length,
   };
 }
@@ -42,17 +44,32 @@ export function linhasDeContagens(c: ContagensDoPlano): string[] {
     `Rodadas com valor simples e em dobro misturados: ${c.rodadasMistas}`,
     `Jogadores com lacuna no meio do histórico: ${c.jogadoresComLacuna}`,
     `Diferenças esperadas (= ajuste manual do legado): ${c.diferencasEsperadas}`,
+    `Diferenças por correção do usuário: ${c.diferencasPorCorrecao}`,
     `Divergências (diferença ≠ ajuste): ${c.divergencias}`,
+  ];
+}
+
+/** Seção "Correções do usuário": só contagens, por data e por atleta (nunca o conteúdo do arquivo). Vazia sem correções. */
+export function linhasDeCorrecoes(plano: PlanoImportacao): string[] {
+  const { chuva, presencas, atletasComEfeito } = plano.correcoes;
+  if (chuva.length === 0 && presencas === 0) return [];
+  return [
+    'Correções do usuário:',
+    ...chuva.map((c) => `  chuva em ${c.data}: ${c.atletasAfetados} atleta(s) mudam de pontos`),
+    `  presenças corrigidas: ${presencas}`,
+    `  atletas com total alterado: ${atletasComEfeito}`,
   ];
 }
 
 /** Calculado × "Atual" por jogador. Traz apelidos: vai só para o terminal do operador, nunca para arquivo. */
 export function linhasDeConferencia(plano: PlanoImportacao): string[] {
   return plano.conferencia
-    .filter((c) => !c.confere || c.ajustes !== 0)
+    .filter((c) => !c.confere || c.ajustes !== 0 || c.efeito !== 0)
     .map((c) =>
-      c.confere
-        ? `diferença esperada: ${c.apelido} calculado ${c.calculado} × Atual ${c.atual} (ajuste ${sinal(c.ajustes)})`
-        : `DIVERGÊNCIA: ${c.apelido} calculado ${c.calculado} × Atual ${c.atual} (diferença ${sinal(c.diferenca)}, ajuste ${sinal(c.ajustes)})`,
+      c.confere && c.efeito !== 0
+        ? `correção do usuário: ${c.apelido} calculado ${c.calculado} × Atual ${c.atual} (efeito ${sinal(c.efeito)}, ajuste ${sinal(c.ajustes)})`
+        : c.confere
+          ? `diferença esperada: ${c.apelido} calculado ${c.calculado} × Atual ${c.atual} (ajuste ${sinal(c.ajustes)})`
+          : `DIVERGÊNCIA: ${c.apelido} calculado ${c.calculado} × Atual ${c.atual} (diferença ${sinal(c.diferenca)}, ajuste ${sinal(c.ajustes)}, efeito das correções ${sinal(c.efeito)})`,
     );
 }

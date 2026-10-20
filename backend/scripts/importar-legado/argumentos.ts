@@ -4,12 +4,13 @@ export interface ArgumentosLegado {
   grupo: string;
   cadastro: string;
   rodadas: string;
+  correcoes: string | undefined;
   alvo: string | undefined;
   dryRun: boolean;
   confirmoBackup: boolean;
 }
 
-const COM_VALOR = new Set(['grupo', 'cadastro', 'rodadas', 'alvo']);
+const COM_VALOR = new Set(['grupo', 'cadastro', 'rodadas', 'correcoes', 'alvo']);
 const SEM_VALOR = new Set(['dry-run', 'confirmo-backup']);
 
 /**
@@ -41,6 +42,7 @@ export function lerArgumentosLegado(argv: readonly string[]): ArgumentosLegado {
     grupo: exigir('grupo'),
     cadastro: exigir('cadastro'),
     rodadas: exigir('rodadas'),
+    correcoes: valores.get('correcoes'),
     alvo: valores.get('alvo'),
     dryRun: marcas.has('dry-run'),
     confirmoBackup: marcas.has('confirmo-backup'),

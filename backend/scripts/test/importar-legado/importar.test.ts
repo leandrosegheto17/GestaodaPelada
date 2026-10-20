@@ -93,6 +93,33 @@ describe('--dry-run', () => {
     expect(await contagens()).toEqual(antes);
   });
 
+  it('com --correcoes: lista a correção do usuário, não grava e a execução real grava a chuva corrigida', async () => {
+    const textoCorrecoes = JSON.stringify({ chuva: ['2022-04-24'], presencas: [] });
+    const antes = await contagens();
+    await importarLegado(opcoes({ dryRun: true, textoCorrecoes }));
+    const texto = saida.join('\n');
+    expect(texto).toContain('Correções do usuário:');
+    expect(texto).toContain('chuva em 2022-04-24: 5 atleta(s) mudam de pontos');
+    expect(texto).toContain('correção do usuário: Alfa');
+    expect(texto).not.toContain('DIVERGÊNCIA');
+    expect(await contagens()).toEqual(antes);
+
+    await importarLegado(opcoes({ textoCorrecoes }));
+    const chuvosas = await banco.consultar<{ n: string }>('SELECT count(*) AS n FROM partidas WHERE choveu');
+    expect(Number(chuvosas[0]?.n)).toBe(2);
+  });
+
+  it('com --correcoes, data ou atleta inexistente recusa sem gravar e sem repetir o nome', async () => {
+    const antes = await contagens();
+    const inexistente = JSON.stringify({
+      presencas: [{ data: '2022-04-10', atleta: 'Segredo', situacao: 'presente' }],
+    });
+    await expect(importarLegado(opcoes({ textoCorrecoes: inexistente }))).rejects.toThrow(/atleta inexistente/);
+    await expect(importarLegado(opcoes({ textoCorrecoes: '{"chuva":["2030-01-01"]}' }))).rejects.toThrow(/data fora/);
+    expect(saida.join('\n')).not.toMatch(/segredo/i);
+    expect(await contagens()).toEqual(antes);
+  });
+
   it('informa as pré-condições sem recusar o dry-run', async () => {
     await importarLegado(opcoes());
     const r = await importarLegado(opcoes({ dryRun: true }));

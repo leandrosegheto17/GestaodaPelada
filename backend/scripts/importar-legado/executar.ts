@@ -1,10 +1,11 @@
 import { emTransacao, type Db } from '../../api/src/infraestrutura/db/index.ts';
 import * as grupos from '../../api/src/infraestrutura/db/repositorios/grupos.ts';
 import { calcularPlano, type PlanoImportacao } from './calculo.ts';
+import { lerCorrecoes } from './correcoes.ts';
 import { gravarPlano, verificarPrecondicoes, type ContagensGravadas } from './gravacao.ts';
 import { lerCadastro } from './leitura-cadastro.ts';
 import { lerPontuacoes } from './leitura-pontuacoes.ts';
-import { contarPlano, linhasDeConferencia, linhasDeContagens } from './relatorio.ts';
+import { contarPlano, linhasDeConferencia, linhasDeCorrecoes, linhasDeContagens } from './relatorio.ts';
 import { ErroLegado } from './tipos.ts';
 
 export interface OpcoesImportacao {
@@ -12,6 +13,8 @@ export interface OpcoesImportacao {
   slug: string;
   textoPontuacoes: string;
   textoCadastro: string;
+  /** JSON de correções do operador (`--correcoes`); sem ele nada muda. */
+  textoCorrecoes?: string;
   dryRun: boolean;
   confirmoBackup: boolean;
   /** "Hoje" de São Paulo (`AAAA-MM-DD`); limita as datas lidas e dá a entrada de ativo sem rodada. */
@@ -29,15 +32,17 @@ export type ResultadoImportacao =
 
 /** Mesma leitura e mesmo cálculo no dry-run e na execução real: o relatório vem do plano, não da gravação. */
 export function prepararPlano(
-  op: Pick<OpcoesImportacao, 'textoPontuacoes' | 'textoCadastro' | 'hoje'>,
+  op: Pick<OpcoesImportacao, 'textoPontuacoes' | 'textoCadastro' | 'textoCorrecoes' | 'hoje'>,
 ): PlanoImportacao {
   const pontuacoes = lerPontuacoes(op.textoPontuacoes, op.hoje);
   const cadastro = lerCadastro(op.textoCadastro, op.hoje);
-  return calcularPlano(pontuacoes, cadastro, op.hoje);
+  const correcoes = op.textoCorrecoes === undefined ? undefined : lerCorrecoes(op.textoCorrecoes);
+  return calcularPlano(pontuacoes, cadastro, op.hoje, correcoes);
 }
 
 function relatar(plano: PlanoImportacao, escrever: (linha: string) => void): void {
   for (const linha of linhasDeContagens(contarPlano(plano))) escrever(linha);
+  for (const linha of linhasDeCorrecoes(plano)) escrever(linha);
   for (const linha of linhasDeConferencia(plano)) escrever(linha);
 }
 
@@ -49,7 +54,9 @@ export async function importarLegado(op: OpcoesImportacao): Promise<ResultadoImp
   const plano = prepararPlano(op);
   relatar(plano, op.escrever);
   if (plano.conferencia.some((c) => !c.confere)) {
-    throw new ErroLegado('Há jogador cujo total calculado difere do "Atual" por mais (ou menos) que o ajuste manual.');
+    throw new ErroLegado(
+      'Há jogador cujo total calculado difere do "Atual" por mais (ou menos) que o ajuste manual e as correções do usuário.',
+    );
   }
 
   if (op.dryRun) {

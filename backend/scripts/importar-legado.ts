@@ -9,9 +9,10 @@ import { ErroLegado } from './importar-legado/tipos.ts';
 /**
  * Importa o histórico do legado (cadastro e rodadas) para um grupo novo, numa única transação.
  * Uso: tsx backend/scripts/importar-legado.ts --grupo <slug> --cadastro <arquivo> --rodadas <arquivo>
- *        [--dry-run] [--confirmo-backup] [--alvo producao|teste]
+ *        [--correcoes <json>] [--dry-run] [--confirmo-backup] [--alvo producao|teste]
  * Variável: DATABASE_URL (nunca por argumento). `--dry-run` lê e confere sem gravar; a execução real exige
  * `--confirmo-backup` e a digitação do slug do grupo. Telefone não é lido.
+ * `--correcoes` aponta um JSON fora do repositório: `chuva` (datas ISO) e `presencas` (data, atleta, situacao).
  */
 /** `AAAA-MM-DD` de São Paulo, o mesmo "hoje" do resto do sistema. */
 const hojeEmSaoPaulo = (agora: Date): string =>
@@ -31,6 +32,7 @@ async function principal(): Promise<void> {
       slug: args.grupo,
       textoPontuacoes: readFileSync(args.rodadas, 'utf8'),
       textoCadastro: readFileSync(args.cadastro, 'utf8'),
+      textoCorrecoes: args.correcoes === undefined ? undefined : readFileSync(args.correcoes, 'utf8'),
       dryRun: args.dryRun,
       confirmoBackup: args.confirmoBackup,
       hoje: hojeEmSaoPaulo(agora),

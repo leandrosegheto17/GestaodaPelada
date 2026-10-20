@@ -159,6 +159,25 @@ a partida recebe a chuva da maioria, a rodada é contada no relatório e quem de
 bloqueia a execução real até a decisão do responsável.
 O relatório com apelidos aparece apenas no terminal; a auditoria guarda só contagens.
 
+### Arquivo de correções (`--correcoes`)
+
+Quando o arquivo do legado tem erro conhecido (por exemplo, rodada com chuva lançada com pontos simples, ou um
+lançamento errado de um atleta), o operador registra a decisão num JSON **fora do repositório** e passa o caminho com
+`--correcoes <json>`, no dry-run e na execução real:
+
+```json
+{ "chuva": ["AAAA-MM-DD"], "presencas": [{ "data": "AAAA-MM-DD", "atleta": "<apelido>", "situacao": "presente" }] }
+```
+
+- `chuva`: datas de rodada cuja partida é gravada com `choveu = true`; todos os presentes passam a valer pelos pesos
+  com chuva (presente 6, lesionado 6, expulso 5).
+- `presencas`: troca a situação de um atleta numa rodada (`presente`, `lesionado`, `expulso` ou `ausente`).
+- O esperado de cada atleta passa a ser "Atual − Ajustes + efeito das correções"; o dry-run lista cada diferença como
+  "correção do usuário" e a seção "Correções do usuário" traz as contagens por data. Qualquer outra diferença continua
+  sendo divergência e bloqueia a execução real.
+- Data que não é de uma rodada, atleta inexistente, campo desconhecido ou correção repetida recusam a execução, citando
+  só a posição do item (nunca o apelido). Sem `--correcoes` nada muda.
+
 ## Checagem mensal do backup
 
 - `gh run list --workflow backup.yml -L 1` deve mostrar o último run verde; confirme que o workflow está ativo.

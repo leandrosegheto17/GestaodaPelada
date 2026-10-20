@@ -125,6 +125,7 @@ describe('cálculo do plano de importação', () => {
       rodadasMistas: 0,
       jogadoresComLacuna: 1,
       diferencasEsperadas: 1,
+      diferencasPorCorrecao: 0,
       divergencias: 0,
     });
     const texto = linhasDeContagens(c).join('\n');

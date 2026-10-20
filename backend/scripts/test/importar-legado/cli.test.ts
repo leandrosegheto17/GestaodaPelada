@@ -26,6 +26,7 @@ describe('argumentos', () => {
       grupo: 'meu-grupo',
       cadastro: 'cadastro.md',
       rodadas: 'rodadas.md',
+      correcoes: undefined,
       alvo: undefined,
       dryRun: true,
       confirmoBackup: false,
@@ -35,6 +36,11 @@ describe('argumentos', () => {
       confirmoBackup: true,
       alvo: 'producao',
     });
+  });
+
+  it('lê --correcoes e exige valor', () => {
+    expect(lerArgumentosLegado([...BASE, '--correcoes', 'c.json']).correcoes).toBe('c.json');
+    expect(() => lerArgumentosLegado([...BASE, '--correcoes'])).toThrow(ErroLegado);
   });
 
   it.each([
