@@ -5,7 +5,7 @@ import { arquivosVersionados, encerrar } from './arquivos.mjs';
 // `cloudflare/wrangler-action` nem `cloudflare/pages-action`. Varre scripts, workflows, Dockerfile, Makefile, justfile,
 // .ps1/.cmd/.bat/.py; Markdown (DEPLOY.md) não é varrido.
 // Risco residual aceito: ofuscação deliberada (bloco `run: |` com `wrangler` e `deploy` em linhas separadas, `$VAR`,
-// array de argumentos, base64) não é detectada; o controle real é a revisão de PR e a aprovação do environment `producao`.
+// array de argumentos, base64) não é detectada; o controle real é a revisão de PR e o disparo manual do deploy restrito à main (branch policy do environment `producao`).
 const RAIZ = process.argv[2] ?? process.cwd();
 const FORA =
   /^(\.md|\.claude)\/|\/node_modules\/|^\.github\/workflows\/deploy\.yml$|^backend\/scripts\/checagens\/(checar-wrangler-deploy\.mjs|test\/checar-wrangler-deploy\.test\.mjs)$/;

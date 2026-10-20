@@ -24,7 +24,8 @@ O ADR-010 fixou o host `pelada.gestaodapelada.workers.dev` e previu um Worker de
 - Menos infraestrutura para manter e nenhum custo extra.
 
 **Negativas**
-- Migrações e o deploy vão direto à produção, protegidos por branch de restauração e dump cifrado antes da migração, e pela aprovação manual no environment `producao`.
+- Migrações e o deploy vão direto à produção, protegidos por branch de restauração e dump cifrado antes da migração, e pelo disparo manual do workflow (`gh workflow run deploy.yml --ref main`).
+- Atualização (decisão do Leandro, 2026-10-19): o environment `producao` não exige mais revisor; o push na `main` não dispara deploy. A barreira passa a ser o disparo manual deliberado + a branch policy do environment (só a `main` pode implantar), mais o branch de restauração e o dump cifrado. Perde-se a segunda pessoa/aprovação explícita antes de cada deploy.
 - Os riscos da troca futura de domínio (T-18) continuam como no ADR-010; o nome `prod-ljs` fica fixo enquanto durar o `workers.dev`.
 
 ## Alternativas consideradas
