@@ -1130,3 +1130,6 @@ APROVADA; 0 críticos, 0 não críticos; contrato 412, rota editar 9, tsc/eslint
 
 ## RTP-0168 — QA — 2026-10-20
 APROVADA - --correcoes (chuva/presencas) atende ao aceite; 125 testes, tsc, eslint, prettier e checar-ids verdes; 0 críticos, 0 não críticos.
+
+## RTP-0173 — QA — 2026-10-20
+APROVADA — aceite (1 a 7) validado, 129 testes + tsc/eslint/prettier OK, cálculo real 0 divergências; 0 críticos, 0 não críticos.

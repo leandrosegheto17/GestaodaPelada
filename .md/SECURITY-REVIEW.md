@@ -1106,3 +1106,6 @@ APROVADA em segurança; 0 achados; guard/isolamento por grupo e auditoria RNF-12
 
 ## RTP-0168 — DevSecOps — 2026-10-20
 APROVADA - --correcoes validado por esquema sem execução, sem vazar nome/caminho, trava não burlável, G-21/backup/idempotência intactos; eslint, tsc, gitleaks e checar-escrita-e-dono verdes; 0 achados.
+
+## RTP-0173 — DevSecOps — 2026-10-20
+APROVADA — trava de divergência intacta (efeito só por entrada explícita, por atleta e rodada), sem dado pessoal/dependência nova, eslint/tsc/segredos/escrita-e-dono OK; 0 achados.
