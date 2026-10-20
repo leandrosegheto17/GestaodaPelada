@@ -1,7 +1,7 @@
 /**
  * - `compartilhado`: o aparelho abriu a folha de compartilhamento e a pessoa concluiu.
  * - `cancelado`: a pessoa fechou a folha de compartilhamento.
- * - `pedir-gesto`: o navegador recusou por falta de gesto recente; é preciso um novo toque.
+ * - `pedir-gesto`: o aparelho compartilha arquivo (ou recusou o compartilhamento direto); a pessoa escolhe Compartilhar ou Baixar.
  * - `baixado`: o aparelho não compartilha arquivo; o PDF foi baixado.
  */
 export type ResultadoEntrega = 'compartilhado' | 'cancelado' | 'pedir-gesto' | 'baixado';

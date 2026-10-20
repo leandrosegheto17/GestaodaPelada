@@ -9,7 +9,7 @@ interface Props {
   aoFechar: () => void;
 }
 
-/** D4: o navegador recusou o compartilhamento direto; um novo toque no gesto da pessoa resolve. */
+/** D4: o aparelho compartilha arquivo (ou recusou o compartilhamento direto); a pessoa escolhe Compartilhar ou Baixar. */
 export function DialogoPdfPronto({ descricao, aoCompartilhar, aoBaixar, aoFechar }: Props) {
   return (
     <Dialogo

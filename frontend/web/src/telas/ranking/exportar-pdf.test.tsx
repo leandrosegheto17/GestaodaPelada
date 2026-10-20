@@ -102,7 +102,7 @@ describe('Exportar PDF na T01', () => {
     await waitFor(() => expect(pedidosPdf).toEqual(['?mes=2026-10']));
   });
 
-  it('com a projeção pronta, gera, entrega pelo compartilhamento e registra o evento', async () => {
+  it('com a projeção pronta, gera, entrega o arquivo e registra o evento', async () => {
     api();
     montar();
     await waitFor(() => expect(pedidosPdf).toHaveLength(1));
@@ -134,7 +134,7 @@ describe('Exportar PDF na T01', () => {
     await waitFor(() => expect(entregarPdf).toHaveBeenCalledTimes(1));
   });
 
-  it('recusa por falta de gesto abre o D4; Compartilhar e Baixar fazem o que dizem', async () => {
+  it('aparelho que compartilha abre o D4 para escolher; Compartilhar e Baixar fazem o que dizem', async () => {
     api();
     entregarPdf.mockResolvedValue('pedir-gesto');
     montar();
