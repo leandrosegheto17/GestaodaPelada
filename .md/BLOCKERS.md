@@ -43,7 +43,7 @@
 - Descrição: Item (b) feito; item (a) exige PR real com job e2e verde (push/PR autorizado pelo usuário) e registrar a URL do run
 - Impacto se não resolvido: —
 - Sugestão: —
-- Status: Em aberto
+- Status: Resolvido (2026-10-19): Item (a) provado: job e2e verde em PR real (PR #2, run 39265054416) e na main (run 39355743642); item (b) feito. Evidencia: https://github.com/leandrosegheto17/GestaodaPelada/actions/runs/39265054416
 
 ## Bloqueio 006 — 2026-10-17 (BK-0006)
 - Reportado por: Executor
