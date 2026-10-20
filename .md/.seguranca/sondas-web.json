@@ -1,0 +1,35 @@
+{
+  "cabecalhos_esperados": {
+    "Content-Security-Policy": "default-src 'self'",
+    "X-Content-Type-Options": "nosniff",
+    "Referrer-Policy": "same-origin",
+    "Permissions-Policy": null
+  },
+  "cors_aberto_proibido": true,
+  "sondas": [
+    {
+      "nome": "app (index)",
+      "metodo": "GET",
+      "caminho": "/",
+      "status_esperado": [
+        200
+      ]
+    },
+    {
+      "nome": "rota SPA",
+      "metodo": "GET",
+      "caminho": "/g/pelada-de-quinta",
+      "status_esperado": [
+        200
+      ]
+    },
+    {
+      "nome": "rota admin SPA",
+      "metodo": "GET",
+      "caminho": "/admin",
+      "status_esperado": [
+        200
+      ]
+    }
+  ]
+}

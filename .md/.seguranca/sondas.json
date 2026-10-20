@@ -1,0 +1,367 @@
+{
+  "cabecalhos_esperados": {
+    "X-Content-Type-Options": "nosniff"
+  },
+  "cors_aberto_proibido": true,
+  "sondas": [
+    {
+      "nome": "saude responde",
+      "metodo": "GET",
+      "caminho": "/api/saude",
+      "status_esperado": [
+        200
+      ]
+    },
+    {
+      "nome": "admin: listar jogadores sem cookie",
+      "metodo": "GET",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores",
+      "status_esperado": [
+        401,
+        403
+      ]
+    },
+    {
+      "nome": "admin: criar jogador sem cookie",
+      "metodo": "POST",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores",
+      "status_esperado": [
+        401,
+        403
+      ],
+      "corpo": "{\"apelido\":\"X\"}",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1"
+      }
+    },
+    {
+      "nome": "admin: pesos sem cookie",
+      "metodo": "GET",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/pesos",
+      "status_esperado": [
+        401,
+        403
+      ]
+    },
+    {
+      "nome": "admin: salvar pesos sem cookie",
+      "metodo": "POST",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/pesos",
+      "status_esperado": [
+        401,
+        403
+      ],
+      "corpo": "{}",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1"
+      }
+    },
+    {
+      "nome": "admin: financeiro sem cookie",
+      "metodo": "GET",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/financeiro/mes",
+      "status_esperado": [
+        401,
+        403
+      ]
+    },
+    {
+      "nome": "admin: admins do grupo sem cookie",
+      "metodo": "GET",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/admins",
+      "status_esperado": [
+        401,
+        403
+      ]
+    },
+    {
+      "nome": "admin: simulador sem cookie",
+      "metodo": "POST",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/simulador/sugerir",
+      "status_esperado": [
+        401,
+        403
+      ],
+      "corpo": "{}",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1"
+      }
+    },
+    {
+      "nome": "dono: painel sem cookie",
+      "metodo": "GET",
+      "caminho": "/api/dono/painel",
+      "status_esperado": [
+        401,
+        403
+      ]
+    },
+    {
+      "nome": "dono: criar grupo sem cookie",
+      "metodo": "POST",
+      "caminho": "/api/dono/grupos",
+      "status_esperado": [
+        401,
+        403
+      ],
+      "corpo": "{}",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1"
+      }
+    },
+    {
+      "nome": "dono: redefinir senha sem cookie",
+      "metodo": "POST",
+      "caminho": "/api/dono/contas/00000000-0000-0000-0000-000000000000/redefinir-senha",
+      "status_esperado": [
+        401,
+        403
+      ],
+      "corpo": "{}",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1"
+      }
+    },
+    {
+      "nome": "sessao/eu sem cookie",
+      "metodo": "GET",
+      "caminho": "/api/sessao/eu",
+      "status_esperado": [
+        401
+      ]
+    },
+    {
+      "nome": "cookie forjado nao autentica",
+      "metodo": "GET",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores",
+      "status_esperado": [
+        401,
+        403
+      ],
+      "cabecalhos": {
+        "Cookie": "__Host-sessao=forjado0000000000000000000000000000000000000"
+      }
+    },
+    {
+      "nome": "CSRF: escrita sem X-Pelada recusada",
+      "metodo": "POST",
+      "caminho": "/api/sessao/sair",
+      "status_esperado": [
+        400,
+        403
+      ],
+      "corpo": "{}",
+      "cabecalhos": {
+        "Content-Type": "application/json"
+      }
+    },
+    {
+      "nome": "login errado: mensagem generica",
+      "metodo": "POST",
+      "caminho": "/api/sessao/entrar",
+      "status_esperado": [
+        400,
+        401
+      ],
+      "corpo": "{\"email\":\"nao-existe@exemplo.invalid\",\"senha\":\"errada-errada-1\"}",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1"
+      },
+      "nao_contem": [
+        "nao-existe@exemplo.invalid",
+        "bcrypt",
+        "hash"
+      ]
+    },
+    {
+      "nome": "login: corpo malformado sem vazamento",
+      "metodo": "POST",
+      "caminho": "/api/sessao/entrar",
+      "status_esperado": [
+        400,
+        422
+      ],
+      "corpo": "{\"email\":",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1"
+      }
+    },
+    {
+      "nome": "login: SQLi no e-mail",
+      "metodo": "POST",
+      "caminho": "/api/sessao/entrar",
+      "status_esperado": [
+        400,
+        401,
+        422
+      ],
+      "corpo": "{\"email\":\"a' OR 1=1 --\",\"senha\":\"x' OR '1'='1\"}",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1"
+      }
+    },
+    {
+      "nome": "publico: ranking sem login",
+      "metodo": "GET",
+      "caminho": "/api/publico/pelada-de-quinta/ranking",
+      "status_esperado": [
+        200
+      ],
+      "nao_contem": [
+        "telefone",
+        "nascimento",
+        "anoNascimento",
+        "idade",
+        "\"nota",
+        "nivel",
+        "financeiro",
+        "email",
+        "senha",
+        "hash"
+      ]
+    },
+    {
+      "nome": "publico: pdf sem login",
+      "metodo": "GET",
+      "caminho": "/api/publico/pelada-de-quinta/pdf",
+      "status_esperado": [
+        200,
+        404
+      ]
+    },
+    {
+      "nome": "publico: slug inexistente",
+      "metodo": "GET",
+      "caminho": "/api/publico/nao-existe-xyz/ranking",
+      "status_esperado": [
+        404
+      ]
+    },
+    {
+      "nome": "publico: SQLi no slug",
+      "metodo": "GET",
+      "caminho": "/api/publico/%27%20OR%201%3D1%20--/ranking",
+      "status_esperado": [
+        400,
+        404
+      ]
+    },
+    {
+      "nome": "publico: traversal no slug",
+      "metodo": "GET",
+      "caminho": "/api/publico/..%2f..%2fetc%2fpasswd/ranking",
+      "status_esperado": [
+        400,
+        404
+      ]
+    },
+    {
+      "nome": "publico: slug enorme",
+      "metodo": "GET",
+      "caminho": "/api/publico/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/ranking",
+      "status_esperado": [
+        400,
+        404,
+        414
+      ]
+    },
+    {
+      "nome": "publico: evento tipo invalido",
+      "metodo": "POST",
+      "caminho": "/api/publico/pelada-de-quinta/eventos",
+      "status_esperado": [
+        400,
+        404,
+        422
+      ],
+      "corpo": "{\"tipo\":\"admin_login\",\"extra\":\"<script>\"}",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1"
+      }
+    },
+    {
+      "nome": "publico: POST em rota de leitura",
+      "metodo": "POST",
+      "caminho": "/api/publico/pelada-de-quinta/ranking",
+      "status_esperado": [
+        404,
+        405
+      ],
+      "corpo": "{}",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1"
+      }
+    },
+    {
+      "nome": "rota inexistente",
+      "metodo": "GET",
+      "caminho": "/api/inexistente",
+      "status_esperado": [
+        404
+      ]
+    },
+    {
+      "nome": "metodo TRACE",
+      "metodo": "TRACE",
+      "caminho": "/api/saude",
+      "status_esperado": [
+        404,
+        405,
+        501,
+        400
+      ]
+    },
+    {
+      "nome": "arquivo sensivel .env",
+      "metodo": "GET",
+      "caminho": "/.env",
+      "status_esperado": [
+        200,
+        404
+      ],
+      "nao_contem": [
+        "PASSWORD",
+        "SECRET",
+        "DATABASE_URL",
+        "postgres://"
+      ]
+    },
+    {
+      "nome": "arquivo sensivel wrangler",
+      "metodo": "GET",
+      "caminho": "/wrangler.jsonc",
+      "status_esperado": [
+        200,
+        404
+      ],
+      "nao_contem": [
+        "Hyperdrive",
+        "localConnectionString",
+        "postgres://"
+      ]
+    },
+    {
+      "nome": "arquivo sensivel .git",
+      "metodo": "GET",
+      "caminho": "/.git/config",
+      "status_esperado": [
+        200,
+        404
+      ],
+      "nao_contem": [
+        "[core]",
+        "repositoryformatversion"
+      ]
+    }
+  ]
+}

@@ -935,6 +935,14 @@ Colunas lidas pelo `taskplan.py` pelo nome. **Est** em dias-pessoa. **Cria**/**U
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | RTP-0169 | Refatoração Revisão 2026-10-20 | SDD §2: tabela de pacotes diz o que backend/scripts realmente importa (@pelada/dominio e db/index.ts) | Backend | SDD §2 Pacotes, pastas e fronteiras; G-01; ADR-021 | Linha de @pelada/dominio lista backend/scripts como dependente; linha de @pelada/api lista infraestrutura/db/index.ts entre o que os scripts podem importar, batendo com ZONAS/SCRIPTS_PERMITIDOS do eslint.config.mjs; nenhum ADR editado; pnpm lint e format:check em 0 | 0.2 | - | - | .md/SDD.md (tabela §2), .md/GUARDRAILS.md (só se G-01 repetir a lista) | sem teste novo; pnpm lint e pnpm format:check | Pendente |
 
+### Refatoração Segurança 2026-10-20
+| ID | Lote | Título | Chapéu | Reqs | Aceite | Est | Dep | Par | Arquivos | Testes e diretrizes | Status |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| RTP-0170 | Refatoração Segurança 2026-10-20 | Adicionar X-Content-Type-Options: nosniff nas respostas JSON de /api/* | Backend | SDD §7 Superfície de Exposição | A sonda nosniff de .md/.seguranca/sondas.json passa em todas as respostas de /api/*; teste de middleware cobre 200, 401, 404 e 500 (origem: auditoria de release 2026-10-20, severidade baixa) | 0.2 | - | - | backend/api/src/entrada/app.ts; backend/api/test | Teste do middleware; seguranca.py --dast http://localhost:8787 --sondas .md/.seguranca/sondas.json --sem-zap | Pendente |
+| RTP-0171 | Refatoração Segurança 2026-10-20 | Fixar por SHA as ações do GitHub e adotar block-exotic-sub-dependencies, minimum-release-age e trust-policy no pnpm | Backend | SDD §7 CI → Cloudflare; G-15 | semgrep sem github-actions-mutable-action-tag e sem os 3 MEDIUM do pnpm-workspace.yaml; CI verde (origem: auditoria de release 2026-10-20, severidade baixa) | 0.3 | - | - | .github/workflows/ci.yml; .github/workflows/deploy.yml; .github/workflows/backup.yml; .github/actions/preparar-node/action.yml; .github/actions/dump-cifrado/action.yml; pnpm-workspace.yaml | CI completo; semgrep p/default | Pendente |
+| RTP-0172 | Refatoração Segurança 2026-10-20 | Cobrir no .gitignore o arquivo de entrada da importação do legado (dados pessoais) | Backend | ADR-021 item 5; RNF-06 | Padrão no .gitignore e git check-ignore confirma o nome do arquivo esperado pelo script (origem: auditoria de release 2026-10-20, severidade baixa) | 0.1 | - | - | .gitignore | git check-ignore -v <arquivo de entrada> | Pendente |
+
+
 
 
 

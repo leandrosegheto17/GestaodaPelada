@@ -1,5 +1,29 @@
 # SECURITY-REVIEW
 
+## Auditoria de release 2026-10-20 — DevSecOps — APROVADA COM DÉBITO
+Escopo: release com pontuação inicial, 6 posições, 6 pesos e importação do legado (ADR-021), a publicar em produção pelo `deploy.yml`. Evidência em `.md/.seguranca/2026-10-20/` (brutos), `.md/.seguranca/sondas.json` e `sondas-web.json`; modelo de ameaças em `.md/THREAT-MODEL.md`. Ambiente testado: local (docker compose, banco `pelada` local descartável, 127.0.0.1); nada contra produção (G-21).
+
+Executado (Fase A, `seguranca.py`):
+- `pnpm audit --prod`: 0 vulnerabilidades. OK.
+- OSV (todos os lockfiles): 1 achado, CONFIRMADO mas só dev: `braces@3.0.3` (GHSA-vfj7-8cjw-p6xm, DoS por aninhamento profundo, severidade da fonte HIGH), vindo de `stylelint > globby > fast-glob > micromatch` (devDependency do `@pelada/web`, `pnpm why braces`). Não entra no Worker nem no bundle. Sem versão corrigida no npm (3.0.3 é a última). Débito monitorado; não bloqueia.
+- gitleaks (histórico, 36): 0 segredos reais. 24 são o par de JWTs de demonstração do Supabase local (payload `iss: supabase-demo`, `role: anon`/`service_role`, nos commits `d273d665`: ci.yml, testes de RLS, e2e e esta própria SECURITY-REVIEW; não dão acesso a nada do projeto); 1 em `.md/.taskplan/TP-0164.md` (commit `bca136ab`, trecho de texto "api: aplicacao/..."); 1 `p256dh-forged` em teste; 10 em docs de skills (`YOUR_API_TOKEN`, `sk_live_abc123`, chaves de exemplo do figma), commit `50b1fa6b`. Todos falsos positivos; nenhuma rotação necessária. Nenhum `.env` versionado (só `.env.example`).
+- semgrep (ERROR 53 / WARNING 41): 0 reais no produto. ERROR: 40 JWT são o próprio `gitleaks.json` varrido; 8 `detect-child-process` e 1 `spawn-shell-true` em `.claude/skills/mermaid-studio` e `.claude/scripts/comparar-visual.mjs` (ferramentas de desenvolvimento, não publicadas, sem entrada externa); 2 websocket inseguro em Markdown (doc de skill e TP-0002); 1 bcrypt em `contas.ts:8` é o `HASH_FIXO` deliberado e sem senha (ADR-015); 1 segredo genérico em doc da skill cloudflare. WARNING: 13 ações do GitHub por tag mutável (REAL, débito Baixo, abaixo), 14 `path-join` e 6 `non-literal-regexp` em scripts de desenvolvimento/testes/config de tokens, 3 `playwright-evaluate` e http-server na skill playwright, md5/sha1 em `.claude/scripts` (identificadores, não segurança). 3 MEDIUM de `pnpm-workspace.yaml` (`block-exotic-sub-dependencies`, `minimum-release-age`, `trust-policy`): endurecimento de cadeia de suprimentos, débito Baixo.
+
+Executado (Fase C, DAST local, `seguranca.py --dast`): 30 sondas na API (0 reprovadas após ajustar a expectativa 400 para 422 em 3 sondas de validação, que é o código do contrato) e 3 no front servido pelo Worker (0 reprovadas). ZAP baseline: 0 alto, 0 médio, 3 baixos (COEP/COOP/CORP ausentes: aceitável, sem recurso cross-origin).
+- Autenticação: 11 rotas de admin/dono sem cookie -> 401; cookie forjado -> 401; escrita sem `X-Pelada` -> 403; login errado -> 401 sem eco do e-mail; corpo malformado e SQLi no login/slug -> 422/401/404 sem stack, SQL nem caminho.
+- Isolamento: admin da quinta em 6 rotas do grupo do domingo -> 404 (e o inverso); admin comum em `/api/dono/*` -> 404.
+- Validação: `pontuacaoInicial` -1, 10000, 1.5, "abc" -> 422 (mensagem "0 a 9999"); 0 e 9999 aceitos; posição inexistente e legada (`defensor`) -> 422; campo extra (`e_dono`) -> 422; pesos 11, -11, 1.5, "a" -> 422 ("-10 a 10"); evento público com tipo inválido ou campo extra -> 422. Registros de teste criados foram apagados.
+- Público: ranking sem login sem telefone, ano de nascimento, nota, nível, financeiro nem e-mail (o campo `linhas[].posicao` é a colocação numérica, não a posição em campo); PDF 200 `no-store`.
+- Sessão: cookie `HttpOnly; Secure; SameSite=Lax; Path=/` (`__Host-`), logout invalida (200 -> 204 -> 401). Bloqueio por e-mail: 5 falhas e depois 429.
+- CORS: sem `Access-Control-Allow-Origin` com `Origin` hostil; preflight não liberado. `/.env`, `/wrangler.jsonc`, `/.git/config` devolvem só o `index.html` da SPA (conferido que não contêm conteúdo sensível).
+- Cabeçalhos do app (`/`, `/g/<slug>`, `/admin`): CSP restritiva, nosniff, Referrer-Policy e Permissions-Policy presentes.
+
+Configuração: `wrangler.jsonc` sem segredo (a `localConnectionString` é a do banco local; Hyperdrive só por binding; `DONO_EMAIL` com `.invalid`); `deploy.yml` com `workflow_dispatch`, `environment: producao`, `permissions: contents: read`, todos os valores via `secrets.*`/`vars.*`, `persist-credentials: false`, branch Neon + dump cifrado antes da migração, cache do Hyperdrive conferido, rollback na falha. SDD §7 conferido item a item (autenticação, autorização, criptografia, multi-tenant, superfície, LGPD): sem divergência.
+
+Não executado: (1) limite de taxa da Cloudflare em `/api/sessao/entrar` e `/api/publico/*`: o binding não existe no ambiente local (o middleware passa sem limitar quando ausente); só verificável no host publicado depois do deploy, em modo leitura (não é DAST de ataque; G-21). Sem homologação (ADR-020).
+
+Débitos (todos Baixos, prazo: antes do próximo deploy): (a) `nosniff` ausente nas respostas JSON de `/api/*`; (b) ações do GitHub por tag, não por SHA, e 3 ajustes de endurecimento do pnpm; (c) `.gitignore` sem padrão para o arquivo de entrada do legado; (d) `braces` dev sem correção publicada (monitorar). Observação fora de segurança: o banco local tem jogadores com posição legada (`defensor`/`meio_campo`) e a lista de jogadores do grupo da quinta responde 500 (ZodError no contrato novo, sem vazamento); em produção a migração 202610200000 converte os valores, e o CHECK legado está no BK de contração.
+
 ## TP-0001 — DevSecOps — 2026-10-16
 APROVADA, 0 críticos/0 não críticos; pnpm audit no lockfile do commit limpo, .env/.dev.vars ignorados e .env.example sem valores, sem dependência proibida; 13 vulns na árvore atual vêm de tarefas posteriores (tratar no /deploy).
 
