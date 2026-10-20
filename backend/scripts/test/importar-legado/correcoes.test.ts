@@ -139,6 +139,49 @@ describe('correções no plano', () => {
     expect(() => plano(correcoes)).not.toThrow(/segredo/i);
   });
 
+  describe('rodada mista (maioria em dobro, Alfa lançado com 3)', () => {
+    const mista = [{ ...ATLETAS[0]!, rodadas: [3, 3, 3, 3, 3, 3] }, ...ATLETAS.slice(1)];
+    const planoMista = (correcoes?: Correcoes) =>
+      calcularPlano(
+        lerPontuacoes(montarPontuacoes(mista), HOJE_DAS_FIXTURES),
+        lerCadastro(montarCadastro(mista), HOJE_DAS_FIXTURES),
+        HOJE_DAS_FIXTURES,
+        correcoes,
+      );
+    const presencaDe = (atleta: string, data = '2022-04-17') => ({
+      chuva: [],
+      presencas: [{ data, atleta, situacao: 'presente' as const }],
+    });
+
+    it('sem presencas, quem destoa continua divergência', () => {
+      const p = planoMista();
+      expect(conferenciaDe(p, 'Alfa')).toMatchObject({ confere: false, efeito: 0 });
+      expect(contarPlano(p).divergencias).toBe(1);
+    });
+
+    it('com presencas do atleta, a diferença vira correção do usuário (+3), sem divergência', () => {
+      const p = planoMista(presencaDe('alfa'));
+      expect(conferenciaDe(p, 'Alfa')).toMatchObject({ efeito: 3, diferenca: -3, confere: true });
+      expect(contarPlano(p)).toMatchObject({ divergencias: 0, diferencasPorCorrecao: 1 });
+      expect(linhasDeConferencia(p).some((l) => l.startsWith('correção do usuário: Alfa'))).toBe(true);
+    });
+
+    it('presencas de quem não destoa tem efeito 0', () => {
+      const p = planoMista(presencaDe('Bravo'));
+      expect(conferenciaDe(p, 'Bravo')).toMatchObject({ efeito: 0, confere: true });
+      expect(conferenciaDe(p, 'Alfa').confere).toBe(false);
+    });
+
+    it('o log de erro e o relatório não trazem apelido', () => {
+      const texto = [
+        ...linhasDeCorrecoes(planoMista(presencaDe('Alfa'))),
+        ...linhasDeContagens(contarPlano(planoMista())),
+      ];
+      expect(texto.join('\n')).not.toContain('Alfa');
+      expect(() => planoMista(presencaDe('Segredo'))).not.toThrow(/segredo/i);
+    });
+  });
+
   it('o relatório traz a seção "Correções do usuário" por data e por atleta', () => {
     const p = plano({ chuva: ['2022-04-24'], presencas: [] });
     expect(linhasDeCorrecoes(p)).toEqual([

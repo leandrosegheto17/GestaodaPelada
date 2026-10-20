@@ -172,6 +172,8 @@ lançamento errado de um atleta), o operador registra a decisão num JSON **fora
 - `chuva`: datas de rodada cuja partida é gravada com `choveu = true`; todos os presentes passam a valer pelos pesos
   com chuva (presente 6, lesionado 6, expulso 5).
 - `presencas`: troca a situação de um atleta numa rodada (`presente`, `lesionado`, `expulso` ou `ausente`).
+- Numa rodada mista (valores simples e em dobro), o atleta que destoa da maioria se resolve com uma entrada em
+  `presencas` para ele naquela data (mesma situação); sem a entrada, continua divergência.
 - O esperado de cada atleta passa a ser "Atual − Ajustes + efeito das correções"; o dry-run lista cada diferença como
   "correção do usuário" e a seção "Correções do usuário" traz as contagens por data. Qualquer outra diferença continua
   sendo divergência e bloqueia a execução real.

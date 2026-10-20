@@ -205,6 +205,7 @@ export function calcularPlano(
   const apelidoDe = new Map(lidas.classificacao.map((c) => [chaveDe(c.apelido), c.apelido]));
 
   const choveuSemCorrecao = new Map<string, boolean>();
+  const mistaSemCorrecao = new Map<string, boolean>();
   const partidas = lidas.rodadas.map((r): PartidaPlano => {
     const presencas: PartidaPlano['presencas'] = [];
     for (const [chave, { apelido, valor }] of r.valores) {
@@ -220,6 +221,7 @@ export function calcularPlano(
     }
     const bruta = chuvaDaRodada(r);
     choveuSemCorrecao.set(r.data, bruta.choveu);
+    mistaSemCorrecao.set(r.data, bruta.mista);
     const corrigida = datasDeChuva.has(r.data);
     return { data: r.data, choveu: bruta.choveu || corrigida, mista: corrigida ? false : bruta.mista, presencas };
   });
@@ -246,7 +248,15 @@ export function calcularPlano(
       const presencas = lidas.rodadas.flatMap((r, i) => {
         const troca = comCorrecao ? trocas.get(chaveDaPresenca(r.data, chave)) : undefined;
         const situacao = troca === undefined ? situacaoDe(serie[i] ?? null) : troca === 'ausente' ? null : troca;
-        const choveu = comCorrecao ? (choveuEm.get(r.data) ?? false) : (choveuSemCorrecao.get(r.data) ?? false);
+        // Sem correção, quem tem `presencas` numa rodada mista vale pelo que está na célula do arquivo: é o
+        // efeito da entrada que explica a diferença entre o arquivo e a regra do app.
+        const pelaCelula =
+          !comCorrecao && mistaSemCorrecao.get(r.data) === true && trocas.has(chaveDaPresenca(r.data, chave));
+        const choveu = comCorrecao
+          ? (choveuEm.get(r.data) ?? false)
+          : pelaCelula
+            ? ehChuva(serie[i] ?? null)
+            : (choveuSemCorrecao.get(r.data) ?? false);
         return situacao ? [{ data: r.data, choveu, situacao }] : [];
       });
       return acumuladoComInicial(c.inicial, presencas, [config], hoje);
