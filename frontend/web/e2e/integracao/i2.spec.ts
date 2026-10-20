@@ -64,12 +64,7 @@ test.describe.serial('I2: do simulador à partida pré-marcada e ao ranking', ()
     await titularA.click();
     await page.getByRole('button', { name: 'Trocar com…' }).click();
     const avaliacao = esperarChamada(page, 'POST', '/simulador/avaliar', 200);
-    await page
-      .getByRole('dialog')
-      .getByRole('button')
-      .filter({ hasText: APELIDOS[0] ? /./ : /./ })
-      .first()
-      .click();
+    await page.getByRole('dialog').getByRole('button').first().click();
     await expect(page.getByRole('button', { name: 'Confirmar escalação' })).toBeDisabled();
     await avaliacao;
     await expect(page.getByRole('button', { name: 'Confirmar escalação' })).toBeEnabled();
