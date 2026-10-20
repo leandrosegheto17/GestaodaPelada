@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-20 14:38
+Atualizado: 2026-10-20 15:14
 
-Resumo: Não executada 7 · Executada (aguarda teste) 1 · Aprovada 385 · Despriorizada 5 · total 398
+Resumo: Não executada 2 · Executada (aguarda teste) 6 · Aprovada 385 · Despriorizada 5 · total 398
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -397,11 +397,11 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 382 | RTP-0167 | executor | ✔ | PATCH de jogador sem pontuacaoInicial não zera a pontuação inicial | Refatoração Lote-46 | TP-0208 | Aprovada |
 | 383 | RTP-0168 | executor | ✔ | Importar-legado: arquivo de correções (--correcoes) para chuva em datas e presenças cor... | Refatoração Lote-46 | TP-0208 | Aprovada |
 | 384 | RTP-0173 | executor | ✔ | Importar-legado: correção de presença em rodada mista conta como correção do usuário (r... | Refatoração Lote-46 | TP-0208 | Aprovada |
-| 385 | RTP-0169 | executor | ✔ | SDD §2: tabela de pacotes diz o que backend/scripts realmente importa (@pelada/dominio... | Refatoração Revisão 2026-10-20 | — | Não executada |
-| 386 | RTP-0174 | executor | ✔ | UX-SPEC: fluxo F4 e diálogo D4 descrevem o Exportar PDF como o app faz hoje | Refatoração Revisão 2026-10-20 | — | Não executada |
-| 387 | RTP-0175 | executor | ✔ | Comentários e títulos de teste do Exportar PDF ainda dizem que o compartilhamento é direto | Refatoração Revisão 2026-10-20 | — | Não executada |
-| 388 | RTP-0170 | executor | ✔ | Adicionar X-Content-Type-Options: nosniff nas respostas JSON de /api/* | Refatoração Segurança 2026-10-20 | — | Não executada |
-| 389 | RTP-0171 | executor | ✔ | Fixar por SHA as ações do GitHub e adotar block-exotic-sub-dependencies, minimum-releas... | Refatoração Segurança 2026-10-20 | — | Não executada |
+| 385 | RTP-0169 | executor | ✔ | SDD §2: tabela de pacotes diz o que backend/scripts realmente importa (@pelada/dominio... | Refatoração Revisão 2026-10-20 | — | Executada (aguarda teste) |
+| 386 | RTP-0174 | executor | ✔ | UX-SPEC: fluxo F4 e diálogo D4 descrevem o Exportar PDF como o app faz hoje | Refatoração Revisão 2026-10-20 | — | Executada (aguarda teste) |
+| 387 | RTP-0175 | executor | ✔ | Comentários e títulos de teste do Exportar PDF ainda dizem que o compartilhamento é direto | Refatoração Revisão 2026-10-20 | — | Executada (aguarda teste) |
+| 388 | RTP-0170 | executor | ✔ | Adicionar X-Content-Type-Options: nosniff nas respostas JSON de /api/* | Refatoração Segurança 2026-10-20 | — | Executada (aguarda teste) |
+| 389 | RTP-0171 | executor | ✔ | Fixar por SHA as ações do GitHub e adotar block-exotic-sub-dependencies, minimum-releas... | Refatoração Segurança 2026-10-20 | — | Executada (aguarda teste) |
 | 390 | RTP-0172 | executor | ✔ | Cobrir no .gitignore o arquivo de entrada da importação do legado (dados pessoais) | Refatoração Segurança 2026-10-20 | — | Executada (aguarda teste) |
 | 391 | BK-0009 | coordenador | ✔ | Ajustar SDD/ADR-010/URL_PUBLICA/CORS/deploy.yml ao domínio prod-ljs.workers.dev e aos acei | — | — | Aprovada |
 | 392 | BK-0012 | coordenador | ✔ | Quando e onde registrar a contração do CHECK de posicao (tirar defensor/meio_campo de joga | — | — | Não executada |
