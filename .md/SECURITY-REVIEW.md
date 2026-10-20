@@ -1109,3 +1109,21 @@ APROVADA - --correcoes validado por esquema sem execução, sem vazar nome/camin
 
 ## RTP-0173 — DevSecOps — 2026-10-20
 APROVADA — trava de divergência intacta (efeito só por entrada explícita, por atleta e rodada), sem dado pessoal/dependência nova, eslint/tsc/segredos/escrita-e-dono OK; 0 achados.
+
+## RTP-0169 — DevSecOps — 2026-10-20
+APROVADA, 0 achados; mudança só documental, SDD §2/G-01 batem com ZONAS e imports reais, sem superfície de segurança nova.
+
+## RTP-0170 — DevSecOps — 2026-10-20
+APROVADA; 0 achados; vitest 17/17 com nosniff em 200/401/404/500; semgrep indisponível e DAST não executado (ficam para o /deploy).
+
+## RTP-0171 — DevSecOps — 2026-10-20
+APROVADA — SHAs fixados sem perda de permissões/segredos, pnpm audit --prod limpo, trustPolicyExclude verificável em 2 de 4 (semver, undici-types); 0 críticos, 0 RTP nova (débito minimumReleaseAge já na RTP-0176).
+
+## RTP-0172 — DevSecOps — 2026-10-20
+APROVADA; 0 achados; check-ignore casa entradas e brutos, exceções sem dado pessoal, nada da importação rastreado nem no histórico (gitleaks 794 commits sem hit nesses arquivos).
+
+## RTP-0174 — DevSecOps — 2026-10-20
+APROVADA, 0 achados; diff só de documentação (UX-SPEC), varredura de segredos/URLs nas linhas adicionadas com 0 ocorrências.
+
+## RTP-0175 — DevSecOps — 2026-10-20
+APROVADA, 0 achados; diff só comentários e títulos de teste (conferido por filtro executado), sem superfície de segurança nova.
