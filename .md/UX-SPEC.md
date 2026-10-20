@@ -413,9 +413,10 @@ Lista em ordem decrescente de data. Cada item mostra a data (dia da semana + dd/
 - **Seção Dados:**
   - Apelido (2 a 30);
   - Ano de nascimento (numérico, de 1940 até o ano atual menos 10);
-  - Posição (Goleiro, Defensor, Meio-campo, Atacante; ⓘ "só para cadastro");
+  - Posição (seletor com 7 opções, nesta ordem: Zagueiro, Lateral, Volante, Meia, Atacante, Centroavante, Goleiro; ⓘ "só para cadastro"). Goleiro fica por último, mantido por compatibilidade (I-46);
   - Telefone (opcional, com máscara (DD) 9XXXX-XXXX);
-  - Data de entrada (padrão = hoje).
+  - Data de entrada (padrão = hoje);
+  - **Pontuação inicial** (campo numérico inteiro, 0 a 9999, padrão 0; ajuda: "Pontos de antes da 1ª partida no app (0 a 9999)."; erro: "Informe um número inteiro de 0 a 9999."). Aparece no cadastro e na edição, só para admin (RF-19, RF-20, RN-22). Ao salvar uma mudança, o ranking passa a somar o valor; a tela não calcula nada.
   - Ação principal: **"Salvar"**.
 - **Seção Habilidades e nível** (só na edição): uma linha por habilidade com uma nota de 1 a 10 ou "–" (seletor numérico). O nível calculado vem da API e é exibido em destaque ("Nível 6,8" ou "Sem nota: usa 5,5 no simulador"). As notas são salvas por alteração, com confirmação discreta "salvo".
 - **Seção Situação:**
@@ -428,14 +429,15 @@ Lista em ordem decrescente de data. Cada item mostra a data (dia da semana + dd/
 Lista de habilidades, cada uma com nome editável no próprio lugar e o botão "Excluir" (D2: "Excluir 'Drible' apaga as notas de todos os jogadores nessa habilidade."). Ação principal: **"Nova habilidade"** (campo + "Adicionar").
 
 ### T18 Pontuação
-- **Cartão "Vigente desde dd/mm/aaaa"** com os 5 pesos em tabela:
+- **Cartão "Vigente desde dd/mm/aaaa"** com os 6 pesos em tabela:
   - Presença sem chuva;
   - Presença com chuva;
   - Lesionado sem chuva;
   - Lesionado com chuva;
-  - Expulso.
-- **Formulário "Nova configuração (vale a partir de hoje)"**: 5 campos inteiros de −10 a 10, preenchidos com os vigentes. Ação principal: **"Salvar nova configuração"**. ⓘ "Partidas anteriores a hoje não mudam."
-- **Histórico:** lista das configurações anteriores, com vigência e "registrado por <nome>".
+  - Expulso sem chuva;
+  - Expulso com chuva.
+- **Formulário "Nova configuração (vale a partir de hoje)"**: 6 campos inteiros de −10 a 10, preenchidos com os vigentes, em pares (sem chuva e com chuva). Ação principal: **"Salvar nova configuração"**. ⓘ "Partidas anteriores a hoje não mudam."
+- **Histórico:** lista das configurações anteriores, com vigência, os **6 valores na ordem acima** ("1 · 1 · 1 · 1 · −1 · −1") e "registrado por <nome>". Em configuração anterior à existência do expulso com chuva, a API devolve o expulso com chuva igual ao expulso sem chuva (RF-24, RF-68); a tela mostra o que vier.
 
 ### T19 Admins do grupo
 - Lista de admins: nome, e-mail, o interruptor **"Acessa financeiro"** e as ações "Redefinir senha" (→ D1) e "Remover do grupo" (D2).
@@ -615,9 +617,9 @@ Padrões globais:
 | T13 | n/a: só existe com sugestão | "Montando os times…" (até 2 s, RNF-03); depois de ajuste, indicadores "recalculando…" | Falha ao sugerir: volta a T12 com o erro. Falha ao avaliar um ajuste: o movimento fica, e os indicadores mostram "Não foi possível recalcular" + Tentar de novo. Falha ao confirmar: faixa de erro, sem perder a composição | Escalação confirmada → T09 com a faixa |
 | T14 | n/a: idem | Idem | Idem | Idem |
 | T15 | Ativos: "Nenhum jogador cadastrado." + Novo jogador. Inativos: "Nenhum jogador inativo." | Esqueleto | Padrão global | Lista |
-| T16 | Novo: formulário vazio. Sem habilidades no catálogo: "Nenhuma habilidade cadastrada" + link T17 | Esqueleto (edição); "salvando" por nota | Validação por campo; apelido repetido; exclusão recusada → oferta de inativar | Faixa "Jogador salvo"; nota "salvo" |
+| T16 | Novo: formulário vazio. Sem habilidades no catálogo: "Nenhuma habilidade cadastrada" + link T17 | Esqueleto (edição); "salvando" por nota | Validação por campo (inclui pontuação inicial fora de 0 a 9999 ou não inteira); apelido repetido; exclusão recusada → oferta de inativar | Faixa "Jogador salvo"; nota "salvo" |
 | T17 | "Nenhuma habilidade. O simulador vai usar nível 5,5 para todos." + Nova habilidade | Esqueleto | Nome repetido ou fora do tamanho | Lista atualizada |
-| T18 | n/a: todo grupo nasce com pesos (RN-18) | Esqueleto | Peso fora da faixa ou não inteiro | "Nova configuração vale a partir de hoje" |
+| T18 | n/a: todo grupo nasce com pesos (RN-18) | Esqueleto | Qualquer dos 6 pesos fora da faixa ou não inteiro | "Nova configuração vale a partir de hoje" |
 | T19 | n/a: todo grupo tem pelo menos 1 admin (RN-13). Com um só admin, a ajuda "Você é o único admin deste grupo…" | Esqueleto | E-mail inválido ("Informe um e-mail válido."); remover o último admin recusado pela API | D1 ou aviso "Admin existente vinculado ao grupo."; lista atualizada |
 | T20 | n/a: o grupo sempre tem dados | Esqueleto | Validação por campo | "Dados salvos"; "Link copiado" |
 | T21 | "Ainda não há uso registrado." | Esqueleto | Padrão global | Tabela ou cartões |
@@ -770,6 +772,7 @@ Autochecagem contra o `SDD.md` desta mesma rodada, nas 4 dimensões: componente,
 | T22 | Coordenador | Mensalidades do mês em uma linha agrupada; a API devolve cada entrada | Resolvido |
 | T01 | Coordenador | Sem jogadores: sem "Exportar PDF" e meses desabilitados | Resolvido |
 | T07 | Coordenador | "Colocação" em vez de "posição" no texto público, para não confundir com a posição em campo (privada) | Resolvido |
+| T16, T18 | **Usuário** (demanda "Adequação ao legado") | T16 ganha o campo "Pontuação inicial" e o seletor passa a ter 7 posições (Zagueiro, Lateral, Volante, Meia, Atacante, Centroavante, Goleiro); T18 passa a 6 pesos (expulso sem e com chuva) e o histórico mostra 6 valores. Mockup T16 (novo, edicao, inativo, erro) e T18 (sucesso, salvo, erro) já atualizados; os rótulos de posição de T11, T15 e `dados.json` (Defensor → Zagueiro, Meio-campo → Meia) são sincronizados pela tarefa da demanda, sem mudança visual | Aprovado pelo usuário |
 | Todas | Coordenador | 57 estados dependem de interação e não são alcançáveis só por rota; ficam em `telas.json` → `revisaoManual` e são conferidos à mão no QA | Resolvido |
 
 **Trade-offs grandes o bastante para o Gestor:** nenhum. Nenhuma das decisões acima muda custo, prazo ou escopo do PRD. As duas que acrescentam ou retiram um padrão de interação ("Marcar todos como presentes" em T11 e a ausência de arrastar e soltar em T13/T14) foram **aprovadas pelo usuário na rodada 2**.

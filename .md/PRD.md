@@ -4,6 +4,13 @@ Versão: rascunho 4.1 (Loop A, reabertura pontual das colunas do ranking) | Data
 Insumos: briefing do Leandro (ideia original), respostas do Leandro às perguntas das rodadas 1, 2 e 3, `.md/PLANO-COMERCIAL.md` v2, `.md/CTO-REVIEW.md` (Gate 1 e adendo da rodada 2).
 Escopo deste PRD: **Fase 1, uso próprio** do grupo do Leandro. A Fase 2 (abertura paga a outros grupos) aparece só como restrição de modelagem.
 
+**Mudanças do rascunho 4.1 para o 4.2 (demanda pontual "Adequação ao legado", aprovada pelo usuário em 2026-10-19):**
+- **Objetivo:** trazer para o grupo real o histórico de outro app (57 jogadores, 231 rodadas desde 03/04/2022) sem perder o acumulado de cada um. Os "ajustes manuais" do legado ficam fora (decisão do usuário).
+- **Pontuação inicial por jogador** (RA-03, RA-06): soma ao acumulado e à coluna PTS INICIAL.
+- **Seis posições** de cadastro (RA-03) e **dois pesos de expulsão**, sem e com chuva (RA-04).
+- **Importação do histórico** como operação do dono (RA-17), depois que as 3 mudanças acima estiverem em produção.
+- Premissas de default na §6 (PR-15 a PR-17).
+
 **Mudanças do rascunho 4 para o 4.1 (reabertura pontual, P-30):**
 - **Colunas do ranking (tela e PDF).** Nesta ordem: #, Jogador, PTS INICIAL (acumulado até o início do mês exibido), uma coluna por partida do mês com os **pontos** da rodada (cor por situação; ícone de chuva ou de sol no cabeçalho) e PTS FINAL (PTS INICIAL + rodadas do mês; no mês corrente, o acumulado até hoje). Saem as contagens de presenças e faltas do mês. É mudança **só de apresentação**: pontuação, acumulado contínuo e ordem sempre pelo acumulado atual (P-26) continuam iguais. Só RA-06 e RA-09 mudam.
 - Uma pergunta nova em aberto (P-32, §7.1).
@@ -88,6 +95,7 @@ O objetivo é cumprido quando M1 a M5 atingem a meta. G1 é uma métrica de guar
 | TWA na Google Play, com o teste fechado começando logo depois do I1 | O briefing pede a TWA "ao mesmo tempo" e a conta da Play já está paga. Detalhes da decisão em RA-14 |
 | Isolamento de todo dado por grupo e campo de situação comercial do grupo, sem lógica | Prepara a Fase 2 sem retrabalho (Gate 1, ressalva 4) |
 | Registro anônimo de uso | Sem isso, M2, M3 e M4 não podem ser medidas |
+| Pontuação inicial por jogador, 6 posições, 2 pesos de expulso e importação única do histórico do app anterior (RA-03, RA-04, RA-17) | Demanda "Adequação ao legado" (2026-10-19). Ordem: mudanças em produção primeiro, importação depois |
 
 ### Fora
 
@@ -104,6 +112,7 @@ O objetivo é cumprido quando M1 a M5 atingem a meta. G1 é uma métrica de guar
 | Envio de e-mail (recuperação de senha, avisos) e notificações push | A recuperação de senha é feita por outro admin ou pelo dono, com aviso interno no app (P-25) |
 | Cobrança automática ou lembrete de pagamento no financeiro | O briefing pede só "um controle simples" |
 | Mais de um idioma | Público só no Brasil (pt-BR) |
+| Importar os "ajustes manuais", os telefones e a data de nascimento completa do legado; tela de importação | Decisão do usuário (ajustes); telefones do arquivo são fictícios; o app guarda só o ano; a importação é operação do dono, não funcionalidade de produto |
 
 ### Ordem de entrega sugerida (incrementos)
 
@@ -123,10 +132,10 @@ Prioridade MoSCoW. O detalhamento está no `PRD-TECNICO.md`.
 |---|---|---|---|
 | RA-01 | Grupos (nome, dia da semana, frequência, horário), criados e arquivados pelo dono da plataforma e editados pelos admins do grupo, com todo dado isolado por grupo | Must | Unidade de isolamento. Exigência de modelagem para a Fase 2 |
 | RA-02 | Acesso de admin com credencial individual (e-mail e senha), vinculado a grupos. O primeiro admin é criado pelo dono com senha aleatória, de troca obrigatória. Os admins do grupo dão acesso a outros admins. Inclui permissão de financeiro e "esqueci a senha" | Must | Briefing e respostas P-07 e P-25 |
-| RA-03 | Cadastro de jogadores (nome/apelido, ano de nascimento, telefone, posição, data de entrada), com inativação sem perda de histórico | Must | Base do ranking e do simulador |
-| RA-04 | Pesos de pontuação por grupo (presença com e sem chuva, lesionado com e sem chuva, expulso), valendo só daqui para a frente. Padrão: 1 por presença e −1 por expulsão | Must | Pedido no briefing. Respostas P-06, P-10 e P-22 |
+| RA-03 | Cadastro de jogadores (nome/apelido, ano de nascimento, telefone, posição, **pontuação inicial**, data de entrada), com inativação sem perda de histórico. Posições: Zagueiro, Lateral, Volante, Meia, Atacante e Centroavante (mais Goleiro, mantido por compatibilidade) | Must | Base do ranking e do simulador. Pontuação inicial e novas posições: demanda "Adequação ao legado" |
+| RA-04 | Pesos de pontuação por grupo (6 pesos: presença, lesionado e expulso, cada um com e sem chuva), valendo só daqui para a frente. Padrão: 1 por presença e −1 por expulsão (com ou sem chuva) | Must | Pedido no briefing. Respostas P-06, P-10 e P-22. O expulso com chuva separado: demanda "Adequação ao legado" (substitui o peso único da P-10) |
 | RA-05 | Lançamento de partidas: data, chuva sim/não e a situação de cada jogador (ausente, presente, lesionado, expulso) | Must | Alimenta o ranking. Precisa ser rápido (G1) |
-| RA-06 | Ranking público do grupo, geral e contínuo. A ordem é sempre a do acumulado atual (desempate pelo mais velho e, depois, pelo apelido) e não muda ao trocar de mês. Colunas: posição, jogador, PTS INICIAL (acumulado até o início do mês exibido), uma coluna por partida do mês com os pontos da rodada de cada jogador (cor por situação: presente, lesionado, expulso, falta ou "–" antes de entrar no grupo; ícone de chuva ou de sol no cabeçalho) e PTS FINAL (PTS INICIAL + pontos das rodadas do mês). Sem contagens de presenças e faltas | Must | Tela principal e núcleo do produto (M1, M2). P-05, P-26 e P-30 |
+| RA-06 | Ranking público do grupo, geral e contínuo. A ordem é sempre a do acumulado atual (desempate pelo mais velho e, depois, pelo apelido) e não muda ao trocar de mês. Colunas: posição, jogador, PTS INICIAL (pontuação inicial do jogador mais o acumulado até o início do mês exibido), uma coluna por partida do mês com os pontos da rodada de cada jogador (cor por situação: presente, lesionado, expulso, falta ou "–" antes de entrar no grupo; ícone de chuva ou de sol no cabeçalho) e PTS FINAL (PTS INICIAL + pontos das rodadas do mês). Sem contagens de presenças e faltas | Must | Tela principal e núcleo do produto (M1, M2). P-05, P-26 e P-30 |
 | RA-07 | Habilidades por grupo (6 iniciais: Visão de Jogo, Passe, Preparo Físico, Drible, Chute, Desarme), com cadastro e nota de 1 a 10 por jogador, visíveis só para admins | Must | O simulador precisa delas (P-04) |
 | RA-08 | Simulador de divisão de times, com escolha do formato, jogadores por time, aptos, ajuste manual e confirmação. **2 times:** "só 1º tempo", limite de substituições, titulares, reservas e "não entra" pelo ranking contínuo; equilíbrio por substituições, depois habilidade, depois idade. **3 ou mais times:** número de times = aptos ÷ jogadores por time, arredondado para cima; quem sobra forma um time incompleto; sem substituições; equilíbrio por habilidade, depois idade | Must | Diferencial do produto. Base de M4. P-14, P-27, P-28, P-29 |
 | RA-09 | Exportação em PDF de uma página do ranking (ordem atual), com as mesmas colunas da tela (RA-06), as partidas do mês exibido e, se couber, as anteriores. Qualquer pessoa com o link pode exportar | Must | Pedido no briefing. Base de M3. P-30 |
@@ -137,6 +146,7 @@ Prioridade MoSCoW. O detalhamento está no `PRD-TECNICO.md`.
 | RA-14 | TWA na Google Play | **Should** (era Could) | **Decisão da rodada 2:** com a conta da Play já paga, o único custo que justificava adiar deixou de existir. O empacotamento tem pouco esforço se o PWA já for instalável (RNF-11), e o briefing pede a TWA "ao mesmo tempo". **Não é Must** por dois motivos. Primeiro, o PWA já cobre o Android e nenhuma métrica de sucesso depende da loja. Segundo, o teste fechado (12 testadores por 14 dias contínuos) depende de pessoas permanecerem inscritas, o que o projeto não controla, e não pode atrasar o início da janela de 8 semanas. O teste fechado começa logo depois do I1, usando o próprio grupo |
 | RA-15 | Aviso simples de privacidade no app | Should | Baixo custo. Prepara a Fase 2 |
 | RA-16 | Área do dono da plataforma: grupos, primeiro admin, redefinição de senha, pedidos de "esqueci a senha" e situação comercial | Must | Sem ela, não há como criar o grupo nem o primeiro admin (P-07) |
+| RA-17 | Importação única do histórico do app anterior para o grupo do Leandro (jogadores, habilidades dos ativos, pontuação inicial, 231 rodadas e a config de pesos do legado), por script de operação com simulação prévia, comparação de totais, backup prévio e transação única. Sem tela. Vem depois das mudanças de RA-03, RA-04 e RA-06 em produção | Must (desta demanda) | Meta: o total de cada jogador no app bate com o do legado, exceto pelos ajustes manuais ignorados por decisão do usuário. Medido na simulação (RF-66 do PRD-TECNICO) |
 
 ## 6. Premissas e Riscos de Produto
 
@@ -156,6 +166,9 @@ Prioridade MoSCoW. O detalhamento está no `PRD-TECNICO.md`.
 | PR-12 | Ranking contínuo: quem está no grupo há mais tempo fica sempre no topo, e quem chega depois quase nunca começa jogando no simulador | Risco social (novo, consequência de P-05) | Observar nas 8 semanas se jogadores novos ficam presos como reservas ou "não entra". Se o grupo reclamar, avaliar uma janela móvel ou zerar o ranking por temporada (decisão futura do usuário, não desta release) | Leandro | Semana 8 da janela |
 | PR-13 | O grupo tem pelo menos 12 pessoas dispostas a ficar inscritas no teste fechado da Play por 14 dias contínuos | Premissa de distribuição | Recrutar os testadores no grupo antes de fechar o I1 | Leandro | No fim do I1 |
 | PR-14 | Concentrar a recuperação de senha no dono da plataforma ou em outro admin, sem e-mail, não deixa nenhum admin bloqueado por muito tempo | Premissa operacional | Observar os pedidos de "esqueci a senha" na janela | Leandro | Semana 8 da janela |
+| PR-15 | Defaults da importação: lesionado vale o mesmo que presença (3 sem chuva, 6 com chuva), porque o legado não tem lesionado; telefones não são importados (os do arquivo são fictícios); as habilidades dos ativos são importadas; "Goleiro" fica como sétima posição | Premissa (decisão do Gestor, na demanda) | Conferir a config de pesos e as posições após a importação | Leandro | Antes de rodar o script |
+| PR-16 | Os totais calculados diferem do "Atual" do legado só pelos ajustes manuais ignorados (4 jogadores, diferenças entre 12 e 240 pontos) | Risco de aceitação | A simulação lista as diferenças e exige que cada uma seja igual à coluna Ajustes do arquivo | Leandro | Na simulação, antes da execução real |
+| PR-17 | O arquivo de cadastro dos 17 inativos não traz ano de nascimento nem posição | Risco de dados | Aceitar valores de preenchimento (PRD-TECNICO I-47) ou informar os dados reais antes | Leandro | Antes de rodar o script |
 
 ## 7. Perguntas em Aberto
 

@@ -95,7 +95,7 @@ As regras de negócio (ranking, pontuação, atividade, simulador e saldos) mora
 | C6 | **Contrato** (`backend/contrato`) | Usado pelo C1 e pelo C4 | Schemas, enums e limites (validação nos dois lados) | CONVENCOES §8 |
 | C7 | **Hyperdrive** (`pelada-prod`, cache desligado) | Cloudflare | Pool de conexões para o Neon; conexão TLS reaproveitada | RNF-03, ADR-014 |
 | C8 | **Banco** (Postgres no Neon, extensão `pgcrypto`) | Neon `aws-sa-east-1` | Persistência; integridade; **hash de senha bcrypt** | Todos; ADR-015 |
-| C9 | **Scripts de operação** (`backend/scripts`, Node) | Máquina do desenvolvedor / GitHub Actions | Migração (conexão direta ao Neon), conta do dono, seed local, anonimização manual (Fase 2: só se houver pedido) | RF-01, I-34, ADR-013 |
+| C9 | **Scripts de operação** (`backend/scripts`, Node) | Máquina do desenvolvedor / GitHub Actions | Migração (conexão direta ao Neon), conta do dono, seed local, anonimização manual (Fase 2: só se houver pedido), **importação do histórico legado** (`importar-legado.ts`, `--dry-run`, transação única, ADR-021) | RF-01, RF-65 a RF-67, I-34, ADR-013, ADR-021 |
 | C10 | **Backup** (`.github/workflows/backup.yml`) | GitHub Actions (cron diário) | `pg_dump` cifrado, retenção de 30 dias | RNF-07, ADR-011 |
 | C11 | **Suíte de isolamento** (`backend/api/test/isolamento`) | CI e local (Postgres do Docker), **nunca em produção** | Toda rota tentando o acesso cruzado entre grupos | RF-09, RNF-05, ADR-005 |
 | C12 | **TWA** (`frontend/twa`) | Google Play | Pacote Bubblewrap da URL do PWA; `assetlinks.json` servido pelo C1 | RF-55, RNF-11, ADR-009 |
@@ -295,7 +295,7 @@ entrada (worker.ts, rotas Hono, middlewares) ─▶ aplicacao (casos de uso) ─
 │  ├─ dominio/               @pelada/dominio: src/{pontuacao,atividade,ranking,pdf,elenco,grupos(slug),simulador,caixa,datas}; testes unitários + teste de orçamento de CPU do simulador
 │  ├─ api/                   @pelada/api: src/{entrada (worker.ts = entrada do Worker),aplicacao,infraestrutura,config}; test/{rotas,isolamento,apoio}
 │  │   └─ src/infraestrutura/db/   repositórios + migracoes/ (SQL versionado), único acesso ao Postgres
-│  └─ scripts/               migrar.ts, dono.ts (criar / redefinir-senha), seed-local.ts, anonimizar-jogador.ts (só se houver pedido LGPD); todos com trava de host para escrita local
+│  └─ scripts/               migrar.ts, dono.ts (criar / redefinir-senha), seed-local.ts, importar-legado.ts (+ `importar-legado/`: leitura, cálculo, gravação; ADR-021), anonimizar-jogador.ts (só se houver pedido LGPD); todos com trava de host para escrita local
 ├─ frontend/
 │  ├─ web/                   @pelada/web: src/{telas,componentes,dados,pdf,pwa,rotulos,formatacao,estilos}; public/ (ícones, .well-known/assetlinks.json); e2e/ (Playwright + comparação visual)
 │  └─ twa/                   projeto Android do Bubblewrap (twa-manifest.json, sem código próprio)
@@ -407,6 +407,7 @@ O workerd local **não impõe o limite de 10 ms de CPU**. O orçamento é verifi
 | [015](adr/015-hash-de-senha-bcrypt-no-postgres-via-pgcrypto.md) | Hash de senha bcrypt no Postgres (`pgcrypto`) | Accepted (rascunho) |
 | [016](adr/016-link-publico-do-grupo-legivel-por-slug.md) | Link público legível por slug, estável e nunca reutilizado | Accepted (decisão do usuário) |
 | [017](adr/017-contingencia-do-simulador-na-lightsail-via-proxy-do-worker.md) | Contingência do simulador: otimizar → Lightsail atrás de proxy do Worker → Workers Paid só por decisão do usuário | Accepted (decisão do usuário; só acionado se o S-02 falhar) |
+| [021](adr/021-importacao-do-legado-por-script-de-operacao-em-transacao-unica.md) | Importação do histórico legado por script de operação, em transação única, depois do deploy da etapa 1 (demanda "Adequação ao legado") | Accepted |
 
 ---
 
@@ -447,9 +448,9 @@ erDiagram
 | **PEDIDO_RESET** | conta, último pedido em, resolvido em/por | No máximo 1 pendente por conta (RF-12, I-29) |
 | **GRUPO** | nome (3 a 60), **`slug` (único, imutável, nunca reutilizado)**, dia da semana, frequência, horário, situação comercial + início do trial, `arquivado_em`, criado por/em | Slug gerado na criação (ADR-016). Criação e arquivamento só pelo dono |
 | **VINCULO_ADMIN** | conta, grupo, `acessa_financeiro`, criado por/em | Único por (conta, grupo); pelo menos 1 por grupo (RN-13, numa transação) |
-| **JOGADOR** | grupo, apelido (2 a 30), ano de nascimento, posição, telefone (opcional) | Apelido único por grupo, sem diferenciar maiúsculas |
+| **JOGADOR** | grupo, apelido (2 a 30), ano de nascimento, posição (`zagueiro`, `lateral`, `volante`, `meia`, `atacante`, `centroavante`, `goleiro`), **`pontuacao_inicial`** (inteiro 0 a 9999, padrão 0, RN-22), telefone (opcional) | Apelido único por grupo, sem diferenciar maiúsculas. Migração: `defensor`→`zagueiro`, `meio_campo`→`meia`; `pontuacao_inicial` = 0 nos existentes. Mudança da pontuação inicial gera auditoria com o valor anterior (RNF-12). Só admin lê e escreve; o público a vê somada no PTS INICIAL/FINAL |
 | **PERIODO_ATIVO** | jogador, início, fim (opcional) | Sem sobreposição; no máximo 1 período aberto (ADR-006) |
-| **CONFIG_PESOS** | grupo, `vigente_desde`, 5 pesos inteiros (−10 a 10), registrado por/em | Imutável; vigência = hoje (RF-23, RN-04) |
+| **CONFIG_PESOS** | grupo, `vigente_desde`, **6 pesos** inteiros (−10 a 10): presença, lesionado e **expulso**, cada um sem e com chuva (RN-23); registrado por/em | Imutável; vigência = hoje (RF-23, RN-04), exceto a carga do legado (RN-24, ADR-021). Migração: `expulso_com_chuva` = o `expulso` atual (nenhum ponto muda) |
 | **HABILIDADE** | grupo, nome (2 a 30) | Única por grupo; a exclusão apaga as notas |
 | **NOTA** | jogador, habilidade, valor (1 a 10) | Única por (jogador, habilidade) |
 | **PARTIDA** | grupo, data, `choveu`, criada/alterada por/em | Única por (grupo, data); data menor ou igual a hoje |
@@ -525,6 +526,8 @@ A dívida da rodada 1, "Vercel Hobby não comercial", **foi eliminada** pela mud
 | **Remover admin / redefinir senha** | Nenhuma: vínculo e sessões lidos a cada requisição | Transação única (com RN-13) | Readicionar / nova senha temporária |
 | **Excluir habilidade** (apaga as notas) | Nenhuma | Transação única (cascata) | Histórico do Neon (6 h) ou dump diário |
 | **Anonimização manual de jogador** (script, só sob pedido LGPD antes da Fase 2) | Nenhuma | Transação única no script, com auditoria | Irreversível por natureza; o dump anterior é mantido pela retenção normal |
+| **Importação do histórico legado** (script, uma vez; demanda "Adequação ao legado", ADR-021) | Nenhuma para o público: o grupo ainda não tem partidas, e a carga é uma transação | Transação única; recusa grupo com partida ou apelido repetido; exige backup confirmado e a etapa 1 em produção | Falha: nada é gravado, repete-se. Depois de gravada: restaurar o backup/branch do Neon confirmado antes da execução |
+| **Migração da etapa 1** (posições, pontuação inicial, 6 pesos) | Entre a migração e o novo Worker, o código antigo lê o schema novo | Aditiva e em uma transação: colunas novas com padrão; `expulso_com_chuva` copiado de `expulso`; o CHECK de posição passa a aceitar as 7 novas **e** as antigas, e as linhas existentes são convertidas por `UPDATE`; o código antigo ignora as colunas novas. O CHECK só com as 7 novas fica para uma migração de contração num deploy seguinte (expandir → publicar → contrair) | `wrangler rollback` + restaurar o branch (ADR-011) |
 | **Restauração de backup** (manual) | O app fica com dados antigos até terminar | Restaura num **branch novo** do Neon; a origem do Hyperdrive é trocada para ele no fim (troca de ponteiro) | Voltar a origem do Hyperdrive para o branch anterior |
 
 ---
