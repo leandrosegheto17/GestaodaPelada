@@ -115,4 +115,4 @@
 - Descrição: ADR-008 §3 decide gerar e chamar navigator.share no mesmo gesto; o app agora sempre mostra Compartilhar/Baixar. Registrar com ADR novo que supersede esse ponto, ou voltar ao fluxo direto?
 - Impacto se não resolvido: Baixa: só documentação (ADR-008, SDD C3); nada bloqueia o deploy
 - Sugestão: Novo ADR (Superseded by no ADR-008 §3) registrando o D4 como passo normal; RTP-0174 já alinha o UX-SPEC
-- Status: Em aberto
+- Status: Resolvido (2026-10-20): Decisão A: ADR-022 supersede o §3 do ADR-008 (diálogo Compartilhar/Baixar); SDD C3, T-05 e tabela de ADRs ajustados

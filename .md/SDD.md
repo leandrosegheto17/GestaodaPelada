@@ -122,7 +122,7 @@ Dependências entre contextos, só por função de aplicação:
 | Integração (PRD-TECNICO §5.2) | Fronteira na arquitetura |
 |---|---|
 | Navegador: instalação de PWA, service worker, armazenamento local | C1 + C2 (ADR-009) |
-| Folha de compartilhamento (Web Share com arquivos) | C3, com alternativa de download (ADR-008) |
+| Folha de compartilhamento (Web Share com arquivos) | C3, em diálogo Compartilhar/Baixar (ADR-022) |
 | Google Play Console e vínculo de domínio (TWA) | C12 + `/.well-known/assetlinks.json` como arquivo estático do Worker |
 | Hospedagem, banco e domínio | Cloudflare Workers + Hyperdrive (C1, C4, C7); Neon (C8); `pelada.prod-ljs.workers.dev` na Fase 1 inteira (ADR-020) |
 | WhatsApp | Sem integração; só destino do compartilhamento e do link copiado |
@@ -408,6 +408,7 @@ O workerd local **não impõe o limite de 10 ms de CPU**. O orçamento é verifi
 | [016](adr/016-link-publico-do-grupo-legivel-por-slug.md) | Link público legível por slug, estável e nunca reutilizado | Accepted (decisão do usuário) |
 | [017](adr/017-contingencia-do-simulador-na-lightsail-via-proxy-do-worker.md) | Contingência do simulador: otimizar → Lightsail atrás de proxy do Worker → Workers Paid só por decisão do usuário | Accepted (decisão do usuário; só acionado se o S-02 falhar) |
 | [021](adr/021-importacao-do-legado-por-script-de-operacao-em-transacao-unica.md) | Importação do histórico legado por script de operação, em transação única, depois do deploy da etapa 1 (demanda "Adequação ao legado") | Accepted |
+| [022](adr/022-pdf-com-escolha-entre-compartilhar-e-baixar.md) | PDF com escolha entre Compartilhar e Baixar em aparelho que compartilha arquivo (supersede só o §3 do ADR-008) | Accepted (decisão do usuário) |
 
 ---
 
@@ -474,7 +475,7 @@ erDiagram
 | T-02 | **Sessão no iPhone instalado cair** apesar do cookie de primeira parte (PR-06) | C1, C4 | **Média** | ADR-003. Teste em iPhone real: instalar, entrar, ficar 8 dias sem abrir e reabrir |
 | T-03 | **Ponto único de falha:** Cloudflare ou Neon fora do ar | C4, C7, C8 | **Baixa** (sem SLA, RNF-07) | O ranking em cache continua visível sem conexão (RF-54) |
 | T-04 | **Vazamento entre grupos** por consulta sem filtro | C4 | **Alta** no impacto, baixa na probabilidade | ADR-005: middleware único, `grupoId` obrigatório, suíte de isolamento em toda rota |
-| T-05 | **Web Share com arquivo recusado no iOS** | C3 | **Baixa** (há alternativa) | ADR-008. Teste em aparelho real no I3 |
+| T-05 | **Web Share com arquivo recusado no iOS** | C3 | **Baixa** (há alternativa) | ADR-008, ADR-022: a recusa do Web Share cai no mesmo diálogo Compartilhar/Baixar. Teste em aparelho real no I3 |
 | T-06 | **Estouro de limite diário** (100 mil requisições ou consultas por dia; 1.000 por minuto) | C4, C7 | **Baixa** (consumo menor que 1%) | Os limites se renovam às 00:00 UTC. Revisão mensal do painel |
 | T-07 | O **identificador anônimo é apagado** pelo Safari (não instalado) e infla M2 | C2 | **Baixa** | Limitação registrada da métrica |
 | T-08 | **Workflow de backup desativado** após 60 dias sem atividade no repositório | C10 | **Média** | Checagem mensal do "último backup"; e-mail de falha do GitHub; histórico de 6 h do Neon. **Contingência:** mover o cron para a Lightsail (ADR-014 §7) se acontecer |
@@ -506,7 +507,7 @@ erDiagram
 | **Bloqueio de login por e-mail, mais só a regra gratuita de taxa da Cloudflare** | Requisito do PRD; grupo fechado | Fase 2 ou primeiro abuso observado |
 | **Sem observabilidade dedicada** (só `wrangler tail` e o painel da Cloudflare) | Custo zero | Primeiro incidente sem diagnóstico, ou Fase 2 |
 | **Retenção de backup de 30 dias** | Sem requisito maior (ADR-011) | Pedido do usuário ou Fase 2 |
-| **Aparência do PDF pode variar levemente** entre aparelhos | Gesto do Web Share; CPU do Worker (ADR-008) | Reclamação real |
+| **Aparência do PDF pode variar levemente** entre aparelhos | Diálogo Compartilhar/Baixar (ADR-022); CPU do Worker (ADR-008) | Reclamação real |
 | **Hash de senha no banco** (senha trafega até o Postgres) | Limite de 10 ms de CPU do Worker gratuito (ADR-015) | Se o projeto passar a Workers Paid: avaliar mover o hash para o Worker |
 | **Enumeração de grupos pelo slug** | Escolha do usuário pela legibilidade (ADR-016) | Fase 2 |
 | **Endereço `workers.dev` na Fase 1** (troca futura com custo, T-18) | Custo zero; escolha do usuário (ADR-020) | Decisão de abrir a Fase 2, ou pedido do usuário |

@@ -1,6 +1,6 @@
 # ADR-008: PDF gerado no navegador a partir de uma projeção pronta da API, com compartilhamento nativo e alternativa de download
 
-- **Status:** Accepted (rascunho do Loop B, sujeito à aprovação do usuário)
+- **Status:** Accepted (rascunho do Loop B, sujeito à aprovação do usuário); §3 Superseded by ADR-022
 - **Data:** 2026-10-16
 - **Decisores:** Coordenador (chapéu Software Architect)
 - **Requisitos:** RF-49 a RF-52, RF-33, RF-57, RNF-03 (PDF em até 5 s), RNF-08; PR-07
@@ -22,7 +22,7 @@ A meta é custo zero. Gerar PDF no servidor com navegador sem cabeça (headless)
    - a grade de marcações (P, L, E, F, –).
    **A regra de corte (RF-50/51) roda no servidor (domínio):** as partidas do mês nunca saem, e o corte começa pelas colunas de meses anteriores.
 2. **O navegador só desenha:** um módulo `pdf/` carregado sob demanda (biblioteca de desenho de PDF, ex.: jsPDF) monta a página com a fonte do mockup embutida (acentos pt-BR). Ele calcula só o tamanho de fonte que cabe, entre 9 e 7 pt. Isso é diagramação, não regra de negócio.
-3. **Ordem para preservar o gesto:**
+3. **[Superseded by ADR-022 — o diálogo "PDF pronto." com Compartilhar e Baixar substitui este fluxo; texto original mantido abaixo]** **Ordem para preservar o gesto:**
    - a tela do ranking **pré-carrega** a projeção do PDF do mês exibido (em segundo plano, depois que o ranking aparece);
    - ao tocar em "Exportar PDF", o arquivo é gerado de forma síncrona (menos de 300 ms) e `navigator.share({ files })` é chamado no mesmo gesto;
    - se o navegador recusar por perda de ativação (`NotAllowedError`), a tela mostra os botões "Compartilhar" e "Baixar", e o novo toque é um novo gesto;

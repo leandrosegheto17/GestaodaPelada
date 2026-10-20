@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-20 19:34
+Atualizado: 2026-10-20 19:40
 
-Resumo: Não executada 3 · Aprovada 395 · Despriorizada 5 · total 403
+Resumo: Não executada 2 · Aprovada 396 · Despriorizada 5 · total 403
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -410,7 +410,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 395 | RTP-0172 | executor | ✔ | Cobrir no .gitignore o arquivo de entrada da importação do legado (dados pessoais) | Refatoração Segurança 2026-10-20 | — | Aprovada |
 | 396 | BK-0009 | coordenador | ✔ | Ajustar SDD/ADR-010/URL_PUBLICA/CORS/deploy.yml ao domínio prod-ljs.workers.dev e aos acei | — | — | Aprovada |
 | 397 | BK-0012 | coordenador | ✔ | Quando e onde registrar a contração do CHECK de posicao (tirar defensor/meio_campo de joga | — | — | Aprovada |
-| 398 | BK-0013 | coordenador | ✔ | ADR-008 §3 decide gerar e chamar navigator.share no mesmo gesto; o app agora sempre mostra | — | — | Não executada |
+| 398 | BK-0013 | coordenador | ✔ | ADR-008 §3 decide gerar e chamar navigator.share no mesmo gesto; o app agora sempre mostra | — | — | Aprovada |
 | 399 | TP-0140 | executor | ✔ | [U] Play Console: app com.gestaodapelada.app (PI-5) | L31 | — | Despriorizada |
 | 400 | TP-0141 | executor | ✔ | /.well-known/assetlinks.json servido pelo Worker | L31 | TP-0088, TP-0140 | Despriorizada |
 | 401 | TP-0142 | executor | ✔ | Projeto TWA (Bubblewrap) em frontend/twa | L31 | TP-0006, TP-0108, TP-0139, TP-0140, TP-0141 | Despriorizada |
