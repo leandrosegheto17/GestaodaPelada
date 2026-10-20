@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-20 19:15
+Atualizado: 2026-10-20 19:16
 
-Resumo: Não executada 4 · Executada (aguarda teste) 1 · Aprovada 391 · Despriorizada 5 · total 401
+Resumo: Não executada 4 · Testada (aguarda segurança) 1 · Aprovada 391 · Despriorizada 5 · total 401
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -400,7 +400,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 385 | RTP-0169 | executor | ✔ | SDD §2: tabela de pacotes diz o que backend/scripts realmente importa (@pelada/dominio... | Refatoração Revisão 2026-10-20 | — | Aprovada |
 | 386 | RTP-0174 | executor | ✔ | UX-SPEC: fluxo F4 e diálogo D4 descrevem o Exportar PDF como o app faz hoje | Refatoração Revisão 2026-10-20 | — | Aprovada |
 | 387 | RTP-0175 | executor | ✔ | Comentários e títulos de teste do Exportar PDF ainda dizem que o compartilhamento é direto | Refatoração Revisão 2026-10-20 | — | Aprovada |
-| 388 | RTP-0177 | executor | ✔ | SDD §7 e GUARDRAILS: requisito de cadeia de suprimento (ações por SHA, política do pnpm... | Refatoração Revisão 2026-10-20 | — | Executada (aguarda teste) |
+| 388 | RTP-0177 | executor | ✔ | SDD §7 e GUARDRAILS: requisito de cadeia de suprimento (ações por SHA, política do pnpm... | Refatoração Revisão 2026-10-20 | — | Testada (aguarda segurança) |
 | 389 | RTP-0178 | executor | ✔ | Checagem de CI: ações do GitHub só por SHA e política do pnpm presente (G-24) | Refatoração Revisão 2026-10-20 | RTP-0177 | Não executada |
 | 390 | RTP-0170 | executor | ✔ | Adicionar X-Content-Type-Options: nosniff nas respostas JSON de /api/* | Refatoração Segurança 2026-10-20 | — | Aprovada |
 | 391 | RTP-0171 | executor | ✔ | Fixar por SHA as ações do GitHub e adotar block-exotic-sub-dependencies, minimum-releas... | Refatoração Segurança 2026-10-20 | — | Aprovada |

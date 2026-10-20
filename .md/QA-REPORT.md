@@ -1151,3 +1151,6 @@ APROVADA, 0 críticos e 0 não críticos; UX-SPEC (F4, D4, P01, T01/P01) bate co
 
 ## RTP-0175 — QA — 2026-10-20
 APROVADA, 0 críticos/0 não críticos; vitest pdf+ranking 71 ok, typecheck e prettier/eslint dos 3 arquivos ok, só comentários e títulos.
+
+## RTP-0177 — QA — 2026-10-20
+APROVADA; 0 críticos, 0 não críticos; prettier limpo, 3 chaves do pnpm e nosniff em /api/* conferidos, nenhum uses: sem SHA, G-24 aponta o script da RTP-0178.
