@@ -1073,3 +1073,6 @@ APROVADA — 0 críticos, 0 não críticos; LIDO: deploy.yml só perdeu o env da
 
 ## RTP-0166 — DevSecOps — 2026-10-20
 APROVADA; 0 críticos, 0 não críticos; diff lido (1 arquivo de teste, X-Pelada: 1, dado fictício, sem console.log/route/msw/segredo); nada executado por este chapéu.
+
+## TP-0208 — DevSecOps — 2026-10-20
+APROVADA em segurança; 0 críticos/altos/médios e 0 novos baixos (RTP-0167 do QA segue); script sem conexão fora de DATABASE_URL, telefone nunca lido, transação única com recusas, migração aditiva, API admin-only com auditoria; eslint, typecheck e checar-escrita-e-dono verdes, sem segredo nem dado real no diff, sem mudança de dependências.
