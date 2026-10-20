@@ -1,11 +1,25 @@
-import type { Page } from '@playwright/test';
+import { test, type Page } from '@playwright/test';
+
+/** Janela do limite de login (`LIMITE_ENTRAR`: 10 por 60 s por IP). A suíte inteira sai de um só IP. */
+const JANELA_DO_LIMITE_MS = 61_000;
 
 /** Entra pela tela T04 (a sessão fica no cookie do contexto da página). */
 export async function entrarComo(page: Page, email: string, senha: string): Promise<void> {
   await page.goto('/entrar');
-  await page.getByLabel('E-mail').fill(email);
-  await page.getByLabel('Senha', { exact: true }).fill(senha);
-  await page.getByRole('button', { name: 'Entrar' }).click();
+  for (let tentativa = 0; ; tentativa++) {
+    // Preenche a cada tentativa: depois de uma recusa a tela limpa os campos.
+    await page.getByLabel('E-mail').fill(email);
+    await page.getByLabel('Senha', { exact: true }).fill(senha);
+    // Espera a resposta do login: sem ela, um `goto` ou `request` logo depois sai antes de o cookie existir.
+    const resposta = page.waitForResponse(
+      (r) => r.request().method() === 'POST' && new URL(r.url()).pathname === '/api/sessao/entrar',
+    );
+    await page.getByRole('button', { name: 'Entrar' }).click();
+    if ((await resposta).status() !== 429 || tentativa >= 2) return;
+    // Limite atingido: espera a janela passar e tenta de novo (o prazo do teste cresce na mesma medida).
+    test.setTimeout(test.info().timeout + JANELA_DO_LIMITE_MS + 5_000);
+    await page.waitForTimeout(JANELA_DO_LIMITE_MS);
+  }
 }
 
 /**

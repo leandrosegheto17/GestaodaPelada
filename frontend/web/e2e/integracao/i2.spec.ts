@@ -45,7 +45,7 @@ test.describe.serial('I2: do simulador à partida pré-marcada e ao ranking', ()
 
     // A partida só pode ser lançada até hoje: o simulador usa a data de hoje.
     await page.getByLabel('Data da partida').fill(ctx.hoje);
-    await page.getByLabel('Jogadores por time').fill('2');
+    await page.getByRole('spinbutton', { name: 'Jogadores por time' }).fill('2');
     await page.getByLabel('Limite de substituições por time').fill('0');
     await expect(page.getByText('2 times de 2 · 1 reserva')).toBeVisible();
 
@@ -120,7 +120,7 @@ test.describe.serial('I2: do simulador à partida pré-marcada e ao ranking', ()
     const page = admin();
     await page.goto(`/admin/${grupo().grupoId}/simulador`);
     await page.getByLabel('3 ou mais times').check();
-    await page.getByLabel('Jogadores por time').fill('2');
+    await page.getByRole('spinbutton', { name: 'Jogadores por time' }).fill('2');
     await expect(page.getByRole('button', { name: 'Sugerir times' })).toBeEnabled();
     const sugestao = esperarChamada(page, 'POST', '/simulador/sugerir', 200);
     await page.getByRole('button', { name: 'Sugerir times' }).click();

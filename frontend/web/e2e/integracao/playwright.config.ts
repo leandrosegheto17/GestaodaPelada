@@ -13,6 +13,11 @@ export default defineConfig({
   reporter: [['list']],
   // Sem trace, screenshot nem vídeo: o corpo de `POST /api/dono/grupos`, a tela da senha
   // temporária e os `fill` do login a carregariam em claro para o artefato do CI.
-  use: { baseURL: 'http://localhost:5173', trace: 'off', screenshot: 'off', video: 'off' },
+  use: {
+    baseURL: process.env['E2E_BASE_URL'] ?? 'http://localhost:5173',
+    trace: 'off',
+    screenshot: 'off',
+    video: 'off',
+  },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
 });

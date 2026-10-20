@@ -65,6 +65,8 @@ test.describe.serial('I1: do grupo novo ao ranking público', () => {
   test('o admin cadastra 3 jogadores e lança a partida na data sugerida', async ({ browser }) => {
     const page = await novoContexto(browser);
     await entrarComo(page, EMAIL_ADMIN, SENHA_NOVA);
+    // Sem esperar, o redirecionamento do login atropela o `goto` seguinte e a tela fica no início do admin.
+    await expect(page).toHaveURL(/\/admin/);
     // Os jogadores entram na data que a tela de partida sugere, para estarem ativos nela.
     await page.goto(`/admin/${estado.grupoId}/partidas/nova`);
     await aceitarAvisoDePrivacidade(page);

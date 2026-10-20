@@ -25,5 +25,6 @@ const EXCECOES = [
 ];
 
 const arquivos = arquivosVersionados(RAIZ, (c) => ESCOPO.test(c) && !FORA.test(c));
-const achados = procurar(arquivos, URL_ABSOLUTA).filter((a) => !EXCECOES.some((excecao) => a.includes(excecao)));
+// As exceções valem para a linha inteira: o achado impresso é truncado e perderia a URL permitida.
+const achados = procurar(arquivos, URL_ABSOLUTA, EXCECOES);
 encerrar(achados, 'URL absoluta no código (G-18)');

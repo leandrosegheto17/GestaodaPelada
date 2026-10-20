@@ -41,11 +41,12 @@ export function arquivosVersionados(raiz, filtro) {
 }
 
 /** Procura `regex` linha a linha e devolve `arquivo:linha: trecho`. */
-export function procurar(arquivos, regex) {
+export function procurar(arquivos, regex, excecoes = []) {
   const achados = [];
   for (const { caminho, texto } of arquivos) {
     texto.split(/\r?\n/).forEach((linha, i) => {
-      if (regex.test(linha)) achados.push(`${caminho}:${i + 1}: ${linha.trim().slice(0, 120)}`);
+      if (regex.test(linha) && !excecoes.some((excecao) => linha.includes(excecao)))
+        achados.push(`${caminho}:${i + 1}: ${linha.trim().slice(0, 120)}`);
     });
   }
   return achados;

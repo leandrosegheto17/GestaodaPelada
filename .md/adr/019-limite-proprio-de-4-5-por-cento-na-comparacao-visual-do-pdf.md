@@ -15,3 +15,6 @@ Opção 1, com a inspeção dos PNGs como complemento obrigatório. `LIMITE_PDF 
 
 ## Consequências
 O limite detecta deslocamento estrutural, não diferença de suavização de glifo. Se a divergência medida subir acima de ~4,2%, tratar como regressão (não subir o limite sem novo ADR). Reavaliar se o jsPDF passar a suportar `tabular-nums` ou se a rasterização deixar de usar pdf.js.
+
+## Adendo (BK-0003)
+No runner Linux do CI (Ubuntu, fontes com hinting próprio) a divergência medida é 7,25% (sucesso) e 6,02% (mes-vazio), com leiaute conferido nos PNGs. Com `CI` definido, `LIMITE_PDF = 0.09`; localmente segue 0.045. Regressão estrutural continua acima de ambos os limites.

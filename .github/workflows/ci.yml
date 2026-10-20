@@ -28,8 +28,7 @@ jobs:
       - run: pnpm --filter @pelada/contrato checar-compatibilidade
       - run: pnpm format:check
       - run: pnpm typecheck
-      - run: pnpm -r test
-      - run: pnpm test:checagens
+      - run: pnpm -r --filter '!@pelada/api' test
       - run: node backend/scripts/checagens/checar-ids-tarefa.mjs
       - run: node backend/scripts/checagens/checar-urls-absolutas.mjs
       - run: node backend/scripts/checagens/checar-wrangler-deploy.mjs
@@ -39,7 +38,33 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   api:
-    needs: base
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        fatia: [1, 2, 3]
+    env:
+      CI: 'true'
+      DATABASE_URL_TESTE: postgres://postgres:postgres@localhost:5432/pelada_teste
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/preparar-node
+      # Cada fatia tem o seu Postgres: os arquivos de teste seguem em série dentro dela.
+      - run: pnpm --filter @pelada/api test --shard=${{ matrix.fatia }}/3
+
+  checagens:
     runs-on: ubuntu-latest
     env:
       CI: 'true'
@@ -61,7 +86,7 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/preparar-node
-      - run: pnpm --filter @pelada/api test
+      - run: pnpm test:checagens
 
   e2e:
     runs-on: ubuntu-latest
@@ -75,7 +100,6 @@ jobs:
       - run: pnpm --filter @pelada/web exec playwright install --with-deps chromium
       - run: pnpm --filter @pelada/web build
       - run: pnpm --filter @pelada/web e2e
-      - run: pnpm --filter @pelada/web visual
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -83,8 +107,30 @@ jobs:
           path: frontend/web/e2e/resultado/
           if-no-files-found: ignore
 
+  visual:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        fatia: [1, 2]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/preparar-node
+      - run: pnpm --filter @pelada/web exec playwright install --with-deps chromium
+      - run: pnpm --filter @pelada/web build
+      - run: pnpm --filter @pelada/web visual
+        env:
+          VISUAL_FATIA: ${{ matrix.fatia }}/2
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: visual-telas-${{ matrix.fatia }}
+          path: frontend/web/e2e/resultado/
+          if-no-files-found: ignore
+
   e2e-integracao:
-    needs: base
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -94,6 +140,7 @@ jobs:
           persist-credentials: false
       - uses: ./.github/actions/preparar-node
       - run: pnpm --filter @pelada/web exec playwright install --with-deps chromium
+      - run: pnpm --filter @pelada/web build
       - run: docker compose up -d --build --wait
       - run: pnpm --filter @pelada/web e2e:integracao
       - name: Logs do compose

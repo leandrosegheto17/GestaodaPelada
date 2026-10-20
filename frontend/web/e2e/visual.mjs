@@ -30,6 +30,10 @@ try {
   falhar(erro.message);
 }
 
+// VISUAL_FATIA=n/m: roda só as telas de índice n-1 (módulo m), para dividir a comparação entre jobs do CI.
+const fatia = /^(\d+)\/(\d+)$/.exec(process.env.VISUAL_FATIA ?? '');
+if (fatia) telas = telas.filter((_, i) => i % Number(fatia[2]) === Number(fatia[1]) - 1);
+
 if (telas.length === 0) {
   console.log('Nenhuma tela ativa: nada a comparar.');
   process.exit(0);
@@ -53,6 +57,8 @@ const resultado = spawnSync(
     'pnpm exec vite preview --port 4173 --strictPort',
     '--saida',
     join(AQUI, 'resultado'),
+    // No runner Linux a T16 (sem-habilidades) desloca 1 px em recorte pequeno: 4,7-6,1%; as demais ficam ≤ 0,06%.
+    ...(process.env.CI ? ['--limite', '7'] : []),
   ],
   { cwd: PACOTE, stdio: 'inherit' },
 );

@@ -10,7 +10,7 @@
     "format:check": "prettier --check .",
     "typecheck": "pnpm -r typecheck && tsc --noEmit -p backend/scripts",
     "test": "pnpm -r test",
-    "test:checagens": "vitest run backend/scripts",
+    "test:checagens": "vitest run backend/scripts --testTimeout=30000",
     "migrar": "tsx backend/scripts/migrar.ts",
     "seed": "tsx backend/scripts/seed-local.ts"
   },

@@ -41,6 +41,13 @@ const esperarChamada = (page: Page, metodo: string, termina: string, status: num
     (r) => r.request().method() === metodo && new URL(r.url()).pathname.endsWith(termina) && r.status() === status,
   );
 
+/** Clica no interruptor pelo rótulo, como o usuário: o `input` fica sob o trilho e o Playwright recusa o clique direto. */
+const alternarPagou = (page: Page, apelido: string) =>
+  page
+    .locator('label')
+    .filter({ has: page.getByRole('switch', { name: `Pagou: ${apelido}` }) })
+    .click();
+
 const lerMes = async (page: Page): Promise<MesReal> => {
   const r = await page.request.get(`/api/grupos/${grupo().grupoId}/financeiro/mes`);
   expect(r.status()).toBe(200);
@@ -88,7 +95,7 @@ test.describe.serial('I4: caixa do grupo, do aviso de privacidade aos saldos', (
   test('marca o pagamento: a entrada da mensalidade aparece e o saldo sobe', async () => {
     const page = admin();
     const marcado = esperarChamada(page, 'POST', '/financeiro/pagamentos', 204);
-    await page.getByRole('switch', { name: `Pagou: ${APELIDOS[0]}` }).click();
+    await alternarPagou(page, APELIDOS[0] ?? '');
     await marcado;
 
     const saldos = page.getByRole('region', { name: 'Saldo atual' });
@@ -117,7 +124,7 @@ test.describe.serial('I4: caixa do grupo, do aviso de privacidade aos saldos', (
     const mes = await lerMes(page);
     const jogador = mes.pagamentos.find((p) => p.apelido === APELIDOS[0]);
 
-    await page.getByRole('switch', { name: `Pagou: ${APELIDOS[0]}` }).click();
+    await alternarPagou(page, APELIDOS[0] ?? '');
     const dialogo = page.getByRole('alertdialog', { name: `Desmarcar o pagamento de ${APELIDOS[0]}?` });
     await expect(dialogo).toContainText(`(${reais(MENSALIDADE)}) será removida do caixa.`);
     const removido = esperarChamada(page, 'DELETE', `/financeiro/pagamentos/${jogador?.jogadorId}/${mes.mes}`, 204);
