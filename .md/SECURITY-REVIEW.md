@@ -1154,3 +1154,6 @@ APROVADA; 0 achados; ações de terceiros todas por SHA, 3 chaves do pnpm e nosn
 
 ## RTP-0178 — DevSecOps — 2026-10-20
 APROVADA COM DÉBITO — 0 críticos/altos, 1 baixo (RTP-0179: `uses: ./../x` e `{uses: ...}` escapam da checagem); script sem eval/rede/traversal, falha fechado, docker:// e tags recusados em cópia descartável, ci.yml só ganha 1 passo; semgrep ausente.
+
+## RTP-0179 — DevSecOps — 2026-10-20
+APROVADA; 0 críticos/0 altos, 1 Baixo residual já documentado (chave `"uses"` entre aspas, sem RTP); EXECUTADO em cópia: `./../x`, `.../actions/../../../x` e `{uses: a/b@v3}` saem 1 com arquivo:linha, ~30 variações sem brecha nova, script real sai 0, sem eval/rede, ci.yml intocado; semgrep ausente (não executado).
