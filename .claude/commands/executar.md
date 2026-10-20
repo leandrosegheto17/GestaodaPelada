@@ -29,7 +29,7 @@ comando: o controle volta ao `/desenvolver`.
 ## 0. Pré-requisitos bloqueantes
 
 0. **Checagem de contexto (antes de tudo)**: rode `/context`. Se o uso da sessão
-   passar de ~250 mil tokens, **pare aqui** — não crie/entre em worktree (só `--tarefa` cria; `--continuar` usa a `main`), não
+   passar de ~250 mil tokens, **pare aqui** — não crie/entre em worktree (só `--worktree` cria; o padrão é a `main`), não
    dispare agente — e devolva um alerta de contexto cheio (uso atual, teto de 250
    mil, sugestão de nova sessão). **Exceção — `--continuar --nocontext`**: pule esta
    checagem por inteiro (nem na primeira tarefa, nem entre as tarefas): a fila roda
@@ -77,11 +77,12 @@ Interprete `$ARGUMENTS`:
     junto com `--continuar`; sozinho ou com outro modo, mostre as opções e **pare**.
   - **`--nocommit`** (só com `--continuar`): **não commita** a cada tarefa; as alterações vão
     se acumulando na `main` e **você** faz o commit e o push no fim. O diff de cada tarefa fica
-    registrado por **snapshot** (Seção 3-0). Com `--tarefa` (worktree) ou sem `--continuar`,
+    registrado por **snapshot** (Seção 3-0). Com `--worktree`,
     mostre as opções e **pare**.
   - **`--paralelo [N]`** (só com `--lote` ou `--continuar`; N de 2 a 20, sem N = 5; ausente = 1):
     aciona até N Executores ao mesmo tempo, cada um com uma tarefa elegível diferente (Seção 3e).
     N > 20 é recusado: mostre as opções e **pare**.
+  - **`--worktree`**: roda a chamada numa worktree git separada, em vez da `main` (Seção 3-0, "Onde o código roda").
   - **`--lotes-distintos`** (só com `--paralelo`): limita a rodada a **no máximo uma tarefa por lote**, o que
     reduz a chance de duas tarefas editarem o mesmo arquivo (modo mais conservador; a rodada fica menor).
 
@@ -166,15 +167,17 @@ com trava atômica (sem risco de duas sessões gravarem ao mesmo tempo).
 
 **Onde o código roda** (ver "Isolamento por worktree" no `EXECUTION-FLOW.md`):
 
-- **`--tarefa <ID>`**: **sempre numa worktree separada** (nome `execucao/executar-<ID>`, criada
-  em `.claude/worktrees`). O encerramento limpo integra à `main` e remove a worktree, e o
-  bloqueio a deixa como está (Seção 6).
-- **`--continuar [N]`**: **direto na `main`**, sem criar worktree. Por padrão, a cada tarefa executada
+- **Padrão (todos os modos: vazio, `--tarefa`, `--lote`, `--continuar`)**: **direto na `main`**, sem criar
+  worktree. Por padrão, a cada tarefa executada
   commite na `main` o código dela (só os arquivos listados em `## 4`) antes de seguir para a próxima.
   **Com `--nocommit`**: não commite nada — as alterações se acumulam e o usuário commita no fim; a `main`
   pode (e vai) estar suja, então não há checagem de árvore limpa, e o diff de cada tarefa é o snapshot
   (`taskplan.py diff <ID>`). Bloqueio: não commite o código parcial e registre o estado no `## Bloqueio`.
-- Vazio e `--lote N`: seguem a regra geral (worktree da sessão).
+- **`--worktree`** (opcional, em qualquer modo): só com essa flag se cria uma worktree separada (nome
+  `execucao/executar-<ID>` para uma tarefa, `execucao/executar-lote-<N>` para uma rodada, criada em
+  `.claude/worktrees`). O encerramento limpo integra à `main` e remove a worktree; o bloqueio a deixa como
+  está (Seção 6). Não combina com `--nocommit` (o diff por snapshot é da `main`): mostre as opções e **pare**.
+  Com várias sessões na mesma árvore, a reserva por tarefa (Seção 3-0) continua evitando a colisão.
 - **Commit da tarefa** (sem `--nocommit`): a mensagem **começa pelo ID** (`TP-0001: <resumo>`), para o
   `/testar` e o `/validar` localizarem o diff — `python .claude/scripts/taskplan.py diff <ID>` usa o
   snapshot quando existe e, senão, os commits que começam pelo ID. Registre os hashes em `## 4`.
@@ -359,7 +362,7 @@ usuário**: um loop de conversa, **sem Executor, sem QA e sem DevSecOps**.
 1. **Conferir**: `python .claude/scripts/taskplan.py tarefa <ID>`. Pare se já estiver `Aprovada`, com dependência
    aberta (SPK vindo do `/definir`) ou reservada por outra sessão (mesma regra da Seção 1). Reserve como numa
    tarefa normal (Seção 3-0; o arquivo `BK-`/`SPK-` já existe em `.md/.taskplan/`). Se o spike exigir código de prova,
-   use a worktree da sessão (Seção 0/EXECUTION-FLOW); decisão e documentação ficam em `.md/`.
+   use `--worktree` (ou a `main`, se o usuário preferir); decisão e documentação ficam em `.md/`.
 2. **Rodada inicial (dispatch novo)**: dispare `coordenador` (`subagent_type: coordenador`,
    `run_in_background: false`). O prompt aponta: o arquivo `.md/.taskplan/<ID>.md` (descrição do que fazer, quem
    reportou, `Escalado para`, `Afeta:`), a entrada correspondente do `.md/BLOCKERS.md` (campo `Origem:`), os

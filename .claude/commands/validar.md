@@ -10,8 +10,8 @@ comum em `.claude/commands/executar.md` — **leia o `executar.md` agora** se ai
 tiver em contexto (e o `testar.md`, de onde vem o limite de devoluções). Este comando é o
 `/executar` com **a etapa trocada**: tudo o que está lá sobre modos e flags (`--tarefa`, `--lote`,
 `--continuar`, `--nocontext`, `--nocommit`, `--paralelo`), checagem de contexto, `taskplan.py`
-(`iniciar`/`concluir`/`consolidar`), reserva por sessão, onde o código roda (worktree em `--tarefa`,
-`main` em `--continuar`), rodada paralela (Seção 3e: até 20 tarefas ao mesmo tempo), bloqueio
+(`iniciar`/`concluir`/`consolidar`), reserva por sessão, onde o código roda (`main` por padrão;
+worktree só com `--worktree`), rodada paralela (Seção 3e: até 20 tarefas ao mesmo tempo), bloqueio
 (Seção 6) e abertura de tarefa nova (Seção 5) vale **igual aqui**, com as diferenças abaixo.
 Agente: `validador` no chapéu DevSecOps (`.claude/agents/validador.md`). **Nunca chama
 `/executar` nem `/testar`.**
@@ -32,8 +32,8 @@ comando: o controle volta ao `/desenvolver`.
   `Em validação de segurança` (retomada), com plano, sem reserva de outra sessão. **Dependências não
   são checadas**; `BK-`/`SPK-` nunca.
 - **`--tarefa <ID>`**: tarefa fora desses estados (ainda sem `QA ✔`, já `Aprovada`,
-  `Bloqueada`…) — explique o estado e o comando certo, e **pare**. Worktree:
-  `execucao/validar-<ID>`, criada a partir da `main`.
+  `Bloqueada`…) — explique o estado e o comando certo, e **pare**. Roda na `main`;
+  com `--worktree`, em `execucao/validar-<ID>`, criada a partir da `main`.
 - **Início e fim**: `iniciar <ID> <token> --etapa "Em DevSecOps"` e, no fim, `concluir <ID> <token>
   sec-ok` (ou `devolvida`). Nada de `TASK.md`/`TASKPLAN.md` na rodada; `consolidar` ao encerrar a chamada.
 

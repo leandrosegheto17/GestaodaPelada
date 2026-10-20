@@ -10,7 +10,7 @@ comum em `.claude/commands/executar.md` — **leia o `executar.md` agora** se ai
 tiver em contexto. Este comando é o `/executar` com **a etapa trocada**: tudo o que está
 lá sobre modos e flags (`--tarefa`, `--lote`, `--continuar`, `--nocontext`, `--nocommit`,
 `--paralelo`, `--lotes-distintos`), checagem de contexto, `taskplan.py` (`iniciar`/`concluir`/`consolidar`),
-reserva por sessão, onde o código roda (worktree em `--tarefa`, `main` em `--continuar`), rodada paralela
+reserva por sessão, onde o código roda (`main` por padrão; worktree só com `--worktree`), rodada paralela
 (Seção 3e: até 20 tarefas ao mesmo tempo), bloqueio (Seção 6) e abertura de tarefa nova (Seção 5) vale
 **igual aqui**, com as diferenças abaixo. Se a suíte mostrar interferência entre testes (banco, portas)
 numa rodada paralela, rode de novo sem `--paralelo`. Agente: `validador` no chapéu QA
@@ -33,7 +33,7 @@ comando: o controle volta ao `/desenvolver`.
   código já foi executado); `BK-`/`SPK-` nunca.
 - **`--tarefa <ID>`**: tarefa fora de `Executada (aguarda teste)`/`Em teste` (ainda não
   executada, já `QA ✔`, `Bloqueada`…) — explique o estado e o comando certo, e **pare**.
-  Worktree: `execucao/testar-<ID>`, criada a partir da `main`.
+  Roda na `main`; com `--worktree`, em `execucao/testar-<ID>`, criada a partir da `main`.
 - **Início e fim**: `iniciar <ID> <token> --etapa "Em QA"` e, no fim, `concluir <ID> <token> qa-ok`
   (ou `devolvida`). Nada de `TASK.md`/`TASKPLAN.md` na rodada; `consolidar` ao encerrar a chamada.
 
@@ -83,8 +83,8 @@ comando: o controle volta ao `/desenvolver`.
      resumo do fim: o usuário decide se a regra entra no `CONVENCOES-DE-CODIGO.md` ou na Seção 1 do
      `TASK.md`, para o Executor parar de repetir o erro.
 4. **Commit** (padrão): o que o QA produziu (seção 5, RTP, correção da via rápida) com a mensagem
-   `<ID>: QA aprovado|devolvido`, pelas regras de onde o código roda (em `--continuar`, na `main`;
-   em `--tarefa`, na worktree, integrada à `main` no fim). Com `--nocommit`, não commite.
+   `<ID>: QA aprovado|devolvido`, pelas regras de onde o código roda (na `main`;
+   com `--worktree`, na worktree, integrada à `main` no fim). Com `--nocommit`, não commite.
 
 ### 3d. Limite de devoluções
 

@@ -27,25 +27,20 @@ declara, em nível de comando.
 `/executar` rodar de verdade — a validação por tarefa (QA e DevSecOps, ver Comando 1)
 depende de `git diff`.
 
-**Isolamento por worktree (obrigatório, primeiro passo da Seção 0 de cada
-comando)**: cada chamada de um comando de execução (`/executar`,
-`/deploy`) roda numa worktree git dedicada à
-sessão, nunca direto na árvore principal — isso evita que duas sessões rodando
-comandos de execução ao mesmo tempo pisem uma na outra (edição concorrente de
-`TASK.md`, `BLOCKERS.md`, código).
+**Onde a execução roda (padrão: a `main`)**: `/executar`, `/testar` e `/validar` rodam **direto na
+`main` da árvore principal**, em todos os modos (vazio, `--tarefa`, `--lote`, `--continuar`). A cada
+tarefa fazem um commit local na `main` (só os arquivos dela). Com **`--nocommit`** não commitam
+nada (o usuário commita no fim) e o diff de cada tarefa é um snapshot da árvore
+(`taskplan.py diff <ID>`). Tarefa que bloqueia deixa o código parcial sem commit e o registra no
+`## Bloqueio`. A colisão entre sessões é evitada pela reserva por tarefa (`taskplan.py iniciar`).
 
-**Exceção dos comandos de execução por modo** (`/executar`, `/testar`, `/validar`):
-`--tarefa <ID>` **sempre** usa worktree própria (regra abaixo). `--continuar [N]` **não**
-usa worktree: roda direto na `main` da árvore principal e, por padrão, a cada tarefa
-faz um commit na `main` (só os arquivos dela) antes de partir para a próxima; com
-**`--nocommit`** não commita nada (o usuário commita e dá o push no fim) e o diff de
-cada tarefa é um snapshot da árvore (`taskplan.py diff <ID>`); `--nocommit` só existe
-com `--continuar`. Tarefa que bloqueia deixa o código parcial sem commit e o registra no
-`## Bloqueio`. Os demais modos (vazio, `--lote`) seguem a regra geral abaixo.
+**`--worktree` (opcional)**: só com essa flag a chamada roda numa worktree git dedicada à sessão
+(regra abaixo), para isolar o trabalho quando se quer revisar antes de integrar. Não combina com
+`--nocommit`. `/deploy` segue a sua própria regra.
 O `taskplan.py` resolve sempre a raiz da **árvore principal** (reservas, Status locais,
 `TASK.md`), mesmo quando roda dentro de uma worktree.
 
-1. Garanta/entre numa worktree dedicada a esta sessão (skill
+1. (Só com `--worktree`.) Garanta/entre numa worktree dedicada a esta sessão (skill
    `superpowers:using-git-worktrees` ou tool `EnterWorktree`) antes de ler ou
    escrever qualquer artefato — nome sugerido: `execucao/<comando>-<lote-ou-
    tarefa>`. Se esta sessão já estiver numa worktree aberta para o mesmo
