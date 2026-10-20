@@ -1094,3 +1094,6 @@ APROVADA — 0 críticos, 0 não críticos; paridade com os node -e antigos conf
 
 ## TP-0139 — QA — 2026-10-19
 DEVOLVIDA — 2 críticos (build de produção sem VITE_RECURSOS_DESLIGADOS: recursos desligados aparecem; itens 2-6 só declarados, campos de evidência em branco) e 2 não críticos (docs desatualizados → RTP-0163; reativação da TP-0139 sem `--desfazer`); run 39342078062 verde, saúde 200 e cabeçalhos OK.
+
+## TP-0139 — QA — 2026-10-19
+APROVADA — 0 críticos; F1 fechado por decisão, F2 risco aceito por escrito (RNF-03/RNF-07 sem prova; itens 2-6 só declarados); run 39342078062 verde, /api/saude 200; RTP-0163 (docs) e RTP-0164 (variável no aceite/deploy.yml), F4 reativação sem registro explícito.
