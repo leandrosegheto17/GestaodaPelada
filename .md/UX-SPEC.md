@@ -154,7 +154,7 @@ Diálogos reutilizados (não são telas próprias):
 - **D1 Senha exibida uma vez:** T19, T26, T27 e T28.
 - **D2 Confirmação destrutiva:** excluir partida, excluir jogador, excluir habilidade, remover admin, desmarcar pagamento, excluir lançamento e arquivar grupo (este exige digitar o nome).
 - **D3 Mover jogador:** T13 e T14.
-- **D4 Compartilhar/Baixar PDF:** T01, quando o compartilhamento direto falha.
+- **D4 Compartilhar/Baixar PDF:** T01, depois de gerar o PDF, quando o aparelho compartilha arquivo (também reaparece se a folha de compartilhamento for recusada por perda de gesto).
 - **D5 Instalar no iPhone:** aviso em T01.
 
 ### F1: Jogador consulta o ranking
@@ -235,8 +235,9 @@ flowchart TD
   B -- Não --> B1[Botão em 'Preparando PDF…' até carregar] --> C
   B -- Sim --> C[Gera o arquivo no aparelho]
   C --> D{canShare com arquivo?}
-  D -- Sim --> E[Folha de compartilhamento do sistema]
-  E -- Recusado por perda de gesto --> D4[D4 Compartilhar / Baixar]
+  D -- Sim --> D4[D4 Compartilhar / Baixar]
+  D4 -- Compartilhar --> E[Folha de compartilhamento do sistema]
+  D4 -- Baixar --> F[Baixa o arquivo + aviso 'PDF baixado']
   D -- Não --> F[Baixa o arquivo + aviso 'PDF baixado']
 ```
 
@@ -630,7 +631,7 @@ Padrões globais:
 | T26 | Sem pedidos: "Nenhum pedido pendente." Sem grupos: "Nenhum grupo criado." + Novo grupo | Esqueleto | Padrão global | Listas |
 | T27 | Formulário vazio | "Criando…" | Validação por campo | D1 / aviso de vínculo → T28 |
 | T28 | n/a: só existe com grupo | Esqueleto | Nome digitado não confere (botão não habilita) | "Grupo arquivado" / "Grupo reativado" / "Situação salva" |
-| P01 | Mês sem partidas: a tabela sai com # / Jogador / Pts inicial / as colunas de meses anteriores / Pts final, e o cabeçalho traz "Nenhuma partida registrada neste mês" | Botão "Preparando PDF…" | Falha ao gerar: faixa "Não foi possível gerar o PDF." + Tentar de novo. Compartilhamento recusado: D4 | Folha de compartilhamento ou "PDF baixado" |
+| P01 | Mês sem partidas: a tabela sai com # / Jogador / Pts inicial / as colunas de meses anteriores / Pts final, e o cabeçalho traz "Nenhuma partida registrada neste mês" | Botão "Preparando PDF…" | Falha ao gerar: faixa "Não foi possível gerar o PDF." + Tentar de novo. PDF gerado em aparelho que compartilha arquivo: D4 (Compartilhar ou Baixar) | D4 e, depois da escolha, folha de compartilhamento ou "PDF baixado"; aparelho sem compartilhamento de arquivo baixa direto com "PDF baixado" |
 
 ---
 
@@ -740,7 +741,7 @@ Autochecagem contra o `SDD.md` desta mesma rodada, nas 4 dimensões: componente,
 | Todas (admin) | ADR-014 (10 ms de CPU; erro 1102 se estourar) | Uma resposta de erro de recurso (inclusive no `sugerir` do simulador) cai no estado de erro padrão da tela ("Não foi possível… Tentar de novo"), sem mensagem técnica. O spike S-02 garante que isso não aconteça no uso normal | Resolvido |
 | T06 / T25 | ADR-015 (bcrypt: até 72 caracteres) | A regra "de 8 a 72 caracteres" fica visível no campo e é validada nos dois lados pelo contrato | Resolvido |
 | T01 | ADR-009 (cache só da rota pública) × RF-54 | Sem conexão, só o ranking funciona. Os ícones de engrenagem e $ continuam visíveis e, ao tocar, mostram "É preciso conexão para entrar" | Resolvido |
-| T01 / P01 | ADR-008 (PDF desenhado no aparelho; gesto do Web Share) | Pré-carregar a projeção; gerar e compartilhar no mesmo toque; D4 como reserva; "Baixar" quando não houver compartilhamento de arquivo | Resolvido |
+| T01 / P01 | ADR-008 (PDF desenhado no aparelho; gesto do Web Share) | Pré-carregar a projeção; gerar no toque em "Exportar PDF" e abrir o D4 (Compartilhar ou Baixar), de modo que o "Compartilhar" seja um novo gesto; baixar direto com "PDF baixado" só quando não houver compartilhamento de arquivo | Resolvido |
 | T04 | ADR-003 (cookies do app instalado separados do Safari) | O admin entra uma vez no navegador e uma vez no app instalado. Decisão: aceitar e explicar numa linha de ajuda em T04, em vez de tentar compartilhar a sessão (não é possível no iOS) | Resolvido (informado ao usuário) |
 | T04 / T05 | ADR-004/015 (bloqueio por e-mail; mensagens genéricas) | As mensagens nunca revelam se o e-mail existe. "Bloqueado" aparece para qualquer e-mail com 5 falhas | Resolvido |
 | T11 | SDD P-2 / ADR-006 (data sugerida e ativos vêm da API) | A tela não decide quem está ativo nem a data sugerida; chama `partidas/nova?data=`. Ao trocar a data, recarrega a lista (estado "carregando") | Resolvido |
