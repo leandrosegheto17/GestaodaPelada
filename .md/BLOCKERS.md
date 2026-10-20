@@ -98,3 +98,12 @@
 - Impacto se não resolvido: QA não consegue rodar a suíte de rota; código revisado sem achados
 - Sugestão: delete da conta órfã do dono em pelada_teste e reexecutar
 - Status: Resolvido (2026-10-17): Conta órfã do dono já removida de pelada_teste; ler.test.ts 11/11 verde; bloqueio só de ambiente
+
+## Bloqueio 012 — 2026-10-20 (BK-0012)
+- Reportado por: coordenador (/revisar)
+- Escalado para: usuário
+- Artefato/trecho afetado: —
+- Descrição: Quando e onde registrar a contração do CHECK de posicao (tirar defensor/meio_campo de jogadores_posicao_check), prometida como 'no deploy seguinte' na migração 202610200000_adequacao_legado.sql, em SDD §6, contrato/QUEBRAS.md e TP-0208, mas sem tarefa nem dono
+- Impacto se não resolvido: Média; sem efeito no deploy atual (o CHECK largo é seguro). Se ninguém contrair, o banco aceita para sempre valores que o contrato recusa
+- Sugestão: Migração nova (-- contrair:) aberta só depois do go-live e da importação do legado confirmadas; registrar como tarefa/lembrete pós-go-live ou linha no backend/DEPLOY.md
+- Status: Em aberto

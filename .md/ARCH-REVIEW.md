@@ -1,5 +1,30 @@
 # Revisão de arquitetura
 
+## Revisão 2026-10-20 — pré-deploy (projeto inteiro, depois da TP-0208 e das RTP-0167/0168)
+
+Números do saude.py: 0 arquivos acima do limite · 4 blocos duplicados (33 linhas; 1 novo par, `Pesos` em `pesos.ts` × `dominio/pontuacao/tipos.ts`, descartado) · 3 IDs de tarefa (todos em `evidencia/s-01`) · 2 pastas com acesso a dados (`backend/api/src`, `evidencia/s-01`) · 0 imports indevidos entre aplicações · 0 conversões forçadas · 8 comentários de cópia (falsos positivos). Comparação visual: 117 de 117 OK; `tokens.css` do app idêntico ao do mockup. Todas as RTP da revisão anterior (0130 a 0134, 0162) e as RTP-0165 a 0168 estão Aprovadas no TASKPLAN.
+
+**Não há achado de severidade Alta aberto. Nada impede o `/deploy`.**
+
+| # | Achado | Item do checklist | Severidade | Onde | Destino |
+|---|---|---|---|---|---|
+| 1 | A tabela de pacotes do SDD §2 diz que só a api depende de `@pelada/dominio` e que os scripts importam da api só repositórios, migrações, `seguranca` e `acesso/senhas`; o código (e o ESLint) também deixam `backend/scripts` importar `@pelada/dominio` e `infraestrutura/db/index.ts` | 2 | Baixa | `.md/SDD.md` §2; `backend/scripts/importar-legado/{calculo,executar}.ts`, `seed-local.ts` | RTP-0169 |
+| 2 | A migração `202610200000_adequacao_legado.sql` alarga o CHECK de `posicao` (antigas e novas) e promete "contrair no deploy seguinte" (SDD §6, `QUEBRAS.md`, TP-0208), mas nenhuma tarefa, BK ou nota registra quem e quando tira `defensor`/`meio_campo` do CHECK | 17 | Média | `backend/api/src/infraestrutura/db/migracoes/202610200000_adequacao_legado.sql:3-8`; `backend/contrato/QUEBRAS.md` | BK (quando contrair e onde registrar) |
+
+Descartados:
+- `Pesos` repetido em `repositorios/pesos.ts` e `dominio/pontuacao/tipos.ts` (8 linhas): a infraestrutura não importa o domínio (camadas do SDD §2); a tipagem estrutural faz o compilador acusar divergência em `aplicacao/pesos/painel.ts` e `aplicacao/pontuacao/adaptadores.ts`. Refinamento marginal.
+- `importar-legado/*` × domínio: sem duplicação da regra de pontuação; `calculo.ts` usa `acumuladoComInicial`, `somarDias` e os tipos do `@pelada/dominio`. `PESOS_LEGADO` são dados da RN-24 (exceção declarada do script), não lógica. A regra de chuva por maioria (`chuvaDaRodada`) é só da leitura do legado.
+- Acesso a dados do script: `gravacao.ts` e `executar.ts` só chamam repositórios (`jogadores`, `partidas`, `pesos`, `habilidades`, `auditoria`, `grupos`) e `emTransacao`; o único SQL novo é `pesos.substituirTodas`, dentro do repositório; lint e `checar-grupo-id` cobrem.
+- Regra de negócio na tela: `FormularioJogador` valida a pontuação inicial pelo schema do contrato; as 7 posições vêm de `POSICOES` (contrato) e os rótulos de `rotulos/`; nenhuma lista de posição ou de peso fora deles.
+- Colunas `expulso` e `expulso_com_chuva` com nomes assimétricos no banco: migração aplicada é imutável; o mapeamento fica isolado em `pesos.ts` (`paraConfig`).
+- "6 posições" no ADR-021 (são 7): ADR é imutável e o SDD, o contrato e o teste de migração dizem 7.
+- IDs de tarefa e acesso a dados em `evidencia/s-01`, comentários "de cópia", blocos de `AreaDono`/`GrupoDono`, `PaginaGrupo`/`PaginaPontuacao` e os dois `EXISTS` de `jogadores.ts`: os mesmos já descartados em 19/10.
+- Menção "etapa 1" em `gravacao.ts` e no teste: nome de fase da ADR-021, não ID de tarefa; `checar-ids-tarefa` em 0.
+
+Conferido: migração aditiva com a isenção `-- contrair:` justificada, CHECK com as duas listas e `UPDATE` sem perda, coberta por `api/test/migracoes/adequacao-legado.test.ts` (rodada no job `api`); testes de `backend/scripts` rodam no job `checagens` (`pnpm test:checagens`) com Postgres; `ci.yml` mantém lint, `checar-*`, `checar-compatibilidade`, format, typecheck (inclui `tsc -p backend/scripts`), build, gitleaks, e2e e visual; `deploy.yml` na ordem build, branch de restauração, dump, migração, cache do Hyperdrive, deploy, saúde, rollback, igual ao cabeçalho e à §6 do SDD; a importação do legado está na §6 com recusa de grupo com partida, backup confirmado e execução só do usuário.
+
+Sem achado nos itens: 1, 3 a 16 e 18. Itens 11, 13 e 14 por amostragem do relatório.
+
 ## Revisão 2026-10-19 (2ª) — sob demanda (projeto inteiro, depois da RTP-0162)
 
 Números do saude.py: 0 arquivos acima do limite · 3 blocos duplicados (25 linhas, os mesmos já descartados hoje) · 3 IDs de tarefa (todos em `evidencia/s-01`) · 0 imports indevidos entre aplicações · 0 conversões forçadas · 8 comentários de cópia (falsos positivos). Nada em frontend mudou; a comparação visual e o diff de tokens da primeira revisão de hoje continuam valendo.
