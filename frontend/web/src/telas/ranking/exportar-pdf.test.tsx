@@ -111,7 +111,6 @@ describe('Exportar PDF na T01', () => {
     const arquivo = entregarPdf.mock.calls[0]?.[0] as File;
     expect(arquivo.name).toBe('ranking-pelada-de-quinta-2026-10.pdf');
     expect(arquivo.type).toBe('application/pdf');
-    expect(entregarPdf.mock.calls[0]?.[1]).toBe('Ranking de outubro de 2026 da Pelada de Quinta');
     await waitFor(() => expect(registrar).toHaveBeenCalledWith('pelada-de-quinta', '2026-10'));
     expect(registrar).toHaveBeenCalledTimes(1);
   });

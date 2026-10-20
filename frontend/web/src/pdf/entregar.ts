@@ -40,9 +40,9 @@ export function baixarArquivo(arquivo: File): void {
   setTimeout(() => URL.revokeObjectURL(url), 0);
 }
 
-/** Compartilha quando o aparelho permite; senão, baixa. */
-export async function entregarPdf(arquivo: File, titulo: string): Promise<ResultadoEntrega> {
-  if (podeCompartilharArquivo(arquivo)) return compartilharArquivo(arquivo, titulo);
+/** Aparelho que compartilha: a pessoa escolhe Compartilhar ou Baixar (`pedir-gesto`); senão, baixa direto. */
+export async function entregarPdf(arquivo: File): Promise<ResultadoEntrega> {
+  if (podeCompartilharArquivo(arquivo)) return 'pedir-gesto';
   baixarArquivo(arquivo);
   return 'baixado';
 }

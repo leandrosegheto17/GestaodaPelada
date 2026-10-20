@@ -6,7 +6,7 @@ import { baixarArquivo, compartilharArquivo, entregarPdf, type ResultadoEntrega 
 
 /**
  * - `preparando`: buscando os dados ou gerando o PDF.
- * - `d4`: o navegador recusou o compartilhamento direto; a pessoa escolhe Compartilhar ou Baixar.
+ * - `d4`: o aparelho compartilha arquivo (ou recusou o compartilhamento direto); a pessoa escolhe Compartilhar ou Baixar.
  * - `baixado`: o PDF foi baixado (faixa por alguns segundos).
  * - `erro`: não foi possível gerar o PDF.
  */
@@ -63,11 +63,11 @@ export function usarExportarPdf({ slug, mes, nomeGrupo, habilitado }: Opcoes) {
       const { gerarPdf } = await import('../../pdf/gerar-pdf');
       const blob = await gerarPdf(dados);
       arquivo.current = new File([blob], `ranking-${slug}-${mes}.pdf`, { type: 'application/pdf' });
-      concluir(await entregarPdf(arquivo.current, titulo));
+      concluir(await entregarPdf(arquivo.current));
     } catch {
       setEstado('erro');
     }
-  }, [projecao, slug, mes, titulo, concluir]);
+  }, [projecao, slug, mes, concluir]);
 
   const compartilharDoD4 = useCallback(async () => {
     if (!arquivo.current) return;

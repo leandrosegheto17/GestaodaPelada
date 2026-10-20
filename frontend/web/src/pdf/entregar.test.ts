@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { entregarPdf } from './entregar';
+import { compartilharArquivo, entregarPdf } from './entregar';
 
 const arquivo = () => new File([new Uint8Array([1, 2, 3])], 'ranking-pelada-2026-10.pdf', { type: 'application/pdf' });
 
@@ -17,11 +17,11 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe('entregarPdf', () => {
-  it('com compartilhamento de arquivo: chama share com 1 File application/pdf', async () => {
+describe('compartilharArquivo', () => {
+  it('chama share com 1 File application/pdf', async () => {
     const share = vi.fn<(dados: ShareData) => Promise<void>>(async () => undefined);
     simularNavegador({ canShare: true, share });
-    expect(await entregarPdf(arquivo(), 'Ranking de outubro')).toBe('compartilhado');
+    expect(await compartilharArquivo(arquivo(), 'Ranking de outubro')).toBe('compartilhado');
     expect(share).toHaveBeenCalledTimes(1);
     const dados = share.mock.calls[0]?.[0];
     expect(dados?.files).toHaveLength(1);
@@ -36,7 +36,7 @@ describe('entregarPdf', () => {
         throw new DOMException('sem gesto', 'NotAllowedError');
       },
     });
-    expect(await entregarPdf(arquivo(), 'x')).toBe('pedir-gesto');
+    expect(await compartilharArquivo(arquivo(), 'x')).toBe('pedir-gesto');
   });
 
   it('AbortError (pessoa fechou a folha) cancela sem erro', async () => {
@@ -46,7 +46,7 @@ describe('entregarPdf', () => {
         throw new DOMException('fechou', 'AbortError');
       },
     });
-    expect(await entregarPdf(arquivo(), 'x')).toBe('cancelado');
+    expect(await compartilharArquivo(arquivo(), 'x')).toBe('cancelado');
   });
 
   it('outro erro de compartilhamento sobe para o chamador', async () => {
@@ -56,7 +56,18 @@ describe('entregarPdf', () => {
         throw new Error('falhou');
       },
     });
-    await expect(entregarPdf(arquivo(), 'x')).rejects.toThrow('falhou');
+    await expect(compartilharArquivo(arquivo(), 'x')).rejects.toThrow('falhou');
+  });
+});
+
+describe('entregarPdf', () => {
+  it('com compartilhamento de arquivo: não compartilha nem baixa; deixa a pessoa escolher', async () => {
+    const share = vi.fn<(dados: ShareData) => Promise<void>>(async () => undefined);
+    simularNavegador({ canShare: true, share });
+    const clique = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => undefined);
+    expect(await entregarPdf(arquivo())).toBe('pedir-gesto');
+    expect(share).not.toHaveBeenCalled();
+    expect(clique).not.toHaveBeenCalled();
   });
 
   it('sem compartilhamento de arquivo: baixa por âncora com download e revoga a URL', async () => {
@@ -66,7 +77,7 @@ describe('entregarPdf', () => {
     Object.assign(URL, { createObjectURL: criar, revokeObjectURL: revogar });
     const clique = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => undefined);
     vi.useFakeTimers();
-    expect(await entregarPdf(arquivo(), 'x')).toBe('baixado');
+    expect(await entregarPdf(arquivo())).toBe('baixado');
     expect(clique).toHaveBeenCalledTimes(1);
     expect(criar).toHaveBeenCalledTimes(1);
     vi.runAllTimers();
@@ -78,6 +89,6 @@ describe('entregarPdf', () => {
     simularNavegador({});
     Object.assign(URL, { createObjectURL: () => 'blob:fake', revokeObjectURL: () => undefined });
     vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => undefined);
-    expect(await entregarPdf(arquivo(), 'x')).toBe('baixado');
+    expect(await entregarPdf(arquivo())).toBe('baixado');
   });
 });
