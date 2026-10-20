@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-20 15:14
+Atualizado: 2026-10-20 15:29
 
-Resumo: Não executada 2 · Executada (aguarda teste) 6 · Aprovada 385 · Despriorizada 5 · total 398
+Resumo: Não executada 3 · Testada (aguarda segurança) 6 · Aprovada 385 · Despriorizada 5 · total 399
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -397,17 +397,18 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 382 | RTP-0167 | executor | ✔ | PATCH de jogador sem pontuacaoInicial não zera a pontuação inicial | Refatoração Lote-46 | TP-0208 | Aprovada |
 | 383 | RTP-0168 | executor | ✔ | Importar-legado: arquivo de correções (--correcoes) para chuva em datas e presenças cor... | Refatoração Lote-46 | TP-0208 | Aprovada |
 | 384 | RTP-0173 | executor | ✔ | Importar-legado: correção de presença em rodada mista conta como correção do usuário (r... | Refatoração Lote-46 | TP-0208 | Aprovada |
-| 385 | RTP-0169 | executor | ✔ | SDD §2: tabela de pacotes diz o que backend/scripts realmente importa (@pelada/dominio... | Refatoração Revisão 2026-10-20 | — | Executada (aguarda teste) |
-| 386 | RTP-0174 | executor | ✔ | UX-SPEC: fluxo F4 e diálogo D4 descrevem o Exportar PDF como o app faz hoje | Refatoração Revisão 2026-10-20 | — | Executada (aguarda teste) |
-| 387 | RTP-0175 | executor | ✔ | Comentários e títulos de teste do Exportar PDF ainda dizem que o compartilhamento é direto | Refatoração Revisão 2026-10-20 | — | Executada (aguarda teste) |
-| 388 | RTP-0170 | executor | ✔ | Adicionar X-Content-Type-Options: nosniff nas respostas JSON de /api/* | Refatoração Segurança 2026-10-20 | — | Executada (aguarda teste) |
-| 389 | RTP-0171 | executor | ✔ | Fixar por SHA as ações do GitHub e adotar block-exotic-sub-dependencies, minimum-releas... | Refatoração Segurança 2026-10-20 | — | Executada (aguarda teste) |
-| 390 | RTP-0172 | executor | ✔ | Cobrir no .gitignore o arquivo de entrada da importação do legado (dados pessoais) | Refatoração Segurança 2026-10-20 | — | Executada (aguarda teste) |
-| 391 | BK-0009 | coordenador | ✔ | Ajustar SDD/ADR-010/URL_PUBLICA/CORS/deploy.yml ao domínio prod-ljs.workers.dev e aos acei | — | — | Aprovada |
-| 392 | BK-0012 | coordenador | ✔ | Quando e onde registrar a contração do CHECK de posicao (tirar defensor/meio_campo de joga | — | — | Não executada |
-| 393 | BK-0013 | coordenador | ✔ | ADR-008 §3 decide gerar e chamar navigator.share no mesmo gesto; o app agora sempre mostra | — | — | Não executada |
-| 394 | TP-0140 | executor | ✔ | [U] Play Console: app com.gestaodapelada.app (PI-5) | L31 | — | Despriorizada |
-| 395 | TP-0141 | executor | ✔ | /.well-known/assetlinks.json servido pelo Worker | L31 | TP-0088, TP-0140 | Despriorizada |
-| 396 | TP-0142 | executor | ✔ | Projeto TWA (Bubblewrap) em frontend/twa | L31 | TP-0006, TP-0108, TP-0139, TP-0140, TP-0141 | Despriorizada |
-| 397 | TP-0143 | executor | ✔ | [U] Teste fechado da Play (12 testadores, 14 dias) | L31 | TP-0139, TP-0141, TP-0142 | Despriorizada |
-| 398 | TP-0144 | executor | ✔ | [U] Publicação da TWA em produção | L31 | TP-0143 | Despriorizada |
+| 385 | RTP-0169 | executor | ✔ | SDD §2: tabela de pacotes diz o que backend/scripts realmente importa (@pelada/dominio... | Refatoração Revisão 2026-10-20 | — | Testada (aguarda segurança) |
+| 386 | RTP-0174 | executor | ✔ | UX-SPEC: fluxo F4 e diálogo D4 descrevem o Exportar PDF como o app faz hoje | Refatoração Revisão 2026-10-20 | — | Testada (aguarda segurança) |
+| 387 | RTP-0175 | executor | ✔ | Comentários e títulos de teste do Exportar PDF ainda dizem que o compartilhamento é direto | Refatoração Revisão 2026-10-20 | — | Testada (aguarda segurança) |
+| 388 | RTP-0170 | executor | ✔ | Adicionar X-Content-Type-Options: nosniff nas respostas JSON de /api/* | Refatoração Segurança 2026-10-20 | — | Testada (aguarda segurança) |
+| 389 | RTP-0171 | executor | ✔ | Fixar por SHA as ações do GitHub e adotar block-exotic-sub-dependencies, minimum-releas... | Refatoração Segurança 2026-10-20 | — | Testada (aguarda segurança) |
+| 390 | RTP-0176 | executor | ✔ | Subir minimumReleaseAge de 1440 para 10080 no pnpm-workspace.yaml e remover o achado se... | Refatoração Segurança 2026-10-20 | RTP-0171 | Não executada |
+| 391 | RTP-0172 | executor | ✔ | Cobrir no .gitignore o arquivo de entrada da importação do legado (dados pessoais) | Refatoração Segurança 2026-10-20 | — | Testada (aguarda segurança) |
+| 392 | BK-0009 | coordenador | ✔ | Ajustar SDD/ADR-010/URL_PUBLICA/CORS/deploy.yml ao domínio prod-ljs.workers.dev e aos acei | — | — | Aprovada |
+| 393 | BK-0012 | coordenador | ✔ | Quando e onde registrar a contração do CHECK de posicao (tirar defensor/meio_campo de joga | — | — | Não executada |
+| 394 | BK-0013 | coordenador | ✔ | ADR-008 §3 decide gerar e chamar navigator.share no mesmo gesto; o app agora sempre mostra | — | — | Não executada |
+| 395 | TP-0140 | executor | ✔ | [U] Play Console: app com.gestaodapelada.app (PI-5) | L31 | — | Despriorizada |
+| 396 | TP-0141 | executor | ✔ | /.well-known/assetlinks.json servido pelo Worker | L31 | TP-0088, TP-0140 | Despriorizada |
+| 397 | TP-0142 | executor | ✔ | Projeto TWA (Bubblewrap) em frontend/twa | L31 | TP-0006, TP-0108, TP-0139, TP-0140, TP-0141 | Despriorizada |
+| 398 | TP-0143 | executor | ✔ | [U] Teste fechado da Play (12 testadores, 14 dias) | L31 | TP-0139, TP-0141, TP-0142 | Despriorizada |
+| 399 | TP-0144 | executor | ✔ | [U] Publicação da TWA em produção | L31 | TP-0143 | Despriorizada |

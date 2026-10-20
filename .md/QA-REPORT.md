@@ -1133,3 +1133,21 @@ APROVADA - --correcoes (chuva/presencas) atende ao aceite; 125 testes, tsc, esli
 
 ## RTP-0173 — QA — 2026-10-20
 APROVADA — aceite (1 a 7) validado, 129 testes + tsc/eslint/prettier OK, cálculo real 0 divergências; 0 críticos, 0 não críticos.
+
+## RTP-0169 — QA — 2026-10-20
+APROVADA, 0 críticos/0 não críticos; SDD §2 e G-01 batem com ZONAS e imports reais, lint exit 0, prettier limpo nos 2 arquivos.
+
+## RTP-0170 — QA — 2026-10-20
+APROVADA; 0 críticos, 0 não críticos; vitest app.test 17/17 (4 novos 200/401/404/500), tsc/eslint/prettier limpos; DAST não executado (fica para o /deploy).
+
+## RTP-0171 — QA — 2026-10-20
+APROVADA — SHAs conferidos com as tags via gh api, semgrep sem mutable-action-tag, install ok; 0 críticos, 1 não crítico (RTP-0176: minimumReleaseAge 1440 em vez de 10080, prazo 2026-10-29).
+
+## RTP-0172 — QA — 2026-10-20
+APROVADA; 0 críticos, 0 não críticos; git check-ignore casa as entradas e os brutos da auditoria, os versionados seguem rastreados e nenhum dado pessoal está no git.
+
+## RTP-0174 — QA — 2026-10-20
+APROVADA, 0 críticos e 0 não críticos; UX-SPEC (F4, D4, P01, T01/P01) bate com entregar.test.ts e exportar-pdf.test.tsx, sem resíduo de "compartilha no mesmo toque" e prettier limpo.
+
+## RTP-0175 — QA — 2026-10-20
+APROVADA, 0 críticos/0 não críticos; vitest pdf+ranking 71 ok, typecheck e prettier/eslint dos 3 arquivos ok, só comentários e títulos.
