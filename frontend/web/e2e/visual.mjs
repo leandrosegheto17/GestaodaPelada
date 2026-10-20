@@ -22,7 +22,10 @@ try {
   telas =
     indice >= 0
       ? lerTelasAtivas((process.argv[indice + 1] ?? '').replaceAll(',', '\n'), idsValidos)
-      : lerTelasAtivas(readFileSync(process.env.TELAS_ATIVAS_ARQUIVO ?? join(AQUI, 'telas-ativas.txt'), 'utf8'), idsValidos);
+      : lerTelasAtivas(
+          readFileSync(process.env.TELAS_ATIVAS_ARQUIVO ?? join(AQUI, 'telas-ativas.txt'), 'utf8'),
+          idsValidos,
+        );
 } catch (erro) {
   falhar(erro.message);
 }
@@ -31,7 +34,8 @@ if (telas.length === 0) {
   console.log('Nenhuma tela ativa: nada a comparar.');
   process.exit(0);
 }
-if (!existsSync(process.env.DIST_DIR ?? join(PACOTE, 'dist'))) falhar('dist/ ausente: rode "pnpm --filter @pelada/web build" antes.');
+if (!existsSync(process.env.DIST_DIR ?? join(PACOTE, 'dist')))
+  falhar('dist/ ausente: rode "pnpm --filter @pelada/web build" antes.');
 
 const resultado = spawnSync(
   process.execPath,

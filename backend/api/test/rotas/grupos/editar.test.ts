@@ -75,7 +75,11 @@ describe('PATCH /api/grupos/:grupoId (workerd)', () => {
       agora: AGORA,
     });
     const foto = async () => ({
-      partidas: await kyselyDe(db).selectFrom('partidas').select(['id', 'data', 'choveu']).where('grupo_id', '=', g).execute(),
+      partidas: await kyselyDe(db)
+        .selectFrom('partidas')
+        .select(['id', 'data', 'choveu'])
+        .where('grupo_id', '=', g)
+        .execute(),
       pesos: await kyselyDe(db).selectFrom('config_pesos').selectAll().where('grupo_id', '=', g).execute(),
     });
     const antes = await foto();

@@ -142,7 +142,10 @@ describe('montarEntradaSimulador', () => {
     const ids: string[] = [];
     for (let i = 0; i < 8; i++) ids.push(await criarJogador(db, g, base.contaId));
     await lancar(db, g, base.contaId, diaRelativo(-1), ids.slice(0, 4));
-    const entrada = dois(diaRelativo(3), ids.map((id) => ({ id })));
+    const entrada = dois(
+      diaRelativo(3),
+      ids.map((id) => ({ id })),
+    );
     const consultas = await contarConsultas(() => montarEntradaSimulador(db, g, entrada));
     expect(consultas).toBeGreaterThan(0);
     expect(consultas).toBeLessThanOrEqual(5);

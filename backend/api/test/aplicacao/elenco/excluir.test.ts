@@ -23,12 +23,14 @@ async function cenario() {
   await vincularAdmin(db, grupo.id, admin.id, { acessaFinanceiro: true });
   const jogadorId = await criarJogador(db, grupo.id, admin.id, { apelido: 'Zeca' });
   const ctx = { autorContaId: admin.id, agora };
-  const existe = async () =>
-    (await jogadores.buscar(db, grupo.id, jogadorId)) !== null;
+  const existe = async () => (await jogadores.buscar(db, grupo.id, jogadorId)) !== null;
   const periodos = async () =>
-    (await kyselyDe(db).selectFrom('periodos_ativos').select('id').where('jogador_id', '=', jogadorId).execute()).length;
+    (await kyselyDe(db).selectFrom('periodos_ativos').select('id').where('jogador_id', '=', jogadorId).execute())
+      .length;
   const acoes = async () =>
-    (await kyselyDe(db).selectFrom('auditoria').select('acao').where('grupo_id', '=', grupo.id).execute()).map((a) => a.acao);
+    (await kyselyDe(db).selectFrom('auditoria').select('acao').where('grupo_id', '=', grupo.id).execute()).map(
+      (a) => a.acao,
+    );
   const comPresenca = () =>
     emTransacao(db, (tx) =>
       partidas.criar(tx, grupo.id, {

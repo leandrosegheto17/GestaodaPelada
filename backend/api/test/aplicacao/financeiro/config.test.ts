@@ -32,7 +32,9 @@ describe('salvarConfigFinanceira', () => {
     const contexto = { autorContaId: base.contaId, hoje: relogio.hoje(), agora: new Date(relogio.agoraIso()) };
     falha.auditoria = true;
     try {
-      await expect(salvarConfigFinanceira(db, base.grupo.id, CORPO, contexto)).rejects.toThrow('auditoria indisponível');
+      await expect(salvarConfigFinanceira(db, base.grupo.id, CORPO, contexto)).rejects.toThrow(
+        'auditoria indisponível',
+      );
     } finally {
       falha.auditoria = false;
     }

@@ -11,7 +11,8 @@ import { relogioFixo } from '../../../apoio/relogio.js';
 
 const fabrica = usarFabrica();
 const abrir = usarDbDoWorker(fabrica);
-const cliente = (cookie?: string) => clienteTeste({ relogio: relogioFixo('2026-10-22'), ...(cookie ? { cookie } : {}) });
+const cliente = (cookie?: string) =>
+  clienteTeste({ relogio: relogioFixo('2026-10-22'), ...(cookie ? { cookie } : {}) });
 
 describe('GET /api/grupos/:g/jogadores/:id (workerd)', () => {
   it('200 validado, no-store; inexistente, de outro grupo e malformado dão o mesmo 404; sem sessão 401', async () => {

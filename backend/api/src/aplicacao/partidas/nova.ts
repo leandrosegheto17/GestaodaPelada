@@ -1,4 +1,11 @@
-import { diaSemana, data as esquemaData, idsDaComposicao, partidaNova, type PartidaNova, type SituacaoPresenca } from '@pelada/contrato';
+import {
+  diaSemana,
+  data as esquemaData,
+  idsDaComposicao,
+  partidaNova,
+  type PartidaNova,
+  type SituacaoPresenca,
+} from '@pelada/contrato';
 import { compararDatas, dataSugeridaPartida } from '@pelada/dominio';
 import type { ExecutorDb } from '../../infraestrutura/db/index.js';
 import * as escalacoes from '../../infraestrutura/db/repositorios/escalacoes.js';

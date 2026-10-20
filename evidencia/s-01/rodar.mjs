@@ -22,14 +22,22 @@ for (let i = 0; i < 50; i++) {
   if (!r.corpo.ok) falhas++;
 }
 const s = await get(`/contar?m=${lote}-s`);
-registrar('Caso 3a: 50 transações em série', falhas === 0 && s.corpo.linhas === 50, `falhas=${falhas} linhas=${s.corpo.linhas}`);
+registrar(
+  'Caso 3a: 50 transações em série',
+  falhas === 0 && s.corpo.linhas === 50,
+  `falhas=${falhas} linhas=${s.corpo.linhas}`,
+);
 
 const par = await Promise.all(
   Array.from({ length: 20 }, () => get(`/tx?m=${lote}-p`).catch(() => ({ corpo: { ok: false } }))),
 );
 const p = await get(`/contar?m=${lote}-p`);
 const falhasP = par.filter((r) => !r.corpo.ok).length;
-registrar('Caso 3b: 20 transações em paralelo (limite do origin = 20)', falhasP === 0 && p.corpo.linhas === 20, `falhas=${falhasP} linhas=${p.corpo.linhas}`);
+registrar(
+  'Caso 3b: 20 transações em paralelo (limite do origin = 20)',
+  falhasP === 0 && p.corpo.linhas === 20,
+  `falhas=${falhasP} linhas=${p.corpo.linhas}`,
+);
 
 console.log(resultados.every(Boolean) ? 'S-01: PASSOU' : 'S-01: FALHOU');
 process.exit(resultados.every(Boolean) ? 0 : 1);

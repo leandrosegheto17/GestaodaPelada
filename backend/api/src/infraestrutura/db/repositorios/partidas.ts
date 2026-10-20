@@ -142,11 +142,7 @@ export interface DadosDaPartida {
   agora: Date;
 }
 
-export async function criar(
-  ex: Tx,
-  grupoId: string,
-  partida: DadosDaPartida & { data: string },
-): Promise<string> {
+export async function criar(ex: Tx, grupoId: string, partida: DadosDaPartida & { data: string }): Promise<string> {
   let id: string;
   try {
     const linha = await kyselyDe(ex)
@@ -171,12 +167,7 @@ export async function criar(
 }
 
 /** Atualiza `choveu` e a última alteração e troca as presenças. `false` se não há partida na data. */
-export async function substituir(
-  ex: Tx,
-  grupoId: string,
-  data: string,
-  partida: DadosDaPartida,
-): Promise<boolean> {
+export async function substituir(ex: Tx, grupoId: string, data: string, partida: DadosDaPartida): Promise<boolean> {
   const banco = kyselyDe(ex);
   const linha = await banco
     .updateTable('partidas')

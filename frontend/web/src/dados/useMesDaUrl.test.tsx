@@ -10,10 +10,9 @@ function montar(url: string) {
       {children}
     </MemoryRouter>
   );
-  return renderHook(
-    () => ({ mes: useMesDaUrl(), local: useLocation(), tipoNavegacao: useNavigationType() }),
-    { wrapper: envoltorio },
-  );
+  return renderHook(() => ({ mes: useMesDaUrl(), local: useLocation(), tipoNavegacao: useNavigationType() }), {
+    wrapper: envoltorio,
+  });
 }
 
 describe('useMesDaUrl', () => {

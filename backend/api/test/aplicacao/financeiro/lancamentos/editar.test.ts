@@ -29,7 +29,11 @@ describe('editarLancamento', () => {
     const { db, grupo, id, ctx } = await cenario();
     const r = await editarLancamento(db, grupo.id, id, NOVO, ctx);
     expect(r).toMatchObject({ tipo: 'ok', lancamento: { ...NOVO, mensalidade: false } });
-    const linhas = await kyselyDe(db).selectFrom('auditoria').select(['acao', 'resumo']).where('grupo_id', '=', grupo.id).execute();
+    const linhas = await kyselyDe(db)
+      .selectFrom('auditoria')
+      .select(['acao', 'resumo'])
+      .where('grupo_id', '=', grupo.id)
+      .execute();
     expect(linhas).toEqual([
       {
         acao: 'lancamento_editado',
