@@ -94,6 +94,8 @@ devolve** e responde `LIMITE` (exit 3) — aí é **bloqueio crítico** (`execut
 com o resumo do que falhou em cada volta. Tarefa bloqueada aqui, depois de `desbloquear`, volta à fila do
 `/executar`.
 
+**Publicação**: commit local apenas; push e espera do CI seguem a Seção 4b do `executar.md` (um push por chamada, só com autorização).
+
 ## Fim
 
 Rode `taskplan.py consolidar` (também monta a entrada de `QA-REPORT.md` a partir da linha `Resumo para o relatório:`). Resumo curto por tarefa: veredito, achados, RTP criadas, estado agora.

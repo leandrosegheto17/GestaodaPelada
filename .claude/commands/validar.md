@@ -73,6 +73,8 @@ comando: o controle volta ao `/desenvolver`.
 4. **Commit** (padrão): o que a validação produziu (seção 6, RTP) com a mensagem
    `<ID>: segurança aprovada|devolvida`, pelas regras de onde o código roda. Com `--nocommit`, não commite.
 
+**Publicação**: commit local apenas; push e espera do CI seguem a Seção 4b do `executar.md` (um push por chamada, só com autorização).
+
 ## Fim
 
 Rode `taskplan.py consolidar` (também monta a entrada de `SECURITY-REVIEW.md` a partir da linha `Resumo para o relatório:`). Resumo curto por tarefa: veredito, achados, RTP criadas, estado agora.

@@ -245,6 +245,19 @@ puladas por depender de bloqueada ou por não ter plano, e quantas divisões for
 Termine sugerindo `/testar` (e `/listar` para tratar os bloqueios um a um;
 `/executar --tarefa <ID>` retoma cada uma). Nunca dispare `/deploy`.
 
+## 4b. Publicação (push e CI) — vale para `/executar`, `/testar` e `/validar`
+
+- **Commit sempre local.** Nenhuma etapa dá `git push` por tarefa: cada tarefa deixa só o seu commit local
+  (`<ID>: ...`). Em `--paralelo N` são N commits locais em sequência, nunca N pushes.
+- **O push é por chamada, não por tarefa**, e **só com autorização do usuário naquela hora**. Ao fim da chamada
+  (depois do `consolidar`), diga quantos commits estão sem push e pergunte se publica. A autorização vale
+  para aquele push. O sinal normal para publicar é a tarefa chegar a `Aprovada` (fim do `/validar`); em modo
+  contínuo, um push por rodada ou por lote.
+- **Depois de cada push**, espere o CI da `main` (`gh run watch`). Se não ficar verde, leia `--log-failed` e
+  **corrija na hora** (novo commit local; o push da correção segue a mesma regra). Com 2+ commits no push,
+  localize o culpado pelo prefixo de ID (`git log`/`bisect`) e devolva só essa tarefa a `Em andamento`.
+- **Deploy é outra coisa**: `deploy.yml` só roda por `workflow_dispatch` (`/deploy`); push nunca faz deploy.
+
 ## 5. Abertura de nova tarefa (refatoração e divisão)
 
 Convenção de IDs e de pasta em `EXECUTION-FLOW.md` ("Convenção de IDs e da pasta

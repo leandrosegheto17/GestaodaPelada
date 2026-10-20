@@ -71,6 +71,10 @@ O `taskplan.py` resolve sempre a raiz da **árvore principal** (reservas, Status
 5. `/listar` é somente-leitura e não escreve nada — podem
    ler direto da árvore principal, sem precisar de worktree própria.
 
+**Publicação (push e CI)**: as etapas só fazem commit local. O push é um por chamada (não por tarefa),
+com autorização do usuário, e depois dele o CI é acompanhado até ficar verde, corrigindo na hora. Detalhe em
+`.claude/commands/executar.md`, Seção 4b. Push nunca dispara deploy.
+
 ---
 
 ## Checagem de contexto (Comando 1 — antes de tudo)

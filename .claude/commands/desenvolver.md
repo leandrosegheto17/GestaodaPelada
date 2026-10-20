@@ -79,6 +79,8 @@ O ciclo só termina por filas vazias, falta de progresso, `--rodadas`, teto de c
 as tarefas (git quebrado, suíte de testes quebrada de forma geral, ambiente indisponível) — neste último caso
 **pare** na hora e diga qual foi.
 
+**Publicação**: as etapas só commitam localmente (`executar.md`, Seção 4b). Não dê push entre elas; ao fim da rodada (ou do lote), peça autorização ao usuário para um único push e acompanhe o CI até ficar verde.
+
 ## 4. Relatório final
 
 Rode `python .claude/scripts/taskplan.py consolidar` e depois `python .claude/scripts/taskplan.py fila
