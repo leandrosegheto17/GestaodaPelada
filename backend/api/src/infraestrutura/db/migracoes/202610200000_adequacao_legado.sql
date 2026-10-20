@@ -1,7 +1,7 @@
 ALTER TABLE jogadores ADD COLUMN pontuacao_inicial integer NOT NULL DEFAULT 0 CHECK (pontuacao_inicial BETWEEN 0 AND 9999);
 
 -- contrair: o CHECK de posição é trocado por outro que aceita a lista antiga e a nova, sem perda de dado
--- Aceita as posições novas e as antigas durante a transição; o CHECK só com as novas entra em um deploy seguinte.
+-- Aceita as posições novas e as antigas durante a transição; o CHECK só com as novas entra numa migração `-- contrair:` própria (RTP-0180).
 ALTER TABLE jogadores DROP CONSTRAINT jogadores_posicao_check;
 ALTER TABLE jogadores ADD CONSTRAINT jogadores_posicao_check CHECK (
   posicao IN ('goleiro', 'zagueiro', 'lateral', 'volante', 'meia', 'atacante', 'centroavante', 'defensor', 'meio_campo')

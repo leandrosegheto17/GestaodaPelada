@@ -518,7 +518,7 @@ A dívida da rodada 1, "Vercel Hobby não comercial", **foi eliminada** pela mud
 
 | Fluxo que substitui dados | Janela de inconsistência | Como fica atômico | Como volta atrás |
 |---|---|---|---|
-| **Migração de schema** (`deploy.yml` → `migrar.ts` → `wrangler deploy`) | Entre a migração e o novo Worker, o código antigo roda contra o schema novo | Uma **transação** por migração (DDL transacional). Migrações **aditivas** (expandir → publicar → contrair num deploy seguinte) | Antes: **branch do Neon** + dump (ADR-011). Volta atrás = `wrangler rollback` para a versão anterior + restaurar o branch (segundos) |
+| **Migração de schema** (`deploy.yml` → `migrar.ts` → `wrangler deploy`) | Entre a migração e o novo Worker, o código antigo roda contra o schema novo | Uma **transação** por migração (DDL transacional). Migrações **aditivas** (expandir → publicar → contrair num deploy seguinte; o projeto só tem produção, sem staging, e toda contração pendente tem tarefa dona, hoje a RTP-0180 para o CHECK de posição) | Antes: **branch do Neon** + dump (ADR-011). Volta atrás = `wrangler rollback` para a versão anterior + restaurar o branch (segundos) |
 | **Recalcular o ranking** depois de editar partida, peso ou cadastro | **Não se aplica:** sem projeção materializada (ADR-006). O cache do Hyperdrive está **desligado**, para não servir leitura velha | — | — |
 | **Confirmar escalação** (substitui a da mesma data) | Nenhuma | Transação única (`upsert` por (grupo, data) + evento) | Confirmar de novo |
 | **Salvar ou editar partida** (presenças substituídas) | Nenhuma | Transação única (partida + presenças + auditoria + evento) | Editar de novo; histórico do Neon para erro grave |

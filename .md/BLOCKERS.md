@@ -106,7 +106,7 @@
 - Descrição: Quando e onde registrar a contração do CHECK de posicao (tirar defensor/meio_campo de jogadores_posicao_check), prometida como 'no deploy seguinte' na migração 202610200000_adequacao_legado.sql, em SDD §6, contrato/QUEBRAS.md e TP-0208, mas sem tarefa nem dono
 - Impacto se não resolvido: Média; sem efeito no deploy atual (o CHECK largo é seguro). Se ninguém contrair, o banco aceita para sempre valores que o contrato recusa
 - Sugestão: Migração nova (-- contrair:) aberta só depois do go-live e da importação do legado confirmadas; registrar como tarefa/lembrete pós-go-live ou linha no backend/DEPLOY.md
-- Status: Em aberto
+- Status: Resolvido (2026-10-20): Decisão A: RTP-0180 contrai o CHECK de posicao (migração -- contrair:); textos de SDD §6, QUEBRAS.md, TP-0208 e da 202610200000 apontam a RTP
 
 ## Bloqueio 013 — 2026-10-20 (BK-0013)
 - Reportado por: coordenador (/revisar)
