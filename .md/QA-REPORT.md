@@ -1157,3 +1157,6 @@ APROVADA; 0 críticos, 0 não críticos; prettier limpo, 3 chaves do pnpm e nosn
 
 ## RTP-0178 — QA — 2026-10-20
 APROVADA — 0 críticos, 0 não críticos; 20 testes verdes, script sai 0 no repositório e sai 1 com arquivo:linha em cópia adulterada (tag v4 e chave do pnpm removida); lint/prettier/tsc limpos.
+
+## RTP-0179 — QA — 2026-10-20
+APROVADA; 0 críticos, 0 não críticos; vitest 23/23, script real saída 0, cópia descartável prova saída 1 nos 3 casos e saída 0 nos aceitos, lint/prettier/tsc limpos.
