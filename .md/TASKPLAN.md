@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-19 23:15
+Atualizado: 2026-10-19 23:17
 
-Resumo: Não executada 4 · Testada (aguarda segurança) 2 · Aprovada 367 · Bloqueada 1 · Despriorizada 10 · total 384
+Resumo: Não executada 4 · Testada (aguarda segurança) 1 · Aprovada 368 · Bloqueada 1 · Despriorizada 10 · total 384
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -222,7 +222,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 207 | RTP-0001 | executor | ✔ | Lint: backend/scripts importando @pelada/api por alias fura a zona (e falta o teste do... | L01 | TP-0002 | Aprovada |
 | 208 | RTP-0003 | executor | ✔ | Teste de enums: conferir situacao de presença das respostas contra o enum | Refatoração Lote-L01 | TP-0005 | Aprovada |
 | 209 | BK-0003 | coordenador | ✔ | Exige push da branch ci-prova e PR real no remoto (ação manual/autorização do usuário); ro | — | — | Aprovada |
-| 210 | RTP-0014 | executor | ✔ | Executar a prova do CI em PR real (ci-prova) | Refatoração Lote-L01 | BK-0003, TP-0003 | Testada (aguarda segurança) |
+| 210 | RTP-0014 | executor | ✔ | Executar a prova do CI em PR real (ci-prova) | Refatoração Lote-L01 | BK-0003, TP-0003 | Aprovada |
 | 211 | RTP-0015 | executor | ✔ | Fixar por SHA de commit as actions de terceiros dos workflows (gitleaks-action, pnpm/ac... | Refatoração Lote-L01 | TP-0003 | Aprovada |
 | 212 | RTP-0002 | executor | ✔ | Lint: aliases contornam Date.now() (G-06) e document.cookie (G-09) | L01 | TP-0002 | Aprovada |
 | 213 | RTP-0004 | executor | ✔ | Remover teste duplicado de slug em src/grupos | Refatoração Lote-L02 | TP-0012 | Aprovada |

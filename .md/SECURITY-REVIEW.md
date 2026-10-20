@@ -1049,3 +1049,6 @@ APROVADA - passo 6 do DEPLOY.md correto e sem falsa sensação de proteção (tm
 
 ## RTP-0162 — DevSecOps — 2026-10-19
 OK DevSecOps — 0 críticos/altos, 0 acionáveis; filtro por prefixo exato nunca lista production/ambiente com metacaracteres (executado com JSON hostil), token fora de argv/eco, falha fechada com pipefail; id do branch não escapado na URL do DELETE é só observação marginal (origem Neon, igual ao código anterior).
+
+## RTP-0014 — DevSecOps — 2026-10-19
+diff só de formatação, gitleaks sem vazamento (116 commits); branch remota ci-prova mergeada ainda a apagar.
