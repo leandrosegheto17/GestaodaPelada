@@ -4,6 +4,38 @@ Log de governança do Gestor (chapéu CTO). Cada seção registra um gate ou um 
 
 ---
 
+## Gate 4 — Fechamento do deploy em produção | 2026-10-20
+
+**Natureza:** registro de fechamento, sem poder de veto. O deploy já aconteceu.
+
+**Deploy:** run `deploy.yml` 39447193681 (workflow_dispatch, environment `producao`, sha `a6be366f` da main). **Sucesso** em todas as etapas: build do web, branch de restauração no Neon, dump cifrado, migração, cache do Hyperdrive desligado, deploy e saúde. Rollback não acionado.
+
+**Verificação no host** `https://pelada.prod-ljs.workers.dev`:
+- `/api/saude` retornou 200.
+- `GET /api/dono/grupos` sem cookie retornou 401.
+- Grupo inexistente retornou 404.
+- Cabeçalhos CSP, nosniff e referrer-policy presentes.
+
+**Conteúdo publicado:**
+- TP-0208 Adequação ao legado: pontuação inicial por jogador, 7 posições, pesos de expulso sem/com chuva, migração `202610200000_adequacao_legado.sql` e script `backend/scripts/importar-legado` com `--correcoes`.
+- RTP-0167 e RTP-0168.
+- Tudo o que já estava aprovado: 384 tarefas Aprovadas.
+
+**Aceite do usuário:** publicado **sem as 5 tarefas despriorizadas da Play Store (TP-0140 a TP-0144)**. O Neon está sem dados e sem usuários, e o usuário dispensou o backup.
+
+**Auditoria de release 2026-10-20:** **APROVADA COM DÉBITO** (RTP-0170, RTP-0171 e RTP-0172, baixas). Um item não foi executado: limite de taxa da Cloudflare em `/api/sessao/entrar` e `/api/publico/*`, a confirmar no host publicado.
+
+**Revisão de arquitetura `--pre-deploy` 2026-10-20:** 0 achados Altos. RTP-0169 e BK-0012 (contração do CHECK de posição, só após o go-live e a importação).
+
+**Pendências pós-deploy:**
+- Dry-run e execução real do `importar-legado`, rodados pelo usuário (G-21).
+- Confirmar o limite de taxa no host publicado.
+- Backlog RTP-0169 a RTP-0172 e BK-0012.
+
+**Registro:** Deploy fechado e registrado. Nenhum bloqueio novo.
+
+---
+
 ## Guardrails — Primeira versão | 2026-10-16 | Loop C (`/definir`)
 
 **Skill:** `guardrails-governance`. Só governança. Não é parecer sobre o SDD.md nem sobre o TASK.md, que o usuário já aprovou diretamente.
