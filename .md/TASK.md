@@ -606,7 +606,7 @@ Colunas lidas pelo `taskplan.py` pelo nome. **Est** em dias-pessoa. **Cria**/**U
 ### Refatoração Lote-L20
 | ID | Lote | Título | Chapéu | Reqs | Aceite | Est | Dep | Par | Arquivos | Testes e diretrizes | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| RTP-0017 | Refatoração Lote-L20 | Provar job e2e verde em PR real e cobrir dist/ ausente em visual.mjs | Frontend | TP-0089; UX-SPEC §0 | Job e2e do ci.yml verde em PR real (URL do run registrada) e teste de visual.mjs com dist/ ausente saindo com código 2 (origem: QA TP-0089, baixa severidade) | 0,5 d | TP-0089, BK-0005 |  | frontend/web/e2e/telas-ativas.test.mjs | e2e/telas-ativas.test.mjs | Concluída · aguarda QA |
+| RTP-0017 | Refatoração Lote-L20 | Provar job e2e verde em PR real e cobrir dist/ ausente em visual.mjs | Frontend | TP-0089; UX-SPEC §0 | Job e2e do ci.yml verde em PR real (URL do run registrada) e teste de visual.mjs com dist/ ausente saindo com código 2 (origem: QA TP-0089, baixa severidade) | 0,5 d | TP-0089, BK-0005 |  | frontend/web/e2e/telas-ativas.test.mjs | e2e/telas-ativas.test.mjs | Concluída · QA ✔ |
 
 ### Refatoração Lote-L04
 | ID | Lote | Título | Chapéu | Reqs | Aceite | Est | Dep | Par | Arquivos | Testes e diretrizes | Status |

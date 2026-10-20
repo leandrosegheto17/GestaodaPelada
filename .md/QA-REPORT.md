@@ -1100,3 +1100,6 @@ APROVADA — 0 críticos; F1 fechado por decisão, F2 risco aceito por escrito (
 
 ## RTP-0014 — QA — 2026-10-19
 CI da main verde (run 39355743642) com a prova do cenário 2 e do cache; sem achados.
+
+## RTP-0017 — QA — 2026-10-19
+e2e verde em PR real (run 39265054416) e teste de dist/ ausente passando (7/7); sem achados.
