@@ -8,6 +8,11 @@ import { carregarDetalhe } from './detalhe.js';
 import type { EntradaCriarJogador } from './criar-jogador.js';
 import { MSG_APELIDO_EM_USO, MSG_PERIODO_INVALIDO, MSG_PRESENCA_ANTES_DA_ENTRADA } from './mensagens.js';
 
+/** Como o cadastro, mas `pontuacaoInicial` omitida mantém o valor atual. */
+export type EntradaEditarJogador = Omit<EntradaCriarJogador, 'pontuacaoInicial'> & {
+  pontuacaoInicial?: number | undefined;
+};
+
 export type ResultadoEditarJogador =
   | { ok: true; jogador: JogadorDetalhe }
   | { ok: false; naoEncontrado: true }
@@ -21,7 +26,7 @@ export async function editarJogador(
   db: Db,
   grupoId: string,
   jogadorId: string,
-  entrada: EntradaCriarJogador,
+  entrada: EntradaEditarJogador,
   contexto: { hoje: string; autor: string; agora: Date },
 ): Promise<ResultadoEditarJogador> {
   try {
@@ -37,23 +42,24 @@ export async function editarJogador(
           return { ok: false, campos: { dataEntrada: MSG_PRESENCA_ANTES_DA_ENTRADA } };
         }
       }
+      const pontuacaoInicial = entrada.pontuacaoInicial ?? atual.pontuacaoInicial;
       await jogadores.editar(tx, grupoId, jogadorId, {
         apelido: entrada.apelido,
         anoNascimento: entrada.anoNascimento,
         posicao: entrada.posicao,
         telefone: entrada.telefone,
-        pontuacaoInicial: entrada.pontuacaoInicial,
+        pontuacaoInicial,
         ...(novaEntrada !== undefined ? { dataEntrada: novaEntrada } : {}),
         autor: contexto.autor,
         agora: contexto.agora,
       });
-      if (atual.pontuacaoInicial !== entrada.pontuacaoInicial) {
+      if (atual.pontuacaoInicial !== pontuacaoInicial) {
         await auditoria.registrar(tx, grupoId, {
           autor: { tipo: 'conta', contaId: contexto.autor },
           acao: 'jogador_pontuacao_inicial_alterada',
           entidade: 'jogador',
           entidadeId: jogadorId,
-          resumo: { anterior: atual.pontuacaoInicial, novo: entrada.pontuacaoInicial },
+          resumo: { anterior: atual.pontuacaoInicial, novo: pontuacaoInicial },
           agora: contexto.agora,
         });
       }

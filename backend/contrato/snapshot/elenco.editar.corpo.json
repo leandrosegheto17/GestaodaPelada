@@ -1,0 +1,51 @@
+{
+  "direcao": "entrada",
+  "esquema": {
+    "additionalProperties": false,
+    "properties": {
+      "anoNascimento": {
+        "maximum": 9007199254740991,
+        "minimum": 1940,
+        "type": "integer"
+      },
+      "apelido": {
+        "maxLength": 30,
+        "minLength": 2,
+        "type": "string"
+      },
+      "dataEntrada": {
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+        "type": "string"
+      },
+      "pontuacaoInicial": {
+        "maximum": 9999,
+        "minimum": 0,
+        "type": "integer"
+      },
+      "posicao": {
+        "enum": [
+          "zagueiro",
+          "lateral",
+          "volante",
+          "meia",
+          "atacante",
+          "centroavante",
+          "goleiro"
+        ],
+        "type": "string"
+      },
+      "telefone": {
+        "type": [
+          "string",
+          "null"
+        ]
+      }
+    },
+    "required": [
+      "apelido",
+      "anoNascimento",
+      "posicao"
+    ],
+    "type": "object"
+  }
+}

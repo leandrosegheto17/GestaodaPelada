@@ -6,6 +6,8 @@ import {
   jogadorCorpo,
   jogadorCorpoBase,
   jogadorDetalhe,
+  jogadorEditarCorpo,
+  jogadorEditarCorpoBase,
   listaJogadores,
   notaValor,
 } from '../src/index.js';
@@ -88,6 +90,16 @@ describe('jogadorCorpo', () => {
       expect(r.success).toBe(false);
       expect(jogadorCorpoBase.safeParse({ ...ok, pontuacaoInicial: valor }).success).toBe(false);
     }
+  });
+  it('corpo de editar: pontuação inicial omitida fica indefinida; enviada segue a faixa', () => {
+    const editar = jogadorEditarCorpo(HOJE);
+    expect(editar.parse(ok).pontuacaoInicial).toBeUndefined();
+    expect(jogadorEditarCorpoBase.parse(ok).pontuacaoInicial).toBeUndefined();
+    expect(editar.parse({ ...ok, pontuacaoInicial: 0 }).pontuacaoInicial).toBe(0);
+    for (const valor of [-1, 10000, 1.5, '5', null]) {
+      expect(editar.safeParse({ ...ok, pontuacaoInicial: valor }).success).toBe(false);
+    }
+    expect(editar.safeParse({ ...ok, eDono: true }).success).toBe(false);
   });
   it('mensagem do campo de pontuação inicial', () => {
     const r = schema.safeParse({ ...ok, pontuacaoInicial: 10000 });

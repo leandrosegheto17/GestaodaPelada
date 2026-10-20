@@ -110,6 +110,35 @@ describe('PATCH /api/grupos/:g/jogadores/:id (editar, workerd)', () => {
     expect(depois).toHaveLength(1);
   });
 
+  it('editar sem pontuacaoInicial mantém o valor, o ranking e não audita', async () => {
+    const db = await abrir();
+    const cen = await montarCenario(db, fabrica);
+    const g = cen.grupoA.id;
+    const id = await criarJogador(db, g, cen.adminA.id, { apelido: 'Mantido', pontuacaoInicial: 25 });
+    await pesos.criarPadrao(db, g, {
+      pesos: PESOS_PADRAO,
+      vigenteDesde: diaRelativo(-400),
+      registradoPor: cen.adminA.id,
+      agora: AGORA_TESTE,
+    });
+    const r = await cliente(cen.adminA.cookie).patch(url(g, id), corpoBase);
+    expect(r.status).toBe(200);
+    expect(jogadorDetalhe.parse(r.corpo).pontuacaoInicial).toBe(25);
+    expect((await jogadores.buscar(db, g, id))?.pontuacaoInicial).toBe(25);
+    const eventos = await kyselyDe(db)
+      .selectFrom('auditoria')
+      .select('id')
+      .where('grupo_id', '=', g)
+      .where('acao', '=', 'jogador_pontuacao_inicial_alterada')
+      .execute();
+    expect(eventos).toHaveLength(0);
+    const publico = await clienteTeste({ relogio: relogioFixo(HOJE_TESTE) }).get(
+      `/api/publico/${cen.grupoA.slug}/ranking`,
+    );
+    const linha = (publico.corpo as { linhas: { apelido: string; ptsFinal: number }[] }).linhas[0];
+    expect(linha).toMatchObject({ apelido: 'Editado', ptsFinal: 25 });
+  });
+
   it('pontuação inicial inválida na edição: 422 no campo, sem gravar', async () => {
     const db = await abrir();
     const cen = await montarCenario(db, fabrica);

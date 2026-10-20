@@ -123,6 +123,14 @@ export function jogadorCorpo(hoje: string) {
   });
 }
 
+/** Corpo estático de editar: omitir `pontuacaoInicial` mantém o valor atual (criar usa 0). */
+export const jogadorEditarCorpoBase = jogadorCorpoBase.extend({ pontuacaoInicial: pontuacaoInicial.optional() });
+
+/** Fábrica do corpo de editar jogador, com as regras que dependem de `hoje`. */
+export function jogadorEditarCorpo(hoje: string) {
+  return jogadorCorpo(hoje).extend({ pontuacaoInicial: pontuacaoInicial.optional() });
+}
+
 export const inativarCorpoBase = z.strictObject({ dataSaida: data.optional() });
 
 export const reativarCorpo = z.strictObject({});
@@ -140,6 +148,7 @@ export const esquemasElenco: Esquemas = {
   'elenco.lista': { direcao: 'resposta', schema: listaJogadores },
   'elenco.detalhe': { direcao: 'resposta', schema: jogadorDetalhe },
   'elenco.corpo': { direcao: 'entrada', schema: jogadorCorpoBase },
+  'elenco.editar.corpo': { direcao: 'entrada', schema: jogadorEditarCorpoBase },
   'elenco.inativar.corpo': { direcao: 'entrada', schema: inativarCorpoBase },
   'elenco.erro.com-historico': { direcao: 'resposta', schema: erroJogadorComHistorico },
 };

@@ -1,4 +1,4 @@
-import { CODIGOS_ERRO, jogadorCorpo } from '@pelada/contrato';
+import { CODIGOS_ERRO, jogadorEditarCorpo } from '@pelada/contrato';
 import { Hono } from 'hono';
 import { editarJogador } from '../../../../aplicacao/elenco/editar-jogador.js';
 import type { AppEnv } from '../../../app.js';
@@ -12,7 +12,7 @@ export const rotaJogadorEditar = new Hono<AppEnv>().patch('/api/grupos/:grupoId/
   const id = uuidDaRota(c, 'id');
   if (!vinculo || !sessao || id === null) return naoEncontrado(c);
   const hoje = c.var.relogio.hoje();
-  const corpo = await lerCorpo(c, jogadorCorpo(hoje));
+  const corpo = await lerCorpo(c, jogadorEditarCorpo(hoje));
   if (!corpo.ok) return corpo.resposta;
 
   const r = await editarJogador(c.var.db(), vinculo.grupoId, id, corpo.dado, {
