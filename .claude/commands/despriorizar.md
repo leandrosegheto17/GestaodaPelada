@@ -1,5 +1,5 @@
 ---
-description: Marca uma tarefa como Despriorizada — você decidiu que a versão de teste pode sair sem ela, mas a versão de distribuição não. Ela fica com o Status Despriorizada, aparece sempre no fim do /listar e é ignorada por /executar, /testar, /validar e /desenvolver. Com --desfazer, a tarefa volta ao Status que tinha. Não dispara agente e não implementa nada.
+description: Marca uma tarefa como Despriorizada — você decidiu que o projeto segue sem ela por enquanto (o /deploy só a lista, não recusa). Ela fica com o Status Despriorizada, aparece sempre no fim do /listar e é ignorada por /executar, /testar, /validar e /desenvolver. Com --desfazer, a tarefa volta ao Status que tinha. Não dispara agente e não implementa nada.
 argument-hint: <ID> [motivo] | --desfazer <ID>
 ---
 
@@ -7,8 +7,8 @@ argument-hint: <ID> [motivo] | --desfazer <ID>
 
 Argumento recebido: $ARGUMENTS
 
-**Despriorizada** = decisão do usuário de que a versão final do módulo **para teste** pode sair sem a tarefa; a versão
-final **de distribuição** não pode. A tarefa continua em aberto, com tudo o que já foi feito preservado.
+**Despriorizada** = decisão do usuário de que o projeto segue sem a tarefa por enquanto (só produção, sem staging);
+o `/deploy` apenas a lista. A tarefa continua em aberto, com tudo o que já foi feito preservado.
 
 Este comando é só administrativo: **não dispara agente**, não implementa, não testa e não commita. Quem faz o trabalho é
 o script `python .claude/scripts/taskplan.py`.
@@ -43,7 +43,7 @@ só essa tarefa espera acompanha-a para o fim da lista sozinho).
 - `/listar`: a tarefa aparece **sempre no fim**, como "despriorizada".
 - `/executar`, `/testar`, `/validar` e `/desenvolver`: **ignoram** a tarefa (nunca elegível; `--tarefa <ID>` explica e para).
   Tarefa que depende dela espera, como em qualquer dependência aberta.
-- `/deploy`: **staging** (versão de teste) pode sair sem ela; **produção/distribuição não** — o `/deploy` recusa enquanto
-  houver tarefa despriorizada.
+- `/deploy`: só existe produção (sem staging); o `/deploy` **lista** as despriorizadas no resumo, mas **não recusa** por
+  causa delas (decisão do usuário em 2026-10-20).
 
 Nunca dispare outro comando.

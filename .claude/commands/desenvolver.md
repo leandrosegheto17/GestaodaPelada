@@ -93,7 +93,7 @@ Rode `python .claude/scripts/taskplan.py consolidar` e depois `python .claude/sc
   achado Alto aberto (que segura o `/deploy`).
 - **O que depende de você**: os `BK-`/`SPK-` abertos (ID + o que fazer, uma linha cada) e as tarefas
   `Bloqueada` que eles seguram. Trate com `/executar --tarefa BK-nnnn`.
-- **Despriorizadas**: quantas (`despriorizadas=`) e quais (`fila --bloqueios` as lista); o ciclo as ignora, mas a versão de distribuição exige todas `Aprovada`.
+- **Despriorizadas**: quantas (`despriorizadas=`) e quais (`fila --bloqueios` as lista); o ciclo as ignora e o `/deploy` só as lista (não bloqueiam).
 - **Travado por outro motivo**: etapas marcadas como travadas (com o motivo), reservas (`reservadas`; as com
   mais de 2 h de idade podem ser de uma sessão interrompida — `/executar --tarefa <ID>` oferece assumi-las) e
   tarefas sem plano (rode `/organizar`).

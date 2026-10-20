@@ -148,8 +148,8 @@ atual da sessão.
   gerar`) com **todas** as tarefas na ordem de execução e o estado de cada uma —
   Não executada · Em execução · Executada (aguarda teste) · Em teste · Testada
   (aguarda segurança) · Em validação de segurança · Aprovada (100%) — mais Bloqueada
-  e Dividida, mais **Despriorizada** (decisão do usuário via `/despriorizar`: a versão de teste sai sem a tarefa, a de
-  distribuição não; fica sempre no fim da lista e é ignorada por `/executar`, `/testar` e `/validar`; o Status anterior
+  e Dividida, mais **Despriorizada** (decisão do usuário via `/despriorizar`: o projeto segue sem a tarefa por enquanto e o
+  `/deploy` só a lista; fica sempre no fim da lista e é ignorada por `/executar`, `/testar` e `/validar`; o Status anterior
   fica guardado no próprio Status do `TASK.md` e volta com `/despriorizar --desfazer`). É uma **visão derivada** (do Status do `TASK.md` e da `Reserva:` do
   arquivo da tarefa); o `/executar` troca o estado da linha a cada etapa
   (`taskplan.py set`) e regera o arquivo ao abrir tarefas novas.
@@ -376,18 +376,10 @@ mais leve (confirmação), mas nunca é pulada.
   correção volta para `/executar` (a tarefa afetada refaz o ciclo completo antes
   de tentar `/deploy` outra vez).
 
-### 4. Deploy em staging
+### 4. Sem staging
 
-Com a validação final limpa: dispare `validador` (chapéu DevOps:
-`deployment-execution`, `observability-setup`,
-`non-functional-requirement-validation`) para staging, para o conjunto de lotes
-desta chamada — **sem pausa**.
-
-### 4a. Teste ativo contra staging
-
-Com o staging no ar, a Fase C da auditoria roda de novo contra ele (mesmas sondas):
-cabeçalhos, CORS, bindings e segredos reais só existem no ambiente publicado. Falha
-Crítica/Alta → para antes de produção. Sondas **nunca** rodam contra produção.
+Só existe produção (uso pessoal, ADR-020): não há deploy nem teste ativo em staging.
+O teste ativo é o da etapa 2b, contra a aplicação local. Sondas **nunca** rodam contra produção.
 
 ### 5. Deploy em produção
 

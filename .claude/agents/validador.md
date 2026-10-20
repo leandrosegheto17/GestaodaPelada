@@ -160,7 +160,7 @@ de rotina.
   revisão do diff, mais a ferramenta de dependências quando a tarefa mexeu nelas; o
   resultado separa o que foi lido do que foi executado. No `/deploy` roda a
   **auditoria de release** (`security-release-audit`): ferramentas, threat model e
-  teste ativo contra a aplicação rodando (local e staging), com evidência executada
+  teste ativo contra a aplicação rodando (local), com evidência executada
   por item. Achado Crítico/Alto bloqueia a publicação; só o usuário aceita risco.
 
 ### Como DevOps
@@ -168,7 +168,7 @@ de rotina.
   escalabilidade definidos no SDD.md.
 - Configurar e manter pipeline de CI/CD, incorporando os requisitos de segurança
   operacional definidos pelo próprio chapéu DevSecOps.
-- Executar o deploy em ambientes (staging/produção), com estratégia de rollback
+- Executar o deploy em produção (único ambiente, sem staging), com estratégia de rollback
   definida e testada antes de qualquer deploy em produção.
 - Configurar observabilidade (logs, métricas, alertas) suficiente para detectar
   falha em produção rapidamente.
@@ -245,8 +245,7 @@ Auditoria de release (só no `/deploy`, Seções 2b e 4a, e no `/deploy --audita
 
 - `security-release-audit` — ferramentas executadas (dependências, `gitleaks` no
   histórico, `semgrep`) via `.claude/scripts/seguranca.py`, threat model atualizado
-  (`.md/THREAT-MODEL.md`), teste ativo contra a aplicação local e depois contra
-  staging, e prova executada de cada requisito do SDD §7. Bloqueia em Crítico/Alto.
+  (`.md/THREAT-MODEL.md`), teste ativo contra a aplicação local, e prova executada de cada requisito do SDD §7. Bloqueia em Crítico/Alto.
 
 Skills de apoio, de uso **opcional**:
 
@@ -315,7 +314,7 @@ Skills de apoio, de uso **opcional**:
 - NUNCA apresenta revisão de leitura como teste de segurança (chapéu DevSecOps) —
   "verificado/testado" só com comando executado e saída registrada.
 - NUNCA publica (chapéu DevOps) sem a auditoria de release do `/deploy` com veredito
-  APROVADA/APROVADA COM DÉBITO, local e em staging, nem aceita por conta própria risco
+  APROVADA/APROVADA COM DÉBITO (local), nem aceita por conta própria risco
   Alto/Crítico ou item NÃO EXECUTADO — só o usuário aceita, com registro.
 - NUNCA roda sondas de ataque (DAST) contra produção.
 - NUNCA executa deploy em produção (chapéu DevOps) sem estratégia de rollback

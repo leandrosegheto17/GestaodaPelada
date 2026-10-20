@@ -1,5 +1,5 @@
 ---
-description: Aciona o agente Validador (chapéu DevOps) para provisionar infra/CI-CD (1ª vez), confirmar a validação final dos lotes prontos, rodar a auditoria de segurança de release (ferramentas + teste ativo local, que bloqueia em achado Crítico/Alto) e publicar em staging; repete o teste ativo contra staging e pausa sempre antes de produção. Fecha com um registro do Gestor (Gate 4). Com --auditar, roda só a auditoria de segurança, sem publicar.
+description: Aciona o agente Validador (chapéu DevOps) para provisionar infra/CI-CD (1ª vez), confirmar a validação final dos lotes prontos, rodar a auditoria de segurança de release (ferramentas + teste ativo local, que bloqueia em achado Crítico/Alto) e pausa sempre antes de publicar em produção (único ambiente, sem staging). Fecha com um registro do Gestor (Gate 4). Com --auditar, roda só a auditoria de segurança, sem publicar.
 argument-hint: [vazio = todos os lotes prontos (tarefas QA ✔ · Sec ✔) ainda não publicados | nome do lote = publica só esse lote | --auditar = só a auditoria de segurança de release, sem publicar]
 ---
 
@@ -117,35 +117,18 @@ comparação com o mockup é manual (`pnpm --filter @mymoney/web visual`).
   correção volta para `/executar` — a tarefa afetada refaz o ciclo completo do
   `/executar` antes de tentar `/deploy` outra vez.
 
-## 4. Deploy em staging
+## 4. Sem staging
 
-Com a confirmação limpa: **dispare** `validador` (chapéu DevOps:
-`deployment-execution`, `observability-setup`,
-`non-functional-requirement-validation`) para staging, cobrindo o conjunto de
-lotes desta chamada — **sem pausa**.
-
-## 4a. Teste ativo de segurança contra staging (obrigatório antes de produção)
-
-Cabeçalhos, CORS, bindings e segredos reais só existem no ambiente publicado. Com o
-staging no ar, **dispare** `validador` (chapéu DevSecOps, skill `security-release-audit`,
-**só a Fase C**) com a URL de staging: ele roda
-`python .claude/scripts/seguranca.py --dast <URL de staging> --sondas .md/.seguranca/sondas.json`
-(mesmas sondas da Seção 2b), confirma as falhas e acrescenta ao `SECURITY-REVIEW.md` a
-entrada `## Auditoria de release <data> — staging`.
-
-- **Crítico/Alto ou sonda reprovada que não aconteceu localmente** (diferença de
-  configuração do ambiente): **pare antes de produção**, pelas mesmas regras do item 5
-  da Seção 2b. O staging fica no ar para inspeção.
-- **Limpo**: siga para a Seção 5.
-
-**Nunca** rode as sondas contra produção.
+O projeto só tem produção (uso pessoal, ADR-020): não há deploy nem teste ativo em
+staging. O teste ativo é o da Seção 2b, contra a aplicação local. **Nunca** rode as
+sondas contra produção. Siga para a Seção 5.
 
 ## 5. Deploy em produção
 
-**Tarefas despriorizadas** (`/despriorizar`): staging (a versão de teste) pode sair sem elas, mas a **versão de distribuição
-não**. Antes de perguntar sobre produção, rode `python .claude/scripts/taskplan.py fila --bloqueios` e liste as linhas
-`DESPRIORIZADA`. Havendo qualquer uma, **não publique em produção**: mostre a lista, diga que cada uma precisa voltar
-(`/despriorizar --desfazer <ID>`) e ficar `Aprovada` (`/executar` → `/testar` → `/validar`) antes, e **pare**.
+**Tarefas despriorizadas** (`/despriorizar`): com produção como único ambiente, elas **não bloqueiam** a
+publicação (decisão do usuário em 2026-10-20: a TWA fica de fora, só PWA). Antes de perguntar sobre
+produção, rode `python .claude/scripts/taskplan.py fila --bloqueios` e **liste** as linhas `DESPRIORIZADA` no
+resumo, para o usuário ver o que está fora desta publicação.
 
 **Pare sempre aqui**, mesmo com tudo limpo. Pergunte explicitamente ao usuário se
 quer publicar este conjunto em produção agora. Só com confirmação explícita,
@@ -161,7 +144,7 @@ incluídos.
 ## 7. Encerramento
 
 Apresente o `DEPLOY.md` atualizado (o que foi publicado, em qual ambiente, estado
-de observabilidade/rollback), o veredito das auditorias de segurança (local e staging,
+de observabilidade/rollback), o veredito da auditoria de segurança (local,
 com as `RTP` de débito abertas e os riscos aceitos pelo usuário, se houver) e, se houve
 produção, a confirmação do Gate 4.
 
