@@ -107,3 +107,12 @@
 - Impacto se não resolvido: Média; sem efeito no deploy atual (o CHECK largo é seguro). Se ninguém contrair, o banco aceita para sempre valores que o contrato recusa
 - Sugestão: Migração nova (-- contrair:) aberta só depois do go-live e da importação do legado confirmadas; registrar como tarefa/lembrete pós-go-live ou linha no backend/DEPLOY.md
 - Status: Em aberto
+
+## Bloqueio 013 — 2026-10-20 (BK-0013)
+- Reportado por: coordenador (/revisar)
+- Escalado para: usuário
+- Artefato/trecho afetado: —
+- Descrição: ADR-008 §3 decide gerar e chamar navigator.share no mesmo gesto; o app agora sempre mostra Compartilhar/Baixar. Registrar com ADR novo que supersede esse ponto, ou voltar ao fluxo direto?
+- Impacto se não resolvido: Baixa: só documentação (ADR-008, SDD C3); nada bloqueia o deploy
+- Sugestão: Novo ADR (Superseded by no ADR-008 §3) registrando o D4 como passo normal; RTP-0174 já alinha o UX-SPEC
+- Status: Em aberto

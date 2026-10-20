@@ -1,5 +1,28 @@
 # Revisão de arquitetura
 
+## Revisão 2026-10-20 (2ª) — pré-deploy, depois do ajuste do Exportar PDF
+
+Números do saude.py: 0 arquivos acima do limite · 4 blocos duplicados (33 linhas, os mesmos já descartados na revisão anterior) · 3 IDs de tarefa (todos em `evidencia/s-01`) · 2 pastas com acesso a dados (`backend/api/src`, `evidencia/s-01`) · 0 imports indevidos entre aplicações · 0 conversões forçadas · 8 comentários de cópia (falsos positivos). Comparação visual: 117 de 117 OK, 0 DIVERGE; `tokens.css` do app idêntico ao do mockup. Mudança desde a revisão anterior: commit 7a7560ee (`pdf/entregar.ts`, `usarExportarPdf.ts`, testes).
+
+**Não há achado de severidade Alta aberto. Nada impede o `/deploy`.** Os achados abaixo são de documentação; o achado #2 da revisão anterior (contrair o CHECK de `posicao`) segue aberto como BK e não é repetido.
+
+| # | Achado | Item do checklist | Severidade | Onde | Destino |
+|---|---|---|---|---|---|
+| 1 | O UX-SPEC ainda descreve o Exportar PDF antigo: F4 compartilha direto e só cai no D4 se recusado; D4 "quando o compartilhamento direto falha"; trade-off T01/P01 "compartilhar no mesmo toque, D4 como reserva". O código agora abre o D4 (Compartilhar ou Baixar) sempre que o aparelho compartilha arquivo | 18 | Baixa | `.md/UX-SPEC.md` F4 (~234-240), lista de diálogos (~157), estados P01 (~633), trade-offs (~743) | RTP-0174 |
+| 2 | Doc de `ResultadoEntrega` (`pedir-gesto` = "recusou por falta de gesto"), comentário de `DialogoPdfPronto` ("recusou o compartilhamento direto") e dois títulos de teste ainda dizem o fluxo antigo | 4 | Baixa | `frontend/web/src/pdf/entregar.ts:4`, `telas/ranking/DialogoPdfPronto.tsx:12`, `telas/ranking/exportar-pdf.test.tsx:105,137` | RTP-0175 |
+| 3 | O ADR-008 (item 3, "Ordem para preservar o gesto") decide gerar e chamar `navigator.share` no mesmo gesto; o app passou a sempre mostrar Compartilhar/Baixar. ADR é imutável: falta um ADR novo que supersede esse ponto (ou decisão de voltar ao fluxo direto) | 17 | Baixa | `.md/adr/008-pdf-gerado-no-cliente-a-partir-de-projecao-da-api.md` §3; `.md/SDD.md` C3 e §6 (risco "Aparência do PDF") | BK |
+
+Descartados:
+- Os 4 blocos duplicados, IDs em `evidencia/s-01`, acesso a dados em `backend/api/src` e `evidencia/s-01`, e os 8 comentários de cópia: os mesmos já descartados em 19 e 20/10.
+- `compartilharArquivo` receber `titulo` enquanto `entregarPdf` não recebe mais: coerente, só o botão Compartilhar do D4 compartilha; `usarExportarPdf.ts` monta o título e passa. Sem código morto.
+- Em `compartilharDoD4`, `pedir-gesto` não faz nada e o D4 continua aberto: a pessoa toca de novo, o que é o comportamento especificado.
+- SDD C3 ("compartilhar ou baixar") e a lista de integrações: continuam verdadeiros com o novo fluxo.
+- Regra de negócio na tela do PDF: sem mudança; `usarExportarPdf` só orquestra, título e colunas vêm do contrato e do domínio.
+
+Conferido: `entregar.test.ts` cobre os 3 caminhos de `entregarPdf` (compartilha, baixa, `canShare` ausente) e `exportar-pdf.test.tsx` cobre D4 (Compartilhar, Baixar, cancelar, erro); visual sem divergência, inclusive `pdf-compartilhar`.
+
+Sem achado nos itens: 1 a 3, 5 a 16 e 18 (além do #1). Itens 11, 13 e 14 por amostragem do relatório.
+
 ## Revisão 2026-10-20 — pré-deploy (projeto inteiro, depois da TP-0208 e das RTP-0167/0168)
 
 Números do saude.py: 0 arquivos acima do limite · 4 blocos duplicados (33 linhas; 1 novo par, `Pesos` em `pesos.ts` × `dominio/pontuacao/tipos.ts`, descartado) · 3 IDs de tarefa (todos em `evidencia/s-01`) · 2 pastas com acesso a dados (`backend/api/src`, `evidencia/s-01`) · 0 imports indevidos entre aplicações · 0 conversões forçadas · 8 comentários de cópia (falsos positivos). Comparação visual: 117 de 117 OK; `tokens.css` do app idêntico ao do mockup. Todas as RTP da revisão anterior (0130 a 0134, 0162) e as RTP-0165 a 0168 estão Aprovadas no TASKPLAN.
