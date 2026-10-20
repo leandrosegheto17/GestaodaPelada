@@ -1,5 +1,28 @@
 # Revisão de arquitetura
 
+## Revisão 2026-10-20 (3ª) — pré-deploy, depois das RTP-0169 a 0175
+
+Números do saude.py: 0 arquivos acima do limite · 4 blocos duplicados (33 linhas, os mesmos já descartados) · 3 IDs de tarefa (todos em `evidencia/s-01`) · 2 pastas com acesso a dados (`backend/api/src`, `evidencia/s-01`) · 0 imports indevidos entre aplicações · 0 conversões forçadas · 8 comentários de cópia (falsos positivos). Comparação visual: a de hoje (117 de 117 OK) segue válida: desde então o frontend só mudou comentários e títulos de teste (RTP-0175); `tokens.css` do app idêntico ao do mockup. Mudança desde a revisão anterior (commit 53526121): workflows com ações fixadas por SHA, `pnpm-workspace.yaml` (RTP-0171), `middlewares/sem-sniff.ts` (RTP-0170), comentários do PDF (RTP-0175); documentos SDD §2, G-01 e UX-SPEC (RTP-0169, 0174).
+
+**Não há achado de severidade Alta aberto. Nada impede o `/deploy`.** Débitos já abertos e não repetidos: RTP-0176 (`minimumReleaseAge` 10080 depois de 22/10, prazo 29/10), BK-0012 e BK-0013.
+
+| # | Achado | Item do checklist | Severidade | Onde | Destino |
+|---|---|---|---|---|---|
+| 1 | O SDD §7 e o GUARDRAILS não têm requisito para a cadeia de suprimento (ações por SHA, política do pnpm) nem para `nosniff` em `/api/*` (a "Superfície de Exposição" só cita `nosniff` nos assets). As RTP-0170/0171 citam "SDD §7; G-15", que não dizem isso: o controle existe só no código | 17 | Baixa | `.md/SDD.md` §7 (Superfície de Exposição, ~595-598); `.md/GUARDRAILS.md` | RTP-0177 |
+| 2 | Nada impede voltar a uma ação por tag mutável (`uses: x@v4`) ou tirar `blockExoticSubdeps`/`trustPolicy`: o fixar por SHA foi feito à mão e só o semgrep do DevSecOps (fora do CI) confere. Os outros guardrails de CI têm `checar-*` | 17 | Baixa | `.github/workflows/*.yml`, `.github/actions/*/action.yml`, `pnpm-workspace.yaml`; modelo: `backend/scripts/checagens/checar-wrangler-deploy.mjs` | RTP-0178 (depende da RTP-0177) |
+
+Descartados:
+- `deploy.yml` depois do pinning: só mudaram as linhas `uses:`; ordem build do web, branch de restauração, dump cifrado, migração, cache do Hyperdrive, deploy, saúde e rollback igual ao cabeçalho do arquivo, ao G-15 e à §6 do SDD; `permissions`, `environment`, `concurrency` e o gatilho `workflow_dispatch` intactos.
+- `semSniff` × `semCache` (7 linhas cada, mesmo corpo com outro cabeçalho): mesmo padrão `await proximo(); c.header(...)` e mesmas duas linhas em `app.ts`, antes de limite de taxa, CSRF e sessão, então 401, 404, 429 e 500 também saem com o cabeçalho; teste cobre 200/401/404/500. Juntar em um arquivo seria refinamento marginal.
+- Nome do arquivo `cache.ts` (exporta `semCache`) × `sem-sniff.ts` (exporta `semSniff`): inconsistência só de nome de arquivo; renomear gera churn sem ganho.
+- THREAT-MODEL com os débitos 1 e 2 ("sem nosniff", "ações por tag") ainda listados: é o retrato da auditoria do DevSecOps, não artefato de arquitetura; a nova auditoria o atualiza.
+- `trustPolicyExclude` com 4 entradas por versão exata: falso positivo do lockfile atual, já previsto na RTP-0176 (item 3), sem RTP nova.
+- Os 4 blocos duplicados, IDs em `evidencia/s-01`, acesso a dados em `backend/api/src` e `evidencia/s-01`, e os 8 comentários de cópia: os mesmos já descartados em 19 e 20/10.
+- Comentários de `pdf/entregar.ts`, `DialogoPdfPronto.tsx` e títulos de `exportar-pdf.test.tsx` (RTP-0175): agora dizem o fluxo novo; sem mudança de lógica.
+- SDD §2 e G-01 (RTP-0169): batem com `ZONAS` do `eslint.config.mjs` e com os imports reais de `backend/scripts`.
+
+Sem achado nos itens: 1 a 16 e 18 (além dos #1 e #2 no 17). Itens 11, 13 e 14 por amostragem do relatório.
+
 ## Revisão 2026-10-20 (2ª) — pré-deploy, depois do ajuste do Exportar PDF
 
 Números do saude.py: 0 arquivos acima do limite · 4 blocos duplicados (33 linhas, os mesmos já descartados na revisão anterior) · 3 IDs de tarefa (todos em `evidencia/s-01`) · 2 pastas com acesso a dados (`backend/api/src`, `evidencia/s-01`) · 0 imports indevidos entre aplicações · 0 conversões forçadas · 8 comentários de cópia (falsos positivos). Comparação visual: 117 de 117 OK, 0 DIVERGE; `tokens.css` do app idêntico ao do mockup. Mudança desde a revisão anterior: commit 7a7560ee (`pdf/entregar.ts`, `usarExportarPdf.ts`, testes).
