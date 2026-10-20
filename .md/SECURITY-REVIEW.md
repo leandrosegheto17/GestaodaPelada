@@ -1052,3 +1052,6 @@ OK DevSecOps — 0 críticos/altos, 0 acionáveis; filtro por prefixo exato nunc
 
 ## RTP-0014 — DevSecOps — 2026-10-19
 diff só de formatação, gitleaks sem vazamento (116 commits); branch remota ci-prova mergeada ainda a apagar.
+
+## RTP-0017 — DevSecOps — 2026-10-19
+diff de script/teste sem superfície de segurança nova; gitleaks sem vazamento.
