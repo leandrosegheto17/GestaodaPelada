@@ -18,7 +18,7 @@ jobs:
   base:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           fetch-depth: 0
           persist-credentials: false
@@ -61,7 +61,7 @@ jobs:
           --health-timeout 3s
           --health-retries 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - uses: ./.github/actions/preparar-node
       # Cada fatia tem o seu Postgres: os arquivos de teste seguem em série dentro dela.
       - run: pnpm --filter @pelada/api test --shard=${{ matrix.fatia }}/3
@@ -84,7 +84,7 @@ jobs:
           --health-timeout 3s
           --health-retries 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           persist-credentials: false
       - uses: ./.github/actions/preparar-node
@@ -95,14 +95,14 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           persist-credentials: false
       - uses: ./.github/actions/preparar-node
       - run: pnpm --filter @pelada/web exec playwright install --with-deps chromium
       - run: pnpm --filter @pelada/web build
       - run: pnpm --filter @pelada/web e2e
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: always()
         with:
           name: visual
@@ -118,14 +118,14 @@ jobs:
       matrix:
         fatia: [1, 2]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - uses: ./.github/actions/preparar-node
       - run: pnpm --filter @pelada/web exec playwright install --with-deps chromium
       - run: pnpm --filter @pelada/web build
       - run: pnpm --filter @pelada/web visual
         env:
           VISUAL_FATIA: ${{ matrix.fatia }}/2
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: always()
         with:
           name: visual-telas-${{ matrix.fatia }}
@@ -137,7 +137,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           persist-credentials: false
       - uses: ./.github/actions/preparar-node
@@ -148,7 +148,7 @@ jobs:
       - name: Logs do compose
         if: failure()
         run: docker compose logs --no-color > compose.log
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: failure()
         with:
           name: integracao-falha
