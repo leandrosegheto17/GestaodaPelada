@@ -1151,3 +1151,6 @@ APROVADA, 0 achados; diff só comentários e títulos de teste (conferido por fi
 
 ## RTP-0177 — DevSecOps — 2026-10-20
 APROVADA; 0 achados; ações de terceiros todas por SHA, 3 chaves do pnpm e nosniff em /api/* conferidos, sem segredo/URL nas linhas adicionadas, texto não afrouxa G-15/G-22.
+
+## RTP-0178 — DevSecOps — 2026-10-20
+APROVADA COM DÉBITO — 0 críticos/altos, 1 baixo (RTP-0179: `uses: ./../x` e `{uses: ...}` escapam da checagem); script sem eval/rede/traversal, falha fechado, docker:// e tags recusados em cópia descartável, ci.yml só ganha 1 passo; semgrep ausente.
