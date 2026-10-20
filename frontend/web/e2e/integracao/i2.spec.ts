@@ -64,22 +64,38 @@ test.describe.serial('I2: do simulador à partida pré-marcada e ao ranking', ()
     await titularA.click();
     await page.getByRole('button', { name: 'Trocar com…' }).click();
     const avaliacao = esperarChamada(page, 'POST', '/simulador/avaliar', 200);
-    await page.getByRole('dialog').getByRole('button').first().click();
+    const parceiro = page
+      .getByRole('dialog')
+      .locator('section', { has: page.getByRole('heading', { name: 'Time B · Titulares' }) })
+      .getByRole('button')
+      .first();
+    const nomeParceiro = ((await parceiro.textContent()) ?? '').trim();
+    expect(nomeA).not.toBe('');
+    expect(nomeParceiro).not.toBe('');
+    await parceiro.click();
     await expect(page.getByRole('button', { name: 'Confirmar escalação' })).toBeDisabled();
     await avaliacao;
     await expect(page.getByRole('button', { name: 'Confirmar escalação' })).toBeEnabled();
-    expect(nomeA).not.toBe('');
 
     const confirmacao = page.waitForRequest((r) => r.url().endsWith('/escalacoes') && r.method() === 'POST');
     const respostaConfirmacao = esperarChamada(page, 'POST', '/escalacoes', 201);
     await page.getByRole('button', { name: 'Confirmar escalação' }).click();
     const corpo = (await confirmacao).postDataJSON() as {
-      composicao: { times: { titulares: unknown[]; entramNo2oTempo: unknown[] }[]; naoEntra: unknown[] };
+      composicao: { times: { titulares: { id: string }[]; entramNo2oTempo: unknown[] }[]; naoEntra: unknown[] };
     };
     const total =
       corpo.composicao.times.reduce((s, t) => s + t.titulares.length + t.entramNo2oTempo.length, 0) +
       corpo.composicao.naoEntra.length;
     expect(total).toBe(5);
+
+    const lista = (await (await page.request.get(`/api/grupos/${grupo().grupoId}/jogadores`)).json()) as {
+      ativos: { id: string; apelido: string }[];
+    };
+    const idDe = (apelido: string) => lista.ativos.find((j) => j.apelido === apelido)?.id;
+    const titularesDe = (i: number) => (corpo.composicao.times[i]?.titulares ?? []).map((t) => t.id);
+    expect(titularesDe(1)).toContain(idDe(nomeA));
+    expect(titularesDe(0)).toContain(idDe(nomeParceiro));
+    expect(titularesDe(0)).not.toContain(idDe(nomeA));
     await respostaConfirmacao;
     await expect(page).toHaveURL(new RegExp(`/admin/${grupo().grupoId}$`));
     await expect(page.getByText(`Escalação de ${diaMes(ctx.hoje)} confirmada.`)).toBeVisible();
