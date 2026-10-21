@@ -1,3 +1,4 @@
+import { MENSAGEM_ANTES_DO_PISO, PISO_INICIO } from '@pelada/contrato';
 import { previaDoInicio, type JogadorDoRanking, type PreviaInicio } from '@pelada/dominio';
 import type { ExecutorDb } from '../../infraestrutura/db/index.js';
 import { carregarHistoricoGrupo, type HistoricoDoGrupo } from '../pontuacao/historico.js';
@@ -27,10 +28,11 @@ export async function carregarContextoInicio(
 }
 
 /**
- * Datas que a edição recusa: no futuro (o servidor decide o "hoje") ou depois da saída do 1º período,
+ * Datas que a edição recusa: antes do piso, no futuro (o servidor decide o "hoje") ou depois da saída do 1º período,
  * que nunca é alterada. Compartilhada pela prévia e pela gravação para as duas darem a mesma resposta.
  */
 export function motivoDeRecusa(contexto: ContextoInicio, novoInicio: string, hoje: string): string | null {
+  if (novoInicio < PISO_INICIO) return MENSAGEM_ANTES_DO_PISO;
   if (novoInicio > hoje) return MSG_INICIO_NO_FUTURO;
   const fimDoPrimeiro = contexto.jogador.periodos[0]?.fim;
   if (fimDoPrimeiro && novoInicio > fimDoPrimeiro) return MSG_INICIO_DEPOIS_DA_SAIDA;

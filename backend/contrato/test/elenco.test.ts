@@ -5,6 +5,8 @@ import {
   inativarCorpo,
   inicioCorpo,
   inicioCorpoBase,
+  MENSAGEM_ANTES_DO_PISO,
+  PISO_INICIO,
   inicioEditarResposta,
   inicioPreviaResposta,
   jogadorCorpo,
@@ -190,6 +192,14 @@ describe('data de início', () => {
       expect(schema.safeParse({ data }).success).toBe(false);
     }
     expect(schema.safeParse({}).success).toBe(false);
+  });
+  it('recusa antes do piso (0000, 0001, véspera) com mensagem em pt-BR e aceita o piso', () => {
+    expect(schema.safeParse({ data: PISO_INICIO }).success).toBe(true);
+    for (const data of ['0000-01-01', '0001-01-01', '1900-01-01', '1999-12-31']) {
+      const r = schema.safeParse({ data });
+      expect(r.success).toBe(false);
+      expect(r.error?.issues[0]?.message).toBe(MENSAGEM_ANTES_DO_PISO);
+    }
   });
   it('recusa campo extra e tipo errado; o corpo estático também', () => {
     expect(schema.safeParse({ data: HOJE, dataEntrada: HOJE }).success).toBe(false);

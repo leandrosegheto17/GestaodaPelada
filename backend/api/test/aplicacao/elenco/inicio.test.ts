@@ -125,6 +125,9 @@ describe('previaInicio', () => {
     await emTransacao(db, (tx) => jogadores.inativar(tx, g, vandre, d(-3)));
     const futuro = await previaInicio(db, g, vandre, d(1), HOJE);
     expect(futuro).toMatchObject({ tipo: 'invalida' });
+    for (const antigo of ['0000-01-01', '0001-01-01', '1999-12-31']) {
+      expect(await previaInicio(db, g, vandre, antigo, HOJE)).toMatchObject({ tipo: 'invalida' });
+    }
     const depoisDaSaida = await previaInicio(db, g, vandre, d(-2), HOJE);
     expect(depoisDaSaida).toMatchObject({ tipo: 'invalida' });
     expect(await previaInicio(db, cen.grupoB.id, vandre, d(-10), HOJE)).toEqual({ tipo: 'nao_encontrado' });

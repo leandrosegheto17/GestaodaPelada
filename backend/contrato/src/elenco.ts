@@ -149,12 +149,18 @@ export function inativarCorpo(hoje: string) {
 
 const MENSAGEM_FUTURO = 'A data não pode ser no futuro.';
 
+/** Primeira data aceita como início da pontuação; antes disso o dado não faz sentido. */
+export const PISO_INICIO = '2000-01-01';
+export const MENSAGEM_ANTES_DO_PISO = 'A data de início não pode ser anterior a 01/01/2000.';
+
 /** Corpo estático de alterar a data de início (prévia e gravação). */
 export const inicioCorpoBase = z.strictObject({ data });
 
 /** Corpo com a regra que depende de `hoje` (America/Sao_Paulo, vindo do servidor). */
 export function inicioCorpo(hoje: string) {
-  return z.strictObject({ data: data.refine((d) => d <= hoje, MENSAGEM_FUTURO) });
+  return z.strictObject({
+    data: data.refine((d) => d >= PISO_INICIO, MENSAGEM_ANTES_DO_PISO).refine((d) => d <= hoje, MENSAGEM_FUTURO),
+  });
 }
 
 const inteiroNaoNegativo = z.number().int().min(0);

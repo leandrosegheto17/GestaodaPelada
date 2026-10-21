@@ -82,7 +82,7 @@ describe('POST /api/grupos/:g/jogadores/:id/inicio/previa (workerd)', () => {
   it('data inválida, futura ou campo extra: 422 no campo, sem gravar', async () => {
     const db = await abrir();
     const { cen, g, id } = await cenario(db);
-    for (const data of [d(1), '2026-02-30', '', '22/10/2026']) {
+    for (const data of [d(1), '2026-02-30', '', '22/10/2026', '0000-01-01', '0001-01-01', '1999-12-31']) {
       const r = await cliente(cen.adminA.cookie).post(previa(g, id), { data });
       expect(r.status).toBe(422);
       expect(Object.keys(campos(r))).toEqual(['data']);
@@ -136,7 +136,7 @@ describe('PUT /api/grupos/:g/jogadores/:id/inicio (workerd)', () => {
   it('data inválida ou futura: 422 e nada gravado', async () => {
     const db = await abrir();
     const { cen, g, id } = await cenario(db);
-    for (const data of [d(1), '2026-02-30', '']) {
+    for (const data of [d(1), '2026-02-30', '', '0000-01-01', '0001-01-01', '1999-12-31']) {
       const r = await cliente(cen.adminA.cookie).put(inicio(g, id), { data });
       expect(r.status).toBe(422);
       expect(Object.keys(campos(r))).toEqual(['data']);
