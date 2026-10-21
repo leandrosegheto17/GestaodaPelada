@@ -4,6 +4,28 @@ Log de governança do Gestor (chapéu CTO). Cada seção registra um gate ou um 
 
 ---
 
+## Gate 4 — Fechamento do deploy em produção | 2026-10-21
+
+**Natureza:** registro de fechamento, sem poder de veto. O deploy já aconteceu.
+
+**Deploy:** run `deploy` 39652858822 (disparo manual a partir da main, commit `83909c5b`). **Sucesso** em todos os passos: build do web, branch de restauração no Neon, dump cifrado, migração, conferência do cache do Hyperdrive, deploy e saúde. O passo de rollback foi pulado (não acionado).
+
+**Verificação passiva no host** `https://pelada.prod-ljs.workers.dev`:
+- `GET /api/saude` retornou `{"ok":true}`, com `Cache-Control: no-store` e `X-Content-Type-Options: nosniff`.
+- `/` com CSP, nosniff e referrer-policy.
+
+**Conteúdo publicado:** TP-0209 (data de início da pontuação do jogador, blocos A–F; migração `202610201000_inicio_pontuacao`), todas as tarefas com QA ✔ · Sec ✔.
+
+**Revisão de arquitetura 2026-10-21:** sem achado Alto. RTP-0183, RTP-0184 e BK-0014 abertos como débito/decisão.
+
+**Auditoria de segurança de release 2026-10-21:** **APROVADA COM DÉBITO** (RTP-0185, Baixa). Risco aceito pelo usuário: limite de taxa da Cloudflare e cabeçalhos no host publicado não testados localmente; conferência passiva feita após o deploy (cabeçalhos ok; o limite de taxa segue sem prova executada).
+
+**Fora da publicação:** TP-0140 a TP-0144 (TWA/Play, despriorizadas).
+
+**Registro:** Deploy fechado e registrado. Nenhum bloqueio novo.
+
+---
+
 ## Guardrails — G-25 (acumulado só pela função única do domínio) | 2026-10-20
 
 Proposta do Coordenador (lote L47 / TP-0209, aprovado pelo usuário). Regra clara, verificável (ESLint + teste de rotas, ambos criados na TP-0209) e sem conflito com G-05, G-14, G-20 ou o ADR-023. Ajuste de redação: a criação do jogador (S = início do 1º período) e as migrações também gravam `inicio_pontuacao`, além do `PUT …/inicio`. **Veredito: Aprovado com ajuste de redação.** Gravada em `GUARDRAILS.md` com entrada no Log de Alterações. Sem renumeração.
