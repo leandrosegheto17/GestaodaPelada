@@ -1160,3 +1160,6 @@ APROVADA — 0 críticos, 0 não críticos; 20 testes verdes, script sai 0 no re
 
 ## RTP-0179 — QA — 2026-10-20
 APROVADA; 0 críticos, 0 não críticos; vitest 23/23, script real saída 0, cópia descartável prova saída 1 nos 3 casos e saída 0 nos aceitos, lint/prettier/tsc limpos.
+
+## TP-0209 — QA — 2026-10-21
+APROVADA com ressalvas: 0 críticos, 1 não crítico (RTP-0182, QUEBRAS.md do `jogadorDetalhe.inicioPontuacao` recusado pelo app anterior) e 2 decisões de UX/PRD para o Coordenador (rótulo de `fora`; RNF-13 (1) × PTS FINAL do Vandré 3→6 e 6→7, só exibição, acumulado e posições idênticos); domínio, contrato, API (isolamento e meta), scripts, web, lint, typecheck e checagens verdes; comparação visual T16 OK (0,00% a 0,48%); `pdf-visual` não executado (ambiente).

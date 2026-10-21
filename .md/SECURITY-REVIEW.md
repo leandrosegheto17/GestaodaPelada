@@ -1161,3 +1161,6 @@ APROVADA COM DÉBITO — 0 críticos/altos, 1 baixo (RTP-0179: `uses: ./../x` e 
 
 ## RTP-0179 — DevSecOps — 2026-10-20
 APROVADA; 0 críticos/0 altos, 1 Baixo residual já documentado (chave `"uses"` entre aspas, sem RTP); EXECUTADO em cópia: `./../x`, `.../actions/../../../x` e `{uses: a/b@v3}` saem 1 com arquivo:linha, ~30 variações sem brecha nova, script real sai 0, sem eval/rede, ci.yml intocado; semgrep ausente (não executado).
+
+## TP-0209 — DevSecOps — 2026-10-21
+APROVADA em segurança: 0 críticos/altos/médios e nenhum achado novo (risco do app em cache = disponibilidade, Baixo, já na RTP-0182); autenticação e 404 fora do grupo, isolamento por `grupo_id`, transação com `FOR UPDATE`, migração aditiva, auditoria sem dado pessoal, G-25 (ESLint + teste) e `verificar-inicio.ts` somente leitura executados; isolamento/rotas/migração/script verdes, semgrep 0 achados em 28 arquivos.
