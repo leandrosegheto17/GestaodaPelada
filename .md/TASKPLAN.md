@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-21 11:12
+Atualizado: 2026-10-21 14:24
 
-Resumo: Não executada 4 · Aprovada 397 · Despriorizada 5 · total 406
+Resumo: Não executada 7 · Aprovada 397 · Despriorizada 5 · total 409
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -411,11 +411,14 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 396 | RTP-0171 | executor | ✔ | Fixar por SHA as ações do GitHub e adotar block-exotic-sub-dependencies, minimum-releas... | Refatoração Segurança 2026-10-20 | — | Aprovada |
 | 397 | RTP-0176 | executor | ✔ | Subir minimumReleaseAge de 1440 para 10080 no pnpm-workspace.yaml e remover o achado se... | Refatoração Segurança 2026-10-20 | RTP-0171 | Não executada |
 | 398 | RTP-0172 | executor | ✔ | Cobrir no .gitignore o arquivo de entrada da importação do legado (dados pessoais) | Refatoração Segurança 2026-10-20 | — | Aprovada |
-| 399 | BK-0009 | coordenador | ✔ | Ajustar SDD/ADR-010/URL_PUBLICA/CORS/deploy.yml ao domínio prod-ljs.workers.dev e aos acei | — | — | Aprovada |
-| 400 | BK-0012 | coordenador | ✔ | Quando e onde registrar a contração do CHECK de posicao (tirar defensor/meio_campo de joga | — | — | Aprovada |
-| 401 | BK-0013 | coordenador | ✔ | ADR-008 §3 decide gerar e chamar navigator.share no mesmo gesto; o app agora sempre mostra | — | — | Aprovada |
-| 402 | TP-0140 | executor | ✔ | [U] Play Console: app com.gestaodapelada.app (PI-5) | L31 | — | Despriorizada |
-| 403 | TP-0141 | executor | ✔ | /.well-known/assetlinks.json servido pelo Worker | L31 | TP-0088, TP-0140 | Despriorizada |
-| 404 | TP-0142 | executor | ✔ | Projeto TWA (Bubblewrap) em frontend/twa | L31 | TP-0006, TP-0108, TP-0139, TP-0140, TP-0141 | Despriorizada |
-| 405 | TP-0143 | executor | ✔ | [U] Teste fechado da Play (12 testadores, 14 dias) | L31 | TP-0139, TP-0141, TP-0142 | Despriorizada |
-| 406 | TP-0144 | executor | ✔ | [U] Publicação da TWA em produção | L31 | TP-0143 | Despriorizada |
+| 399 | RTP-0183 | executor | ✔ | Data de início em vigor: uma função só (api e verificar-inicio repetem o fallback) | Refatoração Revisão 2026-10-21 | — | Não executada |
+| 400 | RTP-0184 | executor | ✔ | PaginaJogador.tsx: voltar ao limite de 200 linhas (213) | Refatoração Revisão 2026-10-21 | — | Não executada |
+| 401 | BK-0009 | coordenador | ✔ | Ajustar SDD/ADR-010/URL_PUBLICA/CORS/deploy.yml ao domínio prod-ljs.workers.dev e aos acei | — | — | Aprovada |
+| 402 | BK-0012 | coordenador | ✔ | Quando e onde registrar a contração do CHECK de posicao (tirar defensor/meio_campo de joga | — | — | Aprovada |
+| 403 | BK-0013 | coordenador | ✔ | ADR-008 §3 decide gerar e chamar navigator.share no mesmo gesto; o app agora sempre mostra | — | — | Aprovada |
+| 404 | BK-0014 | coordenador | ✔ | Texto do '–' no ranking e no PDF (hoje só 'Ainda não fazia parte do grupo') também vale pa | — | — | Não executada |
+| 405 | TP-0140 | executor | ✔ | [U] Play Console: app com.gestaodapelada.app (PI-5) | L31 | — | Despriorizada |
+| 406 | TP-0141 | executor | ✔ | /.well-known/assetlinks.json servido pelo Worker | L31 | TP-0088, TP-0140 | Despriorizada |
+| 407 | TP-0142 | executor | ✔ | Projeto TWA (Bubblewrap) em frontend/twa | L31 | TP-0006, TP-0108, TP-0139, TP-0140, TP-0141 | Despriorizada |
+| 408 | TP-0143 | executor | ✔ | [U] Teste fechado da Play (12 testadores, 14 dias) | L31 | TP-0139, TP-0141, TP-0142 | Despriorizada |
+| 409 | TP-0144 | executor | ✔ | [U] Publicação da TWA em produção | L31 | TP-0143 | Despriorizada |

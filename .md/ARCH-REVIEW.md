@@ -1,5 +1,31 @@
 # Revisão de arquitetura
 
+## Revisão 2026-10-21 — pré-deploy, depois da TP-0209
+
+Números do saude.py: 1 arquivo acima do limite (`PaginaJogador.tsx`, 213 de 200) · 4 blocos duplicados (34 linhas, os mesmos já descartados) · 3 IDs de tarefa (todos em `evidencia/s-01`) · 2 pastas com acesso a dados (`backend/api/src`, `evidencia/s-01`) · 0 imports indevidos entre aplicações · 0 conversões forçadas · 8 comentários de cópia (falsos positivos). Comparação visual: 117 de 117 OK, 0 DIVERGE; `tokens.css` do app idêntico ao do mockup. Mudança desde a revisão anterior: TP-0209 (data de início da pontuação, blocos A a F): `acumuladoPorInicio` no domínio, migração 202610201000, `inicio_pontuacao` no repositório de jogadores, rotas `inicio/previa` e `inicio`, `verificar-inicio`, rodadas "–" no ranking e no PDF, T16 com `DataDeInicio` e `DialogoInicio`; RTP-0182 aberta pelo QA.
+
+**Não há achado de severidade Alta aberto. Nada impede o `/deploy`.** Débitos já abertos e não repetidos: RTP-0176, RTP-0180, RTP-0181 e RTP-0182 (linha de `inicioPontuacao`/`pontuacaoInicial` em `QUEBRAS.md`).
+
+| # | Achado | Item do checklist | Severidade | Onde | Destino |
+|---|---|---|---|---|---|
+| 1 | A regra "data de início em vigor = a gravada ou, sem ela, o início do 1º período" existe em `inicioEfetivo` (api) e foi reescrita à mão em `verificar.ts`, que a usa para conferir justamente que a regra não mudou nada; se uma mudar, a outra não acompanha e a verificação passa a comparar contra regra diferente | 4 | Baixa | `backend/api/src/aplicacao/pontuacao/adaptadores.ts:18`; `backend/scripts/verificar-inicio/verificar.ts:44` | RTP-0183 |
+| 2 | `PaginaJogador.tsx` passou do limite de componente (213 de 200) ao ganhar estado e diálogo da data de início; concentra estado de faixas, de diálogos e três handlers de mutação | 8 | Baixa | `frontend/web/src/telas/jogador/PaginaJogador.tsx` | RTP-0184 |
+| 3 | O "–" do ranking e do PDF agora também vale para rodada anterior à data de início, mas legenda, rótulo (`rotulos/index.ts:39`), UX-SPEC e mockup dizem só "Ainda não fazia parte do grupo". Texto aprovado no mockup: mudar exige decisão do usuário e começa pelo mockup | 11 | Baixa | `frontend/web/src/rotulos/index.ts:39`; `frontend/web/src/pdf/legenda.ts:7`; `.md/UX-SPEC.md` (legenda ~296); `.md/mockup/telas/t01-ranking--*.html` | BK |
+
+Descartados:
+- Acumulado calculado em mais de um lugar: `acumuladoPorInicio` é a única conta; ranking (`acumuladosDosAtivos`, `calcularRanking`), PDF (`projecao.ts`), simulador (`prioridade.ts`), prévia (`previa-inicio.ts`), importação (`calculo.ts`) e `verificar.ts` só a chamam. Frontend e `api` não recalculam. Os blocos `ranking.ts:95-103` × `prioridade.ts:40-48` são a chamada com os mesmos 5 campos (já descartados).
+- Regra de negócio na tela: `DialogoInicio` só formata o que a API devolve (`fraseDaPrevia`) e valida com `inicioCorpo(hoje)` do contrato; `data < atual` só escolhe a frase "rodadas passam a constar". `DataDeInicio` só formata. Nenhum import do domínio no frontend.
+- Prévia (domínio, `previa-inicio.ts:48-54`) × gravação (SQL de `alterarInicio`) repetem "recuar antes do 1º período alinha o início": uma é a conta sem gravar, a outra é o UPDATE; os testes de `escrita-inicio-pontuacao` e `inicio.test` cobrem as duas. Refinamento marginal.
+- Acesso a dados: a coluna só é lida e escrita em `repositorios/jogadores.ts`; `inicio-previa.ts`/`inicio-editar.ts` usam `jogadores.*`, `auditoria.*` e `carregarHistoricoGrupo` (repositórios), e `verificar.ts` só repositórios e `emLeitura`. As 89 ocorrências em `backend/api/src` seguem no módulo único; `evidencia/s-01` é o mesmo descarte de 19 e 20/10.
+- Migração 202610201000: aditiva (coluna nula), `UPDATE` com isenção de perda (a data é a menor entre o 1º período e a 1ª presença, o que já era contado), comentário de coluna sem ID de tarefa; coberta por `migracoes/inicio-pontuacao.test.ts`.
+- `QUEBRAS.md`/contrato: a linha de `elenco.detalhe.inicioPontuacao` (e `pontuacaoInicial`) é a RTP-0182 (já aberta); `inicioCorpo`/`InicioPreviaResposta` são rotas e campos novos (aditivos); snapshot `elenco.detalhe.json` atualizado.
+- ID de tarefa em comentário: `saude.py` §3 em 3 (todos em `evidencia/s-01`); nenhum no código da TP-0209.
+- Re-recálculo da prévia carrega o histórico do grupo a cada data digitada (`carregarHistoricoGrupo`): leitura única por chamada, sem laço de consulta; escala de uma pelada. Item 13 sem achado.
+- `verificar-inicio.ts` com `inicio ?? periodos[0]` e `primeira` por `sort()`: só diagnóstico de leitura; log por id, sem apelido nem telefone (SDD §7).
+- Blocos duplicados `AreaDono`/`GrupoDono`, `PaginaGrupo`/`PaginaPontuacao`, `pesos.ts`/`tipos.ts` e os 8 comentários de cópia: os mesmos já descartados em 19 e 20/10.
+
+Sem achado nos itens: 1, 2, 3, 5, 6, 7, 9, 10, 12 a 18. Itens 11, 13 e 14 por amostragem do relatório.
+
 ## Revisão 2026-10-20 (4ª) — pré-deploy, depois das RTP-0177 a 0179 e dos BK-0012/0013
 
 Números do saude.py: 0 arquivos acima do limite · 4 blocos duplicados (33 linhas, os mesmos já descartados) · 3 IDs de tarefa (todos em `evidencia/s-01`) · 2 pastas com acesso a dados (`backend/api/src`, `evidencia/s-01`) · 0 imports indevidos entre aplicações · 0 conversões forçadas · 8 comentários de cópia (falsos positivos). Comparação visual: a de hoje (117 de 117 OK) segue válida: nenhum arquivo de frontend mudou desde a revisão anterior (4ffef08c); `tokens.css` do app idêntico ao do mockup. Mudança desde a revisão anterior: `checar-acoes-fixadas.mjs` + teste e passo no `ci.yml` (RTP-0178/0179); SDD §7 e G-24 (RTP-0177); ADR-022 e ajustes no SDD, no ADR-008 e no UX-SPEC (BK-0013); `QUEBRAS.md` e comentário da migração 202610200000 (BK-0012).

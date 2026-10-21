@@ -959,6 +959,13 @@ Colunas lidas pelo `taskplan.py` pelo nome. **Est** em dias-pessoa. **Cria**/**U
 | RTP-0176 | Refatoração Segurança 2026-10-20 | Subir minimumReleaseAge de 1440 para 10080 no pnpm-workspace.yaml e remover o achado semgrep pnpm-missing-minimum-release-age (prazo: após 2026-10-22, quando o lockfile só tiver versões com 7+ dias, ou após refresh do lockfile; até 2026-10-29) | Backend | SDD §7; G-15 | pnpm-workspace.yaml com minimumReleaseAge: 10080; pnpm install --frozen-lockfile exit 0; semgrep p/default sem pnpm-missing-minimum-release-age (origem: QA da RTP-0171, severidade baixa) | 0.1 | RTP-0171 | - | pnpm-workspace.yaml | pnpm install --frozen-lockfile; semgrep p/default | Pendente |
 | RTP-0172 | Refatoração Segurança 2026-10-20 | Cobrir no .gitignore o arquivo de entrada da importação do legado (dados pessoais) | Backend | ADR-021 item 5; RNF-06 | Padrão no .gitignore e git check-ignore confirma o nome do arquivo esperado pelo script (origem: auditoria de release 2026-10-20, severidade baixa) | 0.1 | - | - | .gitignore | git check-ignore -v <arquivo de entrada> | Concluída · QA ✔ · Sec ✔ |
 
+### Refatoração Revisão 2026-10-21
+| ID | Lote | Título | Chapéu | Reqs | Aceite | Est | Dep | Par | Arquivos | Testes e diretrizes | Status |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| RTP-0183 | Refatoração Revisão 2026-10-21 | Data de início em vigor: uma função só (api e verificar-inicio repetem o fallback) | Backend | RN-25; ADR-023; SDD §2 | inicioEfetivo existe uma vez no @pelada/dominio ao lado de acumuladoPorInicio; adaptadores.ts, elenco/detalhe.ts e verificar-inicio/verificar.ts a importam e nenhum tem mais o fallback do 1º período; testes, lint, typecheck e format:check limpos | 0,2 d | - | - | backend/dominio/src/pontuacao/acumulado-inicio.ts, backend/api/src/aplicacao/pontuacao/adaptadores.ts, backend/api/src/aplicacao/elenco/detalhe.ts, backend/scripts/verificar-inicio/verificar.ts | backend/dominio/test/pontuacao/acumulado-inicio.test.ts, backend/api/test/aplicacao/pontuacao/adaptadores.test.ts, backend/api/test/aplicacao/elenco/detalhe.test.ts, backend/scripts/test/verificar-inicio.test.ts | Pendente |
+| RTP-0184 | Refatoração Revisão 2026-10-21 | PaginaJogador.tsx: voltar ao limite de 200 linhas (213) | Frontend | CONVENCOES-DE-CODIGO; UX-SPEC T16 | PaginaJogador.tsx com no máximo 200 linhas extraindo faixas de aviso ou hook de situação; comportamento, textos e DOM da T16 inalterados; testes e comparação visual da T16 OK; lint, typecheck e format:check limpos | 0,2 d | - | - | frontend/web/src/telas/jogador/PaginaJogador.tsx, frontend/web/src/telas/jogador/FaixasDaFicha.tsx | frontend/web/src/telas/jogador/PaginaJogador.test.tsx, DialogoInicio.test.tsx, comparação visual T16 | Pendente |
+
+
 
 
 

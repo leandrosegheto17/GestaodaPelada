@@ -116,3 +116,12 @@
 - Impacto se não resolvido: Baixa: só documentação (ADR-008, SDD C3); nada bloqueia o deploy
 - Sugestão: Novo ADR (Superseded by no ADR-008 §3) registrando o D4 como passo normal; RTP-0174 já alinha o UX-SPEC
 - Status: Resolvido (2026-10-20): Decisão A: ADR-022 supersede o §3 do ADR-008 (diálogo Compartilhar/Baixar); SDD C3, T-05 e tabela de ADRs ajustados
+
+## Bloqueio 014 — 2026-10-21 (BK-0014)
+- Reportado por: coordenador (/revisar)
+- Escalado para: usuário
+- Artefato/trecho afetado: —
+- Descrição: Texto do '–' no ranking e no PDF (hoje só 'Ainda não fazia parte do grupo') também vale para rodada anterior à data de início: manter ou mudar a redação?
+- Impacto se não resolvido: Baixo: leitura do ranking pode confundir quem teve a data alterada; mudar exige mockup aprovado primeiro, depois rótulos, legenda do PDF, UX-SPEC e teste
+- Sugestão: Mudar para 'Fora do grupo ou antes da data de início' (mockup, UX-SPEC, rótulo e legenda juntos, depois nova comparação visual); ou registrar a decisão de manter no UX-SPEC
+- Status: Em aberto
