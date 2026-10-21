@@ -90,3 +90,21 @@ describe('ordenarPrioridade', () => {
     expect(ordenarPrioridade({ ...base, aptos: ['b', 'c'], dataPartida: '2026-10-22' })).toEqual(esperado);
   });
 });
+
+describe('ordenarPrioridade com data de início', () => {
+  const partidas = [partida('2026-10-08'), partida('2026-10-15')];
+  const presencas = [presenca('a', '2026-10-08'), presenca('a', '2026-10-15'), presenca('b', '2026-10-15')];
+  const com = (inicioPontuacao: string) => [
+    { ...jogador('a', 'Ana', 1990), inicioPontuacao },
+    jogador('b', 'Bia', 1991),
+    jogador('c', 'Cris', 1992),
+  ];
+
+  it('início na data da partida anterior mantém as presenças', () => {
+    expect(ordenarPrioridade(entrada({ jogadores: com('2026-10-08'), partidas, presencas }))).toEqual(['a', 'b', 'c']);
+  });
+
+  it('início depois das presenças zera quem avançou e o põe atrás no desempate', () => {
+    expect(ordenarPrioridade(entrada({ jogadores: com('2026-10-22'), partidas, presencas }))).toEqual(['b', 'a', 'c']);
+  });
+});

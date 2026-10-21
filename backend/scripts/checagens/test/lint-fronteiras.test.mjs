@@ -153,3 +153,32 @@ describe('fronteiras por caminho real', () => {
     expect(ids.filter((id) => id !== 'import-x/no-unresolved')).toEqual([]);
   });
 });
+
+describe('acumulado pela função única (G-25)', () => {
+  const PONTUACAO = 'backend/dominio/src/pontuacao/x.ts';
+  const consumidores = [
+    'backend/dominio/src/ranking/x.ts',
+    'backend/dominio/src/pdf/x.ts',
+    'backend/dominio/src/simulador/x.ts',
+    'backend/scripts/importar-legado/x.ts',
+    API,
+    WEB,
+  ];
+  const usos = [
+    "import { acumuladoComInicial } from '@pelada/dominio'; acumuladoComInicial(0, [], [], 'x');",
+    "import { acumuladoAte } from '@pelada/dominio'; acumuladoAte([], [], 'x');",
+    "import * as d from '@pelada/dominio'; d.acumuladoAte([], [], 'x');",
+  ];
+
+  it.each(consumidores.flatMap((arquivo) => usos.map((codigo) => [codigo, arquivo])))(
+    'barra %s em %s',
+    async (codigo, arquivo) => {
+      expect((await regras(codigo, arquivo)).length).toBeGreaterThan(0);
+    },
+  );
+
+  it('aceita o uso dentro de dominio/src/pontuacao e a função única fora dela', async () => {
+    expect(await regras(usos[0], PONTUACAO)).toEqual([]);
+    expect(await regras('acumuladoPorInicio({});', 'backend/dominio/src/ranking/x.ts')).toEqual([]);
+  });
+});

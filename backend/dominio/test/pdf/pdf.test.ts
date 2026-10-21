@@ -195,3 +195,21 @@ describe('calcularPdf: troca de pesos e mês com mais de 12 partidas', () => {
     expect(pdf.linhas[0]!.rodadas).toHaveLength(12);
   });
 });
+
+describe('calcularPdf com data de início no meio das colunas', () => {
+  it('colunas antes do início saem "–" e ptsInicial + rodadas = ptsFinal', () => {
+    const partidas = partidasEm(['2026-10-01', '2026-10-08', '2026-10-15']);
+    const entrada = {
+      hoje: '2026-10-20',
+      mes: '2026-10',
+      jogadores: [{ ...jogador('a', 'Ana', 1990, undefined, 5), inicioPontuacao: '2026-10-08' }],
+      partidas,
+      presencas: partidas.map((p) => presenca('a', p.data)),
+      configsPesos: CONFIGS,
+    };
+    const [linha] = calcularPdf(entrada).linhas;
+    expect(linha!.rodadas.map((r) => r.pontos)).toEqual([null, 1, 1]);
+    expect(linha!.ptsInicial).toBe(0);
+    expect(linha!.ptsInicial + linha!.rodadas.reduce((s, r) => s + (r.pontos ?? 0), 0)).toBe(linha!.ptsFinal);
+  });
+});

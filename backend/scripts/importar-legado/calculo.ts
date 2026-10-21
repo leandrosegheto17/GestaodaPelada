@@ -1,4 +1,4 @@
-import { acumuladoComInicial, somarDias, type ConfigPesos, type Pesos, type SituacaoPresenca } from '@pelada/dominio';
+import { acumuladoPorInicio, somarDias, type ConfigPesos, type Pesos, type SituacaoPresenca } from '@pelada/dominio';
 import type { Posicao } from '@pelada/contrato';
 import {
   chaveDe,
@@ -259,7 +259,12 @@ export function calcularPlano(
             : (choveuSemCorrecao.get(r.data) ?? false);
         return situacao ? [{ data: r.data, choveu, situacao }] : [];
       });
-      return acumuladoComInicial(c.inicial, presencas, [config], hoje);
+      return acumuladoPorInicio({
+        pontuacaoInicial: c.inicial,
+        presencas,
+        configs: [config],
+        referencia: hoje,
+      });
     };
     const calculado = total(true);
     const efeito = calculado - total(false);

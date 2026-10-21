@@ -1,7 +1,7 @@
 import { ativosEm } from '../atividade/atividade.js';
 import { somarDias } from '../datas/datas.js';
 import { criarResolvedorDePesos } from '../pontuacao/pesos.js';
-import { acumuladoComInicial } from '../pontuacao/pontos.js';
+import { acumuladoPorInicio } from '../pontuacao/acumulado-inicio.js';
 import { rodadasDoJogador, type Rodada } from '../ranking/rodadas.js';
 import { agruparPresencasPorJogador, calcularRanking, type EntradaRanking } from '../ranking/ranking.js';
 import { escolherColunasPdf, type ColunaPdf } from './colunas.js';
@@ -40,23 +40,26 @@ export function calcularPdf(entrada: EntradaRanking): ProjecaoPdf {
   const primeira = colunas[0];
   const linhas = ranking.linhas.map((linha): LinhaPdf => {
     const presencas = presencasPorJogador.get(linha.jogadorId) ?? [];
+    const jogador = ativos.get(linha.jogadorId);
     const rodadas = rodadasDoJogador(
-      ativos.get(linha.jogadorId)?.periodos ?? [],
+      jogador?.periodos ?? [],
       colunas,
       new Map(presencas.map((p) => [p.partidaId, p.situacao])),
       resolver,
+      jogador?.inicioPontuacao,
     );
     return {
       jogadorId: linha.jogadorId,
       posicao: linha.posicao,
       apelido: linha.apelido,
       ptsInicial: primeira
-        ? acumuladoComInicial(
-            ativos.get(linha.jogadorId)?.pontuacaoInicial ?? 0,
+        ? acumuladoPorInicio({
+            inicio: jogador?.inicioPontuacao,
+            pontuacaoInicial: jogador?.pontuacaoInicial ?? 0,
             presencas,
-            resolver,
-            somarDias(primeira.data, -1),
-          )
+            configs: resolver,
+            referencia: somarDias(primeira.data, -1),
+          })
         : linha.ptsFinal,
       rodadas,
       ptsFinal: linha.ptsFinal,

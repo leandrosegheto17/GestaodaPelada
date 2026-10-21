@@ -88,3 +88,11 @@ export const donoSoEmScripts = [
   { selector: "ImportSpecifier[imported.name='apagarDadosDoSeed']", message: MSG_DONO },
   { selector: "MemberExpression[property.name='apagarDadosDoSeed']", message: MSG_DONO },
 ];
+
+const MSG_ACUMULADO =
+  'Acumulado só pela função acumuladoPorInicio (G-25); acumuladoAte e acumuladoComInicial são internas.';
+export const acumuladoSoNaPontuacao = ['acumuladoAte', 'acumuladoComInicial'].flatMap((nome) => [
+  { selector: `ImportSpecifier[imported.name='${nome}']`, message: MSG_ACUMULADO },
+  { selector: `CallExpression[callee.name='${nome}']`, message: MSG_ACUMULADO },
+  { selector: `MemberExpression[property.name='${nome}']`, message: MSG_ACUMULADO },
+]);

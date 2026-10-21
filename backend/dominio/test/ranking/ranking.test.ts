@@ -226,3 +226,28 @@ describe('desempenho', () => {
     expect(tempos[10]!).toBeLessThan(5);
   });
 });
+
+describe('data de início no meio do mês', () => {
+  const entrada = (inicioPontuacao?: string) => ({
+    hoje: '2026-10-20',
+    mes: '2026-10',
+    jogadores: [jogador('a', 'Ana', 1990), { ...jogador('b', 'Bia', 1991, undefined, 10), inicioPontuacao }],
+    partidas: [partida('2026-10-01'), partida('2026-10-08'), partida('2026-10-15')],
+    presencas: ['2026-10-01', '2026-10-08', '2026-10-15'].flatMap((d) => [presenca('a', d), presenca('b', d)]),
+    configsPesos: CONFIGS,
+  });
+
+  it('rodada anterior ao início vira "–" e ptsInicial + rodadas = ptsFinal', () => {
+    const linha = calcularRanking(entrada('2026-10-08')).linhas.find((l) => l.jogadorId === 'b')!;
+    expect(linha.rodadas.map((r) => r.situacao)).toEqual(['fora', 'presente', 'presente']);
+    expect(linha.rodadas[0]!.pontos).toBeNull();
+    expect(linha.ptsInicial).toBe(0);
+    expect(linha.ptsFinal).toBe(2);
+  });
+
+  it('o final de setembro é o inicial de outubro para todos', () => {
+    const set = calcularRanking({ ...entrada('2026-10-08'), mes: '2026-09' }).linhas;
+    const out = calcularRanking(entrada('2026-10-08')).linhas;
+    expect(out.map((l) => [l.jogadorId, l.ptsInicial])).toEqual(set.map((l) => [l.jogadorId, l.ptsFinal]));
+  });
+});

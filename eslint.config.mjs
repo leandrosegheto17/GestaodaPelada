@@ -3,7 +3,13 @@ import tseslint from 'typescript-eslint';
 import prettier from 'eslint-config-prettier';
 import globals from 'globals';
 import { importX } from 'eslint-plugin-import-x';
-import { donoSoEmScripts, semAsUnknownAs, semDocumentCookie, semRelogio } from './eslint/regras-sintaxe.mjs';
+import {
+  acumuladoSoNaPontuacao,
+  donoSoEmScripts,
+  semAsUnknownAs,
+  semDocumentCookie,
+  semRelogio,
+} from './eslint/regras-sintaxe.mjs';
 import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
 
 const PROIBIDAS_BASE = [
@@ -130,7 +136,11 @@ export default tseslint.config(
     },
     rules: {
       'no-restricted-imports': ['error', restritos([...PROIBIDAS_GLOBAL, ...BANCO])],
-      'no-restricted-syntax': sintaxe(dinamicos([...PROIBIDAS_GLOBAL, ...BANCO]), semAsUnknownAs),
+      'no-restricted-syntax': sintaxe(
+        dinamicos([...PROIBIDAS_GLOBAL, ...BANCO]),
+        semAsUnknownAs,
+        acumuladoSoNaPontuacao,
+      ),
       'import-x/no-restricted-paths': ['error', { basePath: import.meta.dirname, zones: ZONAS }],
     },
   },
@@ -142,6 +152,7 @@ export default tseslint.config(
         semRelogio,
         semAsUnknownAs,
         donoSoEmScripts,
+        acumuladoSoNaPontuacao,
       ),
     },
   },
@@ -150,14 +161,20 @@ export default tseslint.config(
     files: ['backend/api/test/**'],
     rules: {
       'no-restricted-imports': ['error', restritos(PROIBIDAS_GLOBAL)],
-      'no-restricted-syntax': sintaxe(dinamicos(PROIBIDAS_GLOBAL), semRelogio, semAsUnknownAs),
+      'no-restricted-syntax': sintaxe(dinamicos(PROIBIDAS_GLOBAL), semRelogio, semAsUnknownAs, acumuladoSoNaPontuacao),
     },
   },
   {
     files: ['backend/api/src/infraestrutura/db/**'],
     rules: {
       'no-restricted-imports': ['error', restritos(PROIBIDAS_GLOBAL)],
-      'no-restricted-syntax': sintaxe(dinamicos(PROIBIDAS_GLOBAL), semRelogio, semAsUnknownAs, donoSoEmScripts),
+      'no-restricted-syntax': sintaxe(
+        dinamicos(PROIBIDAS_GLOBAL),
+        semRelogio,
+        semAsUnknownAs,
+        donoSoEmScripts,
+        acumuladoSoNaPontuacao,
+      ),
     },
   },
   {
@@ -173,25 +190,46 @@ export default tseslint.config(
           ],
         },
       ],
-      'no-restricted-syntax': sintaxe(dinamicos([...PROIBIDAS_BASE, ...BANCO]), semAsUnknownAs, [
-        { selector: `ImportExpression[source.value=/${ALIAS_API_PROIBIDO}/]`, message: MSG_ALIAS_API },
-        {
-          selector: `CallExpression[callee.name='require'][arguments.0.value=/${ALIAS_API_PROIBIDO}/]`,
-          message: MSG_ALIAS_API,
-        },
-      ]),
+      'no-restricted-syntax': sintaxe(
+        dinamicos([...PROIBIDAS_BASE, ...BANCO]),
+        semAsUnknownAs,
+        acumuladoSoNaPontuacao,
+        [
+          { selector: `ImportExpression[source.value=/${ALIAS_API_PROIBIDO}/]`, message: MSG_ALIAS_API },
+          {
+            selector: `CallExpression[callee.name='require'][arguments.0.value=/${ALIAS_API_PROIBIDO}/]`,
+            message: MSG_ALIAS_API,
+          },
+        ],
+      ),
     },
   },
   {
     files: ['backend/api/src/infraestrutura/relogio/**'],
     rules: {
-      'no-restricted-syntax': sintaxe(dinamicos([...PROIBIDAS_GLOBAL, ...BANCO]), semAsUnknownAs),
+      'no-restricted-syntax': sintaxe(
+        dinamicos([...PROIBIDAS_GLOBAL, ...BANCO]),
+        semAsUnknownAs,
+        acumuladoSoNaPontuacao,
+      ),
     },
   },
   {
     files: ['backend/dominio/**'],
     rules: {
       'no-restricted-imports': ['error', restritos([...PROIBIDAS_GLOBAL, ...DOMINIO_PROIBIDAS])],
+      'no-restricted-syntax': sintaxe(
+        dinamicos([...PROIBIDAS_GLOBAL, ...DOMINIO_PROIBIDAS]),
+        semRelogio,
+        semAsUnknownAs,
+        acumuladoSoNaPontuacao,
+      ),
+    },
+  },
+  {
+    // Único lugar que pode usar as funções internas de soma.
+    files: ['backend/dominio/src/pontuacao/**', 'backend/dominio/test/pontuacao/**'],
+    rules: {
       'no-restricted-syntax': sintaxe(
         dinamicos([...PROIBIDAS_GLOBAL, ...DOMINIO_PROIBIDAS]),
         semRelogio,
@@ -208,6 +246,7 @@ export default tseslint.config(
         semDocumentCookie,
         semAsUnknownAs,
         donoSoEmScripts,
+        acumuladoSoNaPontuacao,
       ),
     },
   },
