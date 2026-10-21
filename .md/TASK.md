@@ -965,6 +965,12 @@ Colunas lidas pelo `taskplan.py` pelo nome. **Est** em dias-pessoa. **Cria**/**U
 | RTP-0183 | Refatoração Revisão 2026-10-21 | Data de início em vigor: uma função só (api e verificar-inicio repetem o fallback) | Backend | RN-25; ADR-023; SDD §2 | inicioEfetivo existe uma vez no @pelada/dominio ao lado de acumuladoPorInicio; adaptadores.ts, elenco/detalhe.ts e verificar-inicio/verificar.ts a importam e nenhum tem mais o fallback do 1º período; testes, lint, typecheck e format:check limpos | 0,2 d | - | - | backend/dominio/src/pontuacao/acumulado-inicio.ts, backend/api/src/aplicacao/pontuacao/adaptadores.ts, backend/api/src/aplicacao/elenco/detalhe.ts, backend/scripts/verificar-inicio/verificar.ts | backend/dominio/test/pontuacao/acumulado-inicio.test.ts, backend/api/test/aplicacao/pontuacao/adaptadores.test.ts, backend/api/test/aplicacao/elenco/detalhe.test.ts, backend/scripts/test/verificar-inicio.test.ts | Pendente |
 | RTP-0184 | Refatoração Revisão 2026-10-21 | PaginaJogador.tsx: voltar ao limite de 200 linhas (213) | Frontend | CONVENCOES-DE-CODIGO; UX-SPEC T16 | PaginaJogador.tsx com no máximo 200 linhas extraindo faixas de aviso ou hook de situação; comportamento, textos e DOM da T16 inalterados; testes e comparação visual da T16 OK; lint, typecheck e format:check limpos | 0,2 d | - | - | frontend/web/src/telas/jogador/PaginaJogador.tsx, frontend/web/src/telas/jogador/FaixasDaFicha.tsx | frontend/web/src/telas/jogador/PaginaJogador.test.tsx, DialogoInicio.test.tsx, comparação visual T16 | Pendente |
 
+### Refatoração Segurança 2026-10-21
+| ID | Lote | Título | Chapéu | Reqs | Aceite | Est | Dep | Par | Arquivos | Testes e diretrizes | Status |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| RTP-0185 | Refatoração Segurança 2026-10-21 | Data de início da pontuação sem limite inferior: 0000-01-01 devolve 500 | Backend | RF-69 a RF-74; RNF-12; SDD §7 | Data de início anterior a um piso definido (ex.: 2000-01-01) recusada com 422 em pt-BR, igual na prévia e no PUT; nunca 500; testes de rota e contrato cobrindo 0000-01-01, 0001-01-01 e o piso; sondas-autenticadas.py sem falha | 0,2 d | - | - | backend/contrato/src/elenco.ts, backend/api/src/aplicacao/elenco/inicio-previa.ts | backend/api/test/aplicacao/elenco/inicio.test.ts, backend/api/test/rotas/grupos/jogadores/inicio.test.ts, backend/contrato/test/elenco.test.ts | Pendente |
+
+
 
 
 

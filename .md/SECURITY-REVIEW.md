@@ -1,5 +1,26 @@
 # SECURITY-REVIEW
 
+## Auditoria de release 2026-10-21 — DevSecOps — APROVADA COM DÉBITO
+
+Escopo: release com a TP-0209 (data de início da pontuação: migração `202610201000_inicio_pontuacao`, rotas `POST …/jogadores/:id/inicio/previa` e `PUT …/jogadores/:id/inicio`, `inicioPontuacao` no detalhe, "–" no ranking e no PDF, T16 com diálogo). Só produção (ADR-020): teste ativo só local (127.0.0.1:8787, banco descartável `pelada_auditoria` semeado por `pnpm seed`); nada contra produção. Brutos em `.md/.seguranca/2026-10-21/` (`dast-api/`, `dast-api-auth/`, `dast-web/`, `semgrep.json`, `osv-scanner.json`, `gitleaks.json`).
+
+Executado (Fase A, `seguranca.py`) e comparado com a 2ª de 20/10, achado a achado no bruto:
+- `pnpm audit --prod`: 0 (igual). OSV: 1, `braces@3.0.3` dev-only (igual). gitleaks (histórico): 36, nos mesmos 3 commits (`d273d665` 21, `50b1fa6b` 14, `bca136ab` 1); nenhum commit da TP-0209 tem achado. semgrep: ERROR 13 / WARNING 28 / MEDIUM 1, mesma contagem por regra; nenhum caminho em `backend/` ou `frontend/` aparece (os achados são `.claude/`, docs, scripts de desenvolvimento). **Novo frente a 20/10: nada.**
+
+Executado (Fase C, DAST local):
+- `seguranca.py --dast … --sondas .md/.seguranca/sondas.json`: 42 sondas (12 novas para a TP-0209: previa e editar sem cookie, cookie forjado, sem `X-Pelada`, data e corpo malformados, detalhe do jogador e PATCH com `inicioPontuacao` sem cookie), 0 reprovadas, `nosniff` em todas.
+- Sondas autenticadas (`.md/.seguranca/sondas-autenticadas.py`, sessões reais de 3 contas e 2 grupos): 71 sondas, 67 passam, 4 falham (um defeito, abaixo). Passam: 401 sem cookie e com cookie forjado; 403 sem `X-Pelada`; 403 para conta com senha temporária; 404 para admin de outro grupo, jogador de outro grupo, par grupo/jogador cruzado, UUID inexistente, id não UUID e id com SQLi; 422 para formato inválido, 30/02, mês 13, data futura, tipo errado, null, campo ausente, campo extra, SQLi na data, data com hora, array, JSON malformado e corpo vazio; 413 para 1 MB; PATCH do jogador recusa `dataEntrada` e `inicioPontuacao` (strict) e o ranking e o PDF públicos não trazem `inicioPontuacao`, e-mail nem id de conta. Mesma data repetida responde 200 sem gravar.
+- Banco (psql, executado): 7 linhas de `jogador_inicio_alterado`, resumo só com datas e acumulados (sem apelido, telefone nem e-mail); hash de senha `$2a$12$`; token de sessão guardado com 32 bytes (SHA-256).
+- Front (`sondas-web.json`) 3/3, 0 falhas; CSP restritiva, `nosniff`, `referrer-policy: same-origin`, `permissions-policy` presentes (`curl -I`). ZAP baseline: 0 alto, 0 médio, 3 baixos (COEP/COOP/CORP, igual e aceitável).
+
+**Achado (Baixo): data de início sem limite inferior.** `PUT …/inicio` com `0000-01-01` devolve 500 `erro_interno` (o Postgres recusa o ano 0; a transação reverte e a mensagem é genérica, sem vazamento), a prévia responde 200 com números sem sentido para a mesma data, e `1900-01-01` é aceita e move o início do 1º período. Só admin autenticado do próprio grupo alcança isso, sem acesso a dado alheio. Vira RTP (Baixo); não bloqueia.
+
+Configuração (executado: grep e `git diff bbb50979..HEAD`): nenhuma mudança em `.github/`, `wrangler.jsonc`, `pnpm-workspace.yaml`, `.gitignore`, lockfile; `deploy.yml` com `workflow_dispatch`, `environment: producao`, `permissions: contents: read`, `persist-credentials: false`; todos os `uses:` externos por SHA de 40 caracteres; `blockExoticSubdeps`, `minimumReleaseAge: 1440`, `trustPolicy: no-downgrade`. SDD §7 conferido contra as sondas acima (autenticação, RBAC por grupo com 404, cookie `__Host-sessao` HttpOnly/Secure/SameSite=Lax, bcrypt 12, hash SHA-256, auditoria sem dado pessoal, cabeçalhos): sem divergência.
+
+Não executado: (1) limite de taxa da Cloudflare em `/api/sessao/entrar` e `/api/publico/*` e cabeçalhos no host publicado (local não tem o limitador; sem staging, ADR-020; DAST em produção é proibido). Verificação passiva obrigatória depois do deploy (`curl -I` na URL pública). O aceite do usuário de 20/10 valia para aquele deploy: este precisa de aceite novo, registrado.
+
+Débito aberto (Baixo): data de início sem limite inferior (RTP-0185), RTP-0176, `braces` dev-only. Nenhum Crítico/Alto. Veredito: APROVADA COM DÉBITO.
+
 ## Auditoria de release 2026-10-20 (2ª) — DevSecOps — APROVADA COM DÉBITO
 
 **Confirmação antes do deploy (2026-10-20, depois das RTP-0177 a 0181 e dos BK-0012/0013):** desde esta auditoria (`a46da169`) o código que roda em produção não mudou (só o comentário da migração `202610200000`); mudaram a checagem `checar-acoes-fixadas`, um passo do `ci.yml` e textos. `pnpm audit --prod` sem vulnerabilidades; gitleaks sobre o histórico inteiro, os mesmos 36 achados nos mesmos 3 commits (todos falsos positivos já classificados); CI da `main` verde em `bbb50979`.

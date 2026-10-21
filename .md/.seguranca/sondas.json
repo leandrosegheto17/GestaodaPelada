@@ -128,6 +128,177 @@
       }
     },
     {
+      "nome": "admin: inicio previa sem cookie",
+      "metodo": "POST",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001/inicio/previa",
+      "status_esperado": [
+        401,
+        403
+      ],
+      "corpo": "{\"data\":\"2026-09-01\"}",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1"
+      }
+    },
+    {
+      "nome": "admin: inicio previa cookie forjado",
+      "metodo": "POST",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001/inicio/previa",
+      "status_esperado": [
+        401,
+        403
+      ],
+      "corpo": "{\"data\":\"2026-09-01\"}",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1",
+        "Cookie": "__Host-sessao=forjado"
+      }
+    },
+    {
+      "nome": "admin: inicio previa sem X-Pelada (CSRF)",
+      "metodo": "POST",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001/inicio/previa",
+      "status_esperado": [
+        401,
+        403
+      ],
+      "corpo": "{\"data\":\"2026-09-01\"}",
+      "cabecalhos": {
+        "Content-Type": "application/json"
+      }
+    },
+    {
+      "nome": "admin: inicio previa data malformada sem cookie",
+      "metodo": "POST",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001/inicio/previa",
+      "status_esperado": [
+        400,
+        401,
+        403,
+        422
+      ],
+      "corpo": "{\"data\":\"2099-99-99'; DROP TABLE jogadores;--\"}",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1"
+      }
+    },
+    {
+      "nome": "admin: inicio previa corpo malformado sem cookie",
+      "metodo": "POST",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001/inicio/previa",
+      "status_esperado": [
+        400,
+        401,
+        403,
+        422
+      ],
+      "corpo": "{nao json",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1"
+      }
+    },
+    {
+      "nome": "admin: inicio editar sem cookie",
+      "metodo": "PUT",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001/inicio",
+      "status_esperado": [
+        401,
+        403
+      ],
+      "corpo": "{\"data\":\"2026-09-01\"}",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1"
+      }
+    },
+    {
+      "nome": "admin: inicio editar cookie forjado",
+      "metodo": "PUT",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001/inicio",
+      "status_esperado": [
+        401,
+        403
+      ],
+      "corpo": "{\"data\":\"2026-09-01\"}",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1",
+        "Cookie": "__Host-sessao=forjado"
+      }
+    },
+    {
+      "nome": "admin: inicio editar sem X-Pelada (CSRF)",
+      "metodo": "PUT",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001/inicio",
+      "status_esperado": [
+        401,
+        403
+      ],
+      "corpo": "{\"data\":\"2026-09-01\"}",
+      "cabecalhos": {
+        "Content-Type": "application/json"
+      }
+    },
+    {
+      "nome": "admin: inicio editar data malformada sem cookie",
+      "metodo": "PUT",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001/inicio",
+      "status_esperado": [
+        400,
+        401,
+        403,
+        422
+      ],
+      "corpo": "{\"data\":\"2099-99-99'; DROP TABLE jogadores;--\"}",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1"
+      }
+    },
+    {
+      "nome": "admin: inicio editar corpo malformado sem cookie",
+      "metodo": "PUT",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001/inicio",
+      "status_esperado": [
+        400,
+        401,
+        403,
+        422
+      ],
+      "corpo": "{nao json",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1"
+      }
+    },
+    {
+      "nome": "admin: detalhe do jogador sem cookie",
+      "metodo": "GET",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001",
+      "status_esperado": [
+        401,
+        403
+      ]
+    },
+    {
+      "nome": "admin: editar jogador (inicioPontuacao) sem cookie",
+      "metodo": "PATCH",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001",
+      "status_esperado": [
+        401,
+        403
+      ],
+      "corpo": "{\"apelido\":\"X\",\"inicioPontuacao\":\"2026-09-01\"}",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1"
+      }
+    },
+    {
       "nome": "sessao/eu sem cookie",
       "metodo": "GET",
       "caminho": "/api/sessao/eu",

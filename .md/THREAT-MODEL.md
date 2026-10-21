@@ -1,7 +1,7 @@
 # THREAT-MODEL
 
-Modelo de ameaças enxuto (STRIDE) do Pelada. Atualizado na auditoria de release de 2026-10-20 (2ª). Evidência executada em
-`.md/.seguranca/2026-10-20/` e `.md/.seguranca/sondas.json`. Requisitos de origem: `SDD.md` §7, `GUARDRAILS.md`.
+Modelo de ameaças enxuto (STRIDE) do Pelada. Atualizado na auditoria de release de 2026-10-21. Evidência executada em
+`.md/.seguranca/2026-10-21/` e `.md/.seguranca/sondas.json`. Requisitos de origem: `SDD.md` §7, `GUARDRAILS.md`.
 
 ## Ativos
 
@@ -49,6 +49,7 @@ Operador (máquina local, `DATABASE_URL` própria) -> Neon por script. GitHub Ac
 | E: admin de um grupo no outro | Middleware de vínculo + repositório com `grupoId` + suíte de isolamento; 404 | Admin da quinta em 6 rotas do grupo do domingo -> 404 (e o inverso); admin comum em `/api/dono/*` -> 404 |
 | T: entrada inválida | Esquema estrito do contrato no servidor | `pontuacaoInicial` fora de 0 a 9999, posição inexistente, campo extra, peso fora de -10 a 10 -> 422 |
 | I: financeiro sem permissão | 403 sem `acessa_financeiro` | Testes do QA (TP-0205) |
+| E/T: data de início da pontuação (TP-0209): `POST …/jogadores/:id/inicio/previa` e `PUT …/jogadores/:id/inicio` | Mesma guarda de admin vinculado (sessão, `X-Pelada`, escopo completo, 404 fora do grupo), corpo estrito `{ data }` com data de calendário e `<= hoje` (servidor), transação com trava da linha e auditoria `jogador_inicio_alterado` (datas e acumulados, sem dado pessoal) | 71 sondas autenticadas (`sondas-autenticadas.py`, 2 grupos e 3 contas): sem cookie/forjado 401, sem `X-Pelada` 403, senha temporária 403, grupo/jogador alheio e id inválido 404, formato/futura/campo extra/tipo/SQLi/corpo malformado 422, 1 MB 413; público sem `inicioPontuacao`. **Falha:** sem limite inferior, `1900-01-01` é aceita e `0000-01-01` na gravação responde 500 (RTP aberta, Baixo) |
 
 ### 4. Importação do legado por script (ADR-021)
 
@@ -94,6 +95,7 @@ T-13 (enumeração de slug), ausência de RLS na Fase 1, sem criptografia por ca
 
 Resolvidos na 2ª auditoria de 2026-10-20 (RTP-0169 a 0175): nosniff em `/api/*` (30 sondas com o cabeçalho exigido em 200/401/403/404/422), ações do GitHub por SHA, `.gitignore` do legado.
 
+0. Data de início sem limite inferior (`0000-01-01` gera 500 no `PUT …/inicio`; `1900-01-01` é aceita). Baixo, só admin autenticado, sem vazamento, transação reverte.
 1. `pnpm-missing-minimum-release-age` ainda acusado pelo semgrep (RTP-0176). Baixo.
 2. `braces@3.0.3` dev-only (GHSA-vfj7-8cjw-p6xm), sem versão corrigida. Baixo, monitorado.
 3. Verificação do limite de taxa e dos cabeçalhos no host publicado: obrigatória após o deploy (não aplicável ao ambiente local; sem staging, ADR-020).
