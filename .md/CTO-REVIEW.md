@@ -4,6 +4,12 @@ Log de governança do Gestor (chapéu CTO). Cada seção registra um gate ou um 
 
 ---
 
+## Guardrails — G-25 (acumulado só pela função única do domínio) | 2026-10-20
+
+Proposta do Coordenador (lote L47 / TP-0209, aprovado pelo usuário). Regra clara, verificável (ESLint + teste de rotas, ambos criados na TP-0209) e sem conflito com G-05, G-14, G-20 ou o ADR-023. Ajuste de redação: a criação do jogador (S = início do 1º período) e as migrações também gravam `inicio_pontuacao`, além do `PUT …/inicio`. **Veredito: Aprovado com ajuste de redação.** Gravada em `GUARDRAILS.md` com entrada no Log de Alterações. Sem renumeração.
+
+---
+
 ## Gate 1 — Demanda pontual "Data de início do jogador" | 2026-10-20 | `/planejar --tarefa`
 
 **Escopo do gate:** só esta demanda. Sem impacto comercial (PLANO-COMERCIAL.md não muda). Projeto só com produção, uso pessoal (ADR-020).
