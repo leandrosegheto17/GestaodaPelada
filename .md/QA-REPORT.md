@@ -1163,3 +1163,15 @@ APROVADA; 0 críticos, 0 não críticos; vitest 23/23, script real saída 0, có
 
 ## TP-0209 — QA — 2026-10-21
 APROVADA com ressalvas: 0 críticos, 1 não crítico (RTP-0182, QUEBRAS.md do `jogadorDetalhe.inicioPontuacao` recusado pelo app anterior) e 2 decisões de UX/PRD para o Coordenador (rótulo de `fora`; RNF-13 (1) × PTS FINAL do Vandré 3→6 e 6→7, só exibição, acumulado e posições idênticos); domínio, contrato, API (isolamento e meta), scripts, web, lint, typecheck e checagens verdes; comparação visual T16 OK (0,00% a 0,48%); `pdf-visual` não executado (ambiente).
+
+## RTP-0182 — QA — 2026-10-21
+APROVADA; 0 críticos/0 não críticos; checar-compatibilidade OK, comparar.test 25/25, prettier limpo, QUEBRAS.md cobre os dois campos.
+
+## RTP-0183 — QA — 2026-10-21
+APROVADA — inicioEfetivo única no domínio, 108 testes, lint/typecheck ok, grep limpo, 0 achados.
+
+## RTP-0184 — QA — 2026-10-21
+APROVADA, 0 críticos/0 não críticos; PaginaJogador 194 linhas, saude componente 0, 68 testes verdes, visual T16 6/6 OK (máx. 0,48%).
+
+## RTP-0185 — QA — 2026-10-21
+APROVADA — piso 2000-01-01 recusa 0000/0001/1999-12-31 com 422 pt-BR na prévia e no PUT (testes 21+421+16 ok, contrato compatível, sondas 71/0 falhas no app local); 0 achados.

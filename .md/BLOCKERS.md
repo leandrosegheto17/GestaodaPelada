@@ -125,3 +125,12 @@
 - Impacto se não resolvido: Baixo: leitura do ranking pode confundir quem teve a data alterada; mudar exige mockup aprovado primeiro, depois rótulos, legenda do PDF, UX-SPEC e teste
 - Sugestão: Mudar para 'Fora do grupo ou antes da data de início' (mockup, UX-SPEC, rótulo e legenda juntos, depois nova comparação visual); ou registrar a decisão de manter no UX-SPEC
 - Status: Em aberto
+
+## Bloqueio 015 — 2026-10-21 (BK-0015)
+- Reportado por: Executor
+- Escalado para: usuário
+- Artefato/trecho afetado: RTP-0180
+- Descrição: Migração 202610210000_contrai_posicao e testes prontos (sem commit), mas a edição de backend/contrato/QUEBRAS.md foi negada pelo classificador de permissão: trocar 'RTP-0180 contrai o CHECK de posição' por 'contraído na migração 202610210000' nas 12 linhas da coluna 'deploy 2'
+- Impacto se não resolvido: RTP-0180 não fecha o aceite e RTP-0181 (mesmo arquivo) espera por ela
+- Sugestão: Liberar a edição do QUEBRAS.md (ou fazê-la à mão) e rodar /executar --tarefa RTP-0180
+- Status: Resolvido (2026-10-21): QUEBRAS.md atualizado por mim a pedido do usuário: 12 linhas da coluna deploy 2 apontam para a migração 202610210000

@@ -8,20 +8,20 @@ um deploy, G-20).
 
 Sempre proibido, sem exceção: campo de entrada `eDono` (G-11).
 
-| esquema        | caminho             | mudança                             | deploy 1                                                                             | deploy 2                            |
-| -------------- | ------------------- | ----------------------------------- | ------------------------------------------------------------------------------------ | ----------------------------------- |
-| elenco.corpo   | posicao             | valor de enum removido (defensor)   | front e API saem juntos no mesmo Worker; banco aceita as posições antigas e as novas | RTP-0180 contrai o CHECK de posição |
-| elenco.corpo   | posicao             | valor de enum removido (meio_campo) | front e API saem juntos no mesmo Worker; banco aceita as posições antigas e as novas | RTP-0180 contrai o CHECK de posição |
-| elenco.detalhe | posicao             | valor de enum removido (defensor)   | front e API saem juntos no mesmo Worker; banco aceita as posições antigas e as novas | RTP-0180 contrai o CHECK de posição |
-| elenco.detalhe | posicao             | valor de enum removido (meio_campo) | front e API saem juntos no mesmo Worker; banco aceita as posições antigas e as novas | RTP-0180 contrai o CHECK de posição |
-| elenco.lista   | ativos[].posicao    | valor de enum removido (defensor)   | front e API saem juntos no mesmo Worker; banco aceita as posições antigas e as novas | RTP-0180 contrai o CHECK de posição |
-| elenco.lista   | ativos[].posicao    | valor de enum removido (meio_campo) | front e API saem juntos no mesmo Worker; banco aceita as posições antigas e as novas | RTP-0180 contrai o CHECK de posição |
-| elenco.lista   | inativos[].posicao  | valor de enum removido (defensor)   | front e API saem juntos no mesmo Worker; banco aceita as posições antigas e as novas | RTP-0180 contrai o CHECK de posição |
-| elenco.lista   | inativos[].posicao  | valor de enum removido (meio_campo) | front e API saem juntos no mesmo Worker; banco aceita as posições antigas e as novas | RTP-0180 contrai o CHECK de posição |
-| pesos.corpo    | expulsoComChuva     | campo de entrada novo e obrigatório | front e API saem juntos no mesmo Worker; banco aceita as posições antigas e as novas | RTP-0180 contrai o CHECK de posição |
-| pesos.corpo    | expulsoSemChuva     | campo de entrada novo e obrigatório | front e API saem juntos no mesmo Worker; banco aceita as posições antigas e as novas | RTP-0180 contrai o CHECK de posição |
-| pesos.painel   | historico[].expulso | campo removido                      | front e API saem juntos no mesmo Worker; banco aceita as posições antigas e as novas | RTP-0180 contrai o CHECK de posição |
-| pesos.painel   | vigente.expulso     | campo removido                      | front e API saem juntos no mesmo Worker; banco aceita as posições antigas e as novas | RTP-0180 contrai o CHECK de posição |
+| esquema        | caminho             | mudança                             | deploy 1                                                                             | deploy 2                           |
+| -------------- | ------------------- | ----------------------------------- | ------------------------------------------------------------------------------------ | ---------------------------------- |
+| elenco.corpo   | posicao             | valor de enum removido (defensor)   | front e API saem juntos no mesmo Worker; banco aceita as posições antigas e as novas | contraído na migração 202610210000 |
+| elenco.corpo   | posicao             | valor de enum removido (meio_campo) | front e API saem juntos no mesmo Worker; banco aceita as posições antigas e as novas | contraído na migração 202610210000 |
+| elenco.detalhe | posicao             | valor de enum removido (defensor)   | front e API saem juntos no mesmo Worker; banco aceita as posições antigas e as novas | contraído na migração 202610210000 |
+| elenco.detalhe | posicao             | valor de enum removido (meio_campo) | front e API saem juntos no mesmo Worker; banco aceita as posições antigas e as novas | contraído na migração 202610210000 |
+| elenco.lista   | ativos[].posicao    | valor de enum removido (defensor)   | front e API saem juntos no mesmo Worker; banco aceita as posições antigas e as novas | contraído na migração 202610210000 |
+| elenco.lista   | ativos[].posicao    | valor de enum removido (meio_campo) | front e API saem juntos no mesmo Worker; banco aceita as posições antigas e as novas | contraído na migração 202610210000 |
+| elenco.lista   | inativos[].posicao  | valor de enum removido (defensor)   | front e API saem juntos no mesmo Worker; banco aceita as posições antigas e as novas | contraído na migração 202610210000 |
+| elenco.lista   | inativos[].posicao  | valor de enum removido (meio_campo) | front e API saem juntos no mesmo Worker; banco aceita as posições antigas e as novas | contraído na migração 202610210000 |
+| pesos.corpo    | expulsoComChuva     | campo de entrada novo e obrigatório | front e API saem juntos no mesmo Worker; banco aceita as posições antigas e as novas | contraído na migração 202610210000 |
+| pesos.corpo    | expulsoSemChuva     | campo de entrada novo e obrigatório | front e API saem juntos no mesmo Worker; banco aceita as posições antigas e as novas | contraído na migração 202610210000 |
+| pesos.painel   | historico[].expulso | campo removido                      | front e API saem juntos no mesmo Worker; banco aceita as posições antigas e as novas | contraído na migração 202610210000 |
+| pesos.painel   | vigente.expulso     | campo removido                      | front e API saem juntos no mesmo Worker; banco aceita as posições antigas e as novas | contraído na migração 202610210000 |
 
 ## Retiradas em dois deploys (sem quebra no snapshot)
 

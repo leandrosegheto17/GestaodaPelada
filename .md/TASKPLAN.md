@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-21 14:54
+Atualizado: 2026-10-21 19:06
 
-Resumo: Não executada 8 · Aprovada 397 · Despriorizada 5 · total 410
+Resumo: Não executada 4 · Aprovada 402 · Despriorizada 5 · total 411
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -227,7 +227,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 212 | TP-0206 | executor | ✔ | [U] Go-live do I4 | L45 | TP-0185, TP-0194, TP-0196, TP-0197, TP-0198, TP-0203, TP-0204, TP-0205 | Aprovada |
 | 213 | TP-0208 | executor | ✔ | Adequação ao legado | L46 | TP-0008, TP-0010, TP-0023, TP-0024, TP-0042, TP-0044, TP-0046, TP-0047, TP-0048, TP-0049, TP-0051, TP-0070, TP-0071, TP-0076, TP-0084, TP-0124, TP-0125, TP-0148, TP-0179 | Aprovada |
 | 214 | TP-0209 | executor | ✔ | Data de início como regra de pontuação | L47 | TP-0208 | Aprovada |
-| 215 | RTP-0182 | executor | ✔ | QUEBRAS.md: registrar que jogadorDetalhe.inicioPontuacao (e pontuacaoInicial) são recus... | Refatoração L47 | TP-0209 | Não executada |
+| 215 | RTP-0182 | executor | ✔ | QUEBRAS.md: registrar que jogadorDetalhe.inicioPontuacao (e pontuacaoInicial) são recus... | Refatoração L47 | TP-0209 | Aprovada |
 | 216 | RTP-0001 | executor | ✔ | Lint: backend/scripts importando @pelada/api por alias fura a zona (e falta o teste do... | L01 | TP-0002 | Aprovada |
 | 217 | RTP-0003 | executor | ✔ | Teste de enums: conferir situacao de presença das respostas contra o enum | Refatoração Lote-L01 | TP-0005 | Aprovada |
 | 218 | BK-0003 | coordenador | ✔ | Exige push da branch ci-prova e PR real no remoto (ação manual/autorização do usuário); ro | — | — | Aprovada |
@@ -405,21 +405,22 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 390 | RTP-0177 | executor | ✔ | SDD §7 e GUARDRAILS: requisito de cadeia de suprimento (ações por SHA, política do pnpm... | Refatoração Revisão 2026-10-20 | — | Aprovada |
 | 391 | RTP-0178 | executor | ✔ | Checagem de CI: ações do GitHub só por SHA e política do pnpm presente (G-24) | Refatoração Revisão 2026-10-20 | RTP-0177 | Aprovada |
 | 392 | RTP-0179 | executor | ✔ | checar-acoes-fixadas: recusar uses: ./ com .. e detectar uses em flow style (G-24) | Refatoração Revisão 2026-10-20 | RTP-0178 | Aprovada |
-| 393 | RTP-0180 | executor | ✔ | Contrair o CHECK jogadores_posicao_check às 7 posições do contrato (migração -- contrair:) | Refatoração Revisão 2026-10-20 | — | Não executada |
-| 394 | RTP-0181 | executor | ✔ | QUEBRAS.md: corrigir o plano de dois deploys das 4 linhas de pesos (texto copiado das d... | Refatoração Revisão 2026-10-20 | RTP-0180 | Não executada |
-| 395 | RTP-0170 | executor | ✔ | Adicionar X-Content-Type-Options: nosniff nas respostas JSON de /api/* | Refatoração Segurança 2026-10-20 | — | Aprovada |
-| 396 | RTP-0171 | executor | ✔ | Fixar por SHA as ações do GitHub e adotar block-exotic-sub-dependencies, minimum-releas... | Refatoração Segurança 2026-10-20 | — | Aprovada |
-| 397 | RTP-0176 | executor | ✔ | Subir minimumReleaseAge de 1440 para 10080 no pnpm-workspace.yaml e remover o achado se... | Refatoração Segurança 2026-10-20 | RTP-0171 | Não executada |
-| 398 | RTP-0172 | executor | ✔ | Cobrir no .gitignore o arquivo de entrada da importação do legado (dados pessoais) | Refatoração Segurança 2026-10-20 | — | Aprovada |
-| 399 | RTP-0183 | executor | ✔ | Data de início em vigor: uma função só (api e verificar-inicio repetem o fallback) | Refatoração Revisão 2026-10-21 | — | Não executada |
-| 400 | RTP-0184 | executor | ✔ | PaginaJogador.tsx: voltar ao limite de 200 linhas (213) | Refatoração Revisão 2026-10-21 | — | Não executada |
-| 401 | RTP-0185 | executor | ✔ | Data de início da pontuação sem limite inferior: 0000-01-01 devolve 500 | Refatoração Segurança 2026-10-21 | — | Não executada |
-| 402 | BK-0009 | coordenador | ✔ | Ajustar SDD/ADR-010/URL_PUBLICA/CORS/deploy.yml ao domínio prod-ljs.workers.dev e aos acei | — | — | Aprovada |
-| 403 | BK-0012 | coordenador | ✔ | Quando e onde registrar a contração do CHECK de posicao (tirar defensor/meio_campo de joga | — | — | Aprovada |
-| 404 | BK-0013 | coordenador | ✔ | ADR-008 §3 decide gerar e chamar navigator.share no mesmo gesto; o app agora sempre mostra | — | — | Aprovada |
-| 405 | BK-0014 | coordenador | ✔ | Texto do '–' no ranking e no PDF (hoje só 'Ainda não fazia parte do grupo') também vale pa | — | — | Não executada |
-| 406 | TP-0140 | executor | ✔ | [U] Play Console: app com.gestaodapelada.app (PI-5) | L31 | — | Despriorizada |
-| 407 | TP-0141 | executor | ✔ | /.well-known/assetlinks.json servido pelo Worker | L31 | TP-0088, TP-0140 | Despriorizada |
-| 408 | TP-0142 | executor | ✔ | Projeto TWA (Bubblewrap) em frontend/twa | L31 | TP-0006, TP-0108, TP-0139, TP-0140, TP-0141 | Despriorizada |
-| 409 | TP-0143 | executor | ✔ | [U] Teste fechado da Play (12 testadores, 14 dias) | L31 | TP-0139, TP-0141, TP-0142 | Despriorizada |
-| 410 | TP-0144 | executor | ✔ | [U] Publicação da TWA em produção | L31 | TP-0143 | Despriorizada |
+| 393 | BK-0015 | coordenador | ✔ | Migração 202610210000_contrai_posicao e testes prontos (sem commit), mas a edição de backe | — | — | Aprovada |
+| 394 | RTP-0180 | executor | ✔ | Contrair o CHECK jogadores_posicao_check às 7 posições do contrato (migração -- contrair:) | Refatoração Revisão 2026-10-20 | BK-0015 | Não executada |
+| 395 | RTP-0181 | executor | ✔ | QUEBRAS.md: corrigir o plano de dois deploys das 4 linhas de pesos (texto copiado das d... | Refatoração Revisão 2026-10-20 | RTP-0180 | Não executada |
+| 396 | RTP-0170 | executor | ✔ | Adicionar X-Content-Type-Options: nosniff nas respostas JSON de /api/* | Refatoração Segurança 2026-10-20 | — | Aprovada |
+| 397 | RTP-0171 | executor | ✔ | Fixar por SHA as ações do GitHub e adotar block-exotic-sub-dependencies, minimum-releas... | Refatoração Segurança 2026-10-20 | — | Aprovada |
+| 398 | RTP-0176 | executor | ✔ | Subir minimumReleaseAge de 1440 para 10080 no pnpm-workspace.yaml e remover o achado se... | Refatoração Segurança 2026-10-20 | RTP-0171 | Não executada |
+| 399 | RTP-0172 | executor | ✔ | Cobrir no .gitignore o arquivo de entrada da importação do legado (dados pessoais) | Refatoração Segurança 2026-10-20 | — | Aprovada |
+| 400 | RTP-0183 | executor | ✔ | Data de início em vigor: uma função só (api e verificar-inicio repetem o fallback) | Refatoração Revisão 2026-10-21 | — | Aprovada |
+| 401 | RTP-0184 | executor | ✔ | PaginaJogador.tsx: voltar ao limite de 200 linhas (213) | Refatoração Revisão 2026-10-21 | — | Aprovada |
+| 402 | RTP-0185 | executor | ✔ | Data de início da pontuação sem limite inferior: 0000-01-01 devolve 500 | Refatoração Segurança 2026-10-21 | — | Aprovada |
+| 403 | BK-0009 | coordenador | ✔ | Ajustar SDD/ADR-010/URL_PUBLICA/CORS/deploy.yml ao domínio prod-ljs.workers.dev e aos acei | — | — | Aprovada |
+| 404 | BK-0012 | coordenador | ✔ | Quando e onde registrar a contração do CHECK de posicao (tirar defensor/meio_campo de joga | — | — | Aprovada |
+| 405 | BK-0013 | coordenador | ✔ | ADR-008 §3 decide gerar e chamar navigator.share no mesmo gesto; o app agora sempre mostra | — | — | Aprovada |
+| 406 | BK-0014 | coordenador | ✔ | Texto do '–' no ranking e no PDF (hoje só 'Ainda não fazia parte do grupo') também vale pa | — | — | Não executada |
+| 407 | TP-0140 | executor | ✔ | [U] Play Console: app com.gestaodapelada.app (PI-5) | L31 | — | Despriorizada |
+| 408 | TP-0141 | executor | ✔ | /.well-known/assetlinks.json servido pelo Worker | L31 | TP-0088, TP-0140 | Despriorizada |
+| 409 | TP-0142 | executor | ✔ | Projeto TWA (Bubblewrap) em frontend/twa | L31 | TP-0006, TP-0108, TP-0139, TP-0140, TP-0141 | Despriorizada |
+| 410 | TP-0143 | executor | ✔ | [U] Teste fechado da Play (12 testadores, 14 dias) | L31 | TP-0139, TP-0141, TP-0142 | Despriorizada |
+| 411 | TP-0144 | executor | ✔ | [U] Publicação da TWA em produção | L31 | TP-0143 | Despriorizada |

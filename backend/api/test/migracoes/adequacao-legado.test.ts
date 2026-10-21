@@ -60,6 +60,7 @@ describe('migração de adequação ao legado', () => {
       expect(pesos.rows).toEqual([{ expulso: -2, expulso_com_chuva: -2 }]);
 
       // Segunda aplicação: o runner pula a migração e nada muda.
+      await aplicarMigracoes(url, lerMigracoes(PASTA));
       const outra = await aplicarMigracoes(url, lerMigracoes(PASTA));
       expect(outra.aplicadas).toEqual([]);
       const antigas = await cliente.query("SELECT 1 FROM jogadores WHERE posicao IN ('defensor', 'meio_campo')");
@@ -103,6 +104,46 @@ describe('migração de adequação ao legado', () => {
       expect(await inserir('Neg', 'meia', -1)).toBe('23514');
       expect(await inserir('Estouro', 'meia', 10000)).toBe('23514');
       expect(await inserir('Ponta', 'ponta', 0)).toBe('23514');
+      expect(await inserir('Antigo1', 'defensor', 0)).toBe('23514');
+      expect(await inserir('Antigo2', 'meio_campo', 0)).toBe('23514');
+    } finally {
+      await cliente.end();
+    }
+  });
+
+  it('a contração do CHECK converte linha antiga antes de restringir e deixa só as sete posições', async () => {
+    const { cliente, url } = await bancoAntesDaMigracao();
+    try {
+      const conta = (
+        await cliente.query<{ id: string }>(
+          `INSERT INTO contas (email, nome, senha_hash, criada_em) VALUES ('mig3@exemplo.test', 'Mig', 'x', now()) RETURNING id`,
+        )
+      ).rows[0]?.id as string;
+      const grupo = (
+        await cliente.query<{ id: string }>(
+          `INSERT INTO grupos (nome, slug, dia_semana, frequencia, horario, criado_por, criado_em)
+           VALUES ('Migracao3', 'mig3', 'quarta', 'semanal', '20:00', $1, now()) RETURNING id`,
+          [conta],
+        )
+      ).rows[0]?.id as string;
+      for (const [apelido, posicao] of [
+        ['Def', 'defensor'],
+        ['Meio', 'meio_campo'],
+      ] as const) {
+        await cliente.query(
+          `INSERT INTO jogadores (grupo_id, apelido, ano_nascimento, posicao, criado_por, criado_em, alterado_por, alterado_em)
+           VALUES ($1, $2, 1990, $3, $4, now(), $4, now())`,
+          [grupo, apelido, posicao, conta],
+        );
+      }
+      await aplicarMigracoes(url, lerMigracoes(PASTA));
+
+      const posicoes = await cliente.query<{ posicao: string }>('SELECT posicao FROM jogadores ORDER BY apelido');
+      expect(posicoes.rows.map((l) => l.posicao)).toEqual(['zagueiro', 'meia']);
+      const definicao = await cliente.query<{ def: string }>(
+        `SELECT pg_get_constraintdef(oid) AS def FROM pg_constraint WHERE conname = 'jogadores_posicao_check'`,
+      );
+      expect(definicao.rows[0]?.def).not.toMatch(/defensor|meio_campo/);
     } finally {
       await cliente.end();
     }

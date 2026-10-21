@@ -17,7 +17,7 @@ function urlDe(banco: string): string {
 
 /**
  * Registra a limpeza dos bancos descartáveis criados por `bancoAntesDaMigracao` e devolve a função
- * que cria um banco com todas as migrações menos `nova`, para provar a conversão de dados existentes.
+ * que cria um banco só com as migrações anteriores a `nova`, para provar a conversão de dados existentes.
  */
 export function bancosDescartaveis(nova: string): () => Promise<{ cliente: pg.Client; url: string }> {
   const criados: string[] = [];
@@ -46,7 +46,7 @@ export function bancosDescartaveis(nova: string): () => Promise<{ cliente: pg.Cl
     const url = urlDe(nome);
     await aplicarMigracoes(
       url,
-      lerMigracoes(PASTA_MIGRACOES).filter((m) => m.nome !== nova),
+      lerMigracoes(PASTA_MIGRACOES).filter((m) => m.nome < nova),
     );
     const cliente = new pg.Client({ connectionString: url });
     await cliente.connect();

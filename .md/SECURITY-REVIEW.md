@@ -1187,3 +1187,15 @@ APROVADA; 0 críticos/0 altos, 1 Baixo residual já documentado (chave `"uses"` 
 
 ## TP-0209 — DevSecOps — 2026-10-21
 APROVADA em segurança: 0 críticos/altos/médios e nenhum achado novo (risco do app em cache = disponibilidade, Baixo, já na RTP-0182); autenticação e 404 fora do grupo, isolamento por `grupo_id`, transação com `FOR UPDATE`, migração aditiva, auditoria sem dado pessoal, G-25 (ESLint + teste) e `verificar-inicio.ts` somente leitura executados; isolamento/rotas/migração/script verdes, semgrep 0 achados em 28 arquivos.
+
+## RTP-0182 — DevSecOps — 2026-10-21
+APROVADA; 0 críticos/0 não críticos; diff só documental, varredura de segredos limpa, sem superfície nova.
+
+## RTP-0183 — DevSecOps — 2026-10-21
+APROVADA — função pura sem dado pessoal/entrada externa, grep limpo e 18 testes do domínio executados, 0 achados.
+
+## RTP-0184 — DevSecOps — 2026-10-21
+APROVADA, 0 críticos/0 não críticos; refatoração de UI sem superfície nova, sem innerHTML/eval/storage/log, dependências intocadas, eslint exit 0.
+
+## RTP-0185 — DevSecOps — 2026-10-21
+APROVADA — piso 2000-01-01 validado no servidor (422 pt-BR, sem 500/stack/SQL) em prévia e PUT, sem regressão de auth/CSRF/isolamento (sondas 71/0 falhas via QA; contrato 52 ok rodado); 0 achados.
