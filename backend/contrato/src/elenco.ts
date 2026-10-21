@@ -123,7 +123,11 @@ export function jogadorCorpo(hoje: string) {
   });
 }
 
-/** Corpo estático de editar: omitir `pontuacaoInicial` mantém o valor atual (criar usa 0). */
+/**
+ * Corpo estático de editar: omitir `pontuacaoInicial` mantém o valor atual (criar usa 0). `dataEntrada`
+ * continua aceita e é ignorada, porque o app da versão anterior ainda a envia (G-20); a data de início
+ * só muda pela rota própria.
+ */
 export const jogadorEditarCorpoBase = jogadorCorpoBase.extend({ pontuacaoInicial: pontuacaoInicial.optional() });
 
 /** Fábrica do corpo de editar jogador, com as regras que dependem de `hoje`. */
@@ -141,6 +145,34 @@ export function inativarCorpo(hoje: string) {
   });
 }
 
+const MENSAGEM_FUTURO = 'A data não pode ser no futuro.';
+
+/** Corpo estático de alterar a data de início (prévia e gravação). */
+export const inicioCorpoBase = z.strictObject({ data });
+
+/** Corpo com a regra que depende de `hoje` (America/Sao_Paulo, vindo do servidor). */
+export function inicioCorpo(hoje: string) {
+  return z.strictObject({ data: data.refine((d) => d <= hoje, MENSAGEM_FUTURO) });
+}
+
+const inteiroNaoNegativo = z.number().int().min(0);
+
+/** Efeito de trocar a data de início, sem gravar. Posição nula = jogador inativo, fora do ranking. */
+export const inicioPreviaResposta = z.strictObject({
+  acumuladoAntes: z.number().int(),
+  acumuladoDepois: z.number().int(),
+  posicaoAntes: inteiroNaoNegativo.nullable(),
+  posicaoDepois: inteiroNaoNegativo.nullable(),
+  rodadasQuePassamAConstar: inteiroNaoNegativo,
+});
+
+export type InicioPreviaResposta = z.infer<typeof inicioPreviaResposta>;
+
+/** `alterado: false` quando a data enviada já era a atual (nada foi gravado). */
+export const inicioEditarResposta = z.strictObject({ inicio: data, alterado: z.boolean() });
+
+export type InicioEditarResposta = z.infer<typeof inicioEditarResposta>;
+
 export const jogadoresConsulta = z.strictObject({ filtro: z.enum(['ativos', 'inativos']).optional() });
 
 export const esquemasElenco: Esquemas = {
@@ -150,5 +182,9 @@ export const esquemasElenco: Esquemas = {
   'elenco.corpo': { direcao: 'entrada', schema: jogadorCorpoBase },
   'elenco.editar.corpo': { direcao: 'entrada', schema: jogadorEditarCorpoBase },
   'elenco.inativar.corpo': { direcao: 'entrada', schema: inativarCorpoBase },
+  'elenco.inicio.previa.corpo': { direcao: 'entrada', schema: inicioCorpoBase },
+  'elenco.inicio.previa.resposta': { direcao: 'resposta', schema: inicioPreviaResposta },
+  'elenco.inicio.editar.corpo': { direcao: 'entrada', schema: inicioCorpoBase },
+  'elenco.inicio.editar.resposta': { direcao: 'resposta', schema: inicioEditarResposta },
   'elenco.erro.com-historico': { direcao: 'resposta', schema: erroJogadorComHistorico },
 };

@@ -10,6 +10,7 @@ export * from './atividade/validar-periodos.js';
 export * from './ranking/ordem.js';
 export * from './ranking/navegacao.js';
 export * from './ranking/ranking.js';
+export * from './ranking/previa-inicio.js';
 export * from './elenco/nivel.js';
 export * from './elenco/idade.js';
 export * from './grupos/slug.js';

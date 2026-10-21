@@ -134,12 +134,12 @@ export async function criar(
   }
 }
 
-/** Atualiza os dados; `dataEntrada` move o início do primeiro período. */
+/** Atualiza os dados cadastrais; a data de início só muda por `alterarInicio`. */
 export async function editar(
   ex: Tx,
   grupoId: string,
   jogadorId: string,
-  dados: DadosJogador & { dataEntrada?: string; autor: string; agora: Date },
+  dados: DadosJogador & { autor: string; agora: Date },
 ): Promise<boolean> {
   const banco = kyselyDe(ex);
   try {
@@ -157,18 +157,8 @@ export async function editar(
       .where('id', '=', jogadorId)
       .where('grupo_id', '=', grupoId)
       .executeTakeFirst();
-    if (Number(r.numUpdatedRows) === 0) return false;
-    if (dados.dataEntrada !== undefined) {
-      await sql`
-        UPDATE periodos_ativos SET inicio = ${dados.dataEntrada}
-        WHERE id = (SELECT id FROM periodos_ativos
-                    WHERE jogador_id = ${jogadorId} AND grupo_id = ${grupoId} ORDER BY inicio LIMIT 1)
-      `.execute(banco);
-    }
-    return true;
+    return Number(r.numUpdatedRows) > 0;
   } catch (erro) {
-    const { code, constraint } = codigoDe(erro);
-    if (code === '23514' && constraint === 'periodo_fim_depois_inicio') throw new PeriodoInvalido();
     return seViolarUnico(erro, 'jogadores_apelido_grupo', () => new ApelidoEmUso());
   }
 }
@@ -268,18 +258,41 @@ export async function temPresencaDesde(
   return r.rows[0]?.existe ?? false;
 }
 
-/** Há presença anterior à data (usado ao mover a data de entrada)? */
-export async function temPresencaAntesDe(
-  ex: ExecutorDb,
+/** Trava a linha do jogador até o fim da transação; `false` se ele não é do grupo. */
+export async function travar(ex: Tx, grupoId: string, jogadorId: string): Promise<boolean> {
+  const linha = await kyselyDe(ex)
+    .selectFrom('jogadores')
+    .select('id')
+    .where('id', '=', jogadorId)
+    .where('grupo_id', '=', grupoId)
+    .forUpdate()
+    .executeTakeFirst();
+  return linha !== undefined;
+}
+
+/**
+ * Grava a data de início. Se ela recua antes do início do primeiro período, só esse início acompanha
+ * (período encerrado e saída não mudam), mantendo `início do 1º período <= início da pontuação`.
+ */
+export async function alterarInicio(
+  ex: Tx,
   grupoId: string,
   jogadorId: string,
-  data: string,
+  dados: { inicio: string; autor: string; agora: Date },
 ): Promise<boolean> {
-  const r = await sql<{ existe: boolean }>`
-    SELECT EXISTS (
-      SELECT 1 FROM presencas pr JOIN partidas pa ON pa.id = pr.partida_id AND pa.grupo_id = pr.grupo_id
-      WHERE pr.grupo_id = ${grupoId} AND pr.jogador_id = ${jogadorId} AND pa.data < ${data}::date
-    ) AS existe
-  `.execute(kyselyDe(ex));
-  return r.rows[0]?.existe ?? false;
+  const banco = kyselyDe(ex);
+  const r = await banco
+    .updateTable('jogadores')
+    .set({ inicio_pontuacao: dados.inicio, alterado_por: dados.autor, alterado_em: dados.agora })
+    .where('id', '=', jogadorId)
+    .where('grupo_id', '=', grupoId)
+    .executeTakeFirst();
+  if (Number(r.numUpdatedRows) === 0) return false;
+  await sql`
+    UPDATE periodos_ativos SET inicio = ${dados.inicio}::date
+    WHERE id = (SELECT id FROM periodos_ativos
+                WHERE jogador_id = ${jogadorId} AND grupo_id = ${grupoId} ORDER BY inicio LIMIT 1)
+      AND grupo_id = ${grupoId} AND inicio > ${dados.inicio}::date
+  `.execute(banco);
+  return true;
 }

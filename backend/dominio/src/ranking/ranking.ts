@@ -1,6 +1,6 @@
 import { ativosEm, type Periodo } from '../atividade/atividade.js';
 import { primeiroDia, somarDias, type Data, type Mes } from '../datas/datas.js';
-import { criarResolvedorDePesos } from '../pontuacao/pesos.js';
+import { criarResolvedorDePesos, type ResolvedorDePesos } from '../pontuacao/pesos.js';
 import { acumuladoPorInicio } from '../pontuacao/acumulado-inicio.js';
 import type { ConfigPesos, PresencaDoJogador, SituacaoPresenca } from '../pontuacao/tipos.js';
 import {
@@ -83,6 +83,27 @@ export function agruparPresencasPorJogador(
   return resultado;
 }
 
+/** Acumulado de cada jogador até `referencia`, pela regra única da data de início. */
+export function acumuladosDosAtivos(
+  jogadores: readonly JogadorDoRanking[],
+  presencasPorJogador: ReadonlyMap<string, readonly PresencaDoJogador[]>,
+  resolver: ResolvedorDePesos,
+  referencia: Data,
+): Map<string, number> {
+  return new Map(
+    jogadores.map((j) => [
+      j.id,
+      acumuladoPorInicio({
+        inicio: j.inicioPontuacao,
+        pontuacaoInicial: j.pontuacaoInicial,
+        presencas: presencasPorJogador.get(j.id) ?? [],
+        configs: resolver,
+        referencia,
+      }),
+    ]),
+  );
+}
+
 /** Ranking de `mes` visto em `hoje`: ordem pelo acumulado até hoje, igual em qualquer mês. */
 export function calcularRanking(entrada: EntradaRanking): ResultadoRanking {
   const { hoje, mes } = entrada;
@@ -90,18 +111,7 @@ export function calcularRanking(entrada: EntradaRanking): ResultadoRanking {
   const presencasPorJogador = agruparPresencasPorJogador(entrada.partidas, entrada.presencas);
 
   const ativos = ativosEm(entrada.jogadores, hoje);
-  const acumulados = new Map(
-    ativos.map((j) => [
-      j.id,
-      acumuladoPorInicio({
-        inicio: j.inicioPontuacao,
-        pontuacaoInicial: j.pontuacaoInicial,
-        presencas: presencasPorJogador.get(j.id) ?? [],
-        configs: resolver,
-        referencia: hoje,
-      }),
-    ]),
-  );
+  const acumulados = acumuladosDosAtivos(ativos, presencasPorJogador, resolver, hoje);
   const ordem = ordenarPorRanking(ativos, acumulados);
 
   const { partidas: doMes, resumo } = partidasDoMes(entrada.partidas, mes);

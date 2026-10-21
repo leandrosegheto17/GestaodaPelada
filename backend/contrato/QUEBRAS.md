@@ -22,3 +22,7 @@ Sempre proibido, sem exceção: campo de entrada `eDono` (G-11).
 | pesos.corpo    | expulsoSemChuva     | campo de entrada novo e obrigatório | front e API saem juntos no mesmo Worker; banco aceita as posições antigas e as novas | RTP-0180 contrai o CHECK de posição |
 | pesos.painel   | historico[].expulso | campo removido                      | front e API saem juntos no mesmo Worker; banco aceita as posições antigas e as novas | RTP-0180 contrai o CHECK de posição |
 | pesos.painel   | vigente.expulso     | campo removido                      | front e API saem juntos no mesmo Worker; banco aceita as posições antigas e as novas | RTP-0180 contrai o CHECK de posição |
+
+## Retiradas em dois deploys (sem quebra no snapshot)
+
+- `elenco.editar.corpo`, campo `dataEntrada`. Deploy 1: a API aceita e ignora o campo (a data de início só muda por `PUT /api/grupos/:grupoId/jogadores/:id/inicio`) e o app deixa de enviá-lo. Deploy 2: remover `dataEntrada` do corpo de editar, depois que o app anterior sair de uso.

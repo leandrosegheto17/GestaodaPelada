@@ -3,6 +3,10 @@ import {
   erroJogadorComHistorico,
   erroPadrao,
   inativarCorpo,
+  inicioCorpo,
+  inicioCorpoBase,
+  inicioEditarResposta,
+  inicioPreviaResposta,
   jogadorCorpo,
   jogadorCorpoBase,
   jogadorDetalhe,
@@ -164,5 +168,47 @@ describe('inativar e nota', () => {
     [5.5, false],
   ])('nota %d → %s', (nota, aceito) => {
     expect(notaValor.safeParse(nota).success).toBe(aceito);
+  });
+});
+
+describe('data de início', () => {
+  const schema = inicioCorpo(HOJE);
+  it('aceita hoje e o passado; recusa amanhã, data inexistente, vazio e formato errado', () => {
+    expect(schema.safeParse({ data: HOJE }).success).toBe(true);
+    expect(schema.safeParse({ data: '2020-01-31' }).success).toBe(true);
+    for (const data of ['2026-10-23', '2026-02-30', '', '22/10/2026', '2026-1-5', '２０２６-10-01']) {
+      expect(schema.safeParse({ data }).success).toBe(false);
+    }
+    expect(schema.safeParse({}).success).toBe(false);
+  });
+  it('recusa campo extra e tipo errado; o corpo estático também', () => {
+    expect(schema.safeParse({ data: HOJE, dataEntrada: HOJE }).success).toBe(false);
+    expect(schema.safeParse({ data: 20261001 }).success).toBe(false);
+    expect(inicioCorpoBase.safeParse({ data: '2026-10-23' }).success).toBe(true);
+    expect(inicioCorpoBase.safeParse({ data: '2026-02-30' }).success).toBe(false);
+  });
+  it('resposta da prévia: números, posição anulável e sem campo extra', () => {
+    const ok = {
+      acumuladoAntes: 33,
+      acumuladoDepois: 1,
+      posicaoAntes: 2,
+      posicaoDepois: null,
+      rodadasQuePassamAConstar: 0,
+    };
+    expect(inicioPreviaResposta.safeParse(ok).success).toBe(true);
+    expect(inicioPreviaResposta.safeParse({ ...ok, apelido: 'x' }).success).toBe(false);
+    expect(inicioPreviaResposta.safeParse({ ...ok, rodadasQuePassamAConstar: -1 }).success).toBe(false);
+  });
+  it('resposta da edição: data e se houve alteração', () => {
+    expect(inicioEditarResposta.safeParse({ inicio: HOJE, alterado: false }).success).toBe(true);
+    expect(inicioEditarResposta.safeParse({ inicio: HOJE }).success).toBe(false);
+  });
+});
+
+describe('edição genérica e dataEntrada', () => {
+  it('ainda aceita dataEntrada (o app anterior a envia); a API a ignora', () => {
+    const ok = { apelido: 'Toninho', anoNascimento: 1978, posicao: 'atacante', dataEntrada: '2026-01-05' };
+    expect(jogadorEditarCorpoBase.safeParse(ok).success).toBe(true);
+    expect(jogadorEditarCorpo(HOJE).safeParse(ok).success).toBe(true);
   });
 });

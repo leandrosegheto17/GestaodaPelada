@@ -24,6 +24,7 @@ import { rotaJogadoresListar } from './rotas/grupos/jogadores/listar.js';
 import { rotaJogadorLer } from './rotas/grupos/jogadores/ler.js';
 import { rotaJogadorCriar } from './rotas/grupos/jogadores/criar.js';
 import { rotaJogadorEditar } from './rotas/grupos/jogadores/editar.js';
+import { rotaJogadorInicioEditar, rotaJogadorInicioPrevia } from './rotas/grupos/jogadores/inicio.js';
 import { rotaJogadorInativar, rotaJogadorReativar } from './rotas/grupos/jogadores/situacao.js';
 import { rotaJogadorExcluir } from './rotas/grupos/jogadores/excluir.js';
 import { rotaPesosLer, rotaPesosSalvar } from './rotas/grupos/pesos/pesos.js';
@@ -81,6 +82,8 @@ export const ROTAS: readonly Hono<AppEnv>[] = [
   rotaJogadorLer,
   rotaJogadorCriar,
   rotaJogadorEditar,
+  rotaJogadorInicioPrevia,
+  rotaJogadorInicioEditar,
   rotaJogadorInativar,
   rotaJogadorReativar,
   rotaJogadorExcluir,

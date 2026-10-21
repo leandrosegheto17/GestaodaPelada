@@ -1,10 +1,8 @@
 import { jogadorDetalhe, listaJogadores } from '@pelada/contrato';
 import { randomUUID } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
-import { emTransacao } from '../../../../src/infraestrutura/db/index.js';
 import * as habilidades from '../../../../src/infraestrutura/db/repositorios/habilidades.js';
 import * as jogadores from '../../../../src/infraestrutura/db/repositorios/jogadores.js';
-import * as partidas from '../../../../src/infraestrutura/db/repositorios/partidas.js';
 import { montarCenario } from '../../../apoio/cenario-acesso.js';
 import { clienteTeste } from '../../../apoio/cliente.js';
 import { usarDbDoWorker } from '../../../apoio/db-worker.js';
@@ -15,7 +13,6 @@ import { relogioFixo } from '../../../apoio/relogio.js';
 const fabrica = usarFabrica();
 const abrir = usarDbDoWorker(fabrica);
 const HOJE = '2026-10-22';
-const AGORA = new Date('2026-10-22T15:00:00Z');
 const cliente = (cookie: string, data = HOJE) => clienteTeste({ relogio: relogioFixo(data), cookie });
 
 describe('GET /api/grupos/:g/jogadores (workerd)', () => {
@@ -84,7 +81,7 @@ describe('GET /api/grupos/:g/jogadores/:id (workerd)', () => {
 });
 
 describe('PATCH /api/grupos/:g/jogadores/:id (workerd)', () => {
-  it('edita os dados e limpa o telefone; nova entrada move o primeiro período', async () => {
+  it('edita os dados e limpa o telefone; dataEntrada é ignorada', async () => {
     const db = await abrir();
     const cen = await montarCenario(db, fabrica);
     const g = cen.grupoA.id;
@@ -101,36 +98,8 @@ describe('PATCH /api/grupos/:g/jogadores/:id (workerd)', () => {
       apelido: 'Editado',
       posicao: 'goleiro',
       telefone: null,
-      situacao: { desde: '2026-04-01' },
+      situacao: { desde: '2026-05-01' },
     });
-  });
-
-  it('presença antes da nova entrada: 422 no campo dataEntrada (L-11)', async () => {
-    const db = await abrir();
-    const cen = await montarCenario(db, fabrica);
-    const g = cen.grupoA.id;
-    const id = await criarJogador(db, g, cen.adminA.id, { apelido: 'Presente', dataEntrada: '2026-01-01' });
-    await emTransacao(db, (tx) =>
-      partidas.criar(tx, g, {
-        data: '2026-03-05',
-        choveu: false,
-        presencas: [{ jogadorId: id, situacao: 'presente' }],
-        autor: cen.adminA.id,
-        agora: AGORA,
-      }),
-    );
-    const base = { apelido: 'Presente', anoNascimento: 1990, posicao: 'atacante' };
-    const recusado = await cliente(cen.adminA.cookie).patch(`/api/grupos/${g}/jogadores/${id}`, {
-      ...base,
-      dataEntrada: '2026-03-06',
-    });
-    expect(recusado.status).toBe(422);
-    expect(Object.keys((recusado.corpo as { erro: { campos: object } }).erro.campos)).toEqual(['dataEntrada']);
-    const aceito = await cliente(cen.adminA.cookie).patch(`/api/grupos/${g}/jogadores/${id}`, {
-      ...base,
-      dataEntrada: '2026-03-05',
-    });
-    expect(aceito.status).toBe(200);
   });
 
   it('apelido repetido 422; jogador de outro grupo e malformado 404', async () => {

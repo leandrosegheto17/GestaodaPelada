@@ -152,7 +152,7 @@ describe('PATCH /api/grupos/:g/jogadores/:id (editar, workerd)', () => {
     expect((await jogadores.buscar(db, g, id))?.pontuacaoInicial).toBe(7);
   });
 
-  it('nova entrada move só o primeiro período; recusa posterior a presença ou ao fim do período', async () => {
+  it('dataEntrada no corpo é aceita e ignorada: período e data de início ficam', async () => {
     const db = await abrir();
     const cen = await montarCenario(db, fabrica);
     const g = cen.grupoA.id;
@@ -162,39 +162,16 @@ describe('PATCH /api/grupos/:g/jogadores/:id (editar, workerd)', () => {
       await jogadores.inativar(tx, g, id, fim0);
       await jogadores.reativar(tx, g, id, e1);
     });
-    const patch = (dataEntrada: string) => cliente(cen.adminA.cookie).patch(url(g, id), { ...corpoBase, dataEntrada });
-
-    const antes = diaRelativo(-70);
-    expect((await patch(antes)).status).toBe(200);
+    for (const dataEntrada of [diaRelativo(-70), diaRelativo(-10)]) {
+      const r = await cliente(cen.adminA.cookie).patch(url(g, id), { ...corpoBase, dataEntrada });
+      expect(r.status).toBe(200);
+      expect(jogadorDetalhe.parse(r.corpo).situacao).toEqual({ ativo: true, desde: e1 });
+    }
     expect(await periodosDe(db, id)).toEqual([
-      { inicio: antes, fim: fim0 },
+      { inicio: e0, fim: fim0 },
       { inicio: e1, fim: null },
     ]);
-
-    const presenca = diaRelativo(-50);
-    await criarPartida(db, g, cen.adminA.id, presenca, [id]);
-    const depoisDaPresenca = await patch(diaRelativo(-49));
-    expect(depoisDaPresenca.status).toBe(422);
-    expect(Object.keys(campos(depoisDaPresenca))).toEqual(['dataEntrada']);
-    expect(depoisDaPresenca.texto).not.toContain(presenca);
-    const depoisDoFim = await patch(diaRelativo(-30));
-    expect(depoisDoFim.status).toBe(422);
-    expect(Object.keys(campos(depoisDoFim))).toEqual(['dataEntrada']);
-    expect((await periodosDe(db, id))[0]?.inicio).toBe(antes);
-
-    expect((await patch(presenca)).status).toBe(200);
-    expect((await periodosDe(db, id))[0]?.inicio).toBe(presenca);
-  });
-
-  it('nova entrada posterior sem presença antes move o período', async () => {
-    const db = await abrir();
-    const cen = await montarCenario(db, fabrica);
-    const g = cen.grupoA.id;
-    const id = await criarJogador(db, g, cen.adminA.id, { dataEntrada: diaRelativo(-60) });
-    const nova = diaRelativo(-10);
-    const r = await cliente(cen.adminA.cookie).patch(url(g, id), { ...corpoBase, dataEntrada: nova });
-    expect(r.status).toBe(200);
-    expect(jogadorDetalhe.parse(r.corpo).situacao).toEqual({ ativo: true, desde: nova });
+    expect((await jogadores.buscar(db, g, id))?.inicioPontuacao).toBe(e0);
   });
 
   it('apelido de outro jogador sem caixa dá 422 no campo; manter o próprio apelido dá 200', async () => {
@@ -209,7 +186,7 @@ describe('PATCH /api/grupos/:g/jogadores/:id (editar, workerd)', () => {
     expect((await cliente(cen.adminA.cookie).patch(url(g, id), { ...corpoBase, apelido: 'Proprio' })).status).toBe(200);
   });
 
-  it('reflete no ranking: ano de nascimento desempata e entrada posterior troca falta por fora', async () => {
+  it('reflete no ranking: ano de nascimento desempata e início posterior troca falta por fora', async () => {
     const db = await abrir();
     const cen = await montarCenario(db, fabrica);
     const g = cen.grupoA.id;
@@ -230,6 +207,8 @@ describe('PATCH /api/grupos/:g/jogadores/:id (editar, workerd)', () => {
     };
     const editar = (id: string, apelido: string, extra: object) =>
       cliente(cen.adminA.cookie).patch(url(g, id), { ...corpoBase, apelido, ...extra });
+    const avancarInicio = (id: string, data: string) =>
+      cliente(cen.adminA.cookie).put(`${url(g, id)}/inicio`, { data });
 
     const antes = await ranking();
     expect(antes.map((l) => l.apelido)).toEqual(['Beto', 'Ana', 'Caio']);
@@ -238,7 +217,7 @@ describe('PATCH /api/grupos/:g/jogadores/:id (editar, workerd)', () => {
     expect((await editar(ana, 'Ana', { anoNascimento: 1970 })).status).toBe(200);
     expect((await ranking()).map((l) => l.apelido)).toEqual(['Ana', 'Beto', 'Caio']);
 
-    expect((await editar(caio, 'Caio', { anoNascimento: 1980, dataEntrada: dia(-8) })).status).toBe(200);
+    expect((await avancarInicio(caio, dia(-8))).status).toBe(200);
     const depois = (await ranking()).find((l) => l.apelido === 'Caio');
     expect(depois?.rodadas.map((r) => r.situacao)).toEqual(['fora']);
   });

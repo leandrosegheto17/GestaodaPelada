@@ -60,7 +60,7 @@ describe('repositório de jogadores', () => {
     expect((await jogadores.listar(db, base.grupo.id)).map((j) => j.apelido)).toEqual(['Alfa']);
   });
 
-  it('editar muda os dados e move só o primeiro período; data depois do fim é PeriodoInvalido', async () => {
+  it('editar muda os dados cadastrais e não mexe em períodos nem na data de início', async () => {
     const db = await abrir();
     const base = await criarBase(db, fabrica);
     const id = await criarJogador(db, base.grupo.id, base.contaId, { dataEntrada: ENTRADA });
@@ -75,23 +75,48 @@ describe('repositório de jogadores', () => {
       autor: base.contaId,
       agora: AGORA,
     };
-    const editar = (grupoId: string, extra: { dataEntrada?: string } = {}) =>
-      emTransacao(db, (tx) => jogadores.editar(tx, grupoId, id, { ...novo, ...extra }));
-    expect(await editar(base.grupo.id, { dataEntrada: d(-245) })).toBe(true);
+    const editar = (grupoId: string) => emTransacao(db, (tx) => jogadores.editar(tx, grupoId, id, novo));
+    expect(await editar(base.grupo.id)).toBe(true);
     const j = await jogadores.buscar(db, base.grupo.id, id);
     expect(j).toMatchObject({
       apelido: 'Novo Nome',
       posicao: 'goleiro',
       telefone: '11987654321',
       pontuacaoInicial: 120,
+      inicioPontuacao: ENTRADA,
     });
     expect(j?.periodos).toEqual([
-      { inicio: d(-245), fim: d(-200) },
+      { inicio: ENTRADA, fim: d(-200) },
       { inicio: d(-150), fim: null },
     ]);
-    await expect(editar(base.grupo.id, { dataEntrada: d(-199) })).rejects.toBeInstanceOf(PeriodoInvalido);
     expect(await editar(base.outroGrupo.id)).toBe(false);
-    expect((await jogadores.buscar(db, base.grupo.id, id))?.apelido).toBe('Novo Nome');
+  });
+
+  it('alterarInicio grava S e move só o 1º período ao recuar antes dele; outro grupo não é tocado', async () => {
+    const db = await abrir();
+    const base = await criarBase(db, fabrica);
+    const id = await criarJogador(db, base.grupo.id, base.contaId, { dataEntrada: ENTRADA });
+    await jogadores.inativar(db, base.grupo.id, id, d(-200));
+    await jogadores.reativar(db, base.grupo.id, id, d(-150));
+    const dados = (inicio: string) => ({ inicio, autor: base.contaId, agora: AGORA });
+    const alterar = (grupoId: string, inicio: string) =>
+      emTransacao(db, async (tx) => {
+        await jogadores.travar(tx, grupoId, id);
+        return jogadores.alterarInicio(tx, grupoId, id, dados(inicio));
+      });
+    expect(await alterar(base.grupo.id, d(-260))).toBe(true);
+    expect(await jogadores.buscar(db, base.grupo.id, id)).toMatchObject({
+      inicioPontuacao: d(-260),
+      periodos: [
+        { inicio: d(-260), fim: d(-200) },
+        { inicio: d(-150), fim: null },
+      ],
+    });
+    // Avançar não mexe nos períodos.
+    expect(await alterar(base.grupo.id, d(-210))).toBe(true);
+    expect((await jogadores.buscar(db, base.grupo.id, id))?.periodos[0]).toEqual({ inicio: d(-260), fim: d(-200) });
+    expect(await alterar(base.outroGrupo.id, d(-300))).toBe(false);
+    expect((await jogadores.buscar(db, base.grupo.id, id))?.inicioPontuacao).toBe(d(-210));
   });
 
   it('com id de outro grupo: inativar, excluir e temHistorico não tocam o jogador; sem Tx não compila', async () => {
@@ -183,15 +208,6 @@ describe('repositório de jogadores', () => {
       JogadorComHistorico,
     );
     expect(await jogadores.buscar(db, base.grupo.id, id)).not.toBeNull();
-  });
-
-  it('temPresencaAntesDe', async () => {
-    const db = await abrir();
-    const base = await criarBase(db, fabrica);
-    const id = await criarJogador(db, base.grupo.id, base.contaId);
-    await presenca(base.grupo.id, base.contaId, id, d(-100));
-    expect(await jogadores.temPresencaAntesDe(db, base.grupo.id, id, d(-99))).toBe(true);
-    expect(await jogadores.temPresencaAntesDe(db, base.grupo.id, id, d(-100))).toBe(false);
   });
 
   it('temPresencaDesde (limite inclusivo, respeita o grupo)', async () => {
