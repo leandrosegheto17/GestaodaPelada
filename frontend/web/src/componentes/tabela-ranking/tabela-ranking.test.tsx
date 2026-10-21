@@ -50,7 +50,7 @@ describe('TabelaRanking (mês com partidas)', () => {
     expect(juninho.getByText('Falta, 0 pontos')).toBeInTheDocument();
     expect(juninho.getAllByText('0')[0]?.className).toContain('f');
     const leo = within(linhaDe('Léo Baiano'));
-    expect(leo.getByText('Ainda não fazia parte do grupo')).toBeInTheDocument();
+    expect(leo.getByText('Fora do grupo ou antes da data de início')).toBeInTheDocument();
     expect(leo.getByText('–')).toHaveAttribute('aria-hidden', 'true');
   });
 
@@ -112,7 +112,7 @@ describe('MarcaRodada', () => {
     ['lesionado', 1, 'l', 'Lesionado, 1 ponto'],
     ['expulso', -1, 'e', 'Expulso, menos 1 ponto'],
     ['falta', 0, 'f', 'Falta, 0 pontos'],
-    ['fora', null, 'x', 'Ainda não fazia parte do grupo'],
+    ['fora', null, 'x', 'Fora do grupo ou antes da data de início'],
   ] as const)('%s', (situacao, pontos, classe, lido) => {
     const { container } = render(<MarcaRodada situacao={situacao} pontos={pontos} />);
     expect(container.querySelector('[aria-hidden="true"]')?.className).toContain(classe);
@@ -134,7 +134,7 @@ describe('Legenda', () => {
       'Lesionado (foi e não jogou)',
       'Expulso',
       'Falta',
-      'Ainda não fazia parte do grupo',
+      'Fora do grupo ou antes da data de início',
       'Jogo sem chuva',
       'Jogo com chuva',
     ]);

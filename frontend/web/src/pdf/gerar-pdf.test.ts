@@ -64,6 +64,8 @@ describe('montarDocumento', () => {
     montarDocumento(doc, projecaoDoMockup('publico-pdf-2026-07.json'));
     expect(textos).toContain(FRASE_MES_VAZIO);
     expect(textoLegenda(true)).not.toContain('pontos antes da 1ª coluna');
+    expect(textoLegenda(false)).toContain('“–”: fora do grupo ou antes da data de início');
+    expect(textoLegenda(true)).toContain('“–”: fora do grupo ou antes da data de início');
   });
 
   it('40 jogadores × 12 colunas cabem numa página com fonte de pelo menos 7 pt', async () => {

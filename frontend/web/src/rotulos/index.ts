@@ -36,7 +36,7 @@ export const ROTULO_SITUACAO_RODADA = {
   lesionado: { texto: ROTULO_SITUACAO_PRESENCA.lesionado.texto, legenda: 'Lesionado (foi e não jogou)' },
   expulso: { texto: ROTULO_SITUACAO_PRESENCA.expulso.texto },
   falta: { texto: 'Falta' },
-  fora: { texto: 'Ainda não fazia parte do grupo' },
+  fora: { texto: 'Fora do grupo ou antes da data de início' },
 } as const satisfies Record<SituacaoRodada, { texto: string; legenda?: string }>;
 export const ORDEM_SITUACAO_RODADA: readonly SituacaoRodada[] = SITUACOES_RODADA;
 

@@ -41,7 +41,7 @@ export function sufixoDaSituacao(situacao: Rodada['situacao']): string {
 
 /**
  * Desenha a rodada numa célula: cor de fundo da situação com o número dos pontos, "L"/"E" depois do número,
- * retângulo tracejado na falta e "–" sem fundo quando o jogador ainda não fazia parte do grupo.
+ * retângulo tracejado na falta e "–" sem fundo quando o jogador estava fora do grupo ou a rodada é anterior à data de início.
  */
 export function desenharMarca(
   doc: jsPDF,

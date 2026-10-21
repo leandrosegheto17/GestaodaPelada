@@ -4,7 +4,7 @@ import { usarFonte } from './fontes-pdf';
 import type { TokensPdf } from './tokens-pdf';
 
 const BASE =
-  'Cor = situação; número = pontos da rodada. Verde: presente · amarelo com “L”: lesionado%LESIONADO% · vermelho com “E”: expulso · cinza tracejado: falta · “–”: ainda não fazia parte do grupo · sol: sem chuva · nuvem: com chuva.';
+  'Cor = situação; número = pontos da rodada. Verde: presente · amarelo com “L”: lesionado%LESIONADO% · vermelho com “E”: expulso · cinza tracejado: falta · “–”: fora do grupo ou antes da data de início · sol: sem chuva · nuvem: com chuva.';
 
 /** Texto da legenda. Com partidas no mês, explica também o "Pts inicial" e que a soma é até hoje. */
 export function textoLegenda(semPartidasNoMes: boolean): string {
