@@ -1,6 +1,10 @@
 # SECURITY-REVIEW
 
 ## Auditoria de release 2026-10-20 (2ª) — DevSecOps — APROVADA COM DÉBITO
+
+**Confirmação antes do deploy (2026-10-20, depois das RTP-0177 a 0181 e dos BK-0012/0013):** desde esta auditoria (`a46da169`) o código que roda em produção não mudou (só o comentário da migração `202610200000`); mudaram a checagem `checar-acoes-fixadas`, um passo do `ci.yml` e textos. `pnpm audit --prod` sem vulnerabilidades; gitleaks sobre o histórico inteiro, os mesmos 36 achados nos mesmos 3 commits (todos falsos positivos já classificados); CI da `main` verde em `bbb50979`.
+
+**Risco aceito pelo usuário em 2026-10-20 (ao pedir o deploy):** o item NÃO EXECUTADO desta auditoria — limite de taxa da Cloudflare em `/api/sessao/entrar` e `/api/publico/*` e cabeçalhos no host publicado. Motivo: não há staging (ADR-020) e DAST em produção é proibido. Prazo: conferência passiva (`curl -I` e leitura, sem ataque) logo depois do deploy.
 Escopo: release após as RTP-0169 a 0175 (nosniff em `/api/*`, ações do GitHub por SHA, endurecimento do pnpm, `.gitignore` do legado) e o ajuste do Exportar PDF no front. Só produção (ADR-020): teste ativo só local (127.0.0.1:8787, banco local); nada contra produção. Brutos em `.md/.seguranca/2026-10-20/` (`dast-api3/`, `dast-web2/`, `semgrep.json`, `osv-scanner.json`, `gitleaks.json`).
 
 Executado (Fase A, `seguranca.py`, resumo-ferramentas.md) e o que mudou frente à 1ª auditoria de hoje:
