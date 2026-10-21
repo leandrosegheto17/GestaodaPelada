@@ -245,6 +245,29 @@ describe('data de início no meio do mês', () => {
     expect(linha.ptsFinal).toBe(2);
   });
 
+  it('entre o início do período e a data de início a rodada é "–", não falta (pontos nulos, não zero)', () => {
+    const e = entrada('2026-10-15');
+    const linha = calcularRanking(e).linhas.find((l) => l.jogadorId === 'b')!;
+    expect(linha.rodadas).toEqual([
+      { situacao: 'fora', pontos: null },
+      { situacao: 'fora', pontos: null },
+      { situacao: 'presente', pontos: 1 },
+    ]);
+    expect(linha.ptsInicial + linha.rodadas.reduce((s, r) => s + (r.pontos ?? 0), 0)).toBe(linha.ptsFinal);
+    const ana = calcularRanking(e).linhas.find((l) => l.jogadorId === 'a')!;
+    expect(ana.rodadas.map((r) => r.situacao)).toEqual(['presente', 'presente', 'presente']);
+  });
+
+  it('sem presença em dia de partida depois de S continua falta (0), antes de S é "–"', () => {
+    const e = { ...entrada('2026-10-08'), presencas: [presenca('a', '2026-10-01'), presenca('b', '2026-10-15')] };
+    const bia = calcularRanking(e).linhas.find((l) => l.jogadorId === 'b')!;
+    expect(bia.rodadas.map((r) => [r.situacao, r.pontos])).toEqual([
+      ['fora', null],
+      ['falta', 0],
+      ['presente', 1],
+    ]);
+  });
+
   it('o final de setembro é o inicial de outubro para todos', () => {
     const set = calcularRanking({ ...entrada('2026-10-08'), mes: '2026-09' }).linhas;
     const out = calcularRanking(entrada('2026-10-08')).linhas;

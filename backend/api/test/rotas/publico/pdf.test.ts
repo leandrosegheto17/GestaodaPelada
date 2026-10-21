@@ -96,6 +96,29 @@ describe('GET /api/publico/:slug/pdf (workerd)', () => {
     );
   });
 
+  it('data de início no meio das colunas: colunas anteriores "–", soma fechando e sem campo novo', async () => {
+    const db = await abrir();
+    const cen = await grupoComHistorico(db);
+    const beto = (await emTransacao(db, (tx) => jogadoresRepo.listar(tx, cen.grupoA.id))).find(
+      (j) => j.apelido === 'Beto',
+    )!;
+    await emTransacao(db, (tx) =>
+      jogadoresRepo.alterarInicio(tx, cen.grupoA.id, beto.id, {
+        inicio: '2026-10-01',
+        autor: cen.adminA.id,
+        agora: AGORA,
+      }),
+    );
+    const r = await anonimo().get(`/api/publico/${cen.grupoA.slug}/pdf`);
+    const pdf = projecaoPdf.parse(r.corpo);
+    const linha = pdf.linhas.find((l) => l.apelido === 'Beto')!;
+    expect(linha.rodadas.map((x) => x.situacao)).toEqual(['fora', 'fora', 'fora', 'falta', 'expulso']);
+    expect(linha.rodadas.slice(0, 3).map((x) => x.pontos)).toEqual([null, null, null]);
+    expect(linha.rodadas.reduce((s, x) => s + (x.pontos ?? 0), linha.ptsInicial)).toBe(linha.ptsFinal);
+    expect(Object.keys(linha).sort()).toEqual(['apelido', 'posicao', 'ptsFinal', 'ptsInicial', 'rodadas']);
+    expect(chaves(r.corpo).map((k) => k.toLowerCase())).not.toContain('inicio');
+  });
+
   it('mês passado sem partidas: as colunas anteriores e "semPartidasNoMes"', async () => {
     const cen = await grupoComHistorico(await abrir());
     const r = await anonimo().get(`/api/publico/${cen.grupoA.slug}/pdf?mes=2026-07`);

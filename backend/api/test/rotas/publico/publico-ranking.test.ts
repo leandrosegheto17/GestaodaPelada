@@ -5,6 +5,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { emTransacao } from '../../../src/infraestrutura/db/index.js';
 import { kyselyDe } from '../../../src/infraestrutura/db/cliente.js';
 import * as grupos from '../../../src/infraestrutura/db/repositorios/grupos.js';
+import * as jogadores from '../../../src/infraestrutura/db/repositorios/jogadores.js';
 import * as partidas from '../../../src/infraestrutura/db/repositorios/partidas.js';
 import * as pesos from '../../../src/infraestrutura/db/repositorios/pesos.js';
 import { montarCenario } from '../../apoio/cenario-acesso.js';
@@ -128,6 +129,27 @@ describe('GET /api/publico/:slug/ranking (workerd)', () => {
     const comuns = outubro.linhas.filter((l) => finalSetembro.has(l.apelido));
     expect(comuns.length).toBeGreaterThan(0);
     for (const l of comuns) expect(l.ptsInicial).toBe(finalSetembro.get(l.apelido));
+  });
+
+  it('data de início no meio do histórico: rodada anterior sai "–", sem campo novo, e o final fecha com o inicial', async () => {
+    const db = await abrir();
+    const cen = await grupoComHistorico(db);
+    const ana = (await emTransacao(db, (tx) => jogadores.listar(tx, cen.grupoA.id))).find((j) => j.apelido === 'Ana')!;
+    await emTransacao(db, (tx) =>
+      jogadores.alterarInicio(tx, cen.grupoA.id, ana.id, { inicio: '2026-10-01', autor: cen.adminA.id, agora: AGORA }),
+    );
+    const url = `/api/publico/${cen.grupoA.slug}/ranking`;
+    const setembro = rankingPublico.parse((await anonimo().get(`${url}?mes=2026-09`)).corpo);
+    const outubro = rankingPublico.parse((await anonimo().get(`${url}?mes=2026-10`)).corpo);
+    const deAna = (r: typeof setembro) => r.linhas.find((l) => l.apelido === 'Ana')!;
+    expect(deAna(setembro).rodadas).toEqual([{ situacao: 'fora', pontos: null }]);
+    expect([deAna(setembro).ptsInicial, deAna(setembro).ptsFinal]).toEqual([0, 0]);
+    expect(deAna(outubro).rodadas).toEqual([{ situacao: 'presente', pontos: 1 }]);
+    expect([deAna(outubro).ptsInicial, deAna(outubro).ptsFinal]).toEqual([0, 1]);
+    const finalSetembro = new Map(setembro.linhas.map((l) => [l.apelido, l.ptsFinal]));
+    for (const l of outubro.linhas) expect(l.ptsInicial).toBe(finalSetembro.get(l.apelido));
+    expect(Object.keys(deAna(outubro)).sort()).toEqual(['apelido', 'posicao', 'ptsFinal', 'ptsInicial', 'rodadas']);
+    expect(chaves(outubro).map((k) => k.toLowerCase())).not.toContain('inicio');
   });
 
   it('?mes malformado: 422; mês fora do histórico: 422', async () => {

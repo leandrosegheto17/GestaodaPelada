@@ -22,7 +22,7 @@ export const situacaoRodada = z.enum(SITUACOES_RODADA);
 
 export const rodadaPublica = z.strictObject({
   situacao: situacaoRodada,
-  /** Nulo na rodada "–" (jogador fora do grupo na data). */
+  /** Nulo na rodada "–" (jogador fora do grupo ou antes da data de início da pontuação). */
   pontos: z.number().int().nullable(),
 });
 

@@ -212,4 +212,31 @@ describe('calcularPdf com data de início no meio das colunas', () => {
     expect(linha!.ptsInicial).toBe(0);
     expect(linha!.ptsInicial + linha!.rodadas.reduce((s, r) => s + (r.pontos ?? 0), 0)).toBe(linha!.ptsFinal);
   });
+
+  it('com S no meio do mês, todos fecham a soma e o final de setembro é o inicial de outubro', () => {
+    const ds = ['2026-09-17', '2026-09-24', '2026-10-01', '2026-10-08', '2026-10-15'];
+    const partidas = partidasEm(ds);
+    const entrada = {
+      hoje: '2026-10-20',
+      mes: '2026-10',
+      jogadores: [
+        jogador('a', 'Ana', 1990),
+        { ...jogador('b', 'Bia', 1991, undefined, 7), inicioPontuacao: '2026-10-08' },
+        { ...jogador('c', 'Cris', 1992), inicioPontuacao: '2026-09-24' },
+      ],
+      partidas,
+      presencas: ds.flatMap((d) => ['a', 'b', 'c'].map((id) => presenca(id, d))),
+      configsPesos: CONFIGS,
+    };
+    const out = calcularPdf(entrada).linhas;
+    const set = calcularPdf({ ...entrada, mes: '2026-09' }).linhas;
+    for (const l of [...out, ...set]) {
+      expect(l.rodadas.reduce((s, r) => s + (r.pontos ?? 0), l.ptsInicial)).toBe(l.ptsFinal);
+    }
+    const rankingSet = calcularRanking({ ...entrada, mes: '2026-09' }).linhas;
+    expect(set.map((l) => [l.jogadorId, l.ptsFinal])).toEqual(rankingSet.map((l) => [l.jogadorId, l.ptsFinal]));
+    const bia = out.find((l) => l.jogadorId === 'b')!;
+    expect(bia.rodadas.map((r) => r.pontos)).toEqual([null, null, null, 1, 1]);
+    expect(bia.ptsFinal).toBe(2);
+  });
 });
