@@ -2,6 +2,8 @@
 
 ## Auditoria de release 2026-10-21 — DevSecOps — APROVADA COM DÉBITO
 
+**Risco aceito pelo usuário em 2026-10-21 (ao pedir o deploy):** o item NÃO EXECUTADO desta auditoria — limite de taxa da Cloudflare em `/api/sessao/entrar` e `/api/publico/*` e cabeçalhos no host publicado. Motivo: não há staging (ADR-020) e DAST em produção é proibido. Prazo: conferência passiva (`curl -I` na URL pública) logo depois do deploy. Débito aberto: RTP-0185 (Baixa).
+
 Escopo: release com a TP-0209 (data de início da pontuação: migração `202610201000_inicio_pontuacao`, rotas `POST …/jogadores/:id/inicio/previa` e `PUT …/jogadores/:id/inicio`, `inicioPontuacao` no detalhe, "–" no ranking e no PDF, T16 com diálogo). Só produção (ADR-020): teste ativo só local (127.0.0.1:8787, banco descartável `pelada_auditoria` semeado por `pnpm seed`); nada contra produção. Brutos em `.md/.seguranca/2026-10-21/` (`dast-api/`, `dast-api-auth/`, `dast-web/`, `semgrep.json`, `osv-scanner.json`, `gitleaks.json`).
 
 Executado (Fase A, `seguranca.py`) e comparado com a 2ª de 20/10, achado a achado no bruto:
