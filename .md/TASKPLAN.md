@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-20 23:50
+Atualizado: 2026-10-21 10:08
 
-Resumo: Não executada 4 · Aprovada 396 · Despriorizada 5 · total 405
+Resumo: Não executada 3 · Executada (aguarda teste) 1 · Aprovada 396 · Despriorizada 5 · total 405
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -226,7 +226,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 211 | TP-0205 | executor | ✔ | E2E de integração do I4 (API real) | L45 | TP-0138, TP-0190, TP-0191, TP-0192, TP-0193, TP-0195, TP-0199, TP-0200, TP-0201, TP-0202 | Aprovada |
 | 212 | TP-0206 | executor | ✔ | [U] Go-live do I4 | L45 | TP-0185, TP-0194, TP-0196, TP-0197, TP-0198, TP-0203, TP-0204, TP-0205 | Aprovada |
 | 213 | TP-0208 | executor | ✔ | Adequação ao legado | L46 | TP-0008, TP-0010, TP-0023, TP-0024, TP-0042, TP-0044, TP-0046, TP-0047, TP-0048, TP-0049, TP-0051, TP-0070, TP-0071, TP-0076, TP-0084, TP-0124, TP-0125, TP-0148, TP-0179 | Aprovada |
-| 214 | TP-0209 | executor | ✔ | Data de início como regra de pontuação | L47 | TP-0208 | Não executada |
+| 214 | TP-0209 | executor | ✔ | Data de início como regra de pontuação | L47 | TP-0208 | Executada (aguarda teste) |
 | 215 | RTP-0001 | executor | ✔ | Lint: backend/scripts importando @pelada/api por alias fura a zona (e falta o teste do... | L01 | TP-0002 | Aprovada |
 | 216 | RTP-0003 | executor | ✔ | Teste de enums: conferir situacao de presença das respostas contra o enum | Refatoração Lote-L01 | TP-0005 | Aprovada |
 | 217 | BK-0003 | coordenador | ✔ | Exige push da branch ci-prova e PR real no remoto (ação manual/autorização do usuário); ro | — | — | Aprovada |
