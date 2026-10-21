@@ -124,7 +124,7 @@
 - Descrição: Texto do '–' no ranking e no PDF (hoje só 'Ainda não fazia parte do grupo') também vale para rodada anterior à data de início: manter ou mudar a redação?
 - Impacto se não resolvido: Baixo: leitura do ranking pode confundir quem teve a data alterada; mudar exige mockup aprovado primeiro, depois rótulos, legenda do PDF, UX-SPEC e teste
 - Sugestão: Mudar para 'Fora do grupo ou antes da data de início' (mockup, UX-SPEC, rótulo e legenda juntos, depois nova comparação visual); ou registrar a decisão de manter no UX-SPEC
-- Status: Em aberto
+- Status: Resolvido (2026-10-21): Decisão do usuário: texto 'Fora do grupo ou antes da data de início'; mockup e UX-SPEC atualizados; código na RTP-0186
 
 ## Bloqueio 015 — 2026-10-21 (BK-0015)
 - Reportado por: Executor

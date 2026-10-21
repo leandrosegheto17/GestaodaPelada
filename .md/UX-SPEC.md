@@ -2,6 +2,13 @@
 
 **Status:** Loop B, etapa **B3**. Documento fechado junto com o mockup completo em `.md/mockup/` (direção A, Gramado). Aguarda a aprovação conjunta de SDD + UX-SPEC + mockup.
 
+**Mudanças da reabertura 4.4 (2026-10-21, "Datas de saída e de retorno", RA-19, RF-75 a RF-82, fluxo F8):** atualização pontual da T16 (seção Situação). Só o que segue mudou; o restante do documento vale como estava.
+- **Lista de períodos** na seção Situação, com o botão "Corrigir datas" por período (RF-77).
+- **"Reativar" ganha um diálogo** com o campo "Data de retorno" (padrão hoje; pode ser anterior) e prévia quando a data não é hoje (RF-75, RF-78).
+- **Novo diálogo "Corrigir datas"** (saída e/ou retorno de um período), no mesmo molde do "Alterar data de início", com prévia e confirmação (RF-76, RF-78).
+- **Mensagens de recusa com a data limite** (RF-82), inclusive no "Alterar data de início" (RN-34) e no "Inativar" (RF-79).
+- Nenhum componente novo e nenhum valor novo em `tokens.css`. Mockup: 15 estados novos (1 comparável por rota, `periodos`, e 14 de interação) e 2 páginas ajustadas (`edicao` e `inativo`) (§0). Aguarda o usuário aprovar esta atualização; o link do Artifact é atualizado pelo orquestrador.
+
 **Mudanças da etapa B3:**
 - A §0 e a §3 apontam para o mockup e para `tokens.css`.
 - **Decisão do usuário: novas colunas da tabela do ranking (T01 e P01).** A ordem das colunas passa a ser:
@@ -71,8 +78,8 @@
 
 **Verificação:**
 - `.claude/scripts/comparar-visual.mjs`, com limite de **1%** de pixels divergentes, nos tamanhos `pc` (1280 × 800) e `celular` (390 × 844);
-- `telas.json` → `telas`: os 59 estados alcançáveis por rota e respostas são comparados automaticamente;
-- `telas.json` → `revisaoManual`: os 57 estados que exigem toque ou envio são conferidos à mão no QA da tarefa, contra a página indicada;
+- `telas.json` → `telas`: os 60 estados alcançáveis por rota e respostas são comparados automaticamente;
+- `telas.json` → `revisaoManual`: os 80 estados que exigem toque ou envio são conferidos à mão no QA da tarefa, contra a página indicada;
 - o PDF (P01, 2 páginas) é conferido pelo teste do gerador a partir de `respostas/publico-pdf-*.json`.
 
 **Fontes:** Barlow e Barlow Condensed (SIL OFL 1.1). O `fontes/fontes.css` carrega provisoriamente pelo Google Fonts. Para auto-hospedar, rode `node .md/mockup/fontes/baixar-fontes.mjs`, que baixa os `.woff2`, grava a `OFL.txt` e reescreve o `fontes.css` com `@font-face` locais. Isso precisa ser feito antes da primeira tarefa de tela.
@@ -95,7 +102,7 @@
 | T13 | `t13-resultado-dois--` sucesso, carregando, recalculando, erro-recalcular, erro-confirmar, mover, refazer | `/admin/:g/simulador/resultado` | pc, celular |
 | T14 | `t14-resultado-varios--` sucesso, mover (carregando, erro e refazer = T13) | `/admin/:g/simulador/resultado` | pc, celular |
 | T15 | `t15-jogadores--` sucesso, vazio, vazio-inativos | `/admin/:g/jogadores` (`?filtro=inativos`) | pc, celular |
-| T16 | `t16-jogador--` edicao, novo, erro, exclusao-recusada, salvo, sem-habilidades, inativar, excluir, inativo | `/admin/:g/jogadores/novo` e `/:id` | pc, celular |
+| T16 | `t16-jogador--` edicao, novo, erro, exclusao-recusada, salvo, sem-habilidades, inativar, excluir, inativo, inicio-avancar, inicio-recuar, inicio-calculando, inicio-igual, inicio-erro, inicio-erro-rede, **inicio-erro-saida**, **periodos**, **reativar**, **reativar-previa**, **reativar-calculando**, **reativar-erro**, **reativar-erro-rede**, **reativado**, **corrigir**, **corrigir-previa**, **corrigir-saida**, **corrigir-calculando**, **corrigir-erro**, **corrigir-erro-rede**, **corrigido** (em negrito: reabertura 4.4) | `/admin/:g/jogadores/novo` e `/:id` | pc, celular |
 | T17 | `t17-habilidades--` sucesso, vazio, erro, excluir | `/admin/:g/habilidades` | pc, celular |
 | T18 | `t18-pontuacao--` sucesso, erro, salvo | `/admin/:g/pontuacao` | pc, celular |
 | T19 | `t19-admins--` sucesso, ultimo-admin, senha, vinculo, remover, erro | `/admin/:g/admins` | pc, celular |
@@ -135,7 +142,7 @@
 | T13 | Simulador: resultado com 2 times | `/admin/:g/simulador/resultado` | Admin | F3 |
 | T14 | Simulador: resultado com 3 ou mais times | `/admin/:g/simulador/resultado` | Admin | F3 |
 | T15 | Jogadores | `/admin/:g/jogadores` | Admin | RF-19 a RF-22 |
-| T16 | Ficha do jogador (dados + notas) | `/admin/:g/jogadores/novo` e `/admin/:g/jogadores/:id` | Admin | RF-19 a RF-22, RF-36, RF-37 |
+| T16 | Ficha do jogador (dados + notas + situação e períodos) | `/admin/:g/jogadores/novo` e `/admin/:g/jogadores/:id` | Admin | RF-19 a RF-22, RF-36, RF-37, RF-69 a RF-72, **F8** (RF-75 a RF-82) |
 | T17 | Habilidades | `/admin/:g/habilidades` | Admin | RF-35 |
 | T18 | Pontuação (pesos) | `/admin/:g/pontuacao` | Admin | RF-23, RF-24 |
 | T19 | Admins do grupo | `/admin/:g/admins` | Admin | RF-13, RF-15, RF-16, RF-18 |
@@ -156,6 +163,7 @@ Diálogos reutilizados (não são telas próprias):
 - **D3 Mover jogador:** T13 e T14.
 - **D4 Compartilhar/Baixar PDF:** T01, depois de gerar o PDF, quando o aparelho compartilha arquivo (também reaparece se a folha de compartilhamento for recusada por perda de gesto).
 - **D5 Instalar no iPhone:** aviso em T01.
+- **D6 Reativar com data de retorno** e **D7 Corrigir datas** (T16, reabertura 4.4): especificados na T16 (§2). São o componente Diálogo existente, no mesmo molde de "Inativar" e "Alterar data de início", sem componente novo.
 
 ### F1: Jogador consulta o ranking
 
@@ -267,6 +275,28 @@ flowchart TD
   T26 -- grupo --> T28 -- Arquivar --> D2[D2 digitar o nome] --> T28
 ```
 
+### F8: Admin registra um retorno retroativo ou corrige saída e retorno (reabertura 4.4)
+
+```mermaid
+flowchart TD
+  T16[T16 Situação: lista de períodos] --> A{Ação}
+  A -- Reativar --> D6[D6 Reativar: Data de retorno, padrão hoje]
+  A -- Corrigir datas de um período --> D7[D7 Corrigir datas: saída e/ou retorno do período]
+  A -- Alterar data de início --> DI[Diálogo existente; recusa passa a trazer a data limite]
+  D6 -- data = hoje --> OK6[Reativar habilitado, sem prévia]
+  D6 -- data anterior a hoje --> P[Prévia: acumulado, posição, rodadas que passam ou deixam de constar]
+  D7 -- data diferente da atual --> P
+  D6 -- recusa 422 --> E[Mensagem no campo com a data limite; confirmar desabilitado]
+  D7 -- recusa 422 --> E
+  P --> C{Confirma?}
+  OK6 --> C
+  C -- Cancelar --> T16
+  C -- Confirmar --> S[Grava; diálogo fecha; ficha recarrega; faixa de sucesso]
+  S --> Q{Rodadas passaram a constar?}
+  Q -- Sim --> AV[Faixa de atenção fica na ficha: valem 0 ponto até lançar a presença em Editar partida, com atalho para T10]
+  Q -- Não --> FIM[Fim]
+```
+
 ---
 
 ## 2. Wireframes / Descrição de Layout por Tela
@@ -287,13 +317,13 @@ Não tem layout próprio: é processamento. Se a URL tiver o slug, ou se houver 
   - **Pts inicial:** acumulado até o início do mês exibido (= Pts final do mês anterior), em tom secundário;
   - **uma coluna por partida do mês:**
     - cabeçalho "dd/mm" com ícone de **sol** (sem chuva) ou **nuvem** (com chuva), e texto oculto ", sem chuva" / ", com chuva";
-    - na célula, os **pontos daquela rodada** (ex.: 1, 2, −1, 0) dentro de uma marca na cor da situação: verde presente, amarelo lesionado, vermelho expulso, cinza falta, e "–" antes de o jogador entrar no grupo;
+    - na célula, os **pontos daquela rodada** (ex.: 1, 2, −1, 0) dentro de uma marca na cor da situação: verde presente, amarelo lesionado, vermelho expulso, cinza falta, e "–" quando o jogador estava fora do grupo ou a rodada é anterior à data de início da pontuação (RN-25, TP-0209; texto decidido no BK-0014, 2026-10-21);
     - pista de forma: lesionado com "L" no canto, expulso com "E" no canto, falta com contorno tracejado;
-    - leitor de tela: "Presente, 2 pontos", "Lesionado, 1 ponto", "Expulso, menos 1 ponto", "Falta, 0 pontos", "Ainda não fazia parte do grupo";
+    - leitor de tela: "Presente, 2 pontos", "Lesionado, 1 ponto", "Expulso, menos 1 ponto", "Falta, 0 pontos", "Fora do grupo ou antes da data de início";
   - **Pts final:** Pts inicial + rodadas do mês. No mês corrente, é o acumulado até hoje. Fica em destaque;
   - uma linha por jogador ativo hoje (RN-06), **sempre na ordem do acumulado de hoje** (RF-30, P-26), em qualquer mês exibido. Num mês passado, por isso, as colunas de pontos podem não ficar em ordem decrescente: é o comportamento aprovado.
 - **Mês sem partidas:** a tabela mantém #, Jogador, Pts inicial e Pts final (iguais), e a área das partidas mostra "Nenhuma partida registrada neste mês" (RF-32).
-- **Legenda** abaixo da tabela: "A cor mostra a situação; o número, os pontos da rodada. Pts inicial + rodadas do mês = Pts final." e os itens Presente · Lesionado (foi e não jogou) · Expulso · Falta · "–" Ainda não fazia parte do grupo · sol Jogo sem chuva · nuvem Jogo com chuva.
+- **Legenda** abaixo da tabela: "A cor mostra a situação; o número, os pontos da rodada. Pts inicial + rodadas do mês = Pts final." e os itens Presente · Lesionado (foi e não jogou) · Expulso · Falta · "–" Fora do grupo ou antes da data de início · sol Jogo sem chuva · nuvem Jogo com chuva. (Na legenda do PDF P01: "–": fora do grupo ou antes da data de início. Decisão BK-0014, 2026-10-21: o "–" também aparece nas rodadas anteriores à data de início da pontuação.)
 - **Ação principal:** botão **"Exportar PDF"**, fixo na barra de ação no celular e acima da tabela no desktop. Não aparece quando o grupo não tem jogadores (estado vazio).
 - **Rodapé:** link "Privacidade" (T07) e o nome do app.
 
@@ -420,11 +450,46 @@ Lista em ordem decrescente de data. Cada item mostra a data (dia da semana + dd/
   - **Pontuação inicial** (campo numérico inteiro, 0 a 9999, padrão 0; ajuda: "Pontos de antes da 1ª partida no app (0 a 9999)."; erro: "Informe um número inteiro de 0 a 9999."). Aparece no cadastro e na edição, só para admin (RF-19, RF-20, RN-22). Ao salvar uma mudança, o ranking passa a somar o valor; a tela não calcula nada.
   - Ação principal: **"Salvar"**.
 - **Seção Habilidades e nível** (só na edição): uma linha por habilidade com uma nota de 1 a 10 ou "–" (seletor numérico). O nível calculado vem da API e é exibido em destaque ("Nível 6,8" ou "Sem nota: usa 5,5 no simulador"). As notas são salvas por alteração, com confirmação discreta "salvo".
-- **Diálogo "Alterar data de início"** (componente Diálogo existente, sem componente novo; só edição; admin do grupo): campo de data (padrão = a atual; não aceita futuro; ajuda "A pontuação do jogador conta a partir desta data. Nada é apagado: voltar a data devolve os pontos."). Ao informar uma data diferente, a tela chama a prévia da API e mostra: **avançar** "Acumulado de X pontos passa a Y; posição de N para M"; **recuar** a mesma linha mais "N rodadas passam a constar". Ações: **Cancelar** / **Confirmar nova data** (só habilitado depois da prévia). Data igual à atual: botão desabilitado ("Nada a alterar"). Estados: carregando (prévia "Calculando…", leitor de tela anuncia), erro (data inválida ou futura com a mensagem da API; falha de rede com "Tentar de novo"), sucesso (diálogo fecha, faixa "Data de início alterada" e a ficha recarrega). Foco no campo ao abrir e de volta ao botão ao fechar; Esc cancela; a prévia é anunciada em região `aria-live`. Visão de lista/ranking: rodadas antes da data aparecem como **"–"** (situação `fora` já existente), sem tela nova. Texto de reativar (T16 Situação): "Volta a aparecer no ranking e nas partidas; a data de início e os pontos não mudam." Auditoria da alteração: sem tela nesta demanda (consulta pelos registros de auditoria do grupo).
-- **Seção Situação:**
-  - ativo: "Inativar" (diálogo "Inativar <apelido>", com o texto "Ele sai do ranking, do lançamento, do simulador e do financeiro a partir da data de saída. O histórico e os pontos ficam guardados.", o campo "Data de saída", padrão hoje, e os botões Cancelar / Inativar);
-  - inativo: "Reativar" (a partir de hoje).
-  - "Excluir jogador" (D2). Se houver histórico, a API recusa e a tela oferece "Inativar em vez disso" (RF-22).
+- **Diálogo "Alterar data de início"** (componente Diálogo existente, sem componente novo; só edição; admin do grupo): campo de data (padrão = a atual; não aceita futuro; ajuda "A pontuação do jogador conta a partir desta data. Nada é apagado: voltar a data devolve os pontos."). Ao informar uma data diferente, a tela chama a prévia da API e mostra: **avançar** "Acumulado de X pontos passa a Y; posição de N para M"; **recuar** a mesma linha mais "N rodadas passam a constar". Ações: **Cancelar** / **Confirmar nova data** (só habilitado depois da prévia). Data igual à atual: botão desabilitado ("Nada a alterar"). Estados: carregando (prévia "Calculando…", leitor de tela anuncia), erro (data inválida, futura ou depois da saída do 1º período, com a mensagem da API; esta última traz a data limite e o caminho "corrija antes a data de saída do primeiro período", RN-34, tabela de mensagens abaixo; falha de rede com "Tentar de novo"), sucesso (diálogo fecha, faixa "Data de início alterada" e a ficha recarrega). Foco no campo ao abrir e de volta ao botão ao fechar; Esc cancela; a prévia é anunciada em região `aria-live`. Visão de lista/ranking: rodadas antes da data aparecem como **"–"** (situação `fora` já existente), sem tela nova. Texto de reativar (T16 Situação): "Volta a aparecer no ranking e nas partidas; a data de início e os pontos não mudam." Auditoria da alteração: sem tela nesta demanda (consulta pelos registros de auditoria do grupo).
+- **Seção Situação** (reabertura 4.4, RF-75 a RF-82; só admin do grupo, nunca na visão pública nem no PDF):
+  - **Linha de status:** "Ativo desde dd/mm/aaaa." (início do período aberto) ou "Inativo desde dd/mm/aaaa." (saída do último período).
+  - **Lista "Períodos de atividade"** (componente Lista e item existente; dados de `GET …/jogadores/:id/periodos`, em ordem cronológica). Cada item mostra, em duas linhas, o intervalo **"dd/mm/aaaa → dd/mm/aaaa"** ou **"dd/mm/aaaa → atual"** (a seta é decorativa; para o leitor de tela o texto oculto diz "até") e o rótulo **"Entrada"** (1º período) ou **"Retorno"** (demais), mais o botão secundário **"Corrigir datas"** à direita (no celular quebra para baixo do texto, `item--quebra`). Quem decide o rótulo e o que se pode corrigir é a API (`tipo` e `corrigivel`); a tela não aplica regra.
+  - **Botão sem nada a corrigir** (1º período ainda aberto: a entrada é a data de início da pontuação, RN-30): fica com `aria-disabled="true"` (continua focável) e a explicação visível e ligada por `aria-describedby`: "Nada a corrigir: a data de entrada é a data de início da pontuação (use Alterar data de início)."
+  - **Ações:** ativo: "Inativar" (diálogo "Inativar <apelido>", com o texto "Ele sai do ranking, do lançamento, do simulador e do financeiro a partir da data de saída. O histórico e os pontos ficam guardados.", o campo "Data de saída", padrão hoje, e os botões Cancelar / Inativar); inativo: "Reativar" (abre o D6). "Excluir jogador" (D2). Se houver histórico, a API recusa e a tela oferece "Inativar em vez disso" (RF-22).
+  - **Inativar:** a recusa da saída (antes da entrada, com presença nessa data ou depois, antes da data de início se for o 1º período) passa a trazer a data limite, no padrão de mensagens abaixo (RF-79).
+- **D6 Reativar <apelido>** (diálogo; Diálogo existente; só quando inativo):
+  - Texto: "Volta a aparecer no ranking e nas partidas; a data de início e os pontos não mudam."
+  - Campo **"Data de retorno"** (tipo data, padrão **hoje**, máximo hoje); ajuda: "Pode ser uma data que já passou, se ele voltou a jogar antes de você registrar. Não pode ser antes da saída anterior (dd/mm/aaaa)." A data entre parênteses vem da lista de períodos; quem recusa é o servidor.
+  - **Data = hoje:** sem prévia; "Reativar" habilitado (continua um toque, como antes). **Data anterior a hoje:** a tela chama `POST …/reativar/previa` e mostra a prévia (abaixo); "Reativar" só habilita com a prévia sem erro. Voltar o campo para hoje limpa a prévia.
+  - Ações: **Cancelar** (foco inicial no campo) / **Reativar**. Esc cancela. Foco devolvido ao botão que abriu.
+  - Sucesso: o diálogo fecha, a ficha recarrega, faixa de sucesso `role=status` "<apelido> reativado desde dd/mm/aaaa." Se a prévia confirmada trazia rodadas que passam a constar, a **faixa de atenção** (abaixo) fica na ficha até sair da tela.
+- **D7 Corrigir datas** (diálogo; Diálogo existente, no molde do "Alterar data de início"; aberto pelo botão "Corrigir datas" do período; só edição):
+  - Título "Corrigir datas". Texto de contexto: "Entrada de <apelido>: dd/mm/aaaa → dd/mm/aaaa." ou "Retorno de <apelido>: …". No 1º período acrescenta: "A entrada é a data de início da pontuação; para mudá-la, use Alterar data de início."
+  - **Campos conforme `corrigivel`:** "Data de saída" (períodos encerrados; ajuda: "Ele deixa de aparecer nas partidas a partir desta data. Não pode ser depois do próximo retorno (dd/mm/aaaa)." quando houver próximo período), "Data de retorno" (períodos que não são o 1º; ajuda: "Ele volta a aparecer nas partidas a partir desta data. Não pode ser antes da saída anterior (dd/mm/aaaa)."). Período intermediário mostra os dois campos; 1º encerrado, só a saída; último aberto, só o retorno. Valor inicial = data atual do período; máximo hoje.
+  - **Prévia:** ao informar um valor diferente do atual, a tela chama `POST …/periodos/:periodoId/previa` e mostra, em região `aria-live="polite"`: (1) a linha de acumulado e posição; (2) as rodadas; (3) o aviso. **Valores igual aos atuais:** "Nada a alterar." e "Confirmar novas datas" desabilitado.
+  - Ações: **Cancelar** / **Confirmar novas datas** (só habilitado depois da prévia sem erro). Sucesso: o diálogo fecha, a ficha recarrega com a lista nova, faixa de sucesso "Datas corrigidas." e, se for o caso, a faixa de atenção.
+- **Prévia (D6 e D7), formato do texto** (a tela só formata os números e as datas que a API entrega; `POST …/previa`):
+  - **Acumulado:** "Acumulado de X pontos passa a Y." quando mudar; "Acumulado de X pontos não muda." quando igual (o caso comum: corrigir período não muda pontos, RN-31).
+  - **Posição:** "posição de N para M" (ou "Posição N, não muda"); jogador sem posição hoje e com posição depois: "Passa a aparecer no ranking, na posição M."; com posição e sem depois: "Sai do ranking (hoje está na posição N)."; sem posição nos dois: a linha não aparece.
+  - **Rodadas:** "N rodadas passam a constar: dd/mm e dd/mm." (singular "1 rodada passa a constar: dd/mm.") e, se houver, "N rodadas deixam de constar: dd/mm." (listas com "e" antes da última; mais de 5 datas: as 5 primeiras e "e mais N"). Uma linha por tipo; nenhuma linha quando a lista é vazia.
+  - **Aviso** (faixa de atenção dentro da região, só quando a API devolve `aviso`): "Elas valem 0 ponto até você lançar a presença em Editar partida." (singular "Ela vale…").
+  - **Depois de gravar**, a ficha mostra uma faixa de atenção que **não some sozinha** (não é a faixa de sucesso de 4 s): "<N rodadas passaram a constar: dd/mm e dd/mm.> <aviso da API>" com o botão-texto "Abrir partidas" (T10). A tela usa a prévia confirmada; o aviso não é recalculado na tela.
+- **Mensagens de recusa** (422; sempre no campo a que se referem, em `campo__erro`, ligadas por `aria-describedby`; a API as devolve prontas, em pt-BR, com a data limite em dd/mm/aaaa; a primeira regra violada na ordem de RF-79 é a única mostrada):
+
+  | Regra (RF-79) | Campo | Mensagem |
+  |---|---|---|
+  | (a) futura | saída / retorno | "A data não pode ser no futuro." (limite: hoje) |
+  | (b) saída antes do início do próprio período | saída | "A saída não pode ser antes do início deste período (dd/mm/aaaa)." |
+  | (c) retorno antes da saída anterior | retorno / dataRetorno | "O retorno não pode ser antes da saída anterior (dd/mm/aaaa)." |
+  | (d) saída depois do próximo retorno / retorno depois da própria saída | saída / retorno | "A saída não pode ser depois do próximo retorno (dd/mm/aaaa)." / "O retorno não pode ser depois da saída deste período (dd/mm/aaaa)." |
+  | (e) sobreposição | saída / retorno | "Os períodos não podem se sobrepor." (só se nenhuma das anteriores já a explicou) |
+  | (f) presença ficaria fora do período (RN-32) | saída / retorno | Saída: "Há presença do jogador em dd/mm/aaaa. A saída precisa ser em dd/mm/aaaa ou depois. Para usar uma data anterior, remova a presença em Editar partida." Retorno: "Há presença do jogador em dd/mm/aaaa. O retorno precisa ser em dd/mm/aaaa ou antes. Para usar uma data posterior, remova a presença em Editar partida." (a segunda data é o limite aceito) |
+  | (g) saída do 1º período antes da data de início da pontuação | saída | "A saída do primeiro período não pode ser antes da data de início da pontuação (dd/mm/aaaa). Para ir antes, altere primeiro a data de início." |
+  | (h) data inválida | saída / retorno | "Informe uma data válida." |
+  | RN-34 (no "Alterar data de início") | data | "A data de início não pode ficar depois da saída do primeiro período (dd/mm/aaaa). Corrija antes a data de saída do primeiro período." |
+  | Período não corrigível naquele campo | saída / retorno | "Este período não tem data de saída." / "O início do primeiro período é a data de início da pontuação; use Alterar data de início." |
+
+  Falha de rede ou 5xx na prévia ou na gravação: faixa de erro `role=alert` no diálogo, "Não foi possível calcular. Verifique a conexão." (na gravação, "Não foi possível salvar. Verifique a conexão."), com **Tentar de novo**; os campos continuam preenchidos. Jogador que sumiu ou de outro grupo (404): fecha o diálogo e mostra a faixa "Jogador não encontrado." com volta à T15.
 - Erros por campo (apelido repetido: "Já existe um jogador com esse apelido neste grupo.").
 
 ### T17 Habilidades
@@ -578,12 +643,12 @@ Abaixo do campo nome fica a ajuda ⓘ "O link do ranking será criado a partir d
 | Lista de avisos | `.avisos` | Novo | T13, T14 | aviso que não bloqueia | `--cor-atencao-*` |
 | Prévia | `.previa` dentro de `.cartao` | Novo | T12 | válida / calculando / erro (vira `.faixa--erro`) | `--texto-xl` |
 | Selo | `.selo`, `--neutro`, `--info`, `--atencao`, `--erro`, `--sucesso` | Novo (base) | T08, T12–T16, T19, T22, T26, T28 | — | `--cor-*-fundo/-texto` |
-| Faixa de mensagem | `.faixa`, `--info`, `--sucesso`, `--atencao`, `--erro`, `--topo`, `__fechar` | Novo (base) | T01, T04, T05, T08, T09, T11, T13, T16, T18–T20, T22, T25, T28 | fechável (instalar) ou não | `--cor-*-fundo/-texto` |
-| Lista e item | `.lista`, `.item`, `__principal`, `__titulo`, `__meta`, `__lado`, `__seta`, `--quebra` | Novo (base) | T08–T10, T12, T15–T19, T22, T26, T28 | link, com ações, com interruptor | `--cor-linha` |
+| Faixa de mensagem | `.faixa`, `--info`, `--sucesso`, `--atencao`, `--erro`, `--topo`, `__fechar` | Novo (base) | T01, T04, T05, T08, T09, T11, T13, T16 (inclusive dentro dos diálogos D6/D7 e a faixa de atenção que fica na ficha), T18–T20, T22, T25, T28 | fechável (instalar) ou não | `--cor-*-fundo/-texto` |
+| Lista e item | `.lista`, `.item`, `__principal`, `__titulo`, `__meta`, `__lado`, `__seta`, `--quebra` | Novo (base) | T08–T10, T12, T15–T19, T22, T26, T28; **lista de períodos (T16)** | link, com ações, com interruptor, **com botão e explicação (reabertura 4.4)** | `--cor-linha` |
 | Bloco "Dia de jogo" | `.dia-de-jogo` | Novo | T09 | com status; sem jogadores | `--cor-verde` |
 | Cartão de saldos | `.saldos`, `__valor`, `__grade` | Novo | T22 | negativo com "−" (`.valor-negativo`) | `--texto-4xl` |
 | Tabela simples / cartões por semana | `.tabela-simples--semanas`, `.cartoes-semana` | Novo | T18, T21 | tabela no PC, cartões no celular | — |
-| Diálogo | `.veu`, `.dialogo`, `__titulo`, `__texto`, `__acoes`, `.senha-exibida` | Novo (base) | D1, D2, D4, inativar (T16), privacidade (T07) | simples, por digitação, senha exibida | `--cor-veu`, `--sombra-dialogo` |
+| Diálogo | `.veu`, `.dialogo`, `__titulo`, `__texto`, `__acoes`, `.senha-exibida` | Novo (base) | D1, D2, D4, inativar, alterar data de início, **D6 reativar, D7 corrigir datas** (T16), privacidade (T07) | simples, por digitação, senha exibida, com campo e prévia | `--cor-veu`, `--sombra-dialogo` |
 | Folha inferior / menu | `.veu--folha`, `.folha`, `__opcao` | Novo (base) | D3, menu da conta | folha no celular, menu no PC; opção atual | `--sombra-flutuante` |
 | Esqueleto | `.esqueleto`, `--linha`, `--titulo`, `--bloco`, `--botao`, `--na-barra`, `--mes`, `--linha-tabela` | Novo (base) | estados "carregando" | pulsa (sem animação com `prefers-reduced-motion`) | `--cor-esqueleto` |
 | Estado vazio / tela de mensagem | `.vazio`, `.tela-mensagem` | Novo (base) | §4 | com ou sem ação | `--cor-contorno` |
@@ -619,7 +684,7 @@ Padrões globais:
 | T13 | n/a: só existe com sugestão | "Montando os times…" (até 2 s, RNF-03); depois de ajuste, indicadores "recalculando…" | Falha ao sugerir: volta a T12 com o erro. Falha ao avaliar um ajuste: o movimento fica, e os indicadores mostram "Não foi possível recalcular" + Tentar de novo. Falha ao confirmar: faixa de erro, sem perder a composição | Escalação confirmada → T09 com a faixa |
 | T14 | n/a: idem | Idem | Idem | Idem |
 | T15 | Ativos: "Nenhum jogador cadastrado." + Novo jogador. Inativos: "Nenhum jogador inativo." | Esqueleto | Padrão global | Lista |
-| T16 | Novo: formulário vazio. Sem habilidades no catálogo: "Nenhuma habilidade cadastrada" + link T17 | Esqueleto (edição); "salvando" por nota | Validação por campo (inclui pontuação inicial fora de 0 a 9999 ou não inteira); apelido repetido; exclusão recusada → oferta de inativar | Faixa "Jogador salvo"; nota "salvo" |
+| T16 | Novo: formulário vazio. Sem habilidades no catálogo: "Nenhuma habilidade cadastrada" + link T17. Situação: a lista de períodos sempre tem ao menos o 1º (todo jogador nasce com um período); "Corrigir datas" sem nada a corrigir fica desabilitado com a explicação | Esqueleto (edição); "salvando" por nota. **D6/D7:** prévia "Calculando…" (anunciada), botão de confirmar desabilitado; gravação com o rótulo mantido ("Salvando…") | Validação por campo (inclui pontuação inicial fora de 0 a 9999 ou não inteira); apelido repetido; exclusão recusada → oferta de inativar. **D6/D7/Alterar data de início/Inativar:** recusa 422 com a data limite no campo; falha de rede com "Tentar de novo" e campos preservados; 404 fecha o diálogo | Faixa "Jogador salvo"; nota "salvo". **D6:** "<apelido> reativado desde dd/mm/aaaa." **D7:** "Datas corrigidas." Nos dois, faixa de atenção persistente quando rodadas passaram a constar |
 | T17 | "Nenhuma habilidade. O simulador vai usar nível 5,5 para todos." + Nova habilidade | Esqueleto | Nome repetido ou fora do tamanho | Lista atualizada |
 | T18 | n/a: todo grupo nasce com pesos (RN-18) | Esqueleto | Qualquer dos 6 pesos fora da faixa ou não inteiro | "Nova configuração vale a partir de hoje" |
 | T19 | n/a: todo grupo tem pelo menos 1 admin (RN-13). Com um só admin, a ajuda "Você é o único admin deste grupo…" | Esqueleto | E-mail inválido ("Informe um e-mail válido."); remover o último admin recusado pela API | D1 ou aviso "Admin existente vinculado ao grupo."; lista atualizada |
@@ -678,6 +743,14 @@ Padrões globais:
 | T13, T14 | 4.1.3 | Especificado | Menor | "recalculando" e os avisos em `role=status`; o resultado novo é anunciado ("Indicadores atualizados") |
 | T13, T14 | 1.4.1 | Especificado | Crítica | Selos com texto ("Sai no intervalo", "Incompleto"), nunca só cor ou borda |
 | T15 a T21 | 3.3.1, 3.3.2 | Especificado | Crítica (formulários) | Padrão global de formulário |
+| T16 (lista de períodos) | 1.3.1 Informação e relações; 1.1.1 | Especificado | Crítica (leitor de tela não entende o intervalo) | Lista semântica `ul` rotulada por "Períodos de atividade" (`aria-labelledby`); a seta "→" é `aria-hidden` e o texto oculto diz "até" ("05/02/2026 até 05/10/2026"); "atual" é texto; "Entrada" e "Retorno" são texto |
+| T16 (Corrigir datas) | 4.1.2 Nome, função, valor; 2.5.3 Rótulo no nome | Especificado | Crítica | O nome visível é "Corrigir datas"; `aria-describedby` aponta o intervalo do período ("Retorno, 20/10/2026 até atual"), então cada botão se distingue sem mudar o nome visível |
+| T16 (botão sem nada a corrigir) | 4.1.2, 3.3.2 | Especificado | Menor | `aria-disabled="true"` (focável, não `disabled`), com a explicação visível ligada por `aria-describedby`; ativá-lo não faz nada |
+| T16 (D6, D7) | 2.4.3 Ordem do foco; 2.1.1 Teclado | Especificado | Crítica | Foco inicial no campo de data (como no "Alterar data de início"); foco preso no diálogo; Esc cancela; ao fechar, o foco volta ao botão que abriu (ou ao título da ficha se o botão deixou de existir); campo de data nativo, operável por teclado |
+| T16 (D6, D7) | 3.3.1 / 3.3.3 Identificação e sugestão de erro | Especificado | Crítica | A recusa aparece no campo (`campo__erro`, com ícone e texto, `aria-invalid="true"`, `aria-describedby` ajuda + erro) e diz a data limite e o caminho; nunca só cor |
+| T16 (D6, D7) | 4.1.3 Mensagens de status | Especificado | Crítica | A prévia vive em região `aria-live="polite"` (o aviso de "valem 0 ponto" vem junto); "Calculando…" é anunciado; a falha de rede é `role=alert`; a faixa de sucesso é `role=status` |
+| T16 (faixa de atenção pós-gravação) | 2.2.1 Tempo ajustável; 1.4.1 | Especificado | Menor | Não desaparece sozinha; ícone + texto; o atalho "Abrir partidas" é botão-texto com alvo ≥ 44 px |
+| T16 (D6, D7) | 1.4.3 Contraste; 1.4.11 | Conferido | Menor | Só usa pares já conferidos (§ abaixo): `faixa--atencao`, `faixa--erro`, `campo__erro`, botão desabilitado e `item__meta`; nenhum token novo |
 | T19 | 4.1.2 Nome, função, valor | Especificado | Menor | Interruptor "Acessa financeiro: <nome>"; ações sem ambiguidade (sem "Remover" na própria linha) |
 | T22 | 1.4.1 | Especificado | Crítica | Negativo com "−" e texto; tipo do lançamento com ícone + texto |
 | T22 | 3.3.4 | Especificado | Menor | Desmarcar pagamento confirma (D2) |
@@ -724,6 +797,10 @@ O layout base é o do celular. Larguras-alvo de teste: **360 px** (Android comum
 | T21 | ≥ 600 | Tabela | — | — |
 | T22 | < 600 | Saldos no topo, pagamentos, lançamentos (empilhados) | Saldo atual primeiro | Interruptor por toque |
 | T22 | ≥ 1024 | Pagamentos e lançamentos lado a lado | — | — |
+| T16 (lista de períodos) | < 600 | Cada período é um item: intervalo e rótulo em cima; "Corrigir datas" quebra para baixo, na largura do item, alvo ≥ 44 px (`item--quebra`); a explicação do botão desabilitado ocupa a largura toda | Intervalo e rótulo primeiro; ação depois | Toque |
+| T16 (lista de períodos) | ≥ 600 | Intervalo e rótulo à esquerda, "Corrigir datas" à direita na mesma linha | — | Clique; Tab percorre os botões na ordem cronológica |
+| T16 (D6, D7) | < 600 | Diálogo na largura da tela (máx. 440 px), botões empilhados com "Confirmar novas datas"/"Reativar" acima de "Cancelar"; a prévia (3 blocos de texto) cresce e o diálogo rola dentro do véu; o teclado do campo de data não cobre as ações (o diálogo rola) | Campo, prévia e aviso antes dos botões | Seletor de data nativo do aparelho |
+| T16 (D6, D7) | ≥ 600 | Diálogo centralizado de 440 px; botões lado a lado, à direita | — | Teclado: data digitável; Esc cancela |
 | T02 a T08, T16 a T20, T23 a T25, T27, T28 | todas | Formulário ou conteúdo em uma coluna, largura máxima legível | — | Teclado completo no desktop |
 | P01 | n/a | Documento A4 fixo, independente do aparelho | — | — |
 
@@ -775,6 +852,11 @@ Autochecagem contra o `SDD.md` desta mesma rodada, nas 4 dimensões: componente,
 | T01 | Coordenador | Sem jogadores: sem "Exportar PDF" e meses desabilitados | Resolvido |
 | T07 | Coordenador | "Colocação" em vez de "posição" no texto público, para não confundir com a posição em campo (privada) | Resolvido |
 | T16, T18 | **Usuário** (demanda "Adequação ao legado") | T16 ganha o campo "Pontuação inicial" e o seletor passa a ter 7 posições (Zagueiro, Lateral, Volante, Meia, Atacante, Centroavante, Goleiro); T18 passa a 6 pesos (expulso sem e com chuva) e o histórico mostra 6 valores. Mockup T16 (novo, edicao, inativo, erro) e T18 (sucesso, salvo, erro) já atualizados; os rótulos de posição de T11, T15 e `dados.json` (Defensor → Zagueiro, Meio-campo → Meia) são sincronizados pela tarefa da demanda, sem mudança visual | Aprovado pelo usuário |
-| Todas | Coordenador | 57 estados dependem de interação e não são alcançáveis só por rota; ficam em `telas.json` → `revisaoManual` e são conferidos à mão no QA | Resolvido |
+| Todas | Coordenador | 80 estados dependem de interação e não são alcançáveis só por rota; ficam em `telas.json` → `revisaoManual` e são conferidos à mão no QA | Resolvido |
+| T16 | Coordenador (reabertura 4.4) | **A lista de períodos vem de uma rota própria** (`GET …/jogadores/:id/periodos`), e não como campo novo de `elenco.detalhe`: o app anterior valida o detalhe com `strictObject` e recusaria o campo novo (risco já aceito uma vez em `QUEBRAS.md` para `inicioPontuacao`). Custo: uma chamada a mais ao abrir a ficha (em paralelo, só admin). Enquanto a lista carrega, a seção Situação mostra o esqueleto da lista; se só ela falhar, mostra "Não foi possível carregar os períodos." com "Tentar de novo", e o restante da ficha segue funcionando | Resolvido (decisão de detalhe; ver SDD §2 e §6) |
+| T16 | Coordenador (reabertura 4.4) | **Reativar continua de um toque no caso comum:** com a data padrão (hoje) o diálogo não pede prévia. A prévia (e a exigência de ela estar pronta) só vale quando a data é anterior a hoje, que é o caso que muda rodadas (RF-78) | Resolvido (decisão de detalhe, dentro do RF-78) |
+| T16 | Coordenador (reabertura 4.4) | **Mensagem de recusa por presença (RF-79f):** a mensagem cita a data da presença e a **data limite aceita** (saída: o dia seguinte à presença; retorno: o dia da presença), porque "a data da presença" sozinha deixaria o admin adivinhar o limite do intervalo semiaberto | Resolvido (decisão de detalhe) |
+| T16 | Coordenador (reabertura 4.4) | **Aviso "valem 0 ponto"** vem pronto da API (`aviso`), no singular ou no plural, e só quando alguma rodada que passa a constar é falta; a tela não decide a condição. Depois de gravar, a faixa de atenção persiste na ficha (não usa a faixa de sucesso de 4 s) para o admin não perder o próximo passo (lançar a presença) | Resolvido |
+| T16 | Coordenador (reabertura 4.4) | **Personagens do mockup:** Gil (dois períodos, corrigir) e Beto (inativo, reativar retroativo) existem só nas respostas de exemplo da T16; não estão no ranking público do mockup. Toninho e Léo Baiano ganham a lista com um período | Resolvido |
 
 **Trade-offs grandes o bastante para o Gestor:** nenhum. Nenhuma das decisões acima muda custo, prazo ou escopo do PRD. As duas que acrescentam ou retiram um padrão de interação ("Marcar todos como presentes" em T11 e a ausência de arrastar e soltar em T13/T14) foram **aprovadas pelo usuário na rodada 2**.

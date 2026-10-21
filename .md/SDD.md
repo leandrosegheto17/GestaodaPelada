@@ -16,6 +16,8 @@
 | Aceitos por decisão do usuário | 010, 016, 017 |
 | Superados | 001 e 002 → 014; 004 → 015. O §5 do 014 foi substituído pelo 017 |
 
+**Reabertura 4.4 (2026-10-21, "Datas de saída e de retorno do jogador", RA-19, PRD-TECNICO §1.17, RF-75 a RF-82, RN-30 a RN-34, RNF-14, F8)** — atualização pontual do Coordenador. Mudou só isto: a subseção "Datas de saída e de retorno" na Seção 2 (rotas, contrato aditivo, validação, auditoria e reaproveitamento de `previaDoInicio`), a linha de jogadores na superfície da API, `PERIODO_ATIVO` e `AUDITORIA` na Seção 5, o risco T-20 e uma linha em "Troca de dados em produção" na Seção 6, e uma linha na tabela de autorização da Seção 7. **Nenhum ADR novo** (justificativa na subseção). **Sem migração.**
+
 **Mudanças da rodada 3** (respostas do usuário):
 1. **Domínio:** a Fase 1 inteira fica em `pelada.prod-ljs.workers.dev` (ADR-020, que substitui o ADR-010). O custo de uma troca futura (T-18) é **risco aceito pelo usuário**. O que barateia a troca entra desde já:
    - nenhuma URL absoluta no código ou no banco;
@@ -236,9 +238,64 @@ O contrato detalhado (OpenAPI) nasce por endpoint no `API-CONTRACT.yaml`, durant
 |---|---|---|
 | `/api/publico/:slug` | nenhuma (somente leitura, projeção pública) | `GET ranking?mes=` (linhas com `ptsInicial`, `rodadas[{situacao, pontos}]`, `ptsFinal`), `GET pdf?mes=` (até 12 `colunas`, mesmas linhas), `POST eventos` (só `ranking_aberto` e `pdf_exportado`). Formato de referência: `.md/mockup/respostas/publico-*.json` |
 | `/api/sessao` | — / sessão | `POST entrar`, `POST sair`, `POST esqueci-senha`, `POST trocar-senha`, `GET eu` (conta, papel, grupos, escopo, aviso de privacidade visto, `enderecoNovo` opcional, ADR-020) |
-| `/api/grupos/:grupoId` | sessão completa + vínculo (404 se não houver) | `GET/PATCH /` (o GET traz `permissoes` e o resumo `inicio` da T09); `admins`; `partidas?mes=`, `partidas/:data`; `jogadores` (CRUD, inativar, reativar, notas; `jogadores/:id/inicio/previa` e `PUT jogadores/:id/inicio` para a data de início, RF-69 a RF-72, ADR-023; a edição genérica não aceita mais `dataEntrada`); `habilidades`; `pesos`; `partidas` (`nova?data=`, CRUD); `simulador/contexto?data=`, `simulador/previa`, `simulador/sugerir`, `simulador/avaliar`, `escalacoes`; `uso` |
+| `/api/grupos/:grupoId` | sessão completa + vínculo (404 se não houver) | `GET/PATCH /` (o GET traz `permissoes` e o resumo `inicio` da T09); `admins`; `partidas?mes=`, `partidas/:data`; `jogadores` (CRUD, inativar, reativar, notas; `jogadores/:id/inicio/previa` e `PUT jogadores/:id/inicio` para a data de início, RF-69 a RF-72, ADR-023; a edição genérica não aceita mais `dataEntrada`; **datas de saída e de retorno, RF-75 a RF-82: `GET jogadores/:id/periodos`, `POST jogadores/:id/periodos/:periodoId/previa`, `PUT jogadores/:id/periodos/:periodoId`, `POST jogadores/:id/reativar/previa` e `dataRetorno` opcional em `POST jogadores/:id/reativar`**, detalhe logo abaixo); `habilidades`; `pesos`; `partidas` (`nova?data=`, CRUD); `simulador/contexto?data=`, `simulador/previa`, `simulador/sugerir`, `simulador/avaliar`, `escalacoes`; `uso` |
 | `/api/grupos/:grupoId/financeiro` | vínculo + `acessa_financeiro` (403 se faltar) | `mes?mes=` (config, saldos, pagamentos e lançamentos do mês), `config`, `pagamentos`, `lancamentos`, `lancamentos/:id` |
 | `/api/dono` | sessão completa + `e_dono` (404 se não for) | `painel` (pedidos + grupos), `grupos/:id`, `pedidos-reset`, `grupos` (listar metadados, criar com 1º admin e slug, situação comercial, arquivar, reativar), `contas/:id/redefinir-senha` |
+
+### Datas de saída e de retorno do jogador (reabertura 4.4, RF-75 a RF-82)
+
+Vocabulário (PRD-TECNICO §1.17): **período** = intervalo semiaberto `[início, fim)` de atividade do jogador; **saída** = `fim`; **retorno** = `início` de um período que não é o primeiro. O início do 1º período é a data de início da pontuação e só muda pela rota de `inicio` (ADR-023). O acumulado (RN-25) **não olha períodos**; corrigi-los muda quem aparece nas rodadas, no ranking, no lançamento, no simulador e no financeiro, e nunca um ponto.
+
+**Rotas** (todas sob `/api/grupos/:grupoId/jogadores/:id`, atrás do middleware de vínculo: jogador, período ou grupo de outro lugar respondem 404 genérico; escrita exige `X-Pelada: 1`; G-03, G-04, G-09):
+
+| Rota | Para quê | Corpo → resposta |
+|---|---|---|
+| `GET periodos` | Lista da seção Situação (só admin) | → `{ periodos: [{ id, tipo: 'entrada'\|'retorno', inicio, fim \| null, corrigivel: { saida, retorno } }] }` em ordem cronológica. `tipo` e `corrigivel` vêm do domínio (G-05): 1º período aberto = nada corrigível; 1º encerrado = só a saída; aberto = só o retorno; demais = os dois |
+| `POST periodos/:periodoId/previa` | Efeito de uma correção, sem gravar | `{ saida?, retorno? }` (ao menos um) → **prévia** |
+| `PUT periodos/:periodoId` | Grava a correção | mesmo corpo → `{ alterado, periodos }` (`alterado: false` se nada mudou: não grava nem audita) |
+| `POST reativar/previa` | Efeito de reativar com retorno retroativo | `{ dataRetorno }` → **prévia** |
+| `POST reativar` (existente) | Reativa | corpo **opcional** `{ dataRetorno? }`; sem corpo, `{}` ou data de hoje = retorno hoje (comportamento atual). Resposta continua `JogadorDetalhe`, sem campo novo |
+
+**Prévia** (esquema novo `elenco.periodo.previa.resposta`, usado pelas duas rotas de prévia): `{ acumuladoAntes, acumuladoDepois, posicaoAntes \| null, posicaoDepois \| null, rodadasQuePassamAConstar: [{ data, situacao }], rodadasQueDeixamDeConstar: [{ data }], aviso \| null }`. Posição nula = jogador fora do ranking de hoje. `aviso` é o texto pronto ("Elas valem 0 ponto até você lançar a presença em Editar partida.", singular ou plural), presente só se alguma rodada que passa a constar for falta (P-43). O esquema `inicioPreviaResposta` (contagem inteira) **não muda**.
+
+**Contrato aditivo (RNF-14, G-20).** Só entram: as rotas e esquemas novos, e `dataRetorno` **opcional** no corpo de `reativar` (`strictObject({})` vira `strictObject({ dataRetorno: opcional })`). `elenco.detalhe` **não ganha campo**: o app anterior o valida com `strictObject` e recusaria a resposta (risco que `QUEBRAS.md` já aceitou uma vez para `inicioPontuacao`; aqui evitável). Por isso a lista de períodos com identificador vai numa rota própria, o que cumpre RF-77 ("o contrato do elenco entrega cada período com identificador") sem tocar o detalhe. O app anterior chama `reativar` sem corpo e continua funcionando; `checar-compatibilidade` deve passar **sem** entrada nova em `QUEBRAS.md`. **Sem migração** (G-14 não se aplica): `periodos_ativos.id` já existe e as restrições atuais (`fim >= início`, um período aberto) seguem como última barreira.
+
+**Domínio (`@pelada/dominio`, puro; G-05, G-06).**
+- `atividade/avaliar-periodos.ts`: **uma só função de validação** para as três operações (corrigir, reativar com retorno, inativar com saída), na ordem de RF-79 — (a) futura, (b) saída antes do início do período, (c) retorno antes da saída anterior, (d) saída depois do próximo retorno ou retorno depois da própria saída, (e) sobreposição, (f) presença fora do período, (g) saída do 1º período antes da data de início, (h) data inválida. Devolve `{ ok, periodos }` ou `{ regra, campo, limite }`; o texto em pt-BR e o formato dd/mm/aaaa são da `aplicacao/` (`mensagens.ts`), como hoje. Entrada: períodos com id, a operação, `hoje`, `inicioPontuacao` e as **datas de partida em que o jogador tem presença, lesão ou expulsão**. A regra (f) (RN-32) compara a cobertura **antes e depois** e só recusa data que a correção retira (I-55, PR-25); o limite informado é o aceito (saída: dia seguinte à presença mais tarde retirada; retorno: o dia da presença mais cedo retirada) e a mensagem cita também a data da presença. O mesmo conjunto vale para o Inativar (RF-79, última frase), que perde as mensagens fixas atuais.
+- `ranking/previa-periodos.ts`: `previaDosPeriodos`. **Reaproveita `previaDoInicio`**: o miolo (cenário antes × depois do jogador alvo no ranking de hoje, `acumuladoPorInicio`, `ordenarPorRanking`, `rodadasDoJogador`) é extraído para um auxiliar comum, de modo que `previaDoInicio` mantém assinatura e resultado (contagem) e a nova função devolve as **datas** das rodadas que passam ou deixam de constar. Acumulado só por `acumuladoPorInicio` (G-25).
+- Rodada "passa a constar" = era `fora` e deixa de ser; "deixa de constar" = o inverso; a nova situação vem da mesma `rodadasDoJogador` do ranking (falta, presente, lesionado, expulso).
+
+**Aplicação e transação** (`aplicacao/elenco/`, G-02): `periodos-listar`, `periodos-previa`, `periodos-corrigir`; `reativar.ts` e `inativar.ts` passam a usar o mesmo caminho. A **gravação** é: `emTransacao` → `jogadores.travar` (a linha do jogador, como em `inicio-editar.ts`; dois pedidos juntos se enfileiram e o segundo parte do que o primeiro gravou) → carregar histórico e início **dentro** da transação → avaliar (mesma função da prévia) → `corrigirPeriodo` ou `reativar` → auditoria. A **prévia** é só leitura e chama a mesma avaliação e o mesmo cálculo (RF-78), então devolve a mesma recusa que a gravação devolveria. Toda recusa é 422 com `campos.<saida|retorno|dataRetorno>` (nunca 500); `PeriodoInvalido` e `JaAtivo` do banco são convertidos em 422/409 como hoje. Datas iguais às atuais: `alterado: false`, sem escrita e sem auditoria.
+
+**Repositório** (`infraestrutura/db/repositorios/jogadores.ts`, único acesso ao Postgres): `PeriodoDoJogador` passa a trazer `id` (já selecionável na consulta; campo extra que o adaptador do domínio ignora); nova `corrigirPeriodo(tx, grupoId, jogadorId, periodoId, { inicio?, fim? })` (UPDATE filtrando `id`, `jogador_id` e `grupo_id`; zero linhas = não encontrado). As datas de presença saem do histórico já carregado, sem SQL novo; `temPresencaDesde` deixa de ser usada pelo Inativar. Nenhuma função nova escreve em `jogadores.inicio_pontuacao` (G-25 continua verde).
+
+**Auditoria** (mesmo `auditoria.registrar` do ADR-023, sem tabela nova; só admin; fora da visão pública e do PDF): ação `jogador_periodo_corrigido` e, no `reativar` com data anterior a hoje, `jogador_reativado_retroativo`. Resumo plano (o filtro de chaves proíbe senha, token, hash e telefone, e o formato aceita `null`): `periodo` (ordem, a partir de 1), `saidaAnterior`, `saidaNova`, `retornoAnterior`, `retornoNovo`, `acumuladoAntes`, `acumuladoDepois`, `posicaoAntes`, `posicaoDepois`; no retroativo, `retorno`, `saidaAnterior`, acumulados e posições. As datas anteriores ali permitem desfazer. O Inativar com saída retroativa **não** passa a auditar (fora do RF-80).
+
+**Consumidores (RF-81).** Nada a propagar: ranking, PDF, simulador, lançamento e financeiro leem os períodos a cada requisição (ADR-006, cache do Hyperdrive desligado), então o "próximo carregamento" já reflete a correção.
+
+**Desempenho (G-12).** A prévia carrega o histórico do grupo em 4 consultas, o mesmo custo da `previaInicio` já em produção. Medir com o histórico importado do legado no teste de orçamento.
+
+**Decisão sem ADR.** Não há alternativa estrutural em aberto: o modelo de períodos (RN-06, ADR-006), o padrão transacional com jogador travado, a prévia e a auditoria seguem o ADR-023; as escolhas novas são de detalhe (função única de validação, rota própria para a lista por causa do G-20, mensagem com data limite). Se o usuário preferir o campo `periodos` dentro de `elenco.detalhe`, basta registrar o risco em `QUEBRAS.md` como foi feito com `inicioPontuacao`; ainda assim sem ADR.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Ad as Admin
+    participant W as PWA (T16)
+    participant A as Worker /api
+    participant D as Domínio
+    participant B as Postgres
+    Ad->>W: informa a nova data no diálogo
+    W->>A: POST …/periodos/:p/previa  (ou …/reativar/previa)
+    A->>B: histórico do grupo (4 consultas, só leitura)
+    A->>D: avaliar (RF-79) + previaDosPeriodos (reaproveita previaDoInicio)
+    A-->>W: prévia ou 422 com a data limite
+    Ad->>W: confirma
+    W->>A: PUT …/periodos/:p  (ou POST …/reativar)
+    A->>B: BEGIN; travar jogador; recarregar; avaliar de novo
+    A->>B: UPDATE/INSERT do período; INSERT auditoria; COMMIT
+    A-->>W: { alterado, periodos } (ou JogadorDetalhe)
+```
 
 ### Pacotes, pastas e fronteiras
 
@@ -451,7 +508,7 @@ erDiagram
 | **GRUPO** | nome (3 a 60), **`slug` (único, imutável, nunca reutilizado)**, dia da semana, frequência, horário, situação comercial + início do trial, `arquivado_em`, criado por/em | Slug gerado na criação (ADR-016). Criação e arquivamento só pelo dono |
 | **VINCULO_ADMIN** | conta, grupo, `acessa_financeiro`, criado por/em | Único por (conta, grupo); pelo menos 1 por grupo (RN-13, numa transação) |
 | **JOGADOR** | grupo, apelido (2 a 30), ano de nascimento, posição (`zagueiro`, `lateral`, `volante`, `meia`, `atacante`, `centroavante`, `goleiro`), **`pontuacao_inicial`** (inteiro 0 a 9999, padrão 0, RN-22), telefone (opcional) | Apelido único por grupo, sem diferenciar maiúsculas. Migração: `defensor`→`zagueiro`, `meio_campo`→`meia`; `pontuacao_inicial` = 0 nos existentes. Mudança da pontuação inicial gera auditoria com o valor anterior (RNF-12). Só admin lê e escreve; o público a vê somada no PTS INICIAL/FINAL. **`inicio_pontuacao` (data de início S, ADR-023, RN-25):** decide a partir de quando os pontos contam; invariante `início do 1º período <= S`; só muda pela rota de edição da data de início (auditoria `jogador_inicio_alterado`: anterior, nova, acumulado antes e depois). Anulável na expansão (NULL = início do 1º período) |
-| **PERIODO_ATIVO** | jogador, início, fim (opcional) | Sem sobreposição; no máximo 1 período aberto (ADR-006) |
+| **PERIODO_ATIVO** | jogador, início, fim (opcional) | Sem sobreposição; no máximo 1 período aberto (ADR-006). Banco: `fim >= início` e índice único do aberto; **a ausência de sobreposição é garantida pela validação com o jogador travado** (não há restrição de exclusão no banco, T-20). Reabertura 4.4: a saída de qualquer período encerrado e o retorno de qualquer período que não seja o 1º podem ser corrigidos (RN-30); nunca se cria, apaga ou reordena período; o início do 1º é a data de início da pontuação. O `id` aparece só na rota admin `GET …/periodos` |
 | **CONFIG_PESOS** | grupo, `vigente_desde`, **6 pesos** inteiros (−10 a 10): presença, lesionado e **expulso**, cada um sem e com chuva (RN-23); registrado por/em | Imutável; vigência = hoje (RF-23, RN-04), exceto a carga do legado (RN-24, ADR-021). Migração: `expulso_com_chuva` = o `expulso` atual (nenhum ponto muda) |
 | **HABILIDADE** | grupo, nome (2 a 30) | Única por grupo; a exclusão apaga as notas |
 | **NOTA** | jogador, habilidade, valor (1 a 10) | Única por (jogador, habilidade) |
@@ -462,7 +519,7 @@ erDiagram
 | **PAGAMENTO_MES** | grupo, jogador, mês, lançamento vinculado (opcional), marcado por/em | Único por (jogador, mês) (RN-15) |
 | **LANCAMENTO** | grupo, tipo, data, descrição (1 a 80), valor em centavos (> 0), criado/alterado por/em | A entrada vinculada é removida junto com a desmarcação |
 | **EVENTO_USO** | grupo, tipo, momento, `dispositivo_id` anônimo (só em `ranking_aberto`), mês exportado, data da partida | **Sem nome, telefone, IP nem localização** (RF-57) |
-| **AUDITORIA** | autor (conta ou "infraestrutura"), ação, entidade, id, grupo, momento, resumo | Exclusões, redefinições de senha, alterações de partida, pesos e financeiro, anonimização manual (RNF-12) |
+| **AUDITORIA** | autor (conta ou "infraestrutura"), ação, entidade, id, grupo, momento, resumo | Exclusões, redefinições de senha, alterações de partida, pesos e financeiro, anonimização manual, `jogador_inicio_alterado` (RNF-12). Reabertura 4.4: `jogador_periodo_corrigido` e `jogador_reativado_retroativo`, com período, datas anteriores e novas, acumulado e posição antes e depois (RF-80); resumo plano, sem tabela nova |
 
 ---
 
@@ -490,6 +547,7 @@ erDiagram
 | **T-16** | **Senha em claro até o banco** (o hash é calculado no Postgres) | C4, C7, C8 | **Baixa** (TLS em todo o caminho; sem log de parâmetros) | ADR-015; revisão do Validador (DevSecOps) |
 | **T-17** | **Dependência incompatível com workerd** (APIs de Node ausentes) | C4 | **Baixa** | `nodejs_compat`; testes de API rodando no pool de Workers (workerd) no CI |
 | **T-18** | **Troca do `workers.dev` por um domínio próprio** (provável na Fase 2): reinstalação do app pelos jogadores, novo login dos admins, nova versão da TWA, M2 distorcida na semana | C1, C2, C12 | **Média**, só quando a troca acontecer. **Risco aceito pelo usuário** (rodada 3) | ADR-020 (ex-ADR-010), já preparado no código: sem URL absoluta, `URL_PUBLICA`, sinal `enderecoNovo` com faixa no app, saída de emergência do service worker, 301 que preserva caminho, pacote da TWA independente do domínio |
+| **T-20** | **Correção de período concorrente com o lançamento ou a edição de uma partida** (reabertura 4.4): a correção trava a linha do jogador, mas lançar/editar partida não, então uma presença poderia ser gravada na data que a correção acabou de retirar do período. Também não há restrição de exclusão no banco para sobreposição de períodos | C4, C8 | **Baixa** (um admin por vez na prática; janela de milissegundos) | A correção revalida dentro da transação com o jogador travado, e duas correções se enfileiram. Mitigação opcional, se o QA ou o uso real mostrar a corrida: o lançamento/edição de partida toma `FOR SHARE` nas linhas dos jogadores marcados. Teste de concorrência da correção (RNF-14) e teste com o histórico importado do legado (PR-25) |
 | **T-19** | **Contingência do simulador acionada** (ADR-017): a Lightsail entra no caminho de uma função (disponibilidade, TLS, segredo HMAC) | C4 + Lightsail | **Baixa** (só se o S-02 falhar). Uma falha afeta só o simulador | Serviço sem estado e sem banco; HMAC com janela de 60 s; firewall só na 443; erro tratado em T13/T14; o resto do app segue no Worker |
 
 ### Spikes técnicos identificados (entram no TASK.md, Loop C)
@@ -531,6 +589,7 @@ A dívida da rodada 1, "Vercel Hobby não comercial", **foi eliminada** pela mud
 | **Importação do histórico legado** (script, uma vez; demanda "Adequação ao legado", ADR-021) | Nenhuma para o público: o grupo ainda não tem partidas, e a carga é uma transação | Transação única; recusa grupo com partida ou apelido repetido; exige backup confirmado e a etapa 1 em produção | Falha: nada é gravado, repete-se. Depois de gravada: restaurar o backup/branch do Neon confirmado antes da execução |
 | **Migração da etapa 1** (posições, pontuação inicial, 6 pesos) | Entre a migração e o novo Worker, o código antigo lê o schema novo | Aditiva e em uma transação: colunas novas com padrão; `expulso_com_chuva` copiado de `expulso`; o CHECK de posição passa a aceitar as 7 novas **e** as antigas, e as linhas existentes são convertidas por `UPDATE`; o código antigo ignora as colunas novas. O CHECK só com as 7 novas fica para uma migração de contração num deploy seguinte (expandir → publicar → contrair) | `wrangler rollback` + restaurar o branch (ADR-011) |
 | **Editar a data de início do jogador** (RF-69 a RF-72, ADR-023) | Nenhuma: o ranking é calculado na leitura (ADR-006) | Transação única: S + ajuste do início do 1º período (se recuou) + auditoria | Editar a data de novo (recuar devolve; nada é apagado) |
+| **Corrigir saída/retorno de um período e reativar com retorno retroativo** (RF-75 a RF-82, reabertura 4.4) | Nenhuma: o ranking é calculado na leitura (ADR-006) e o cache do Hyperdrive está desligado | Transação única com o jogador travado: validação (RF-79) + UPDATE/INSERT do período + auditoria. Sem migração | Corrigir de novo, com as datas anteriores lidas da auditoria; nada é apagado e nenhum ponto muda (RN-31). Deploy: só `wrangler rollback`, sem restaurar branch |
 | **Implantação da regra de início** (migração + `verificar-inicio.ts`, RNF-13) | Entre a migração e o novo Worker o código antigo ignora a coluna nova | Migração aditiva em uma transação; backfill de S = `LEAST(1º período, 1ª presença)` e, só para quem tinha presença anterior ao 1º período, alinhamento do início do período; nenhum acumulado muda. `verificar-inicio.ts` (somente leitura) roda antes (dry-run) e depois; diferença bloqueia o uso até decisão do usuário | `wrangler rollback` + restaurar o branch (ADR-011) |
 | **Restauração de backup** (manual) | O app fica com dados antigos até terminar | Restaura num **branch novo** do Neon; a origem do Hyperdrive é trocada para ele no fim (troca de ponteiro) | Voltar a origem do Hyperdrive para o branch anterior |
 
@@ -563,6 +622,7 @@ RBAC por grupo, com um papel global, verificado **no servidor, em toda requisiç
 | Ler ranking e PDF de um grupo | Qualquer pessoa com o slug; grupo arquivado ou inexistente responde "indisponível" | RF-29, RF-49, RF-03, ADR-016 |
 | Registrar `ranking_aberto` / `pdf_exportado` | Qualquer pessoa com o slug; só esses dois tipos, com o payload validado | RF-57 |
 | Qualquer dado de grupo (jogadores, partidas, pesos, habilidades, notas, simulador, admins, uso) | Admin **vinculado**, com sessão de escopo completo. Os demais recebem 404 | RF-09, RF-38, ADR-005 |
+| Ver e corrigir períodos de um jogador, reativar com data de retorno e pedir as prévias | Qualquer admin vinculado ao grupo (o dono só se for admin do grupo); período de outro jogador ou grupo responde 404 | RF-80, RN-33, P-45, RF-09 |
 | Financeiro | Admin vinculado **com `acessa_financeiro`**. Sem a permissão: 403 com aviso | RF-18 |
 | Conceder e retirar `acessa_financeiro` | Admin vinculado com `acessa_financeiro` | RF-18 |
 | Adicionar e remover admin, redefinir senha de admin do grupo | Admin vinculado; não remove o último admin | RF-13, RF-15, RF-16, RN-13 |

@@ -1175,3 +1175,9 @@ APROVADA, 0 críticos/0 não críticos; PaginaJogador 194 linhas, saude componen
 
 ## RTP-0185 — QA — 2026-10-21
 APROVADA — piso 2000-01-01 recusa 0000/0001/1999-12-31 com 422 pt-BR na prévia e no PUT (testes 21+421+16 ok, contrato compatível, sondas 71/0 falhas no app local); 0 achados.
+
+## RTP-0180 — QA — 2026-10-21
+APROVADA; 0 críticos, 0 não críticos; migrações 74/74, checagens 595/595, checar-migracao-aditiva saída 0, lint/typecheck ok, QUEBRAS.md coerente.
+
+## RTP-0181 — QA — 2026-10-21
+APROVADA; 0 críticos, 0 não críticos; checar-compatibilidade 0, comparar.test 25/25, prettier limpo, texto das 4 linhas de pesos confere com a migração 202610200000.

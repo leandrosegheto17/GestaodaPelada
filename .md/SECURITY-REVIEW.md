@@ -1199,3 +1199,9 @@ APROVADA, 0 críticos/0 não críticos; refatoração de UI sem superfície nova
 
 ## RTP-0185 — DevSecOps — 2026-10-21
 APROVADA — piso 2000-01-01 validado no servidor (422 pt-BR, sem 500/stack/SQL) em prévia e PUT, sem regressão de auth/CSRF/isolamento (sondas 71/0 falhas via QA; contrato 52 ok rodado); 0 achados.
+
+## RTP-0180 — DevSecOps — 2026-10-21
+APROVADA; 0 críticos, 0 não críticos; migração atômica e falha fechada, sem privilégio/segredo, deploy.yml mantém restauração Neon + dump cifrado; adequacao-legado 3/3.
+
+## RTP-0181 — DevSecOps — 2026-10-21
+APROVADA; 0 críticos, 0 não críticos; diff só de documento, gitleaks sem vazamentos, grep de segredos vazio, texto de pesos confere com a migração 202610200000.

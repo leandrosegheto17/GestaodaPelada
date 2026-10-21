@@ -4,6 +4,27 @@ Log de governança do Gestor (chapéu CTO). Cada seção registra um gate ou um 
 
 ---
 
+## Gate 1 — Reabertura pontual "Datas de saída e de retorno do jogador" | 2026-10-21 | `/planejar` rodada 1
+
+**Escopo do gate:** só esta demanda. Correção interna, sem impacto comercial (PLANO-COMERCIAL.md não muda; nenhum conflito com preço ou canal). Projeto só com produção, uso pessoal (ADR-020).
+
+**Objetivo de negócio:** o admin registrar retorno retroativo e corrigir saída/retorno já registrados, para o ranking, o lançamento de partidas e a edição da data de início (RA-18) refletirem a realidade (caso real: jogador voltou antes de 20/10/2026 mas consta "ativo desde 20/10").
+
+**Achados:**
+- Alinhado ao produto: reaproveita o diálogo de prévia e a auditoria da RA-18; nada é apagado.
+- **Fato técnico verificado no código:** `acumuladoPorInicio` não olha períodos; a correção de períodos muda aparência (falta/"–"), linhas do ranking e disponibilidade no lançamento, simulador e financeiro, e não muda pontos sozinha. Por isso o PRD registra a expectativa como risco (PR-22) e a prévia explica o efeito.
+- Sem gap de capacidade: mudança aditiva em domínio, contrato e aplicação, sem migração obrigatória; compatível com G-05, G-14, G-20 e G-25 (acumulado só pela função única). Sem exceção em GUARDRAILS.md.
+- Privacidade: lista de períodos e auditoria só para admins (RNF-06, G-10). Risco de segurança: validação no servidor, transação com trava, sem 500 (RNF-14); revisão tática com o Validador.
+- Custo/prazo: pequeno; sem recurso novo (G-13).
+
+**Decisões de produto do Gestor (P-43 a P-45, revogáveis pelo usuário):** antecipar o retorno não cria pontos sozinho; presença que ficaria fora do período bloqueia a correção; qualquer admin do grupo corrige.
+
+**Ressalvas:** (1) deploy só pelo `deploy.yml` com backup (G-15); (2) teste de regressão: acumulado idêntico antes e depois de correção sem presença lançada; (3) conferência do Leandro com o caso real.
+
+**Veredito: Aprovado com ressalvas.** Libera os chapéus PM/BA (feitos) e o `/definir` desta demanda. Nenhum bloqueio aberto.
+
+---
+
 ## Gate 4 — Fechamento do deploy em produção | 2026-10-21
 
 **Natureza:** registro de fechamento, sem poder de veto. O deploy já aconteceu.

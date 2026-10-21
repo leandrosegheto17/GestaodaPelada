@@ -44,9 +44,20 @@
   </section>
   <section class="secao" aria-labelledby="s-sit">
     <h2 id="s-sit" class="subtitulo">Situação</h2>
-    <p class="paragrafo">Inativo desde 22/10/2026.</p>
-    <p class="paragrafo">Volta a aparecer no ranking e nas partidas; a data de início e os pontos não mudam.</p>
-    <div class="grupo-botoes"><button class="botao botao--secundario" type="button">Reativar</button><a class="botao botao--texto botao--texto-destrutivo" href="t16-jogador--excluir.html">Excluir jogador</a></div>
+    <div class="formulario">
+      <p class="paragrafo">Inativo desde 22/10/2026.</p>
+      <div class="campo">
+        <span class="campo__rotulo" id="s-per">Períodos de atividade</span>
+        <ul class="lista" aria-labelledby="s-per">
+          <li class="item item--quebra">
+            <div class="item__principal"><span class="item__titulo" id="p1-t">05/02/2026 <span aria-hidden="true">→</span><span class="sr">até</span> 22/10/2026</span><span class="item__meta">Entrada</span></div>
+            <div class="item__lado"><button class="botao botao--secundario" type="button" aria-describedby="p1-t">Corrigir datas</button></div>
+          </li>
+        </ul>
+      </div>
+      <p class="paragrafo">Volta a aparecer no ranking e nas partidas; a data de início e os pontos não mudam.</p>
+      <div class="grupo-botoes"><button class="botao botao--secundario" type="button">Reativar</button><a class="botao botao--texto botao--texto-destrutivo" href="t16-jogador--excluir.html">Excluir jogador</a></div>
+    </div>
   </section>
 </main>
 </body>
