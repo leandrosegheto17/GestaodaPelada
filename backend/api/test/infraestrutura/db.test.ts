@@ -3,7 +3,7 @@ import pg from 'pg';
 import { afterAll, beforeAll, describe, expect, expectTypeOf, it } from 'vitest';
 import * as publico from '../../src/infraestrutura/db/index.js';
 import { kyselyDe } from '../../src/infraestrutura/db/cliente.js';
-import { criarDb, emTransacao, fecharDb } from '../../src/infraestrutura/db/index.js';
+import { criarDb, emLeitura, emTransacao, fecharDb } from '../../src/infraestrutura/db/index.js';
 import type { Db, Tx } from '../../src/infraestrutura/db/index.js';
 import { criarBancoTemporario, temBanco, type BancoTemporario } from '../apoio/banco.js';
 
@@ -18,7 +18,7 @@ describe('módulo de dados: superfície pública', () => {
     for (const proibido of ['Kysely', 'pg', 'Client', 'sql', 'kyselyDe', 'embrulhar']) {
       expect(nomes).not.toContain(proibido);
     }
-    expect(nomes.sort()).toEqual(['criarDb', 'emTransacao', 'fecharDb']);
+    expect(nomes.sort()).toEqual(['criarDb', 'emLeitura', 'emTransacao', 'fecharDb']);
   });
 
   it('Db e Tx não expõem Kysely nem pg no tipo público', () => {
@@ -104,6 +104,29 @@ describe.skipIf(!temBanco)('módulo de dados contra o Postgres de teste', () => 
     expect(dentro[0]).toEqual(dentro[1]);
     expect(antes.rows).toEqual(dentro[0]);
     expect(depois.rows).toEqual(dentro[0]);
+  });
+
+  it('leitura: lê normalmente e o Postgres recusa qualquer escrita (25006)', async () => {
+    const { db } = abrir();
+    const lido = await emLeitura(
+      db,
+      async (tx) => (await sql(tx as never, `SELECT count(*)::int AS n FROM ${tabela}`)).rows,
+    );
+    expect(lido).toEqual([{ n: expect.any(Number) }]);
+    const codigo = await emLeitura(db, async (tx) => {
+      try {
+        await sql(tx as never, `INSERT INTO ${tabela} VALUES (3)`);
+        return 'gravou';
+      } catch (erro) {
+        return (erro as { code?: string }).code;
+      }
+    });
+    expect(codigo).toBe('25006');
+    await expect(emLeitura(db, (tx) => emLeitura(tx as never, async () => 1))).rejects.toThrow(
+      /dentro de uma transação/,
+    );
+    await fecharDb(db);
+    expect(await externo(`SELECT id FROM ${tabela} WHERE id = 3`)).toEqual([]);
   });
 
   it('transação aninhada é recusada', async () => {

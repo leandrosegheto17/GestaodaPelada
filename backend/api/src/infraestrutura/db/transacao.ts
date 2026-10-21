@@ -12,3 +12,18 @@ export async function emTransacao<T>(db: Db, fn: (tx: Tx) => Promise<T>): Promis
     .transaction()
     .execute((kyselyTx) => fn(embrulhar(kyselyTx, true) as Tx));
 }
+
+/**
+ * Leitura consistente: uma transação somente leitura sobre um retrato único do banco. Qualquer
+ * escrita dentro dela é recusada pelo próprio Postgres (25006).
+ */
+export async function emLeitura<T>(db: Db, fn: (tx: Tx) => Promise<T>): Promise<T> {
+  if (ehTransacao(db)) {
+    throw new Error('emLeitura não pode ser chamado dentro de uma transação.');
+  }
+  return kyselyDe(db)
+    .transaction()
+    .setAccessMode('read only')
+    .setIsolationLevel('repeatable read')
+    .execute((kyselyTx) => fn(embrulhar(kyselyTx, true) as Tx));
+}

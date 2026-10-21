@@ -1,54 +1,10 @@
-import { randomBytes } from 'node:crypto';
-import { join } from 'node:path';
-import pg from 'pg';
-import { afterEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { aplicarMigracoes } from '../../src/infraestrutura/db/migracoes/aplicar.js';
 import { lerMigracoes } from '../../src/infraestrutura/db/migracoes/ler.js';
-import { exigirHostPermitido } from '../../src/infraestrutura/seguranca/trava-host.js';
-import { URL_BANCO_TESTE } from '../apoio/url-teste.js';
+import { bancosDescartaveis, PASTA_MIGRACOES as PASTA } from '../apoio/banco-migracao.js';
 
-const PASTA = join(import.meta.dirname, '../../src/infraestrutura/db/migracoes');
 const NOVA = '202610200000_adequacao_legado.sql';
-
-function urlDe(banco: string): string {
-  const url = new URL(URL_BANCO_TESTE);
-  url.pathname = `/${banco}`;
-  return url.toString();
-}
-
-const criados: string[] = [];
-
-afterEach(async () => {
-  const admin = new pg.Client({ connectionString: urlDe('postgres') });
-  await admin.connect();
-  try {
-    for (const banco of criados.splice(0)) await admin.query(`DROP DATABASE IF EXISTS ${banco} WITH (FORCE)`);
-  } finally {
-    await admin.end();
-  }
-});
-
-/** Banco descartável com todas as migrações menos a nova, para provar a conversão de dados existentes. */
-async function bancoAntesDaMigracao(): Promise<{ cliente: pg.Client; url: string }> {
-  await exigirHostPermitido({ url: URL_BANCO_TESTE });
-  const nome = `pelada_mig_${randomBytes(6).toString('hex')}`;
-  const admin = new pg.Client({ connectionString: urlDe('postgres') });
-  await admin.connect();
-  try {
-    await admin.query(`CREATE DATABASE ${nome}`);
-  } finally {
-    await admin.end();
-  }
-  criados.push(nome);
-  const url = urlDe(nome);
-  await aplicarMigracoes(
-    url,
-    lerMigracoes(PASTA).filter((m) => m.nome !== NOVA),
-  );
-  const cliente = new pg.Client({ connectionString: url });
-  await cliente.connect();
-  return { cliente, url };
-}
+const bancoAntesDaMigracao = bancosDescartaveis(NOVA);
 
 describe('migração de adequação ao legado', () => {
   it('converte posições, zera a pontuação inicial e copia o expulso para o expulso com chuva', async () => {

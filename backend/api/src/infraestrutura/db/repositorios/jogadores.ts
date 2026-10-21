@@ -35,6 +35,8 @@ export interface Jogador {
   posicao: string | null;
   telefone: string | null;
   pontuacaoInicial: number;
+  /** Data a partir da qual as partidas contam pontos; `null` = início do primeiro período. */
+  inicioPontuacao: string | null;
   /** Em ordem de início. */
   periodos: PeriodoDoJogador[];
 }
@@ -46,6 +48,7 @@ interface LinhaJogador {
   posicao: string | null;
   telefone: string | null;
   pontuacao_inicial: number;
+  inicio_pontuacao: string | null;
   periodos: PeriodoDoJogador[];
 }
 
@@ -56,6 +59,7 @@ const paraJogador = (l: LinhaJogador): Jogador => ({
   posicao: l.posicao,
   telefone: l.telefone,
   pontuacaoInicial: l.pontuacao_inicial,
+  inicioPontuacao: l.inicio_pontuacao,
   periodos: l.periodos,
 });
 
@@ -66,6 +70,7 @@ async function consultar(ex: ExecutorDb, grupoId: string, jogadorId: string | nu
   const filtro = jogadorId === null ? sql`` : sql`AND j.id = ${jogadorId}`;
   const resultado = await sql<LinhaJogador>`
     SELECT j.id, j.apelido, j.ano_nascimento, j.posicao, j.telefone, j.pontuacao_inicial,
+           j.inicio_pontuacao::text AS inicio_pontuacao,
            coalesce(json_agg(json_build_object('inicio', p.inicio::text, 'fim', p.fim::text) ORDER BY p.inicio)
                     FILTER (WHERE p.id IS NOT NULL), '[]'::json) AS periodos
     FROM jogadores j
@@ -111,6 +116,7 @@ export async function criar(
         posicao: dados.posicao,
         telefone: dados.telefone,
         pontuacao_inicial: dados.pontuacaoInicial,
+        inicio_pontuacao: dados.dataEntrada,
         criado_por: dados.autor,
         criado_em: dados.agora,
         alterado_por: dados.autor,

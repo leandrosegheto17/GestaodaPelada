@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { criarDb, fecharDb } from '../api/src/infraestrutura/db/index.ts';
 import { exigirHostPermitido, HostRecusado } from '../api/src/infraestrutura/seguranca/trava-host.ts';
 import { confirmarHost, perguntar } from './comum/argumentos.ts';
+import { hojeEmSaoPaulo } from './comum/hoje.ts';
 import { lerArgumentosLegado } from './importar-legado/argumentos.ts';
 import { importarLegado } from './importar-legado/executar.ts';
 import { ErroLegado } from './importar-legado/tipos.ts';
@@ -14,10 +15,6 @@ import { ErroLegado } from './importar-legado/tipos.ts';
  * `--confirmo-backup` e a digitação do slug do grupo. Telefone não é lido.
  * `--correcoes` aponta um JSON fora do repositório: `chuva` (datas ISO) e `presencas` (data, atleta, situacao).
  */
-/** `AAAA-MM-DD` de São Paulo, o mesmo "hoje" do resto do sistema. */
-const hojeEmSaoPaulo = (agora: Date): string =>
-  new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(agora);
-
 async function principal(): Promise<void> {
   const args = lerArgumentosLegado(process.argv.slice(2));
   const url = process.env['DATABASE_URL'];

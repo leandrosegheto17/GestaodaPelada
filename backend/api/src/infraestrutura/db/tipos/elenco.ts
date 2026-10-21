@@ -8,6 +8,8 @@ export interface JogadoresTabela {
   posicao: string | null;
   telefone: string | null;
   pontuacao_inicial: Generated<number>;
+  /** Coluna `date` (texto `AAAA-MM-DD`); nula = início do primeiro período. */
+  inicio_pontuacao: string | null;
   criado_por: string;
   criado_em: Date;
   alterado_por: string;

@@ -31,6 +31,8 @@ export const SLUG_DO_TESTE = 'grupo-ficticio';
 
 export interface BancoDescartavel {
   db: Db;
+  /** Conexão do banco descartável, para quem precisa abrir a própria (scripts em processo à parte). */
+  url: string;
   grupoId: string;
   contaId: string;
   /** SQL de apoio dos testes (contagens e conferências). */
@@ -87,6 +89,7 @@ export async function criarBancoDescartavel(semMigracoes: readonly string[] = []
 
   return {
     db,
+    url,
     grupoId: grupo,
     contaId: conta,
     consultar,

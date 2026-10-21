@@ -15,6 +15,7 @@ describe('adaptadores do histórico', () => {
       posicao: 'atacante',
       telefone: '11987654321',
       pontuacaoInicial: 40,
+      inicioPontuacao: null,
       periodos: [{ inicio: '2026-02-05', fim: null }],
     });
     expect(r).toEqual({
@@ -23,6 +24,7 @@ describe('adaptadores do histórico', () => {
       anoNascimento: 1978,
       periodos: [{ inicio: '2026-02-05', fim: null }],
       pontuacaoInicial: 40,
+      inicioPontuacao: '2026-02-05',
     });
     expect(JSON.stringify(r)).not.toContain('11987654321');
   });
@@ -35,9 +37,21 @@ describe('adaptadores do histórico', () => {
       posicao: null,
       telefone: null,
       pontuacaoInicial: 0,
+      inicioPontuacao: null,
       periodos: [],
     });
     expect(r.anoNascimento).toBe(9999);
+    expect(r.inicioPontuacao).toBeUndefined();
+  });
+
+  it('data de início gravada vale sobre o início do primeiro período', () => {
+    const base = { id: 'j', apelido: 'x', anoNascimento: 1990, posicao: null, telefone: null, pontuacaoInicial: 0 };
+    const periodos = [
+      { inicio: '2026-10-20', fim: null },
+      { inicio: '2026-12-01', fim: null },
+    ];
+    expect(paraJogadorDominio({ ...base, inicioPontuacao: '2026-09-20', periodos }).inicioPontuacao).toBe('2026-09-20');
+    expect(paraJogadorDominio({ ...base, inicioPontuacao: null, periodos }).inicioPontuacao).toBe('2026-10-20');
   });
 
   it('partida e presença mantêm datas e situação; situação desconhecida falha', () => {

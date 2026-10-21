@@ -14,6 +14,9 @@ import type { ConfigPesosHistorico } from '../../infraestrutura/db/repositorios/
  */
 const ANO_SEM_INFORMACAO = 9999;
 
+/** Sem data de início gravada, a pontuação começa no início do primeiro período (já em ordem de início). */
+const primeiroInicio = (periodos: Jogador['periodos']): string | undefined => periodos[0]?.inicio;
+
 /** Monta o jogador do domínio campo a campo: telefone e demais colunas nunca chegam ao domínio. */
 export function paraJogadorDominio(linha: Jogador): JogadorDoRanking {
   return {
@@ -22,6 +25,7 @@ export function paraJogadorDominio(linha: Jogador): JogadorDoRanking {
     anoNascimento: linha.anoNascimento ?? ANO_SEM_INFORMACAO,
     periodos: linha.periodos.map((p) => ({ inicio: p.inicio, fim: p.fim })),
     pontuacaoInicial: linha.pontuacaoInicial,
+    inicioPontuacao: linha.inicioPontuacao ?? primeiroInicio(linha.periodos),
   };
 }
 
