@@ -1,9 +1,7 @@
 import { useState } from 'react';
 import { Navigate, useLocation, useNavigate, useParams } from 'react-router';
-import { Botao } from '../../componentes/basicos/Botao';
 import { ErroRede } from '../../componentes/basicos/ErroRede';
 import { Esqueleto } from '../../componentes/basicos/Esqueleto';
-import { Faixa } from '../../componentes/basicos/Faixa';
 import { Voltar } from '../../componentes/basicos/Voltar';
 import { DialogoConfirmacao, textosConfirmacao } from '../../componentes/dialogos-padrao';
 import { TituloPagina } from '../../componentes/pagina/TituloPagina';
@@ -22,6 +20,7 @@ import { useGrupo } from '../../dados/grupo';
 import { recursos } from '../../config/recursos';
 import { DialogoInativar } from './DialogoInativar';
 import { DialogoInicio } from './DialogoInicio';
+import { FaixasDaFicha } from './FaixasDaFicha';
 import { FormularioJogador } from './FormularioJogador';
 import { SecaoNotas } from './SecaoNotas';
 import { SecaoSituacao } from './SecaoSituacao';
@@ -124,31 +123,13 @@ export function Component() {
       <title>{novo ? 'Novo jogador' : (jogador?.apelido ?? 'Jogador')}</title>
       <Voltar para={`${base}/jogadores`} rotulo="Jogadores" />
       <TituloPagina>{novo ? 'Novo jogador' : (jogador?.apelido ?? '')}</TituloPagina>
-      {salvo ? (
-        <div className={estilos.faixaSalvo}>
-          <Faixa tipo="sucesso">Jogador salvo</Faixa>
-        </div>
-      ) : null}
-      {inicioAlterado ? (
-        <div className={estilos.faixaSalvo}>
-          <Faixa tipo="sucesso">Data de início alterada</Faixa>
-        </div>
-      ) : null}
-      {recusadaPorHistorico ? (
-        <Faixa
-          tipo="erro"
-          acao={
-            <Botao variante="texto" onClick={() => setDialogo('inativar')}>
-              Inativar em vez disso
-            </Botao>
-          }
-        >
-          {recusadaPorHistorico}
-        </Faixa>
-      ) : null}
-      {falhaNaSituacao ? (
-        <Faixa tipo="erro">Não foi possível concluir. Verifique a conexão e tente de novo.</Faixa>
-      ) : null}
+      <FaixasDaFicha
+        salvo={salvo}
+        inicioAlterado={inicioAlterado}
+        recusadaPorHistorico={recusadaPorHistorico}
+        falhaNaSituacao={falhaNaSituacao}
+        aoInativarEmVezDeExcluir={() => setDialogo('inativar')}
+      />
       <section aria-labelledby={novo ? undefined : 's-dados'}>
         {novo ? null : (
           <h2 id="s-dados" className={estilos.subtitulo}>
