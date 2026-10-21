@@ -1,5 +1,25 @@
 # Revisão de arquitetura
 
+## Revisão 2026-10-20 (4ª) — pré-deploy, depois das RTP-0177 a 0179 e dos BK-0012/0013
+
+Números do saude.py: 0 arquivos acima do limite · 4 blocos duplicados (33 linhas, os mesmos já descartados) · 3 IDs de tarefa (todos em `evidencia/s-01`) · 2 pastas com acesso a dados (`backend/api/src`, `evidencia/s-01`) · 0 imports indevidos entre aplicações · 0 conversões forçadas · 8 comentários de cópia (falsos positivos). Comparação visual: a de hoje (117 de 117 OK) segue válida: nenhum arquivo de frontend mudou desde a revisão anterior (4ffef08c); `tokens.css` do app idêntico ao do mockup. Mudança desde a revisão anterior: `checar-acoes-fixadas.mjs` + teste e passo no `ci.yml` (RTP-0178/0179); SDD §7 e G-24 (RTP-0177); ADR-022 e ajustes no SDD, no ADR-008 e no UX-SPEC (BK-0013); `QUEBRAS.md` e comentário da migração 202610200000 (BK-0012).
+
+**Não há achado de severidade Alta aberto. Nada impede o `/deploy`.** Débitos já abertos e não repetidos: RTP-0176 (`minimumReleaseAge` 10080 depois de 22/10) e RTP-0180 (contrair o CHECK de `posicao`).
+
+| # | Achado | Item do checklist | Severidade | Onde | Destino |
+|---|---|---|---|---|---|
+| 1 | As 4 linhas de pesos de `QUEBRAS.md` (`expulsoComChuva`, `expulsoSemChuva`, `historico[].expulso`, `vigente.expulso`) trazem o texto das linhas de `posicao` ("banco aceita as posições antigas e as novas", "RTP-0180 contrai o CHECK de posição"). Para pesos a migração só acrescentou `expulso_com_chuva` e manteve `expulso`; não há contração. A RTP-0180 manda trocar o "deploy 2" das "12 linhas" e espalharia o texto errado | 17 | Baixa | `backend/contrato/QUEBRAS.md:21-24` | RTP-0181 (depende da RTP-0180) |
+
+Descartados:
+- `checar-acoes-fixadas.mjs` × padrão: usa `arquivosVersionados` e `encerrar` de `arquivos.mjs`, `RAIZ` por argumento, regex no topo, como `checar-wrangler-deploy.mjs`; teste em `checagens/test/` roda em `pnpm test:checagens`. Sem leitura de arquivo ou saída copiada. Resíduos aceitos pelo DevSecOps (chave `"uses"` entre aspas, `\` em caminho local): revisão de PR cobre; sem RTP.
+- Passo no `ci.yml`: está no job `base`, ao lado dos outros `checar-*` (a RTP-0178 diz "job `checagens`", que só roda os testes); o lugar certo é o atual, sem mudança.
+- ADR-022 × código × UX-SPEC: `entregarPdf` devolve `pedir-gesto` quando o aparelho compartilha arquivo e baixa direto senão; é o que o ADR-022 §1-3, a F4/D4 e o trade-off T01/P01 do UX-SPEC, o C3 e o T-05 do SDD descrevem. O ADR-008 só ganhou a marca de status "§3 Superseded by ADR-022" e o texto original foi mantido: é o uso previsto de ADR imutável.
+- G-24: aponta `backend/scripts/checagens/checar-acoes-fixadas.mjs`, que existe e roda no CI; as 3 chaves batem com `pnpm-workspace.yaml`. Sem staging/homologação: a única menção em `.github` é o cabeçalho do `deploy.yml` ("sem homologação", ADR-020).
+- Incidente do comentário da migração 202610200000 com ID de tarefa (corrigido em bbb50979): caso isolado de um comentário de texto; a trava existe e funcionou (`checar-ids-tarefa` no CI, hoje 0 fora de `evidencia/s-01`). Sem causa estrutural nem RTP.
+- Os 4 blocos duplicados, IDs em `evidencia/s-01`, acesso a dados em `backend/api/src` e `evidencia/s-01`, e os 8 comentários de cópia: os mesmos já descartados em 19 e 20/10.
+
+Sem achado nos itens: 1 a 16 e 18 (além do #1 no 17). Itens 11, 13 e 14 por amostragem do relatório.
+
 ## Revisão 2026-10-20 (3ª) — pré-deploy, depois das RTP-0169 a 0175
 
 Números do saude.py: 0 arquivos acima do limite · 4 blocos duplicados (33 linhas, os mesmos já descartados) · 3 IDs de tarefa (todos em `evidencia/s-01`) · 2 pastas com acesso a dados (`backend/api/src`, `evidencia/s-01`) · 0 imports indevidos entre aplicações · 0 conversões forçadas · 8 comentários de cópia (falsos positivos). Comparação visual: a de hoje (117 de 117 OK) segue válida: desde então o frontend só mudou comentários e títulos de teste (RTP-0175); `tokens.css` do app idêntico ao do mockup. Mudança desde a revisão anterior (commit 53526121): workflows com ações fixadas por SHA, `pnpm-workspace.yaml` (RTP-0171), `middlewares/sem-sniff.ts` (RTP-0170), comentários do PDF (RTP-0175); documentos SDD §2, G-01 e UX-SPEC (RTP-0169, 0174).
