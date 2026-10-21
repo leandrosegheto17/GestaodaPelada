@@ -1,6 +1,7 @@
 import { jogadorDetalhe } from '@pelada/contrato';
 import { describe, expect, it } from 'vitest';
 import { carregarDetalhe } from '../../../src/aplicacao/elenco/detalhe.js';
+import { kyselyDe } from '../../../src/infraestrutura/db/cliente.js';
 import { emTransacao } from '../../../src/infraestrutura/db/index.js';
 import * as habilidades from '../../../src/infraestrutura/db/repositorios/habilidades.js';
 import * as jogadores from '../../../src/infraestrutura/db/repositorios/jogadores.js';
@@ -45,6 +46,7 @@ describe('carregarDetalhe (workerd)', () => {
       telefone: '11987654321',
       pontuacaoInicial: 25,
       situacao: { ativo: true, desde: '2026-02-05' },
+      inicioPontuacao: '2026-02-05',
       nivel: 6.8,
       semNota: false,
     });
@@ -82,6 +84,28 @@ describe('carregarDetalhe (workerd)', () => {
     expect((await carregarDetalhe(db, g, id, HOJE))?.situacao).toEqual({ ativo: false, desde: '2026-08-10' });
     await jogadores.reativar(db, g, id, '2026-09-14');
     expect((await carregarDetalhe(db, g, id, HOJE))?.situacao).toEqual({ ativo: true, desde: '2026-09-14' });
+  });
+
+  it('data de início: a gravada vale mesmo depois de inativar e reativar; sem ela, o início do 1º período', async () => {
+    const db = await abrir();
+    const cen = await montarCenario(db, fabrica);
+    const g = cen.grupoA.id;
+    const id = await criarJogador(db, g, cen.adminA.id, { dataEntrada: '2026-02-05' });
+    expect((await carregarDetalhe(db, g, id, HOJE))?.inicioPontuacao).toBe('2026-02-05');
+    await emTransacao(db, (tx) =>
+      jogadores.alterarInicio(tx, g, id, {
+        inicio: '2026-09-01',
+        autor: cen.adminA.id,
+        agora: new Date('2026-10-16T12:00:00Z'),
+      }),
+    );
+    await jogadores.inativar(db, g, id, '2026-09-20');
+    await jogadores.reativar(db, g, id, '2026-10-01');
+    const d = await carregarDetalhe(db, g, id, HOJE);
+    expect(d?.inicioPontuacao).toBe('2026-09-01');
+    expect(d?.situacao.desde).toBe('2026-10-01');
+    await kyselyDe(db).updateTable('jogadores').set({ inicio_pontuacao: null }).where('id', '=', id).execute();
+    expect((await carregarDetalhe(db, g, id, HOJE))?.inicioPontuacao).toBe('2026-02-05');
   });
 
   it('jogador de outro grupo ou inexistente dá null', async () => {

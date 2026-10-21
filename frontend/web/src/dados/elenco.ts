@@ -1,4 +1,4 @@
-import { jogadorDetalhe, listaJogadores } from '@pelada/contrato';
+import { inicioEditarResposta, inicioPreviaResposta, jogadorDetalhe, listaJogadores } from '@pelada/contrato';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { escrever, ler, semCorpo } from './cliente';
 import { chaveGrupo } from './grupo';
@@ -58,6 +58,23 @@ export function useEditarJogador(grupoId: string, jogadorId: string) {
   const invalidar = useInvalidarGrupo(grupoId);
   return useMutation({
     mutationFn: (corpo: CorpoJogador) => escrever('PATCH', caminhoJogador(grupoId, jogadorId), corpo, jogadorDetalhe),
+    onSuccess: invalidar,
+  });
+}
+
+/** Efeito de trocar a data de início (acumulado, posição, rodadas), sem gravar; o cálculo é da API. */
+export function useInicioPrevia(grupoId: string, jogadorId: string) {
+  return useMutation({
+    mutationFn: (corpo: { data: string }) =>
+      escrever('POST', `${caminhoJogador(grupoId, jogadorId)}/inicio/previa`, corpo, inicioPreviaResposta),
+  });
+}
+
+export function useAlterarInicio(grupoId: string, jogadorId: string) {
+  const invalidar = useInvalidarGrupo(grupoId);
+  return useMutation({
+    mutationFn: (corpo: { data: string }) =>
+      escrever('PUT', `${caminhoJogador(grupoId, jogadorId)}/inicio`, corpo, inicioEditarResposta),
     onSuccess: invalidar,
   });
 }

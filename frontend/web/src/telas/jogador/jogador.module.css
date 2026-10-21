@@ -16,6 +16,13 @@
 .paragrafo {
   margin: 0 0 var(--esp-3);
 }
+.campoTexto {
+  display: grid;
+  gap: var(--esp-1);
+}
+.rotulo {
+  font-weight: var(--peso-semi);
+}
 .grupoBotoes {
   display: flex;
   flex-wrap: wrap;

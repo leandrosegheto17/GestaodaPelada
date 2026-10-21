@@ -24,6 +24,11 @@ export function SecaoSituacao({ jogador, aoInativar, aoReativar, aoExcluir, reat
       <p className={estilos.paragrafo}>
         {ativo ? 'Ativo' : 'Inativo'} desde {dataCompleta(desde)}.
       </p>
+      {ativo ? null : (
+        <p className={estilos.paragrafo}>
+          Volta a aparecer no ranking e nas partidas; a data de início e os pontos não mudam.
+        </p>
+      )}
       <div className={estilos.grupoBotoes}>
         {ativo ? (
           <Botao variante="secundario" onClick={aoInativar}>

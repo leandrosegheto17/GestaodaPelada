@@ -21,6 +21,7 @@ import { deErroApi, type ErrosDeCampos } from '../../dados/errosDeCampos';
 import { useGrupo } from '../../dados/grupo';
 import { recursos } from '../../config/recursos';
 import { DialogoInativar } from './DialogoInativar';
+import { DialogoInicio } from './DialogoInicio';
 import { FormularioJogador } from './FormularioJogador';
 import { SecaoNotas } from './SecaoNotas';
 import { SecaoSituacao } from './SecaoSituacao';
@@ -46,7 +47,8 @@ export function Component() {
   const [semConexao, setSemConexao] = useState(false);
   const [salvoNaFicha, setSalvo] = useState(false);
   const salvo = salvoNaFicha || (localizacao.state as { salvo?: boolean } | null)?.salvo === true;
-  const [dialogo, setDialogo] = useState<'inativar' | 'excluir' | null>(null);
+  const [dialogo, setDialogo] = useState<'inativar' | 'excluir' | 'inicio' | null>(null);
+  const [inicioAlterado, setInicioAlterado] = useState(false);
   const [recusadaPorHistorico, setRecusadaPorHistorico] = useState<string | null>(null);
   const [falhaNaSituacao, setFalhaNaSituacao] = useState(false);
 
@@ -82,6 +84,7 @@ export function Component() {
 
   const aoSalvar = (corpo: CorpoJogador) => {
     setSalvo(false);
+    setInicioAlterado(false);
     setSemConexao(false);
     setErrosDoServidor({});
     const aoErro = (erro: unknown) => {
@@ -126,6 +129,11 @@ export function Component() {
           <Faixa tipo="sucesso">Jogador salvo</Faixa>
         </div>
       ) : null}
+      {inicioAlterado ? (
+        <div className={estilos.faixaSalvo}>
+          <Faixa tipo="sucesso">Data de início alterada</Faixa>
+        </div>
+      ) : null}
       {recusadaPorHistorico ? (
         <Faixa
           tipo="erro"
@@ -151,6 +159,7 @@ export function Component() {
           key={jogador ? jogador.id : 'novo'}
           jogador={jogador}
           hoje={hoje}
+          aoAlterarInicio={() => setDialogo('inicio')}
           errosDoServidor={errosDoServidor}
           enviando={criar.isPending || editar.isPending}
           semConexao={semConexao}
@@ -175,6 +184,20 @@ export function Component() {
           falhou={falhaNaSituacao}
           aoInativar={aoInativar}
           aoCancelar={() => setDialogo(null)}
+        />
+      ) : null}
+      {dialogo === 'inicio' && jogador ? (
+        <DialogoInicio
+          grupoId={grupoId}
+          jogadorId={jogador.id}
+          hoje={hoje}
+          atual={jogador.inicioPontuacao}
+          aoCancelar={() => setDialogo(null)}
+          aoAlterado={() => {
+            setDialogo(null);
+            setSalvo(false);
+            setInicioAlterado(true);
+          }}
         />
       ) : null}
       {dialogo === 'excluir' && jogador ? (

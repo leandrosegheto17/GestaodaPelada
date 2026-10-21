@@ -26,6 +26,16 @@ describe('respostas do mockup', () => {
   it.each(respostas(/^jogador-(toninho|sem-habilidades)\.json$/))('$nome passa em jogadorDetalhe', ({ json }) => {
     expect(jogadorDetalhe.safeParse(json).success).toBe(true);
   });
+  it.each(respostas(/^inicio-previa-.*\.json$/))('$nome passa em inicioPreviaResposta', ({ json }) => {
+    expect(inicioPreviaResposta.safeParse(json).success).toBe(true);
+  });
+  it('o detalhe exige a data de início da pontuação, de calendário', () => {
+    const detalhe = respostas(/^jogador-toninho\.json$/)[0]?.json as Record<string, unknown>;
+    const sem = { ...detalhe };
+    delete sem['inicioPontuacao'];
+    expect(jogadorDetalhe.safeParse(sem).success).toBe(false);
+    expect(jogadorDetalhe.safeParse({ ...detalhe, inicioPontuacao: '2026-02-30' }).success).toBe(false);
+  });
   it('erro 409 com histórico e erro de validação', () => {
     expect(erroJogadorComHistorico.safeParse(respostas(/^erro-jogador-com-historico\.json$/)[0]?.json).success).toBe(
       true,

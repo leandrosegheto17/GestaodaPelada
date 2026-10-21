@@ -50,6 +50,8 @@ export const jogadorDetalhe = z.strictObject({
     .nullable(),
   pontuacaoInicial,
   situacao: z.strictObject({ ativo: z.boolean(), desde: data }),
+  /** Data de início da pontuação em vigor (sem valor gravado, o início do 1º período); a tela só formata. */
+  inicioPontuacao: data,
   nivel: nivelDecimal,
   semNota: z.boolean(),
   notas: z.array(

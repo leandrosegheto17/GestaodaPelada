@@ -14,12 +14,15 @@ import { deValidacao, type ErrosDeCampos } from '../../dados/errosDeCampos';
 import type { CorpoJogador } from '../../dados/elenco';
 import { digitosDoTelefone, formatarTelefone, mascararTelefone } from '../../formatacao/telefone';
 import { ORDEM_POSICAO, rotuloPosicao } from '../../rotulos';
+import { DataDeInicio } from './DataDeInicio';
 
 interface Props {
   /** Dados atuais (edição); `undefined` = novo jogador. */
   jogador: JogadorDetalhe | undefined;
   /** "Hoje" da API, para as regras do contrato (ano máximo, data de entrada). */
   hoje: string;
+  /** Edição: abre o diálogo que altera a data de início. */
+  aoAlterarInicio: () => void;
   /** Erros que vieram do servidor (422 `campos`), por campo. */
   errosDoServidor: ErrosDeCampos;
   enviando: boolean;
@@ -42,12 +45,20 @@ const OPCOES_POSICAO = [
 ];
 
 /** Dados do jogador: o mesmo formulário serve ao cadastro e à edição. Valida com as regras do contrato. */
-export function FormularioJogador({ jogador, hoje, errosDoServidor, enviando, semConexao, aoSalvar }: Props) {
+export function FormularioJogador({
+  jogador,
+  hoje,
+  aoAlterarInicio,
+  errosDoServidor,
+  enviando,
+  semConexao,
+  aoSalvar,
+}: Props) {
   const [apelido, setApelido] = useState(jogador?.apelido ?? '');
   const [ano, setAno] = useState(jogador ? String(jogador.anoNascimento) : '');
   const [posicao, setPosicao] = useState<string>(jogador?.posicao ?? '');
   const [telefone, setTelefone] = useState(jogador?.telefone ? formatarTelefone(jogador.telefone) : '');
-  const [entrada, setEntrada] = useState(jogador?.situacao.desde ?? hoje);
+  const [entrada, setEntrada] = useState(hoje);
   const [inicial, setInicial] = useState(String(jogador?.pontuacaoInicial ?? 0));
   const [errosLocais, setErrosLocais] = useState<ErrosDeCampos>({});
 
@@ -63,7 +74,7 @@ export function FormularioJogador({ jogador, hoje, errosDoServidor, enviando, se
       posicao: posicao || undefined,
       telefone: digitosDoTelefone(telefone),
       pontuacaoInicial: inicial.trim() === '' ? Number.NaN : Number(inicial),
-      dataEntrada: entrada || undefined,
+      dataEntrada: jogador ? undefined : entrada || undefined,
     });
     const invalidos = deValidacao(analise);
     if (posicao === '') invalidos.posicao = 'Escolha a posição.';
@@ -133,14 +144,18 @@ export function FormularioJogador({ jogador, hoje, errosDoServidor, enviando, se
             />
           )}
         </Campo>
-        <CampoData
-          id="entrada"
-          rotulo="Data de entrada"
-          valor={entrada}
-          aoMudar={setEntrada}
-          erro={erros.dataEntrada}
-          erroComoAlerta={umSoErro}
-        />
+        {jogador ? (
+          <DataDeInicio inicio={jogador.inicioPontuacao} aoAlterar={aoAlterarInicio} />
+        ) : (
+          <CampoData
+            id="entrada"
+            rotulo="Data de entrada"
+            valor={entrada}
+            aoMudar={setEntrada}
+            erro={erros.dataEntrada}
+            erroComoAlerta={umSoErro}
+          />
+        )}
         <Campo
           id="inicial"
           rotulo="Pontuação inicial"

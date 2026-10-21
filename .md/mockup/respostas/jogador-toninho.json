@@ -6,6 +6,7 @@
   "telefone": "11987654321",
   "pontuacaoInicial": 0,
   "situacao": { "ativo": true, "desde": "2026-02-05" },
+  "inicioPontuacao": "2026-02-05",
   "nivel": 6.8,
   "semNota": false,
   "notas": [

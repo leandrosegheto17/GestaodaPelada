@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse, type JsonBodyType } from 'msw';
 import { setupServer } from 'msw/node';
@@ -29,11 +29,14 @@ let chamadas: Chamada[] = [];
 
 interface Opcoes {
   jogador?: JsonBodyType;
+  /** Ficha devolvida depois de gravar a nova data de início. */
+  jogadorDepoisDoInicio?: JsonBodyType;
   escrita?: (metodo: string) => Response;
 }
 
-function api({ jogador = fixture('jogador-toninho.json'), escrita }: Opcoes = {}) {
+function api({ jogador = fixture('jogador-toninho.json'), jogadorDepoisDoInicio, escrita }: Opcoes = {}) {
   chamadas = [];
+  let fichaAtual = jogador;
   const registrar = async (metodo: string, request: Request) => {
     const texto = await request.text();
     chamadas.push({
@@ -46,7 +49,7 @@ function api({ jogador = fixture('jogador-toninho.json'), escrita }: Opcoes = {}
   };
   servidor.use(
     http.get('/api/grupos/g-quinta', () => HttpResponse.json(fixture('grupo-quinta.json'))),
-    http.get('/api/grupos/g-quinta/jogadores/j-toninho', () => HttpResponse.json(jogador)),
+    http.get('/api/grupos/g-quinta/jogadores/j-toninho', () => HttpResponse.json(fichaAtual)),
     http.post('/api/grupos/g-quinta/jogadores', async ({ request }) => {
       const resposta = await registrar('POST', request);
       return resposta ?? HttpResponse.json(fixture('jogador-toninho.json'), { status: 201 });
@@ -54,6 +57,15 @@ function api({ jogador = fixture('jogador-toninho.json'), escrita }: Opcoes = {}
     http.patch('/api/grupos/g-quinta/jogadores/j-toninho', async ({ request }) => {
       const resposta = await registrar('PATCH', request);
       return resposta ?? HttpResponse.json(jogador);
+    }),
+    http.post('/api/grupos/g-quinta/jogadores/j-toninho/inicio/previa', async ({ request }) => {
+      const resposta = await registrar('POST', request);
+      return resposta ?? HttpResponse.json(fixture('inicio-previa-avancar.json'));
+    }),
+    http.put('/api/grupos/g-quinta/jogadores/j-toninho/inicio', async ({ request }) => {
+      const resposta = await registrar('PUT', request);
+      if (jogadorDepoisDoInicio) fichaAtual = jogadorDepoisDoInicio;
+      return resposta ?? HttpResponse.json({ inicio: '2026-10-01', alterado: true });
     }),
     http.post('/api/grupos/g-quinta/jogadores/j-toninho/inativar', async ({ request }) => {
       const resposta = await registrar('POST', request);
@@ -261,6 +273,69 @@ describe('PaginaJogador (T16): ficha', () => {
     });
   });
 
+  it('edição: "Data de início" em texto (dd/mm/aaaa), sem campo editável de entrada e sem dataEntrada no PATCH', async () => {
+    const base = fixture('jogador-toninho.json') as Record<string, JsonBodyType>;
+    api({ jogador: { ...base, situacao: { ativo: true, desde: '2026-03-01' }, inicioPontuacao: '2026-02-05' } });
+    montar(FICHA);
+    await screen.findByLabelText('Pontuação inicial');
+    expect(screen.queryByLabelText('Data de entrada')).toBeNull();
+    expect(screen.queryByLabelText('Data de início')).toBeNull();
+    expect(screen.getByText('Data de início')).toBeInTheDocument();
+    expect(screen.getByText('05/02/2026')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Alterar data de início' })).toHaveAccessibleDescription('05/02/2026');
+    await userEvent.click(screen.getByRole('button', { name: 'Salvar' }));
+    await waitFor(() => expect(chamadas[0]?.metodo).toBe('PATCH'));
+    expect(chamadas[0]?.corpo).not.toHaveProperty('dataEntrada');
+  });
+
+  it('alterar a data de início: prévia, confirmação, faixa, ficha recarregada e foco de volta ao botão', async () => {
+    const base = fixture('jogador-toninho.json') as Record<string, JsonBodyType>;
+    api({ jogadorDepoisDoInicio: { ...base, inicioPontuacao: '2026-10-01' } });
+    montar(FICHA);
+    const botao = await screen.findByRole('button', { name: 'Alterar data de início' });
+    await userEvent.click(botao);
+    const dialogo = await screen.findByRole('dialog', { name: 'Alterar data de início' });
+    const campo = within(dialogo).getByLabelText('Data de início');
+    expect(campo).toHaveValue('2026-02-05');
+    expect(campo).toHaveFocus();
+    fireEvent.change(campo, { target: { value: '2026-10-01' } });
+    await within(dialogo).findByText('Acumulado de 18 pontos passa a 11; posição de 5 para 7.');
+    await userEvent.click(within(dialogo).getByRole('button', { name: 'Confirmar nova data' }));
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+    expect(await screen.findByText('Data de início alterada')).toBeInTheDocument();
+    expect(await screen.findByText('01/10/2026')).toBeInTheDocument();
+    expect(botao).toHaveFocus();
+    expect(chamadas.map((c) => [c.metodo, c.caminho, c.corpo])).toEqual([
+      ['POST', `${API_FICHA}/inicio/previa`, { data: '2026-10-01' }],
+      ['PUT', `${API_FICHA}/inicio`, { data: '2026-10-01' }],
+    ]);
+  });
+
+  it('Esc e Cancelar fecham o diálogo da data de início sem gravar', async () => {
+    api();
+    montar(FICHA);
+    const botao = await screen.findByRole('button', { name: 'Alterar data de início' });
+    await userEvent.click(botao);
+    await screen.findByRole('dialog', { name: 'Alterar data de início' });
+    await userEvent.keyboard('{Escape}');
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+    expect(botao).toHaveFocus();
+    await userEvent.click(botao);
+    await userEvent.click(within(await screen.findByRole('dialog')).getByRole('button', { name: 'Cancelar' }));
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+    expect(screen.queryByText('Data de início alterada')).toBeNull();
+    expect(chamadas).toEqual([]);
+  });
+
+  it('inativo: o texto de reativar diz que data de início e pontos não mudam', async () => {
+    const base = fixture('jogador-toninho.json') as Record<string, JsonBodyType>;
+    api({ jogador: { ...base, situacao: { ativo: false, desde: '2026-08-31' } } });
+    montar(FICHA);
+    expect(
+      await screen.findByText('Volta a aparecer no ranking e nas partidas; a data de início e os pontos não mudam.'),
+    ).toBeInTheDocument();
+  });
+
   it('inativo: mostra Reativar e envia POST /reativar', async () => {
     const base = fixture('jogador-toninho.json') as Record<string, JsonBodyType>;
     api({ jogador: { ...base, situacao: { ativo: false, desde: '2026-08-31' } } });
@@ -299,5 +374,12 @@ describe('PaginaJogador (T16): ficha', () => {
     expect(await violacoes(container)).toEqual([]);
     await userEvent.click(screen.getByRole('button', { name: 'Inativar' }));
     expect(await violacoes(await screen.findByRole('dialog'))).toEqual([]);
+  });
+
+  it('sem violações do axe: diálogo da data de início', async () => {
+    api();
+    montar(FICHA);
+    await userEvent.click(await screen.findByRole('button', { name: 'Alterar data de início' }));
+    expect(await violacoes(await screen.findByRole('dialog', { name: 'Alterar data de início' }))).toEqual([]);
   });
 });
