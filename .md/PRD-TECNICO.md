@@ -1,9 +1,15 @@
 # PRD-TECNICO — Gestão da Pelada
 
-Versão: rascunho 4.2 (demanda pontual "Adequação ao legado") | Data: 2026-10-19 | Autor: Gestor (chapéu Business Analyst)
+Versão: rascunho 4.3 (demanda pontual "Data de início do jogador"; base: 4.2) | Data: 2026-10-20 | Autor: Gestor (chapéu Business Analyst)
 Base: `.md/PRD.md` (rascunho 4.2), `.md/CTO-REVIEW.md` (Gate 1 e adendo da rodada 2), `.md/PLANO-COMERCIAL.md` v2 e as respostas do Leandro nas rodadas 1 a 4 e na decisão P-30.
 
-Este documento detalha **o quê** o sistema faz e **com que regras**. Não decide arquitetura, stack, banco ou algoritmo: isso é do Coordenador no `SDD.md`. Toda ambiguidade resolvida está na Seção 7. Há uma interpretação provisória pendente (I-42, ligada à P-32).
+Este documento detalha **o quê** o sistema faz e **com que regras**. Não decide arquitetura, stack, banco ou algoritmo: isso é do Coordenador no `SDD.md`. Toda ambiguidade resolvida está na Seção 7. Há uma interpretação provisória pendente (I-42, ligada à P-32). As interpretações I-49 a I-52 foram confirmadas pelo usuário em 2026-10-20, com uma premissa técnica pendente para o Coordenador (I-49).
+
+**Demanda pontual 4.3 ("Data de início do jogador", pedida pelo usuário em 2026-10-20; adição pontual, sem impacto comercial; só produção, ADR-020):**
+- Objetivo (modelo mínimo da rodada 3, substitui o da rodada 2): duas regras. (1) **Reativar** só devolve o jogador ao ranking e às partidas, sem mexer em pontos nem em data. (2) **Data de início** (a data de entrada do cadastro) editável: o acumulado conta apenas as presenças com data igual ou posterior a ela. "Zerar" é pôr a data de hoje; "voltar a contar" é voltar a data. Nada é apagado.
+- Novos: RF-69 a RF-74, RN-25 a RN-29, RNF-13, F7, PR-18 a PR-21, I-49 a I-52. Alterados por referência cruzada (texto original preservado): RN-01, RN-05, RN-06, RN-08, RN-21, RN-22, RF-21, RNF-12.
+- Decisões do usuário aplicadas: P-33 "Sim", P-35 "um campo só", P-38 "correto" e a simplificação da rodada 3. A P-34 ("preservar o histórico") foi resolvida pela P-41. **Em 2026-10-20 o usuário aprovou este recorte com todas as recomendações do Gestor: P-33 a P-41 estão DECIDIDAS** (P-36, P-37, P-39, P-40 e P-41 como recomendadas). Resta só a premissa técnica para o Coordenador (I-49).
+- Invariante central: **na implantação, nenhum ponto de nenhum jogador muda** (RNF-13, RF-74); depois, só a edição da data muda pontos, e só os do próprio jogador (RN-25, RN-28).
 
 **Demanda pontual 4.2 ("Adequação ao legado", aprovada pelo usuário em 2026-10-19):**
 - Objetivo: importar para o grupo real o histórico de outro app (57 jogadores, 231 rodadas desde 03/04/2022) sem perder o acumulado de cada um. Os "ajustes manuais" do legado não são importados.
@@ -184,6 +190,19 @@ Operação do dono da plataforma (Leandro), executada por script, **sem tela**. 
 | RF-67 | Segurança, idempotência e privacidade da execução | **Se** o grupo alvo já tiver qualquer partida ou algum apelido do arquivo, **então** o script deve recusar a execução real e não gravar nada (nunca duplica; rodar duas vezes no mesmo grupo é recusado). **O sistema deve** obter a conexão de produção apenas de variável do ambiente do operador e **não deve** ler credencial de arquivo do projeto, argumento de linha de comando ou documento (G-21). **Se** o operador não confirmar explicitamente que há backup ou ponto de restauração recente, **então** deve recusar a execução real (RNF-07). **O sistema não deve** gravar em log persistente telefone, data de nascimento nem nome; o log guarda só contagens e o número de linha (#) do arquivo. A saída com apelidos só aparece no terminal do operador. **Quando** os arquivos de entrada tiverem linha inválida, nota fora de 1 a 10, valor de rodada fora de {0, 2, 3, 5, 6, —}, duas rodadas na mesma data (RN-14) ou data futura, **então** deve abortar sem gravar e indicar a linha. |
 | RF-68 | Ordem de entrega e migração de dados | **O sistema deve** ser entregue em 2 etapas, nesta ordem: (1) em produção (deploy), pontuação inicial (RF-19/RF-20, RN-22), 6 posições (RF-19, I-22) e 6 pesos (RF-23, RN-01), com migração dos dados existentes; (2) só depois, a simulação (RF-66) e a execução real (RF-65, RF-67) do script. **Quando** a etapa 1 for implantada, **o sistema deve** migrar os dados existentes sem alterar nenhum ponto já calculado: posição Defensor → Zagueiro, Meio-campo → Meia, Atacante → Atacante e Goleiro → Goleiro; pontuação inicial de todo jogador existente = 0; em toda configuração de pesos existente, expulso com chuva = o expulso atual. **Se** a etapa 1 não estiver em produção, **então** o script deve recusar a execução real. |
 
+### 1.16 Data de início do jogador (RA-18)
+
+**Modelo mínimo da rodada 3.** Vocabulário: **data de início do jogador** é a data de entrada do cadastro (RF-19), igual ao início do primeiro período de atividade (RN-06, RF-21). É o **único campo** editado e decide a partir de quando a pontuação do jogador conta (RN-25). Reativar (RF-21) **não** altera a data de início nem pontos: só devolve o jogador ao ranking e às partidas (RN-29). Não existe campo de "corte" à parte. Os requisitos marcados "(P-nn)" citam a decisão do usuário correspondente (todas tomadas em 2026-10-20). **Premissa técnica pendente para o Coordenador, a confirmar pelo Coordenador:** que a data de entrada do cadastro e o início do primeiro período são o mesmo dado (ou que o sistema consegue mantê-los alinhados, RF-71).
+
+| ID | Requisito | Critério de aceite (EARS) |
+|---|---|---|
+| RF-69 | Editar a data de início do jogador | **Quando** um admin do grupo abrir o cadastro de um jogador (RF-20), informar uma nova data de início e confirmar, **o sistema deve** salvar a data e aplicar RF-70 ou RF-71 conforme ela avance ou recue, recalculando ranking, PDF e simulador. **Se** a nova data for igual à atual, **então** o sistema não deve gravar nada nem registrar auditoria. **Se** a data for vazia, inválida, futura (hoje no fuso America/Sao_Paulo, RNF-02) ou violar RN-26, **então** deve recusar e dizer o motivo. **O sistema não deve** pedir nem criar outro campo de "corte" (P-35), e **não deve** editar períodos encerrados nem as datas de saída. |
+| RF-70 | Avançar a data: a pontuação anterior deixa de contar | **Quando** a nova data for posterior à atual, **o sistema deve**, antes de gravar, mostrar a prévia "acumulado de X pontos passa a Y, posição de N para M" e exigir confirmação. **Quando** o admin confirmar, **o sistema deve** passar a contar para o jogador apenas as partidas com data igual ou posterior à nova data e, se a nova data passar da primeira presença do jogador, **deixar de contar a pontuação inicial do cadastro** (P-33, RN-25). **O sistema não deve** apagar nem alterar partida, presença ou o valor da pontuação inicial cadastrada. A regra vale em qualquer mês exibido (RN-27, P-41). |
+| RF-71 | Recuar a data | **Quando** a nova data for anterior à atual, **o sistema deve**, antes de gravar, mostrar a prévia do acumulado e das rodadas que passam a constar, exigir confirmação e gravar. **Se** não houver nenhuma presença, lesão ou expulsão lançada do jogador com data entre a nova data (inclusive) e a data atual (exclusive), **então** o acumulado, o PTS INICIAL, o PTS FINAL e a posição de **todos** os jogadores devem ficar idênticos aos de antes (RN-28). **Se** houver tais lançamentos, **então** eles voltam a contar (o "voltar a contar a pontuação antiga", P-35). **Quando** a nova data for anterior ao início do primeiro período de atividade do jogador, **o sistema deve** alinhar esse início à nova data, para que ele conste nas partidas a partir dela (RN-06); as partidas sem presença lançada passam a ser falta com 0 ponto. |
+| RF-72 | Auditoria e permissão | **Quando** uma data de início for alterada, **o sistema deve** registrar: o admin, a data e a hora, a data anterior e a nova, e o acumulado do jogador antes e depois (RNF-12, P-39, decidida). **O sistema deve** deixar a edição apenas para admins vinculados ao grupo (RF-09, RN-17), o mesmo nível das demais edições do elenco (RF-20, RF-21) (P-40). **O sistema não deve** mostrar essa auditoria na visão pública nem no PDF (RF-33, RNF-06); o público vê só os pontos e o "–". |
+| RF-73 | Todos os consumidores usam a mesma regra | **O sistema deve** calcular o acumulado do jogador (RN-25) num único lugar e usá-lo no ranking (RF-29 a RF-32), no PDF (RF-50), na prioridade do simulador (RN-08) e na verificação de totais do script de importação (RF-66) (G-05). **Quando** o simulador calcular a prioridade para uma data de partida, **o sistema deve** considerar a data de início do jogador na véspera dessa data: partidas anteriores à data de início ou posteriores à véspera não contam. |
+| RF-74 | Verificação prévia de regressão (continua necessário) | **Antes** de a regra de RN-25 entrar em produção, **o sistema deve** oferecer ao operador uma verificação que liste, por jogador, o acumulado atual, o acumulado pela nova regra e a primeira presença lançada, e **deve** levar a data de início de quem tiver presença anterior a ela até a data da primeira presença (RNF-13), alinhando o início do primeiro período (RF-71). **Se** restar qualquer diferença de acumulado depois do ajuste, **então** a regra não deve ser ligada sem decisão do usuário. |
+
 ---
 
 ## 2. Requisitos Não-Funcionais
@@ -201,7 +220,8 @@ Operação do dono da plataforma (Leandro), executada por script, **sem tela**. 
 | RNF-09 | Escala | Fase 1: até 5 grupos, 40 jogadores ativos por grupo e cerca de 1 partida por semana. A modelagem deve aceitar N grupos sem mudar estrutura. O ranking acumulado é contínuo, sem limite de tempo (I-35) | Revisão do SDD.md |
 | RNF-10 | Acessibilidade | Contraste WCAG 2.1 AA. A situação de cada rodada (presente, lesionado, expulso, falta, "–") e a chuva nunca indicadas só por cor, na tela e no PDF: com os pesos padrão, presente e lesionado valem os dois 1 ponto, e a falta vale 0, o mesmo número de um peso configurado como 0, então a cor sozinha não basta (I-43). A forma do indicador secundário é do Coordenador/UX | Ferramenta de contraste e checagem da grade em escala de cinza |
 | RNF-11 | Prontidão para TWA | O PWA cumpre os critérios de instalabilidade do Chrome, de modo que a TWA não exige mudança de funcionalidade | Auditoria de instalabilidade |
-| RNF-12 | Rastreabilidade | Partidas, pesos, alterações da pontuação inicial de jogador (com o valor anterior), lançamentos financeiros, pagamentos e redefinições de senha guardam quem fez e quando. A importação guarda quem executou e quando | Teste funcional |
+| RNF-12 | Rastreabilidade | Partidas, pesos, alterações da pontuação inicial de jogador (com o valor anterior), lançamentos financeiros, pagamentos e redefinições de senha guardam quem fez e quando. A importação guarda quem executou e quando. A edição da data de início de um jogador guarda quem, quando, data anterior e nova e acumulado antes e depois (RF-72) | Teste funcional |
+| RNF-13 | Não regressão e reversibilidade da data de início | (1) **Na implantação** desta demanda, nenhum ponto, posição, PTS INICIAL ou PTS FINAL de nenhum jogador pode mudar. Como a regra passa a olhar a data de início S (RN-25) e hoje o acumulado ignora datas, **antes** de ligar a regra a verificação e o ajuste de RF-74 devem levar S de cada jogador à data da primeira presença dele quando esta for anterior (é o caso esperado do Vandré e de qualquer jogador do legado com período aberto em 20/10), e garantir que quem tem pontuação inicial acima de 0 continue contando-a. (2) **Recuar** uma data sem lançamentos escondidos não pode alterar nenhum acumulado do grupo (RN-28). (3) **Avançar** não pode apagar nem modificar partida, presença ou pontuação inicial: a operação é reversível recuando a data (RF-71). (4) A mudança de contrato e de banco deve ser aditiva e compatível com o PWA da versão anterior por um deploy (G-14, G-20). (5) Como o projeto só tem produção (ADR-020), a implantação segue o `deploy.yml` com o backup prévio (G-15) | Teste de regressão que compara o acumulado de todos os jogadores antes e depois da migração e antes e depois de recuar uma data; conferência do Leandro no ranking real após o deploy |
 
 ---
 
@@ -235,6 +255,11 @@ Operação do dono da plataforma (Leandro), executada por script, **sem tela**. 
 | RN-22 | Pontuação inicial: inteiro de 0 a 9999 por jogador (padrão 0), que representa os pontos acumulados antes da primeira partida registrada no app. Soma-se ao acumulado e ao PTS INICIAL em qualquer mês (RN-01, RN-05, RN-21), vale para o simulador (RN-08) e o PDF (RF-50), não é afetada por inativação nem reativação (RF-21) e não depende de nenhuma configuração de pesos (RN-04) | Permite trazer o saldo de um histórico anterior sem lançar partidas. Demanda "Adequação ao legado" |
 | RN-23 | Expulso: tem dois pesos, sem chuva e com chuva (cada um inteiro de −10 a 10). Os pontos de uma expulsão numa partida são o peso conforme a chuva daquela partida, pela configuração vigente na data (RN-01, RN-04). Padrão de grupo novo: −1 e −1. Na migração, o com chuva recebe o valor do expulso atual (RF-68). A norma do legado "o expulso perde 1 ponto em relação à presença" (2 contra 3 sem chuva; 5 contra 6 com chuva) vale como valor da configuração importada, **não** como validação do sistema | Demanda "Adequação ao legado". Substitui o peso único (I-08) |
 | RN-24 | Configuração do legado: na importação (RF-65), o grupo alvo tem a configuração de pesos do legado (presença 3/6, lesionado 3/6, expulso 2/5) como a **única vigente de 03/04/2022 em diante**. Como o grupo ainda não tem partidas (RF-67), qualquer configuração anterior do grupo sem partida não pode ser aplicada a nenhuma rodada importada: o script substitui a(s) existente(s) por essa, com vigência retroativa, e registra a operação (quem e quando, RNF-12). Alterações de pesos posteriores seguem a RN-04 | Sem isso, rodadas de 2026 seriam pontuadas pela configuração padrão do grupo e os totais não bateriam |
+| RN-25 | **Regra única (campo único, P-35).** Para um jogador com data de início S e data de referência D: acumulado = soma dos pontos das partidas com data de S até D (inclusive), **mais** a pontuação inicial (RN-22) **somente se** S for igual ou anterior à data da **primeira presença lançada do jogador em todo o histórico** (considerando também as anteriores a S), ou se ele não tiver nenhuma presença. A pontuação inicial deixa de contar quando S passa da primeira presença (P-33) e volta a contar quando S recua até ela. Nada precisa ser guardado além de S: a condição é derivada das partidas. O PTS INICIAL, o PTS FINAL (RN-21) e a prioridade do simulador (RN-08) usam a mesma conta. S só muda por RF-69 (e pelo ajuste único de RF-74); reativar, importar e cadastrar não o alteram depois de gravado | O usuário quer um só campo ("já tem o campo no cadastro"). Como nada é apagado, **avançar zera e recuar devolve** com a mesma fórmula, sem regra extra: as respostas "voltar a data volta a contar" e "recuar não muda pontos de quem não tinha nada escondido" não entram em conflito. Limitação: um jogador sem nenhuma presença não é "zerável" (só tem a pontuação inicial) |
+| RN-26 | **Janela da data de início.** A nova data deve ser uma data de calendário válida e igual ou anterior a hoje (America/Sao_Paulo). Não há outro limite: pode ser anterior à primeira partida do grupo (P-36, decidida). Períodos encerrados e datas de saída nunca são alterados por esta edição | Impede datas inexistentes sem restringir o uso legítimo (recuar o Vandré para 20/09; pôr hoje para zerar o Kim) |
+| RN-27 | **Meses anteriores à data de início (consequência da regra única, P-41).** Em qualquer mês exibido, as rodadas do jogador anteriores a S aparecem como "–" (sem número, fora de qualquer soma, sem falta; P-37, decidida), e o PTS INICIAL e o PTS FINAL desses meses são calculados pela RN-25 (0 para quem foi zerado). **A pontuação que o jogador tinha na época não é preservada na tela nem no PDF** para os meses anteriores a S; os dados de presença continuam gravados e voltam a aparecer se S recuar. A igualdade PTS FINAL de um mês = PTS INICIAL do seguinte **continua valendo** para todos os jogadores, e a conta PTS INICIAL + rodadas = PTS FINAL também. A ordem do ranking segue o acumulado atual (RN-05). Só a última data S é guardada | A resposta anterior "preservar o histórico" (P-34) é incompatível com "o ranking ignora as presenças anteriores à data" num campo só. O usuário aceitou a consequência em 2026-10-20 (P-41) |
+| RN-28 | **Efeito de avançar e de recuar (decorre da RN-25).** Recuar S para S' < S **muda os pontos só do próprio jogador, e só se houver presença, lesão ou expulsão lançada com data em [S', S) ou se S' alcançar a primeira presença dele (a pontuação inicial volta)**. Caso contrário nada muda de ponto: as partidas sem presença lançada passam de "–" para falta com 0 ponto, e só isso muda (RF-71). **Vandré:** após o ajuste de RF-74 (S = 20/09), as presenças de 20/09, 27/09 e 11/10 contam e nada muda; recuar de novo antes de 20/09 não muda ponto. **Kim:** pôr S = hoje zera (todas as presenças ficam antes de S e a pontuação inicial deixa de contar), e voltar S devolve tudo. Casos de borda: (1) falta vale 0; (2) uma presença nunca conta duas vezes; (3) a posição de outros jogadores muda apenas pelo efeito normal da nova soma do jogador editado | Mostra que as respostas 3 e 4 do usuário se encaixam na mesma regra |
+| RN-29 | **Reativar só devolve visibilidade e disponibilidade.** Quando um admin reativa um jogador inativo (RF-21), o jogador volta a aparecer nas linhas do ranking (RN-06) e a ficar disponível nas partidas e no simulador, a partir da data de reativação (novo período). Reativar **não** altera a data de início S, a pontuação inicial nem nenhum ponto. Para o retorno "zerado" (Kim), o admin edita S (RF-70) | Resposta do usuário na rodada 3; separa as duas coisas (presença nas partidas e contagem de pontos) |
 
 ---
 
@@ -374,6 +399,29 @@ flowchart TD
   G --> H[Admin cadastra outros admins, jogadores, pesos]
 ```
 
+### F7 — Admin edita a data de início de um jogador
+
+```mermaid
+flowchart TD
+  A[Admin abre o cadastro do jogador] --> B[Editar data de início]
+  B --> C{Data válida? hoje ou antes, RN-26}
+  C -- Não --> C1[Recusa e mostra o motivo] --> B
+  C -- Sim --> D{Igual à atual?}
+  D -- Sim --> D1[Nada a gravar]
+  D -- Não --> E{Avança ou recua?}
+  E -- Avança --> F[Prévia: acumulado de X para Y, posição de N para M; pontuação inicial deixa de contar]
+  E -- Recua --> G{Há lançamentos escondidos no intervalo, ou a pontuação inicial volta?}
+  G -- Não --> G1[Prévia: nenhum ponto muda; só passa a constar nas rodadas do intervalo]
+  G -- Sim --> G2[Prévia: pontos que voltam a contar, de X para Y]
+  F --> H{Admin confirma?}
+  G1 --> H
+  G2 --> H
+  H -- Não --> D1
+  H -- Sim --> I[Grava data e auditoria; alinha o primeiro período se recuou antes dele] --> J[Ranking, PDF e simulador recalculados]
+  K[Reativar jogador, RN-29] --> L[Volta ao ranking e às partidas; data de início e pontos não mudam]
+  L -. para zerar .-> B
+```
+
 ---
 
 ## 5. Dependências entre Requisitos e Integrações Externas
@@ -399,6 +447,11 @@ flowchart TD
 | RF-55 (TWA) | RF-53, RNF-11, I1 no ar | A TWA empacota o PWA instalável |
 | RF-65 a RF-67 (importação) | RF-68 etapa 1 em produção (RF-19, RF-20, RF-23), RF-21, RF-25, RF-35, RF-36, RN-22 a RN-24 | O script grava pontuação inicial, posições, 6 pesos, habilidades, períodos de atividade e partidas |
 | RF-66 (simulação) → RF-65 | — | A execução real só depois do dry-run sem erro |
+| RF-69 a RF-73 (data de início) | RF-19, RF-21 (períodos), RF-29 a RF-32, RF-50, RN-06, RN-08, RN-21, RN-22, RF-09 | Edita o período aberto; muda o acumulado usado pelo ranking, PDF e simulador; só admin do grupo |
+| RF-73 → RF-66 | RF-69 a RF-72 | O script de importação usa o mesmo cálculo de acumulado; com as datas de início ajustadas (RF-74), o resultado dele não muda |
+| RF-70 (avançar) | P-33, P-37, P-41 (decididas) | "–" nas rodadas anteriores (P-37) e o efeito sobre os meses anteriores (P-41) foram aceitos pelo usuário |
+| RF-74 (verificação prévia) | RF-69 a RF-73, dados atuais de produção | Precede a ativação da regra de RN-25 (RNF-13) |
+| RN-29 (reativar) | RF-21 | Reativar só muda visibilidade e disponibilidade |
 
 Caminho crítico até a janela de 8 semanas:
 RF-01 → RF-02 → RF-11/14 → RF-19 → RF-23 → RF-25 → RF-29/30 → (RF-35/36 → RF-38..48) → RF-49..52 + RF-56/57.
@@ -442,6 +495,10 @@ Status de cada premissa ou risco herdado do PRD.md §6. "Validada" e "Refutada" 
 | PR-15 | Defaults da importação (lesionado = presença, telefones fora, habilidades importadas, Goleiro mantido) | **Decididos pelo Gestor** | Legado sem lesionado; telefones do arquivo fictícios. Sem pesquisa possível | I-45, I-46, I-48, RF-65 |
 | PR-16 | Os totais do app batem com o legado, exceto pelos ajustes ignorados | **Validável só na simulação** | O arquivo traz Inicial, Ajustes, Pontos em rodadas e Atual por jogador (Atual = Inicial + Ajustes + rodadas). Risco adicional tratado: sem a RN-24, as rodadas de 2026 seriam pontuadas pelos pesos do grupo; sem transação única e recusa em grupo com partidas, uma falha ou repetição corromperia o grupo real | RF-66, RF-67, RN-24 |
 | PR-17 | Dados dos 17 inativos incompletos (sem ano de nascimento nem posição) | **Aceito, com preenchimento** | Tabela de inativos do cadastro | I-47 |
+| PR-18 | Com a data de início S passando a decidir o que conta (campo único), quem tem presença lançada antes de S perderia pontos na implantação (Vandré: período aberto em 20/10, presenças em 20/09, 27/09 e 11/10) | **Risco confirmado pelo contexto técnico verificado; mitigado por verificação e ajuste prévios** | Hoje o acumulado não olha datas (`acumuladoComInicial`); os períodos só decidem quem aparece nas partidas e a situação "fora". Com ~57 jogadores a verificação é viável | RF-74, RNF-13, RN-25, I-49 |
+| PR-19 | O grupo pode estranhar que o jogador zerado também apareça com "–" e 0 nos meses antigos | **Não resolvível por pesquisa** | Depende de conversa com o grupo (Leandro, antes do primeiro uso real) | RN-27, PR-21 |
+| PR-20 | Avançar uma data por engano zera um jogador no ranking público | **Mitigado** | Prévia obrigatória, confirmação, auditoria e desfazer por recuo | RF-70, RF-71, RF-72 |
+| PR-21 | Com um campo só, os meses anteriores à data de início deixam de preservar a pontuação da época para o jogador (aparece "–" e 0); só a última data é guardada | **Consequência da regra simples; aceita pelo usuário em 2026-10-20 (P-41)** | PTS FINAL de um mês = PTS INICIAL do seguinte continua valendo (RN-27) | RN-27, P-41 |
 
 ---
 
@@ -452,6 +509,17 @@ Status de cada premissa ou risco herdado do PRD.md §6. "Validada" e "Refutada" 
 | ID | Ambiguidade | Interpretação escolhida | Por quê | Pergunta |
 |---|---|---|---|---|
 | I-42 | No PDF com colunas de meses anteriores (I-17), a que se refere o PTS INICIAL | PTS INICIAL do PDF = acumulado antes da **primeira partida impressa** (não do mês exibido). PTS FINAL = o do mês exibido (RN-21). Assim a linha sempre fecha: PTS INICIAL + rodadas impressas = PTS FINAL. Se o PDF tiver só partidas do mês exibido, coincide com a tela. O cabeçalho da coluna deve deixar claro a partir de quando ela conta (forma: Coordenador/UX) | Preserva ao mesmo tempo a fórmula que o usuário definiu na P-30 e a decisão P-19. A alternativa (PTS INICIAL do mês exibido, com as colunas anteriores "fora da conta") deixaria a linha sem fechar | P-32 (PRD.md §7.1) |
+
+### 7.1.3 Interpretações da demanda "Data de início do jogador" (4.3, confirmadas pelo usuário em 2026-10-20)
+
+Todas seguem as decisões P-33 a P-41 (PRD.md §7.1). Única pendência: a premissa técnica da I-49, para o Coordenador.
+
+| ID | Ambiguidade | Interpretação vigente | Por quê | Origem |
+|---|---|---|---|---|
+| I-49 | Qual campo se edita e como se liga aos períodos (`periodos_ativos`) | A **data de início do cadastro** (entrada, RF-19) é o único campo e decide a pontuação (RN-25). Os períodos continuam decidindo só quem aparece nas partidas, e reativar não mexe na data (RN-29). Ao recuar antes do início do primeiro período, esse início é alinhado (RF-71). Premissa a confirmar pelo Coordenador: data de entrada e início do primeiro período são o mesmo dado | Resposta do usuário (P-35 e rodada 3) | P-35 (decidida). **Pendente, para o Coordenador:** confirmar a premissa técnica de que a data de entrada do cadastro e o início do primeiro período são o mesmo dado ou ficam alinhados |
+| I-50 | Pontuação inicial, meses anteriores e rodadas anteriores | A pontuação inicial conta enquanto S não passar da primeira presença do jogador (nada novo a guardar, RN-25). Os meses anteriores a S passam a mostrar "–" e 0 para o jogador, sem preservar a época (RN-27) | P-33 "Sim" e a regra simples da rodada 3; custo em PR-21 | P-33, P-37, P-41 (decididas) |
+| I-51 | Limites da data | Data válida e não futura, sem outro limite (RN-26) | Cobre os dois casos reais | P-36 (decidida) |
+| I-52 | Auditoria e permissão | Auditoria com quem, quando, datas e acumulado antes/depois (RF-72); qualquer admin do grupo | Coerência com as demais edições do elenco | P-39, P-40 (decididas) |
 
 ### 7.1.2 Decisões de default da demanda "Adequação ao legado" (4.2, tomadas pelo Gestor onde faltava decisão; o usuário aprovou a demanda)
 

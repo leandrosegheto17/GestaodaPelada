@@ -4,6 +4,31 @@ Log de governança do Gestor (chapéu CTO). Cada seção registra um gate ou um 
 
 ---
 
+## Gate 1 — Demanda pontual "Data de início do jogador" | 2026-10-20 | `/planejar --tarefa`
+
+**Escopo do gate:** só esta demanda. Sem impacto comercial (PLANO-COMERCIAL.md não muda). Projeto só com produção, uso pessoal (ADR-020).
+
+**Objetivo de negócio:** permitir que um jogador que saiu ou foi punido por faltas volte ao grupo com a pontuação zerada, sem mexer no histórico, e corrigir o início do Vandré (20/10 para 20/09) sem alterar pontos.
+
+**Achados:**
+- Alinhado ao produto de ranking contínuo (I-35): zerar é ação explícita por jogador, não temporada (PR-12 segue como decisão futura).
+- **Risco técnico/produto principal (PR-18):** o acumulado hoje ignora períodos; ligar o corte ao início do período faria todo jogador importado (período aberto em 20/10) perder o histórico. Exigido: corte separado, vazio por padrão, e teste de regressão (RNF-13).
+- Sem gap de capacidade: mudança aditiva em domínio, contrato e banco, compatível com G-05, G-14 e G-20. Sem exceção em GUARDRAILS.md.
+- Privacidade: auditoria e corte só para admins; público vê só pontos e "–" (G-10).
+- Custo/prazo: pequeno; sem recurso novo (G-13).
+
+**Ressalvas:** (1) as 8 decisões de produto P-33 a P-40 são do usuário, sem veto do Gestor; (2) deploy só pelo `deploy.yml` com backup (G-15); (3) conferência do Leandro no ranking real após o deploy.
+
+**Atualização (rodada 2, mesmo dia):** o usuário respondeu P-33 (pontuação inicial também deixa de contar), P-34 (preservar histórico dos meses anteriores), P-35 (um campo só: a data de início do cadastro) e P-38 (recuar só muda quem aparece). O modelo de "corte separado" foi abandonado; o PR-18 passa a ser tratado por verificação e ajuste prévios dos dados (RF-74, RNF-13). Surgem P-41 (reconciliar "voltar a data volta a contar" com "recuar não muda pontos") e P-42 (reativar e zerar). Sem mudança de veredito.
+
+**Atualização (rodada 3):** o usuário simplificou a regra (reativar só devolve visibilidade; o ranking conta apenas as presenças a partir da data de início). O modelo da rodada 2 foi substituído; a regra simples não sustenta "preservar o histórico dos meses anteriores" (reaberto como P-41). RF-74 (verificação e ajuste prévios das datas) continua necessário contra regressão (PR-18). Sem mudança de veredito.
+
+**Rodada final do Gate 1 (2026-10-20):** o usuário aprovou o `PRD.md` e o `PRD-TECNICO.md` deste recorte com todas as recomendações do Gestor. P-33 a P-41 estão decididas (P-36 data válida e não futura; P-37 rodadas anteriores como "–"; P-39 auditoria com acumulado antes e depois; P-40 qualquer admin do grupo; P-41 aceita que os meses anteriores à data de início deixem de mostrar a pontuação da época para o jogador). I-49 a I-52 confirmadas. Resta só a premissa técnica para o Coordenador (data de entrada do cadastro e início do primeiro período são o mesmo dado ou ficam alinhados) e o RF-74 antes de ligar a regra (PR-18).
+
+**Veredito (final): Aprovado.** Libera o `/definir` desta demanda; as ressalvas anteriores ficam cobertas por RF-74/RNF-13 (regressão), `deploy.yml` com backup (G-15) e conferência do Leandro no ranking real.
+
+---
+
 ## Gate 4 — Fechamento do deploy em produção (2º do dia) | 2026-10-20
 
 **Natureza:** registro de fechamento, sem poder de veto. O deploy já aconteceu.

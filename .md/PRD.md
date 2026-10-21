@@ -1,8 +1,15 @@
 # PRD — Gestão da Pelada
 
-Versão: rascunho 4.1 (Loop A, reabertura pontual das colunas do ranking) | Data: 2026-10-16 | Autor: Gestor (chapéu PM)
+Versão: rascunho 4.3 (demanda pontual "Data de início do jogador"; base: 4.2) | Data: 2026-10-20 | Autor: Gestor (chapéu PM)
 Insumos: briefing do Leandro (ideia original), respostas do Leandro às perguntas das rodadas 1, 2 e 3, `.md/PLANO-COMERCIAL.md` v2, `.md/CTO-REVIEW.md` (Gate 1 e adendo da rodada 2).
 Escopo deste PRD: **Fase 1, uso próprio** do grupo do Leandro. A Fase 2 (abertura paga a outros grupos) aparece só como restrição de modelagem.
+
+**Mudanças do rascunho 4.2 para o 4.3 (demanda pontual "Data de início do jogador", pedida pelo usuário em 2026-10-20; sem impacto comercial, produção apenas, ADR-020):**
+- **Problema:** um jogador que saiu, ou foi punido por acúmulo de faltas, volta ao grupo com a pontuação zerada. Hoje isso só se faz mexendo em todo o histórico, e o app não permite editar a data de início de um período existente. Um caso real oposto: o Vandré tem o período aberto com início em 20/10 (efeito da importação do legado), mas jogou em 20/09, 27/09 e 11/10; a data dele precisa **recuar** sem mudar pontos.
+- **Nova capacidade (RA-18), modelo mínimo da rodada 3 (substitui o da rodada 2):** duas regras simples. (1) **Reativar** só faz o jogador voltar a ficar visível no ranking e disponível nas partidas; não mexe em pontos nem em data. (2) **Data de início** (a data de entrada que já existe no cadastro) editável: o ranking considera os pontos **apenas a partir dessa data**, ignorando as presenças anteriores. Logo, "zerar" é pôr a data de hoje; "voltar a contar" é voltar a data. Nada é apagado.
+- **Decisões do usuário:** P-33 "Sim" (a pontuação inicial também deixa de contar quando a data avança) e P-35/P-38 (um campo só; recuar volta a contar). A resposta P-34 ("preservar o histórico dos meses anteriores") não se sustentava com um campo só e foi resolvida na P-41.
+- **Aprovação final (2026-10-20):** o usuário aprovou este recorte com todas as recomendações do Gestor. **P-33 a P-41 estão DECIDIDAS** (P-36, P-37, P-39, P-40 e P-41 conforme a recomendação). Não resta pergunta de produto desta demanda.
+- Premissas e riscos PR-18 a PR-21 (§6).
 
 **Mudanças do rascunho 4.1 para o 4.2 (demanda pontual "Adequação ao legado", aprovada pelo usuário em 2026-10-19):**
 - **Objetivo:** trazer para o grupo real o histórico de outro app (57 jogadores, 231 rodadas desde 03/04/2022) sem perder o acumulado de cada um. Os "ajustes manuais" do legado ficam fora (decisão do usuário).
@@ -96,6 +103,7 @@ O objetivo é cumprido quando M1 a M5 atingem a meta. G1 é uma métrica de guar
 | Isolamento de todo dado por grupo e campo de situação comercial do grupo, sem lógica | Prepara a Fase 2 sem retrabalho (Gate 1, ressalva 4) |
 | Registro anônimo de uso | Sem isso, M2, M3 e M4 não podem ser medidas |
 | Pontuação inicial por jogador, 6 posições, 2 pesos de expulso e importação única do histórico do app anterior (RA-03, RA-04, RA-17) | Demanda "Adequação ao legado" (2026-10-19). Ordem: mudanças em produção primeiro, importação depois |
+| Edição da data de início (entrada) do jogador no cadastro: o ranking só conta presenças a partir dela (avançar zera, recuar volta a contar), com confirmação, prévia do efeito e auditoria; e reativar passando a significar só visibilidade e disponibilidade (RA-18) | Demanda "Data de início do jogador" (2026-10-20). Permite o retorno de quem saiu ou foi punido sem mexer no histórico, e corrige o início do Vandré |
 
 ### Fora
 
@@ -113,6 +121,7 @@ O objetivo é cumprido quando M1 a M5 atingem a meta. G1 é uma métrica de guar
 | Cobrança automática ou lembrete de pagamento no financeiro | O briefing pede só "um controle simples" |
 | Mais de um idioma | Público só no Brasil (pt-BR) |
 | Importar os "ajustes manuais", os telefones e a data de nascimento completa do legado; tela de importação | Decisão do usuário (ajustes); telefones do arquivo são fictícios; o app guarda só o ano; a importação é operação do dono, não funcionalidade de produto |
+| Apagar, editar ou reescrever partidas e presenças antigas para "zerar" um jogador; zerar o ranking de todo o grupo por temporada; editar períodos já encerrados (salvo decisão P-35); reativação em lote | A demanda é justamente evitar mexer no histórico. Temporada continua sendo decisão futura (PR-12) |
 
 ### Ordem de entrega sugerida (incrementos)
 
@@ -147,6 +156,7 @@ Prioridade MoSCoW. O detalhamento está no `PRD-TECNICO.md`.
 | RA-15 | Aviso simples de privacidade no app | Should | Baixo custo. Prepara a Fase 2 |
 | RA-16 | Área do dono da plataforma: grupos, primeiro admin, redefinição de senha, pedidos de "esqueci a senha" e situação comercial | Must | Sem ela, não há como criar o grupo nem o primeiro admin (P-07) |
 | RA-17 | Importação única do histórico do app anterior para o grupo do Leandro (jogadores, habilidades dos ativos, pontuação inicial, 231 rodadas e a config de pesos do legado), por script de operação com simulação prévia, comparação de totais, backup prévio e transação única. Sem tela. Vem depois das mudanças de RA-03, RA-04 e RA-06 em produção | Must (desta demanda) | Meta: o total de cada jogador no app bate com o do legado, exceto pelos ajustes manuais ignorados por decisão do usuário. Medido na simulação (RF-66 do PRD-TECNICO) |
+| RA-18 | Edição da data de início (data de entrada do cadastro) de um jogador, só por admin do grupo; é o único campo. Regra única: o acumulado conta as presenças com data **igual ou posterior** à data de início (a pontuação inicial conta enquanto a data de início não passar da primeira presença do jogador). **Avançar** a data: o que ficou antes deixa de contar no ranking, no PDF e no simulador (o jogador "volta zerado" se a data for hoje). **Recuar** a data: o que ficou escondido volta a contar. Reativar só devolve o jogador ao ranking e às partidas. Com prévia do efeito, confirmação e registro de auditoria. Nenhum dado de partida é apagado ou editado | Must (desta demanda) | Meta mensurável: (1) o Kim volta ao grupo com acumulado 0 na data escolhida e a ordem do ranking reflete isso; (2) o Vandré tem o início recuado para 20/09 e o acumulado dele, e o de todos os outros jogadores, fica idêntico ao de antes; (3) na implantação nenhum ponto de ninguém muda. Medido por teste automatizado de regressão e conferência do Leandro no ranking real |
 
 ## 6. Premissas e Riscos de Produto
 
@@ -169,10 +179,38 @@ Prioridade MoSCoW. O detalhamento está no `PRD-TECNICO.md`.
 | PR-15 | Defaults da importação: lesionado vale o mesmo que presença (3 sem chuva, 6 com chuva), porque o legado não tem lesionado; telefones não são importados (os do arquivo são fictícios); as habilidades dos ativos são importadas; "Goleiro" fica como sétima posição | Premissa (decisão do Gestor, na demanda) | Conferir a config de pesos e as posições após a importação | Leandro | Antes de rodar o script |
 | PR-16 | Os totais calculados diferem do "Atual" do legado só pelos ajustes manuais ignorados (4 jogadores, diferenças entre 12 e 240 pontos) | Risco de aceitação | A simulação lista as diferenças e exige que cada uma seja igual à coluna Ajustes do arquivo | Leandro | Na simulação, antes da execução real |
 | PR-17 | O arquivo de cadastro dos 17 inativos não traz ano de nascimento nem posição | Risco de dados | Aceitar valores de preenchimento (PRD-TECNICO I-47) ou informar os dados reais antes | Leandro | Antes de rodar o script |
+| PR-18 | **Risco de regressão maior da demanda 4.3:** com um campo só (a data de início do cadastro) decidindo o que conta, qualquer jogador que tenha presença lançada **antes** da data dele deixaria de somá-la na implantação. O candidato conhecido é o Vandré (período aberto em 20/10 pela importação, com presenças em 20/09, 27/09 e 11/10), e pode haver outros. Mitigação: verificação e ajuste de datas **antes** da regra entrar (PRD-TECNICO RF-74, RNF-13), e teste de regressão em que o acumulado de todo jogador sai idêntico. Se a verificação achar divergência, o usuário decide caso a caso (corrigir a data do jogador) | Risco de produto/dados | Teste de regressão: acumulado de todos os jogadores idêntico antes e depois da implantação e depois de recuar uma data; conferência do Leandro no ranking real | Gestor (requisito), Validador (teste) | Antes do deploy desta demanda |
+| PR-19 | O usuário prevê usar a edição para "anular" faltas excessivas e saídas; o grupo pode estranhar que, ao zerar um jogador, os meses antigos dele também passem a mostrar "–" e 0 (consequência da P-41) | Risco social (análogo a PR-01 e PR-12) | Combinar a regra com o grupo antes do primeiro uso real (Kim) | Leandro | Antes de zerar o primeiro jogador |
+| PR-20 | A edição por engano de uma data (avançar sem querer) zera pontos de um jogador no ranking público. Mitigação: prévia "acumulado de X para Y", confirmação explícita e possibilidade de desfazer recuando a data | Risco operacional | Teste de usabilidade com o Leandro na primeira edição real | Validador, com o Leandro | No fim do desenvolvimento |
+| PR-21 | **Consequência de usar um campo só (P-41):** a data de início vale para o ranking inteiro, inclusive os meses passados. Ao avançar a data de um jogador, os meses anteriores a ela passam a mostrar, para ele, "–" nas rodadas e 0 no PTS INICIAL e no PTS FINAL; a pontuação que ele tinha naquela época não é preservada nem na tela nem no PDF (os dados de presença continuam gravados). Em compensação, PTS FINAL de um mês = PTS INICIAL do seguinte continua valendo para todos. O app guarda só a última data | Risco de produto (decisão do usuário) | Confirmar a P-41; o menor desvio, se não aceitar, é guardar o histórico de datas (custo alto, não recomendado) | Leandro | Antes do `/definir` desta demanda |
 
 ## 7. Perguntas em Aberto
 
 ### 7.1 Ainda em aberto
+
+Demanda "Data de início do jogador" (4.3): **todas as perguntas abaixo estão decididas pelo usuário em 2026-10-20.** A única pergunta ainda em aberto desta seção é a P-32 (rascunho 4.1), no fim.
+
+**Respondidas pelo usuário em 2026-10-20 (rodadas 2 e 3):**
+
+| # | Pergunta | Resposta do usuário | Onde foi aplicada |
+|---|---|---|---|
+| P-33 | A pontuação inicial do cadastro também deixa de contar quando a data de início avança? | **"Sim."** | RN-25 |
+| P-35 | Que campo/período se edita? | **"Já tem o campo no cadastro, bastaria editar. Se um dia quiser voltar a contar a pontuação antiga, basta voltar a data."** Um único campo: a data de início (entrada) do cadastro; sem campo de "corte" | RF-69, RN-25 |
+| P-38 | Recuar só muda quem aparece nas partidas, sem mudar pontos? | **"Correto."** Como nada é apagado, a regra única (RN-25) cumpre as duas respostas: recuar devolve só o que o avanço havia escondido, e não muda nada quando não havia nada escondido | RN-25, RN-28 |
+| (rodada 3) | Reativar e data de início | **"Reativar apenas faz o jogador voltar a ficar visível no ranking e disponível para as partidas. Data de início: o ranking passa a considerar os pontos apenas depois da data de início, ignorando as presenças anteriores. Com esses dois ajustes o ZERAR já funciona."** Substitui o modelo da rodada 2 | RF-69 a RF-74, RN-25 a RN-29 |
+| P-34 | Os meses anteriores ao novo início preservam a pontuação da época? | Respondida "Sim" na rodada 2, mas a regra simples da rodada 3 a contradizia. **DECIDIDA em 2026-10-20 pela P-41:** o usuário aceita que os meses anteriores à data de início deixem de mostrar a pontuação da época para aquele jogador | RN-27, PR-21 |
+
+**DECIDIDAS em 2026-10-20** (o usuário aprovou todas as recomendações do Gestor):
+
+| # | Pergunta | Opções | Decisão (= recomendação do Gestor) |
+|---|---|---|---|
+| P-36 | Limites da data: o que é válido? | (a) Data válida e não futura, sem outro limite; (b) igual a (a), mais "não anterior à primeira partida do grupo"; (c) igual a (a), mais "não posterior ao início do período aberto" | **(a), DECIDIDA.** Hoje é o limite natural para zerar; datas anteriores à primeira partida não têm efeito em pontos |
+| P-37 | Efeito sobre as rodadas anteriores do próprio jogador, quando a data avança | (a) Aparecem como "–" (sem número, fora de qualquer soma, sem falta), como hoje antes da entrada; (b) Continuam mostrando os pontos, mas "fora do acumulado" (esmaecidos); (c) Aparecem como falta (0) | **(a), DECIDIDA.** É o tratamento que o ranking já dá a quem ainda não estava no grupo (RN-06) e a conta fecha na tela. (b) obriga a tela a mostrar números que não somam; (c) puniria o jogador com faltas que ele não tinha como cometer |
+| P-41 | **Pede confirmação (consequência da regra simples).** Com um campo só, avançar a data de um jogador faz **todos** os meses anteriores a ela mostrarem, para ele, "–" nas rodadas e 0 no PTS INICIAL e no PTS FINAL; a pontuação que ele tinha na época não é preservada na tela nem no PDF (os dados continuam gravados, e voltar a data os traz de volta). A conta PTS FINAL do mês = PTS INICIAL do seguinte continua valendo. Você aceita? | (a) Sim, aceito; (b) Não: guardar o histórico de datas de início para mostrar cada mês com a data vigente na época (mais telas, mais regras, e "época" fica ambígua); (c) Não: manter só o acumulado de hoje com a regra e deixar os meses antigos sem a regra (a conta PTS INICIAL + rodadas = PTS FINAL deixa de fechar no mês da data) | **(a), DECIDIDA: aceito.** É a consequência direta do que você pediu ("ignorar as presenças anteriores à data") e a mais simples e segura. O menor desvio, se não aceitar, é (c) |
+| P-39 | Auditoria da alteração | (a) Mínima: quem, quando, data anterior e nova; (b) (a) mais o acumulado antes e depois; (c) (b) mais um motivo em texto livre opcional | **(b), DECIDIDA.** Mostra de relance o dano de um erro, sem pedir mais um campo ao admin. Visível só aos admins do grupo |
+| P-40 | Permissão | (a) Qualquer admin do grupo, como as demais edições do elenco; (b) Só admin com a permissão "acessa financeiro"; (c) Só o dono da plataforma | **(a), DECIDIDA.** Consistente com RF-20 e RF-21. O dono só vê metadados (I-30) e não opera o elenco. A confirmação com prévia e a auditoria cobrem o risco |
+
+Pergunta anterior (rascunho 4.1):
 
 | # | Pergunta | Por que importa | Interpretação provisória (PRD-TECNICO) |
 |---|---|---|---|
