@@ -4,6 +4,44 @@ Log de governança do Gestor (chapéu CTO). Cada seção registra um gate ou um 
 
 ---
 
+## Gate 4 — Fechamento do deploy em produção (2º do dia) | 2026-10-20
+
+**Natureza:** registro de fechamento, sem poder de veto. O deploy já aconteceu.
+
+**Deploy:** run `deploy.yml` 39529189540 (workflow_dispatch, environment `producao`, sha `6501168a` da main). **Sucesso** em todas as etapas. Rollback não acionado. Sem migração de banco neste deploy.
+
+**Verificação passiva no host** `https://pelada.prod-ljs.workers.dev`:
+- `/api/saude` retornou 200, com `Cache-Control: no-store` e `X-Content-Type-Options: nosniff`.
+- `GET /api/dono/grupos` sem cookie retornou 401.
+- Rota inexistente retornou 404, com nosniff.
+- `/` com CSP, referrer-policy, permissions-policy e nosniff.
+- Login com e-mail inexistente: 401 nas 5 primeiras tentativas e 429 da 6ª em diante (bloqueio por e-mail funcionando). O limitador da Cloudflare em `/api/sessao/entrar` e `/api/publico/*` segue **não verificado de forma isolada** (o 429 observado é o bloqueio por e-mail).
+
+**Conteúdo publicado desde o deploy anterior:**
+- Exportar PDF com diálogo "PDF pronto." (Compartilhar ou Baixar) em aparelho que compartilha, resolvendo o PC sem opção de salvar (ADR-022 supersede o §3 do ADR-008).
+- `X-Content-Type-Options: nosniff` em todas as respostas de `/api/*` (RTP-0170).
+- Ações do GitHub fixadas por SHA e pnpm endurecido (RTP-0171).
+- `.gitignore` dos arquivos de entrada do legado (RTP-0172).
+- Checagem de CI `checar-acoes-fixadas` (RTP-0178 e RTP-0179).
+- Documentação (RTP-0169, 0174, 0175 e 0177).
+
+**Decisões do usuário em 2026-10-20:** o projeto só tem produção (uso pessoal), sem staging, e o fluxo (`deploy.md`, `EXECUTION-FLOW.md`, `validador.md` etc.) foi ajustado. A TWA/Play Store (TP-0140 a TP-0144) fica fora, seguindo só PWA; as despriorizadas não bloqueiam o deploy. BK-0012 resolvido pela alternativa A (RTP-0180 contrai o CHECK de `posicao`) e BK-0013 pela A (ADR-022).
+
+**Auditoria de release 2026-10-20 (2ª):** **APROVADA COM DÉBITO** (0 Crítico/Alto). DAST local 30/30 na API e 3/3 no front; ZAP 0 alto e 0 médio. Risco aceito pelo usuário e registrado no `SECURITY-REVIEW.md`: o limitador da Cloudflare não executado isoladamente, com conferência passiva feita após o deploy.
+
+**Revisão de arquitetura `--pre-deploy` (4ª do dia):** 0 achados Altos.
+
+**Pendências pós-deploy:**
+- RTP-0176 (`minimumReleaseAge` 10080 a partir de 22/10, prazo 29/10).
+- RTP-0180 (migração que contrai o CHECK de `posicao`) e RTP-0181 (corrigir 4 linhas de pesos no `QUEBRAS.md`, depende da 0180).
+- `braces` dev-only sem correção publicada.
+- e2e intermitente `i4.spec.ts:170` (falhou uma vez no CI por login rejeitado e passou no reroda): observar.
+- semgrep ainda acusa `pnpm-missing-minimum-release-age` (é a RTP-0176).
+
+**Registro:** Deploy fechado e registrado. Nenhum bloqueio novo.
+
+---
+
 ## Gate 4 — Fechamento do deploy em produção | 2026-10-20
 
 **Natureza:** registro de fechamento, sem poder de veto. O deploy já aconteceu.
