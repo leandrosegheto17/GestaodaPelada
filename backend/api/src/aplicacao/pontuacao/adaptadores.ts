@@ -1,9 +1,10 @@
-import type {
-  ConfigPesos,
-  JogadorDoRanking,
-  PartidaDoRanking,
-  PresencaDoRanking,
-  SituacaoPresenca,
+import {
+  inicioEfetivo,
+  type ConfigPesos,
+  type JogadorDoRanking,
+  type PartidaDoRanking,
+  type PresencaDoRanking,
+  type SituacaoPresenca,
 } from '@pelada/dominio';
 import type { Jogador } from '../../infraestrutura/db/repositorios/jogadores.js';
 import type { ConfigPesosHistorico } from '../../infraestrutura/db/repositorios/pesos.js';
@@ -13,9 +14,6 @@ import type { ConfigPesosHistorico } from '../../infraestrutura/db/repositorios/
  * pelo menor ano primeiro).
  */
 const ANO_SEM_INFORMACAO = 9999;
-
-/** Data de início da pontuação em vigor: a gravada ou, sem ela, o início do primeiro período (já em ordem de início). */
-export const inicioEfetivo = (linha: Jogador): string | undefined => linha.inicioPontuacao ?? linha.periodos[0]?.inicio;
 
 /** Monta o jogador do domínio campo a campo: telefone e demais colunas nunca chegam ao domínio. */
 export function paraJogadorDominio(linha: Jogador): JogadorDoRanking {

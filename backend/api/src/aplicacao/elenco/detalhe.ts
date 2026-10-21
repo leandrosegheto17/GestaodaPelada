@@ -1,8 +1,8 @@
 import { jogadorDetalhe, type JogadorDetalhe } from '@pelada/contrato';
+import { inicioEfetivo } from '@pelada/dominio';
 import type { ExecutorDb } from '../../infraestrutura/db/index.js';
 import * as habilidades from '../../infraestrutura/db/repositorios/habilidades.js';
 import * as jogadores from '../../infraestrutura/db/repositorios/jogadores.js';
-import { inicioEfetivo } from '../pontuacao/adaptadores.js';
 import { POSICAO_PADRAO } from './listar.js';
 import { nivelDaResposta } from './nivel.js';
 import { situacaoAtual } from './situacao.js';

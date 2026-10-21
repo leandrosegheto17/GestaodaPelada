@@ -3,6 +3,17 @@ import type { ResolvedorDePesos } from './pesos.js';
 import { acumuladoAte, acumuladoComInicial } from './pontos.js';
 import type { ConfigPesos, PresencaDoJogador } from './tipos.js';
 
+/**
+ * Data de início da pontuação em vigor (RN-25): a gravada ou, sem ela, o início do primeiro período
+ * (os períodos chegam em ordem de início).
+ */
+export function inicioEfetivo(jogador: {
+  inicioPontuacao?: Data | null | undefined;
+  periodos: readonly { inicio: Data }[];
+}): Data | undefined {
+  return jogador.inicioPontuacao ?? jogador.periodos[0]?.inicio;
+}
+
 export interface EntradaAcumulado {
   /** Data de início da pontuação (S). Omitida: vale tudo o que o jogador tem, desde o cadastro. */
   inicio?: Data | undefined;

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   PESOS_PADRAO,
   acumuladoPorInicio,
+  inicioEfetivo,
   rodadasDoJogador,
   criarResolvedorDePesos,
   type ConfigPesos,
@@ -120,5 +121,22 @@ describe('rodadasDoJogador com data de início', () => {
 
   it('sem data de início mantém o comportamento pelos períodos', () => {
     expect(rodadasDoJogador(periodos, partidas, situacoes, resolvedor)[0]).toEqual({ situacao: 'presente', pontos: 1 });
+  });
+});
+
+describe('inicioEfetivo', () => {
+  const periodos = [{ inicio: '2026-03-01' }, { inicio: '2026-08-01' }];
+
+  it('a data gravada vence', () => {
+    expect(inicioEfetivo({ inicioPontuacao: '2026-05-10', periodos })).toBe('2026-05-10');
+  });
+
+  it('sem data gravada, vale o início do primeiro período', () => {
+    expect(inicioEfetivo({ inicioPontuacao: null, periodos })).toBe('2026-03-01');
+    expect(inicioEfetivo({ periodos })).toBe('2026-03-01');
+  });
+
+  it('sem data gravada e sem período, não há início', () => {
+    expect(inicioEfetivo({ inicioPontuacao: undefined, periodos: [] })).toBeUndefined();
   });
 });

@@ -1,4 +1,4 @@
-import { acumuladoPorInicio, agruparPresencasPorJogador, criarResolvedorDePesos } from '@pelada/dominio';
+import { acumuladoPorInicio, agruparPresencasPorJogador, criarResolvedorDePesos, inicioEfetivo } from '@pelada/dominio';
 import { emLeitura, type Db } from '../../api/src/infraestrutura/db/index.ts';
 import * as grupos from '../../api/src/infraestrutura/db/repositorios/grupos.ts';
 import * as jogadores from '../../api/src/infraestrutura/db/repositorios/jogadores.ts';
@@ -40,8 +40,7 @@ export async function verificarInicio({ db, hoje, escrever }: OpcoesVerificacao)
       );
       for (const jogador of elenco) {
         const doJogador = presencas.get(jogador.id) ?? [];
-        // Sem data gravada, a pontuação começa no início do primeiro período.
-        const inicio = jogador.inicioPontuacao ?? jogador.periodos[0]?.inicio;
+        const inicio = inicioEfetivo(jogador);
         const base = { pontuacaoInicial: jogador.pontuacaoInicial, presencas: doJogador, configs, referencia: hoje };
         const atual = acumuladoPorInicio(base);
         const novo = acumuladoPorInicio({ ...base, inicio });
