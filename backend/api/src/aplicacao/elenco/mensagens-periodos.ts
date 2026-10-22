@@ -19,6 +19,9 @@ function presencaDe(recusa: Recusa): string {
   return formatarDataBr(recusa.presenca);
 }
 
+/** Texto da regra (e): períodos que se sobrepõem. */
+export const MSG_PERIODOS_SOBREPOSTOS = 'Os períodos não podem se sobrepor.';
+
 const TEXTOS: Record<RegraPeriodo, (recusa: Recusa) => string> = {
   a: () => MSG_INICIO_NO_FUTURO,
   b: (x) => `A saída não pode ser antes do início deste período (${limiteDe(x)}).`,
@@ -27,7 +30,7 @@ const TEXTOS: Record<RegraPeriodo, (recusa: Recusa) => string> = {
     x.campo === 'saida'
       ? `A saída não pode ser depois do próximo retorno (${limiteDe(x)}).`
       : `O retorno não pode ser depois da saída deste período (${limiteDe(x)}).`,
-  e: () => 'Os períodos não podem se sobrepor.',
+  e: () => MSG_PERIODOS_SOBREPOSTOS,
   f: (x) =>
     x.campo === 'saida'
       ? `Há presença do jogador em ${presencaDe(x)}. A saída precisa ser em ${limiteDe(x)} ou depois. Para usar uma data anterior, remova a presença em Editar partida.`

@@ -6,14 +6,13 @@ import * as auditoria from '../../infraestrutura/db/repositorios/auditoria.js';
 import * as jogadores from '../../infraestrutura/db/repositorios/jogadores.js';
 import { avaliarPedidoDePeriodos } from './avaliacao-periodos.js';
 import { carregarDetalhe } from './detalhe.js';
+import { MSG_PERIODOS_SOBREPOSTOS } from './mensagens-periodos.js';
 
 export type ResultadoReativar =
   | { tipo: 'ok'; jogador: JogadorDetalhe }
   | { tipo: 'nao_encontrado' }
   | { tipo: 'ja_ativo' }
   | { tipo: 'invalida'; campo: CampoPeriodo; mensagem: string };
-
-const MSG_SOBREPOSTO = 'Os períodos não podem se sobrepor.';
 
 /**
  * Abre um novo período em `dataRetorno` (padrão hoje); o acumulado anterior continua valendo. Tudo numa
@@ -42,7 +41,7 @@ export async function reativarJogador(
 
       try {
         if ((await jogadores.reativar(tx, grupoId, jogadorId, dataRetorno)) === null) {
-          return { tipo: 'invalida', campo: 'dataRetorno', mensagem: MSG_SOBREPOSTO };
+          return { tipo: 'invalida', campo: 'dataRetorno', mensagem: MSG_PERIODOS_SOBREPOSTOS };
         }
       } catch (erro) {
         if (erro instanceof jogadores.JaAtivo) return { tipo: 'ja_ativo' };
