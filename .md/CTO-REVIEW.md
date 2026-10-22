@@ -4,6 +4,30 @@ Log de governança do Gestor (chapéu CTO). Cada seção registra um gate ou um 
 
 ---
 
+## Gate 4 — Fechamento do deploy em produção (2º do dia) | 2026-10-22
+
+**Natureza:** registro de fechamento, sem poder de veto. O deploy já aconteceu.
+
+**Deploy:** run `deploy` 39874767901 (workflow_dispatch, main @ `41554098`). **Sucesso** em todas as etapas. O passo de rollback foi pulado (não necessário).
+
+**Verificação passiva no host** `https://pelada.prod-ljs.workers.dev`:
+- `curl -I` na raiz: 200, com CSP, permissions-policy, referrer-policy same-origin e x-content-type-options nosniff.
+- `/api/sessao/eu` sem cookie: 401.
+
+**Conteúdo publicado:** regra nova de pontuação, decidida pelo usuário em 2026-10-22: quem saiu e voltou conta só a partir do retorno (período ativo na data; o 1º período segue a data de início; quem nunca saiu não muda). RTP-0207 (acumulado, ranking, PDF, simulador) e RTP-0211 (prévia). Caso real: o jogador Kim passa de 69 para 6 pontos. Também RTP-0206, RTP-0208, RTP-0209 e RTP-0210 (formatação do snapshot do contrato, format:check, LF) e ajustes de teste.
+
+**Antes do deploy:** CI da main verde (`7411f62a`). Dois CI vermelhos no caminho foram corrigidos (teste `inicio-pontuacao` com a regra antiga; lint). Um commit de consolidação removeu por engano `checar-escrita-e-dono.mjs`, de outra sessão; foi restaurado. `/revisar --pre-deploy` (4ª do dia) sem achado Alto: RTP-0212 e RTP-0213 (documentação com a regra antiga, Média), RTP-0214 (duplicação, Baixa). BK-0020 aberto: redação do texto de reativar para quem saiu e voltou.
+
+**Auditoria de segurança de release 2026-10-22 (2ª):** **APROVADA COM DÉBITO** (RTP-0176; braces dev-only). Risco aceito pelo usuário em 2026-10-22: limite de taxa da Cloudflare em `/api/sessao/entrar` e `/api/publico/*` não testável sem staging (ADR-020); suíte do `pelada_teste` coberta pelo CI.
+
+**Pendente:** (1) conferir o limite de taxa da Cloudflare no painel; (2) conferir o Kim em produção (deve mostrar 6); (3) decidir o BK-0020.
+
+**Fora da publicação:** TP-0140 a TP-0144 (TWA/Play, despriorizadas).
+
+**Registro:** Deploy fechado e registrado. Nenhum bloqueio novo.
+
+---
+
 ## Gate 4 — Fechamento do deploy em produção | 2026-10-22
 
 **Natureza:** registro de fechamento, sem poder de veto. O deploy já aconteceu.
