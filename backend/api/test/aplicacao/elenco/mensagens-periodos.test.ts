@@ -8,12 +8,8 @@ import {
 
 type Recusa = Extract<ResultadoAvaliacao, { ok: false }>;
 
-const r = (
-  regra: RegraPeriodo,
-  campo: CampoPeriodo,
-  limite: string | null,
-  presenca?: string,
-): Recusa => (presenca === undefined ? { ok: false, regra, campo, limite } : { ok: false, regra, campo, limite, presenca });
+const r = (regra: RegraPeriodo, campo: CampoPeriodo, limite: string | null, presenca?: string): Recusa =>
+  presenca === undefined ? { ok: false, regra, campo, limite } : { ok: false, regra, campo, limite, presenca };
 
 const TABELA: Array<[string, Recusa, { campo: string; mensagem: string }]> = [
   ['a saida', r('a', 'saida', '2026-10-21'), { campo: 'saida', mensagem: 'A data não pode ser no futuro.' }],
@@ -96,7 +92,15 @@ describe('mensagemDaRecusa', () => {
 
   it('devolve texto não vazio para toda regra do domínio', () => {
     const regras: Record<RegraPeriodo, true> = {
-      a: true, b: true, c: true, d: true, e: true, f: true, g: true, h: true, 'nao-corrigivel': true,
+      a: true,
+      b: true,
+      c: true,
+      d: true,
+      e: true,
+      f: true,
+      g: true,
+      h: true,
+      'nao-corrigivel': true,
     };
     for (const regra of Object.keys(regras) as RegraPeriodo[]) {
       for (const campo of ['saida', 'retorno', 'dataRetorno'] as CampoPeriodo[]) {
