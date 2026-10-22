@@ -1402,3 +1402,6 @@ APROVADA — commit toca só .gitattributes; 379 binários i/-text intactos, 0 .
 
 ## RTP-0207 — DevSecOps — 2026-10-22
 APROVADA em segurança. G-25 mantida (único `acumuladoPorInicio`, grep sem cálculo paralelo), sem mudança de autorização, isolamento ou dado exposto, `periodos` só com datas, sem dependência nova. Domínio pontuacao+ranking 86/86 executado. 0 críticos, 0 não críticos.
+
+## RTP-0211 — DevSecOps — 2026-10-22
+APROVADA, 0 críticos/0 não críticos; G-25 mantido (acumulado só por acumuladoPorInicio), sem mudança de autorização/exposição/dependências; vitest ranking+pontuacao 87/87.

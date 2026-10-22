@@ -1322,3 +1322,6 @@ APROVADA — .gitattributes correto; renormalize em clone descartável sem diff 
 
 ## RTP-0207 — QA — 2026-10-22
 APROVADA — domínio 477/477 e API 220/220, tsc limpos, caso Kim (6 / PTS INICIAL 0) coberto; 0 críticos, 1 não crítico (prévia usa início bruto na grade).
+
+## RTP-0211 — QA — 2026-10-22
+APROVADA, 0 críticos/0 não críticos; domínio 478/478 e API 190/190, tsc limpo; prévia corta por período do mês da rodada, igual ao ranking.
