@@ -1,6 +1,7 @@
 import { PESOS_PADRAO } from '@pelada/dominio';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import * as avaliacao from '../../src/aplicacao/elenco/avaliacao-periodos.js';
+import { editarInicio } from '../../src/aplicacao/elenco/inicio-editar.js';
 import { inativarJogador } from '../../src/aplicacao/elenco/inativar.js';
 import { corrigirPeriodoDoJogador } from '../../src/aplicacao/elenco/periodos-corrigir.js';
 import { reativarJogador } from '../../src/aplicacao/elenco/reativar.js';
@@ -150,5 +151,52 @@ describe('POST reativar retroativo', () => {
     ).rejects.toThrow('auditoria fora');
 
     expect((await jogadores.buscar(db, g, id))?.periodos).toHaveLength(1);
+  });
+});
+
+describe('PUT inicio (editarInicio)', () => {
+  async function cenarioAtivo(db: Db) {
+    const cen = await montarCenario(db, fabrica);
+    const g = cen.grupoA.id;
+    await pesos.criarPadrao(db, g, {
+      pesos: PESOS_PADRAO,
+      vigenteDesde: d(-400),
+      registradoPor: cen.adminA.id,
+      agora: AGORA_TESTE,
+    });
+    const id = await criarJogador(db, g, cen.adminA.id, { dataEntrada: d(-60) });
+    const antes = (await jogadores.buscar(db, g, id))?.inicioPontuacao;
+    return { g, id, autor: cen.adminA.id, antes };
+  }
+
+  it('trava o jogador, grava e audita na mesma transação, nessa ordem', async () => {
+    const db = await abrir();
+    const { g, id, autor } = await cenarioAtivo(db);
+    const travar = vi.spyOn(jogadores, 'travar');
+    const gravar = vi.spyOn(jogadores, 'alterarInicio');
+    const registrar = vi.spyOn(auditoria, 'registrar');
+
+    const r = await editarInicio(db, g, id, d(-50), { hoje: HOJE_TESTE, autor, agora: AGORA_TESTE });
+
+    expect(r).toMatchObject({ tipo: 'ok', alterado: true });
+    const [t, w, a] = ordem(travar, gravar, registrar);
+    expect(t).toBeLessThan(w!);
+    expect(w).toBeLessThan(a!);
+    const tx = travar.mock.calls[0]![0];
+    expect(tx).not.toBe(db);
+    expect(gravar.mock.calls[0]![0]).toBe(tx);
+    expect(registrar.mock.calls[0]![0]).toBe(tx);
+  });
+
+  it('sem a auditoria a alteração não vale: falha ao auditar desfaz a escrita', async () => {
+    const db = await abrir();
+    const { g, id, autor, antes } = await cenarioAtivo(db);
+    vi.spyOn(auditoria, 'registrar').mockRejectedValueOnce(new Error('auditoria fora'));
+
+    await expect(editarInicio(db, g, id, d(-50), { hoje: HOJE_TESTE, autor, agora: AGORA_TESTE })).rejects.toThrow(
+      'auditoria fora',
+    );
+
+    expect((await jogadores.buscar(db, g, id))?.inicioPontuacao).toBe(antes);
   });
 });
