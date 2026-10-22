@@ -1,7 +1,7 @@
 # THREAT-MODEL
 
-Modelo de ameaças enxuto (STRIDE) do Pelada. Atualizado na auditoria de release de 2026-10-22. Evidência executada em
-`.md/.seguranca/2026-10-22/`, `.md/.seguranca/sondas.json` e `.md/.seguranca/sondas-autenticadas*.py`. Requisitos de origem: `SDD.md` §7, `GUARDRAILS.md`.
+Modelo de ameaças enxuto (STRIDE) do Pelada. Atualizado na auditoria de release de 2026-10-22 (2ª). Evidência executada em
+`.md/.seguranca/2026-10-22/`, `.md/.seguranca/2026-10-22-2a/`, `.md/.seguranca/sondas.json` e `.md/.seguranca/sondas-autenticadas*.py`. Requisitos de origem: `SDD.md` §7, `GUARDRAILS.md`.
 
 ## Ativos
 
@@ -40,6 +40,7 @@ Operador (máquina local, `DATABASE_URL` própria) -> Neon por script. GitHub Ac
 | I: enumeração de slug | Risco aceito pelo usuário (T-13); 404 igual para inexistente e arquivado; limitador `LIMITE_PUBLICO` (60/min) | 404 uniforme; limitador só publicado |
 | T/E: escrita anônima | Só `POST eventos`, união discriminada estrita (2 tipos) | Tipo inválido e campo extra -> 422 |
 | D: varredura | Limitador por IP | Ver acima |
+| I: totais por período do jogador (regra "quem saiu e voltou recomeça a contagem no retorno", RTP-0207/0211) | Cálculo puro no domínio (`inicioDoPeriodo`, `periodoDoMes`); a projeção pública segue estrita e não expõe períodos | 2ª auditoria de 2026-10-22: 107 sondas autenticadas de reativar/corrigir retorno com ranking e PDF de 6 variações de `mes` a cada mudança: sem 5xx, sem e-mail/telefone/períodos, sem apelido do outro grupo; 429 uniforme com `no-store` e `nosniff` observado localmente no `LIMITE_PUBLICO` |
 
 ### 3. Rotas de admin e do dono (`/api/grupos/*`, `/api/dono/*`)
 

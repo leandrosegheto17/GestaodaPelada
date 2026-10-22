@@ -1,5 +1,55 @@
 # SECURITY-REVIEW
 
+## Auditoria de release 2026-10-22 (2ª) — DevSecOps — APROVADA COM DÉBITO
+
+Escopo: o que mudou desde a auditoria anterior de hoje (`1de6c38e..HEAD`, 639c5932): RTP-0207 (acumulado, ranking, PDF e simulador contam só a partir do retorno; `backend/dominio/src/{pontuacao,ranking,pdf,atividade,simulador}`), RTP-0211 (prévia), RTP-0206/0208/0209/0210 (snapshot do contrato formatado, `format:check`, `.gitattributes` LF, `.prettierrc.json`) e o ajuste de teste 639c5932. Nenhuma rota, migração, esquema, dependência, workflow, Docker nem `wrangler.jsonc` mudou (`git diff --stat 1de6c38e..HEAD -- .github backend/api/src frontend wrangler.jsonc pnpm-lock.yaml` vazio); a mudança de comportamento está em funções puras do domínio, que alimentam `/api/publico/<slug>/ranking`, `/pdf` e as prévias. **Risco aceito pelo usuário em 2026-10-22** (item NÃO EXECUTADO, ver abaixo) vale para este deploy se ele repetir o aceite. Só local (API `127.0.0.1:8787`, banco de desenvolvimento `pelada`); nada contra produção, nada apagado, `pelada_teste` não usado. Brutos em `.md/.seguranca/2026-10-22/` (Fase A) e `.md/.seguranca/2026-10-22-2a/` (DAST: `dast-sondas.json`, `resumo-dast.md`, `zap.json`, `dast-web/`, `dast-api-auth/{inicio,periodos,retorno}.json`).
+
+### Executado (evidência com comando e saída)
+
+| Item | Comando | Ferramenta | Resultado | Saída completa |
+|---|---|---|---|---|
+| Dependências de produção | `pnpm audit --prod --json` | pnpm 11.23.0 | 0 vulnerabilidades | `2026-10-22/dependencias-node.json` |
+| Dependências, todos os lockfiles | `osv-scanner scan source -r` (Docker) | osv-scanner (`latest`) | 1: `braces@3.0.3`, dev-only via stylelint; igual à anterior | `2026-10-22/osv-scanner.json` |
+| Segredos no histórico inteiro | `gitleaks git` | gitleaks 8.30.1 | 36, nos mesmos 3 commits (`d273d665` 21, `50b1fa6b` 14, `bca136ab` 1; contagem conferida no JSON); `gitleaks git --log-opts=1de6c38e..HEAD`: 27 commits, 0 achados (inclui 639c5932, posterior ao bruto) | `2026-10-22/gitleaks.json` |
+| SAST | `semgrep scan --config p/default p/secrets p/owasp-top-ten` (Docker) | semgrep (`latest`) | ERROR 13, WARNING 32, MEDIUM 1. Nenhum caminho em `backend/api/src`, `backend/dominio`, `backend/contrato` ou `frontend/web/src`. Os mesmos achados no worktree de `1de6c38e` (também 13/32/1, comparado por arquivo/regra: diferença vazia) | `2026-10-22/semgrep.json` |
+| DAST da API (sondas do projeto) | `seguranca.py --dast http://127.0.0.1:8787 --sondas .md/.seguranca/sondas.json` | seguranca.py + urllib | 77 sondas, 0 reprovadas, `nosniff` em todas; `/.env`, `/wrangler.jsonc` e `/.git/config` respondem 200 com o `index.html` do SPA (mesmo ETag da raiz, 0 byte de segredo) | `2026-10-22-2a/dast-sondas.json`, `resumo-dast.md` |
+| ZAP baseline | idem (Docker) | zaproxy/zap-stable | 0 alto, 0 médio, 3 baixos (COEP/COOP/CORP, iguais e aceitáveis) | `2026-10-22-2a/zap.json` |
+| Front servido pelo Worker | `seguranca.py --dast … --sondas .md/.seguranca/sondas-web.json` | seguranca.py | 3/3, 0 falhas; CSP restritiva e `nosniff` no `curl -si` | `2026-10-22-2a/dast-web/` |
+| Sondas autenticadas da data de início | `python .md/.seguranca/sondas-autenticadas.py http://127.0.0.1:8787 …/inicio.json` | Python 3 + urllib | 71 sondas, 0 falhas | `2026-10-22-2a/dast-api-auth/inicio.json` |
+| Sondas autenticadas do lote de períodos | `python .md/.seguranca/sondas-autenticadas-periodos.py …` | Python 3 + urllib | 225 sondas. 1ª rodada: 5 falhas; 2ª, depois de inativar o jogador de teste: 4 falhas. **Todas de fixture, não de produto**: o script supõe o jogador de teste inativo com um só período; neste banco ele já tinha 2 períodos (rodada anterior de hoje), então as respostas válidas deram 409 `jogador_ja_ativo` / 422 "retorno não pode ser antes da saída anterior" no lugar dos 200 esperados. As validações de data, autenticação, CSRF e IDOR passam; nenhuma 5xx, `nosniff` e sem stack/SQL em todas | `2026-10-22-2a/dast-api-auth/periodos.json` |
+| Sonda nova da regra de retorno (RTP-0207/0211) | `python .md/.seguranca/sondas-autenticadas-retorno.py http://127.0.0.1:8787 …/retorno.json` (script novo, gravado na pasta de sondas) | Python 3 + urllib | 107 sondas, 0 falhas. Com o jogador `SondaAudit-10-22`: inativar 20/10, prévia e gravação de reativar com retorno retroativo 21/10 (200), segundo reativar 409, prévia e correção do retorno para 22/10, 21/10 e 20/10 (200), retornos inválidos (19/10, 2099, 1900: 409/422). **Após cada mudança**, `GET /api/publico/racha-de-domingo/{ranking,pdf}` com `mes` atual, anterior, antigo, `abc` e `2026-13` (200/422, nunca 5xx), e as duas rotas do outro grupo: `nosniff`, nenhum `@exemplo`, `telefone`, `contaId`, `periodos`, nenhum dos 20 apelidos do outro grupo; o jogador de teste ausente do ranking enquanto inativo e presente depois da reativação | `2026-10-22-2a/dast-api-auth/retorno.json` |
+| Limitador local (`LIMITE_PUBLICO`, 60/min) | rajada de rotas públicas (1ª rodada da sonda de retorno) | wrangler dev | 429 `muitas_requisicoes` com `Cache-Control: no-store` e `nosniff`, corpo sem detalhe interno; a sonda passou a espaçar as requisições | `curl -si` no terminal |
+| Bloqueio por e-mail | 13 `POST /api/sessao/entrar` com e-mail inexistente (`nao-existe-sondaaudit@exemplo.com`) | curl | 401 x5, depois 429 uniforme (regra de 5 falhas do SDD §7) | terminal |
+| Testes do domínio | `pnpm --filter @pelada/dominio test` | vitest 4.1.12 | 27 arquivos, 478 testes passando (cobre a regra nova) | terminal |
+| Checagens estáticas do projeto (G-14, G-21, G-23, G-24, G-25, G-26) | `node backend/scripts/checagens/checar-{escrita-periodo,escrita-e-dono,grupo-id,migracao-aditiva,acoes-fixadas,ids-tarefa}.mjs` | node | todas com código de saída 0 | terminal |
+| Contrato compatível | `pnpm --filter @pelada/contrato checar-compatibilidade` | pnpm 11.23.0 | "Contrato compatível com o snapshot." | terminal |
+
+### Comparação com a auditoria anterior de hoje
+
+- **gitleaks** 36 = 36 e **OSV** 1 = 1 (`braces`); **pnpm audit** 0.
+- **semgrep**: ERROR 13 = 13. WARNING 32 contra os 31 da entrada anterior: o "1 novo" **não é código novo**. Rodando o semgrep no worktree de `1de6c38e` (a auditoria anterior) o resultado já é 13/32/1, idêntico por arquivo e regra ao de agora; a entrada anterior contou 31 porque listou três WARNING novos e não incluiu o `dynamic-urllib-use-detected` de `.md/.seguranca/sondas-autenticadas-periodos.py:32` (script de sonda que recusa qualquer base fora de `127.0.0.1`/`localhost`, URL vem do argumento; falso positivo, sem entrada externa, fora do código publicado). Nenhum dos 20 commits do escopo adiciona WARNING.
+- `pnpm-minimum-release-age` (MEDIUM) permanece: RTP-0176, não duplicado.
+
+### Verificação do escopo
+
+- **Executado**: a regra nova não mudou rota nem contrato; as respostas do ranking público, do PDF e das prévias seguem com a mesma projeção estrita (conferido na resposta: chaves `grupo, mes, hoje, geradoEm, enderecoNovo, navegacao, resumoMes, partidas, linhas`; linha com `posicao, apelido, ptsInicial, rodadas, ptsFinal`). Sem 5xx em nenhuma das 107 sondas da regra de retorno nem nas 77 do projeto; sem vazamento entre grupos.
+- **Somente lido (não conta como teste)**: `git diff 1de6c38e..HEAD -- backend/dominio/src backend/contrato .gitattributes .prettierrc.json`. O domínio muda só aritmética de data e escolha do início do período (`inicioDoPeriodo`, `periodoDoMes`, `situacaoNaRodada` com assinatura menor); sem I/O, SQL, `eval`, `console.log` ou segredo nas linhas adicionadas (grep). `snapshot-formatado.test.ts` usa `execFileSync(process.execPath, [prettier…])` com caminhos fixos da raiz e pasta temporária removida no `afterEach`, sem entrada externa. `.gitattributes` (`* text=auto eol=lf`) e `endOfLine: auto` do prettier não afetam segurança. `ci.yml`, `deploy.yml`, `wrangler.jsonc`, lockfile e `pnpm-workspace.yaml` sem alteração no escopo.
+- SDD §7 (autenticação, sessão, RBAC com 404, criptografia, isolamento por grupo, superfície e LGPD) permanece provado pelas sondas executadas acima e pelas da auditoria anterior de hoje, que continuam passando (inicio 71/0, periodos 225 com as 4 falhas de fixture explicadas, DAST 77/0).
+
+### Achados
+
+Nenhum Crítico, Alto, Médio nem Baixo novo. Sem tarefa nova. Observação (sem severidade): o limitador `LIMITE_PUBLICO` agora atua no `wrangler dev` local (429 observado), então o "binding não existe no ambiente local" da entrada anterior deixou de valer para o limite de taxa local; a verificação no host publicado continua obrigatória.
+
+### Resíduos no banco de desenvolvimento (nada apagado)
+
+Jogador `SondaAudit-10-22` (id `873599a3-7262-4751-a469-8c85fb442538`, Racha de Domingo), hoje ativo, com 4 períodos (entrada 01/09 a 20/09, retornos 01/10 a 10/10 e 12/10 a 20/10, e um retorno aberto, corrigido pela sonda para 20/10) e as linhas de `auditoria` das correções/reativações; no primeiro jogador da Pelada de Quinta a sonda da data de início regravou e restaurou `2026-07-04`. Tentativas de login de `nao-existe-sondaaudit@exemplo.com` na tabela de tentativas (bloqueado por 15 min).
+
+### Não executado
+
+Limite de taxa da Cloudflare em `/api/sessao/entrar` e `/api/publico/*` e cabeçalhos no host publicado (HSTS, `Set-Cookie`, CSP): sem staging (ADR-020) e DAST em produção é proibido. **Risco já aceito pelo usuário em 2026-10-22** (entrada anterior); vale para este deploy se ele repetir o aceite. Verificação passiva obrigatória depois do deploy (`curl -I` na URL pública). Também não rodados: teste de ordem/concorrência da G-26 e suíte de isolamento por rota (`pnpm --filter @pelada/api test`), que dependem do `pelada_teste`; cobertos pelo CI da `main`.
+
+Débito aberto (Baixo): RTP-0176 e `braces` dev-only (monitorado). Nenhum Crítico/Alto. Veredito: APROVADA COM DÉBITO, condicionada à repetição do aceite do item NÃO EXECUTADO no pedido de deploy.
+
 ## Auditoria de release 2026-10-22 — DevSecOps — APROVADA COM DÉBITO
 
 **Risco aceito pelo usuário em 2026-10-22 (resposta "sim" ao pedido de confirmação do deploy):** o item NÃO EXECUTADO desta auditoria (limite de taxa da Cloudflare em `/api/sessao/entrar` e `/api/publico/*` e cabeçalhos no host publicado). Motivo: não há staging (ADR-020) e DAST em produção é proibido; o aceite de 2026-10-21 valia para aquele deploy. Prazo proposto: conferência passiva (`curl -I` na URL pública) logo depois do deploy.
