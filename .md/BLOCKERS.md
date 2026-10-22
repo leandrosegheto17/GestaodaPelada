@@ -134,3 +134,12 @@
 - Impacto se não resolvido: RTP-0180 não fecha o aceite e RTP-0181 (mesmo arquivo) espera por ela
 - Sugestão: Liberar a edição do QUEBRAS.md (ou fazê-la à mão) e rodar /executar --tarefa RTP-0180
 - Status: Resolvido (2026-10-21): QUEBRAS.md atualizado por mim a pedido do usuário: 12 linhas da coluna deploy 2 apontam para a migração 202610210000
+
+## Bloqueio 016 — 2026-10-21 (BK-0016)
+- Reportado por: Executor
+- Escalado para: Coordenador
+- Artefato/trecho afetado: TP-0220
+- Descrição: avaliarPedidoDePeriodos (TP-0217) não devolve ja_ativo para reativar: jogador ativo cairia em 422 (regra e) e não no 409 do aceite; decidir se se acrescenta { tipo: 'ja_ativo' } em backend/api/src/aplicacao/elenco/avaliacao-periodos.ts (~4 linhas, arquivo da TP-0217) ou se a TP-0220 checa fora da avaliação
+- Impacto se não resolvido: TP-0220 e dependentes (reativar/previa) paradas
+- Sugestão: Autorizar o acréscimo de ja_ativo na avaliação comum (4 linhas, com teste) e reexecutar a TP-0220
+- Status: Em aberto

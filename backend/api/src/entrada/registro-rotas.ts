@@ -22,6 +22,7 @@ import { rotaAdminsRedefinirSenha } from './rotas/grupos/admins/redefinir-senha.
 import { rotaAdminsFinanceiro } from './rotas/grupos/admins/financeiro.js';
 import { rotaJogadoresListar } from './rotas/grupos/jogadores/listar.js';
 import { rotaJogadorLer } from './rotas/grupos/jogadores/ler.js';
+import { rotaJogadorPeriodoCorrigir } from './rotas/grupos/jogadores/periodos-corrigir.js';
 import { rotaJogadorPeriodosListar } from './rotas/grupos/jogadores/periodos-listar.js';
 import { rotaJogadorPeriodoPrevia } from './rotas/grupos/jogadores/periodos-previa.js';
 import { rotaJogadorCriar } from './rotas/grupos/jogadores/criar.js';
@@ -84,6 +85,7 @@ export const ROTAS: readonly Hono<AppEnv>[] = [
   rotaJogadorLer,
   rotaJogadorPeriodosListar,
   rotaJogadorPeriodoPrevia,
+  rotaJogadorPeriodoCorrigir,
   rotaJogadorCriar,
   rotaJogadorEditar,
   rotaJogadorInicioPrevia,
