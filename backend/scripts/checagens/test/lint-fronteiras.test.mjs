@@ -182,3 +182,74 @@ describe('acumulado pela função única (G-25)', () => {
     expect(await regras('acumuladoPorInicio({});', 'backend/dominio/src/ranking/x.ts')).toEqual([]);
   });
 });
+
+describe('correção de período só na aplicação (G-26)', () => {
+  const PERMITIDO = 'backend/api/src/aplicacao/elenco/periodos-corrigir.ts';
+  const REPO = '../../infraestrutura/db/repositorios/periodos-corrigir.js';
+  const importacoes = [
+    `import { corrigirPeriodo } from '${REPO}';`,
+    `import { corrigirPeriodo as c } from '${REPO}';`,
+    `import * as j from '${REPO}';`,
+    `import j from '${REPO}';`,
+    `export { corrigirPeriodo } from '${REPO}';`,
+    `export * from '${REPO}';`,
+    `export { corrigirPeriodo as outra } from '${REPO}';`,
+    "import { corrigirPeriodo } from '../../../infraestrutura/db/repositorios/periodos-corrigir';",
+    "import { corrigirPeriodo } from '@pelada/api/src/infraestrutura/db/repositorios/periodos-corrigir.js';",
+    `const m = await import('${REPO}');`,
+    `const m = require('${REPO}');`,
+    'const m = await import(caminho);',
+  ];
+  const lugares = [
+    'backend/api/src/aplicacao/elenco/reativar.ts',
+    'backend/api/src/entrada/rotas/grupos/jogadores/situacao.ts',
+    'backend/api/src/infraestrutura/db/repositorios/jogadores.ts',
+    'backend/api/src/aplicacao/elenco/periodos-corrigir-outro.ts',
+    'backend/api/src/aplicacao/periodos-corrigir.ts',
+    'backend/scripts/x.ts',
+    'backend/dominio/src/x.ts',
+    'frontend/web/src/x.ts',
+  ];
+
+  it.each(lugares.flatMap((arquivo) => importacoes.map((codigo) => [codigo, arquivo])))(
+    'barra %s em %s',
+    async (codigo, arquivo) => {
+      expect((await regras(codigo, arquivo)).length).toBeGreaterThan(0);
+    },
+  );
+
+  it.each(['./periodos-corrigir', './periodos-corrigir.js'])(
+    'barra o vizinho relativo %s na pasta dos repositórios',
+    async (alvo) => {
+      const ids = await regras(
+        `import { corrigirPeriodo } from '${alvo}';`,
+        'backend/api/src/infraestrutura/db/repositorios/jogadores.ts',
+      );
+      expect(ids.length).toBeGreaterThan(0);
+    },
+  );
+
+  it('aceita o import no único arquivo permitido e nos testes', async () => {
+    expect(await regras(`import { corrigirPeriodo } from '${REPO}';`, PERMITIDO)).toEqual([]);
+    expect(
+      await regras(
+        "import { corrigirPeriodo } from '../../src/infraestrutura/db/repositorios/periodos-corrigir.js';",
+        'backend/api/test/repositorios/periodos-corrigir.test.ts',
+      ),
+    ).toEqual([]);
+  });
+
+  it('o arquivo permitido continua barrando os outros pacotes proibidos', async () => {
+    expect((await regras("import pg from 'pg';", PERMITIDO)).length).toBeGreaterThan(0);
+  });
+
+  it.each([
+    `// import { corrigirPeriodo } from '${REPO}';`,
+    `const nome = '${REPO}';`,
+    "import { corrigirPeriodoDoJogador } from '../../aplicacao/elenco/periodos-corrigir.js';",
+    "import * as jogadores from '../../infraestrutura/db/repositorios/jogadores.js';",
+  ])('ignora comentário, string e outros módulos: %s', async (codigo) => {
+    const ids = await regras(codigo, 'backend/api/src/entrada/rotas/grupos/jogadores/situacao.ts');
+    expect(ids.filter((id) => id !== 'import-x/no-restricted-paths')).toEqual([]);
+  });
+});

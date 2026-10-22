@@ -29,7 +29,13 @@ const PROIBIDAS_BASE = [
 ];
 // Função destrutiva do seed: só backend/scripts pode importá-la (o bloco de scripts usa PROIBIDAS_BASE).
 const SEED_LOCAL = ['**/repositorios/seed-local', '**/repositorios/seed-local.*'];
-const PROIBIDAS_GLOBAL = [...PROIBIDAS_BASE, ...SEED_LOCAL];
+// Correção de período: só a aplicação (aplicacao/elenco/periodos-corrigir.ts), dentro da transação com o
+// jogador travado e auditada, importa o repositório. O relativo `./` cobre os vizinhos da própria pasta.
+const CORRIGIR_PERIODO = ['**/repositorios/periodos-corrigir', '**/repositorios/periodos-corrigir.*'];
+const CORRIGIR_PERIODO_VIZINHO = ['./periodos-corrigir', './periodos-corrigir.*'];
+const PROIBIDAS_GLOBAL = [...PROIBIDAS_BASE, ...SEED_LOCAL, ...CORRIGIR_PERIODO];
+// Testes e o arquivo da aplicação que corrige período podem importar o repositório da correção.
+const PROIBIDAS_COM_CORRECAO = [...PROIBIDAS_BASE, ...SEED_LOCAL];
 const BANCO = ['pg', 'pg/*', 'kysely', 'kysely/*'];
 const DOMINIO_PROIBIDAS = [
   'zod',
@@ -160,16 +166,21 @@ export default tseslint.config(
     // Apoio de teste da API conecta no Postgres de teste (nunca em produção).
     files: ['backend/api/test/**'],
     rules: {
-      'no-restricted-imports': ['error', restritos(PROIBIDAS_GLOBAL)],
-      'no-restricted-syntax': sintaxe(dinamicos(PROIBIDAS_GLOBAL), semRelogio, semAsUnknownAs, acumuladoSoNaPontuacao),
+      'no-restricted-imports': ['error', restritos(PROIBIDAS_COM_CORRECAO)],
+      'no-restricted-syntax': sintaxe(
+        dinamicos(PROIBIDAS_COM_CORRECAO),
+        semRelogio,
+        semAsUnknownAs,
+        acumuladoSoNaPontuacao,
+      ),
     },
   },
   {
     files: ['backend/api/src/infraestrutura/db/**'],
     rules: {
-      'no-restricted-imports': ['error', restritos(PROIBIDAS_GLOBAL)],
+      'no-restricted-imports': ['error', restritos([...PROIBIDAS_GLOBAL, ...CORRIGIR_PERIODO_VIZINHO])],
       'no-restricted-syntax': sintaxe(
-        dinamicos(PROIBIDAS_GLOBAL),
+        dinamicos([...PROIBIDAS_GLOBAL, ...CORRIGIR_PERIODO_VIZINHO]),
         semRelogio,
         semAsUnknownAs,
         donoSoEmScripts,
@@ -185,13 +196,13 @@ export default tseslint.config(
         'error',
         {
           patterns: [
-            ...restritos([...PROIBIDAS_BASE, ...BANCO]).patterns,
+            ...restritos([...PROIBIDAS_BASE, ...CORRIGIR_PERIODO, ...BANCO]).patterns,
             { regex: ALIAS_API_PROIBIDO, message: MSG_ALIAS_API },
           ],
         },
       ],
       'no-restricted-syntax': sintaxe(
-        dinamicos([...PROIBIDAS_BASE, ...BANCO]),
+        dinamicos([...PROIBIDAS_BASE, ...CORRIGIR_PERIODO, ...BANCO]),
         semAsUnknownAs,
         acumuladoSoNaPontuacao,
         [
@@ -201,6 +212,20 @@ export default tseslint.config(
             message: MSG_ALIAS_API,
           },
         ],
+      ),
+    },
+  },
+  {
+    // Único arquivo de produção que importa o repositório da correção de período.
+    files: ['backend/api/src/aplicacao/elenco/periodos-corrigir.ts'],
+    rules: {
+      'no-restricted-imports': ['error', restritos([...PROIBIDAS_COM_CORRECAO, ...BANCO])],
+      'no-restricted-syntax': sintaxe(
+        dinamicos([...PROIBIDAS_COM_CORRECAO, ...BANCO]),
+        semRelogio,
+        semAsUnknownAs,
+        donoSoEmScripts,
+        acumuladoSoNaPontuacao,
       ),
     },
   },

@@ -1,4 +1,5 @@
 import { arquivosVersionados, encerrar } from './arquivos.mjs';
+import { LITERAL, semComentarios } from './texto-codigo.mjs';
 
 // G-11: o papel de dono nunca é escrito por rota. Só backend/scripts/, as migrações, o repositório de
 // contas (função criarContaDono, travada por lint) e os testes podem escrever `e_dono`/`eDono`.
@@ -11,8 +12,6 @@ const ESCRITA =
   /\b(insert|update|upsert)\b|\bset\b|\bvalues\b|\.set\(|\.values\(|insertinto|updatetable|on\s+conflict/i;
 const CHAVE_CALCULADA = /['"`]e_['"`]\s*\+|['"`]e['"`]\s*\+\s*['"`]_?dono/i;
 
-// Literal de texto: o `;` dentro dele não encerra a instrução.
-const LITERAL = /(['"`])(?:\\[\s\S]|(?!\1)[^\\])*\1/g;
 // `e_dono` como chave de objeto com valor literal ou variável (`{ e_dono: true`, `, 'eDono': v }`): objeto
 // montado antes de uma escrita. Projeção de leitura (`eDono: conta.eDono`, `z.boolean()`) não casa.
 // O valor também pode ser `!!x` ou um ternário `a ? b : c`.
@@ -25,21 +24,6 @@ const CHAVE_DE_OBJETO = new RegExp(
 // `=>` são leitura.
 const ATRIBUICAO_DE_MEMBRO =
   /(?:\.\s*|\[\s*['"`])e_?dono(?:['"`]\s*\])?\s*(?:\|\||&&|\?\?|\*\*|>>>|>>|<<|[-+*/%|&^])?=(?![=>])/i;
-
-// Uma única passada da esquerda para a direita: `//` e `--` dentro de literal de texto (URL, `a--b`) não
-// são comentário e não podem apagar o resto da linha. Aspas simples e duplas não atravessam linha.
-// `--` só é comentário SQL quando não cola num identificador/fecha-parêntese (`i--`) e é seguido de espaço
-// ou fim de linha (`--i` é decremento).
-const COMENTARIO_OU_LITERAL =
-  /\/\*[\s\S]*?\*\/|\/\/[^\n]*|(?<![\w$)\]])--(?=\s|$)[^\n]*|'(?:\\.|[^'\\\n])*'|"(?:\\.|[^"\\\n])*"|`(?:\\[\s\S]|[^`\\])*`/g;
-
-function semComentarios(texto) {
-  return texto.replace(COMENTARIO_OU_LITERAL, (m) => {
-    if (m.startsWith('/*')) return m.replace(/[^\n]/g, ' ');
-    if (m.startsWith('//') || m.startsWith('--')) return '';
-    return m;
-  });
-}
 
 const arquivos = arquivosVersionados(RAIZ, (c) => CODIGO.test(c) && !FORA.test(c));
 const achados = [];
