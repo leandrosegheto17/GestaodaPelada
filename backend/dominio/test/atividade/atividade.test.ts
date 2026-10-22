@@ -8,21 +8,9 @@ const inativadoEReativado = [
 ];
 
 describe('situacaoNaRodada', () => {
-  it('antes da entrada é fora; no dia, falta ou a situação', () => {
+  it('antes da entrada é fora; no dia da entrada, falta', () => {
     expect(situacaoNaRodada(entrouNoMeio, '2026-10-01')).toBe('fora');
-    expect(situacaoNaRodada(entrouNoMeio, '2026-10-08', 'presente')).toBe('fora');
     expect(situacaoNaRodada(entrouNoMeio, '2026-10-15')).toBe('falta');
-    expect(situacaoNaRodada(entrouNoMeio, '2026-10-15', 'lesionado')).toBe('lesionado');
-  });
-  it.each([
-    ['2026-10-01', undefined, 'fora'],
-    ['2026-10-08', undefined, 'fora'],
-    ['2026-10-15', undefined, 'falta'],
-    ['2026-10-15', 'presente', 'presente'],
-    ['2026-10-15', 'lesionado', 'lesionado'],
-    ['2026-10-08', 'presente', 'fora'],
-  ] as const)('entrada no meio do mês: %s com %s -> %s', (data, situacao, esperado) => {
-    expect(situacaoNaRodada(entrouNoMeio, data, situacao)).toBe(esperado);
   });
   it('inativação e reativação', () => {
     expect(situacaoNaRodada(inativadoEReativado, '2026-08-09')).toBe('falta');

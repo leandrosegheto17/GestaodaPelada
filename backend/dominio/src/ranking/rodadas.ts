@@ -36,7 +36,7 @@ export function rodadasDoJogador(
   return partidas.map((partida): Rodada => {
     const antesDoInicio = inicioPontuacao !== undefined && compararDatas(partida.data, inicioPontuacao) < 0;
     const gravada = situacaoPorPartida.get(partida.id);
-    const situacao = antesDoInicio ? 'fora' : (gravada ?? situacaoNaRodada<SituacaoPresenca>(periodos, partida.data));
+    const situacao = antesDoInicio ? 'fora' : (gravada ?? situacaoNaRodada(periodos, partida.data));
     if (situacao === 'fora') return { situacao, pontos: null };
     if (situacao === 'falta') return { situacao, pontos: 0 };
     return { situacao, pontos: pontosDaPresenca(situacao, partida.choveu, resolverPesos(partida.data)) };
