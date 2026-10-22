@@ -1,5 +1,25 @@
 # Revisão de arquitetura
 
+## Revisão 2026-10-22 (2) — pré-deploy, depois das RTP-0201 e RTP-0202
+
+Números do saude.py: 0 arquivos acima do limite · 4 blocos duplicados (34 linhas, os mesmos já descartados) · 3 IDs de tarefa (todos em `evidencia/s-01`) · 2 pastas com acesso a dados (`backend/api/src`, `evidencia/s-01`) · 0 imports indevidos entre aplicações · 0 conversões forçadas · 8 comentários de cópia (falsos positivos). Comparação visual: 153 de 153 OK, 0 DIVERGE; diff de `tokens.css` vazio. Fora do escopo: BK-0018/BK-0019, RTP-0197 e as alterações não commitadas em `backend/dominio` e `test/apoio/regressao-periodos*`; linhas vazadas em `pelada_teste` (ambiente).
+
+**Não há achado de severidade Alta aberto. Nada impede o `/deploy`.**
+
+| # | Achado | Item do checklist | Severidade | Onde | Destino |
+|---|---|---|---|---|---|
+| 1 | `ordem.test.ts` (273 linhas) repete 4 vezes o preparo cenário + `pesos.criarPadrao` e 3 vezes o trecho "travar < gravar < registrar, mesmo tx"; a RTP-0202 extraiu só o de partida e o QA registrou "sem duplicação" | 4 | Baixa | `backend/api/test/g26/ordem.test.ts:28-41,100-110,161-181,229-241` | RTP-0203 |
+| 2 | Resíduo `ler.test.ts.tmp.19100.8eb12c1434f6` em `backend/api/test/rotas/grupos`; `.gitignore` não cobre `*.tmp.*` | 17 | Baixa | `backend/api/test/rotas/grupos/`; `.gitignore` | RTP-0204 |
+
+Descartados:
+- Coerência `ROTAS_QUE_ESCREVEM` × G-26: lista (`periodos-corrigir`, `situacao`, `criar`, `inicio`) e caminhos que travam (`corrigir`, `reativar`, `inativar`, `inicio-editar`, lançar, editar partida) conferem com o texto reescrito pela RTP-0201; G-26 segue PROPOSTA aguardando o Gestor, sem mudança.
+- Cobertura de ordem da G-26: os seis caminhos têm teste em `ordem.test.ts` (editar partida fechada pela RTP-0202).
+- IDs de tarefa no código: só os 3 de `evidencia/s-01`; nenhum em `ordem.test.ts`.
+- Acesso a dados: `backend/api/src` segue no módulo único; `evidencia/s-01` é o descarte anterior.
+- Blocos duplicados `AreaDono`/`GrupoDono`, `ranking`/`prioridade`, `PaginaGrupo`/`PaginaPontuacao`, `pesos.ts`/`tipos.ts` e os 8 comentários de cópia: os mesmos já descartados.
+
+Sem achado nos itens: 1 a 3, 5 a 16 e 18. Itens 11, 13 e 14 por amostragem do relatório.
+
 ## Revisão 2026-10-22 — pré-deploy, depois do lote de períodos do jogador (L49 a L51, RTP-0197 a 0200)
 
 Números do saude.py: 0 arquivos acima do limite · 4 blocos duplicados (34 linhas, os mesmos já descartados) · 3 IDs de tarefa (todos em `evidencia/s-01`) · 2 pastas com acesso a dados (`backend/api/src`, `evidencia/s-01`) · 0 imports indevidos entre aplicações · 0 conversões forçadas · 8 comentários de cópia (falsos positivos). Comparação visual: 153 de 153 OK, 0 DIVERGE; `tokens.css` do app idêntico ao do mockup.

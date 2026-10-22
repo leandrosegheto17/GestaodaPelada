@@ -1043,8 +1043,15 @@ Telas dependem de `contrato/elenco-periodos` e dos arquivos de `respostas/`, nun
 ### Refatoração Revisão 2026-10-22
 | ID | Lote | Título | Chapéu | Reqs | Aceite | Est | Dep | Par | Arquivos | Testes e diretrizes | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| RTP-0201 | Refatoração Revisão 2026-10-22 | G-26 desatualizada: lista só periodos-corrigir e reativar, mas inativar, inicio-editar e lançar/editar partida também travam o jogador (Baixa) | Software Architect | RF-76; RN-33; RN-34 | O texto da G-26 em GUARDRAILS.md (regra e 'Como verificar') lista os caminhos que travam hoje e bate com ROTAS_QUE_ESCREVEM de checar-escrita-periodo.mjs; entrada no Log de Alterações; checar-escrita-periodo.mjs segue verde | 0,2 d | - | - | .md/GUARDRAILS.md | node backend/scripts/checagens/checar-escrita-periodo.mjs | Pendente |
-| RTP-0202 | Refatoração Revisão 2026-10-22 | Editar partida trava jogadores sem teste de ordem (Baixa) | Backend | RF-79; RN-34 | Bloco novo 'PUT partida (editar presença)' em test/g26/ordem.test.ts prova travas em ordem crescente de id, antes de gravar e no mesmo tx; tirar travarMarcados de editar.ts derruba o teste | 0,2 d | - | - | backend/api/test/g26/ordem.test.ts | cd backend/api && pnpm exec vitest run test/g26 test/rotas/grupos/partidas | Pendente |
+| RTP-0201 | Refatoração Revisão 2026-10-22 | G-26 desatualizada: lista só periodos-corrigir e reativar, mas inativar, inicio-editar e lançar/editar partida também travam o jogador (Baixa) | Software Architect | RF-76; RN-33; RN-34 | O texto da G-26 em GUARDRAILS.md (regra e 'Como verificar') lista os caminhos que travam hoje e bate com ROTAS_QUE_ESCREVEM de checar-escrita-periodo.mjs; entrada no Log de Alterações; checar-escrita-periodo.mjs segue verde | 0,2 d | - | - | .md/GUARDRAILS.md | node backend/scripts/checagens/checar-escrita-periodo.mjs | Concluída · QA ✔ · Sec ✔ |
+| RTP-0202 | Refatoração Revisão 2026-10-22 | Editar partida trava jogadores sem teste de ordem (Baixa) | Backend | RF-79; RN-34 | Bloco novo 'PUT partida (editar presença)' em test/g26/ordem.test.ts prova travas em ordem crescente de id, antes de gravar e no mesmo tx; tirar travarMarcados de editar.ts derruba o teste | 0,2 d | - | - | backend/api/test/g26/ordem.test.ts | cd backend/api && pnpm exec vitest run test/g26 test/rotas/grupos/partidas | Concluída · QA ✔ · Sec ✔ |
+
+### Refatoração Revisão 2026-10-22 (2)
+| ID | Lote | Título | Chapéu | Reqs | Aceite | Est | Dep | Par | Arquivos | Testes e diretrizes | Status |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| RTP-0203 | Refatoração Revisão 2026-10-22 (2) | Consolidar o preparo repetido e as checagens de ordem em g26/ordem.test.ts | Backend | - | ordem.test.ts tem um auxiliar único de cenário + pesos padrão (hoje 4 cópias) e um auxiliar comum para travar<gravar<registrar no mesmo tx; mesmos 10 testes e mesmas asserções, test/g26 verde | 0,2 d | - | - | backend/api/test/g26/ordem.test.ts | cd backend/api && pnpm exec vitest run test/g26; prettier --check; tsc --noEmit | Pendente |
+| RTP-0204 | Refatoração Revisão 2026-10-22 (2) | Remover resíduo ler.test.ts.tmp.* e ignorar *.tmp.* no .gitignore | DevOps | - | arquivo backend/api/test/rotas/grupos/ler.test.ts.tmp.19100.8eb12c1434f6 removido; .gitignore com *.tmp.*; git ls-files não lista nenhum .tmp. | 0,1 d | - | - | backend/api/test/rotas/grupos/ler.test.ts.tmp.19100.8eb12c1434f6; .gitignore | git status limpo do arquivo; vitest run test/rotas/grupos/ler.test.ts verde | Pendente |
+
 
 
 

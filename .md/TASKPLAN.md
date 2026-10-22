@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-22 13:07
+Atualizado: 2026-10-22 13:27
 
-Resumo: Não executada 3 · Em execução 1 · Aprovada 444 · Bloqueada 1 · Despriorizada 5 · total 454
+Resumo: Não executada 3 · Em execução 1 · Aprovada 446 · Bloqueada 1 · Despriorizada 5 · total 456
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -454,16 +454,18 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 439 | RTP-0198 | executor | ✔ | Inativar: avaliar e gravar dentro de transação com trava do jogador (achado DevSecOps d... | Refatoração Lote-L50 | TP-0223 | Aprovada |
 | 440 | RTP-0199 | executor | ✔ | Teste de ordem da G-26 para editarInicio (achado do QA de TP-0226) | Refatoração Lote-L50 | TP-0226 | Aprovada |
 | 441 | RTP-0200 | executor | ✔ | Lançamento de presença trava os jogadores (serializa com inativar/reativar/correção) | Refatoração Lote-L50 | RTP-0198 | Aprovada |
-| 442 | RTP-0201 | executor | ✔ | G-26 desatualizada: lista só periodos-corrigir e reativar, mas inativar, inicio-editar... | Refatoração Revisão 2026-10-22 | — | Não executada |
-| 443 | RTP-0202 | executor | ✔ | Editar partida trava jogadores sem teste de ordem (Baixa) | Refatoração Revisão 2026-10-22 | — | Não executada |
-| 444 | BK-0009 | coordenador | ✔ | Ajustar SDD/ADR-010/URL_PUBLICA/CORS/deploy.yml ao domínio prod-ljs.workers.dev e aos acei | — | — | Aprovada |
-| 445 | BK-0012 | coordenador | ✔ | Quando e onde registrar a contração do CHECK de posicao (tirar defensor/meio_campo de joga | — | — | Aprovada |
-| 446 | BK-0013 | coordenador | ✔ | ADR-008 §3 decide gerar e chamar navigator.share no mesmo gesto; o app agora sempre mostra | — | — | Aprovada |
-| 447 | BK-0014 | coordenador | ✔ | Texto do '–' no ranking e no PDF (hoje só 'Ainda não fazia parte do grupo') também vale pa | — | — | Aprovada |
-| 448 | BK-0019 | coordenador | ✔ | Código e testes de domínio prontos (82 verdes, tsc ok), mas regressao-periodos.test.ts (AP | — | — | Não executada |
-| 449 | RTP-0197 | executor | ✔ | Decidir: presença gravada fora de período (legado, I-48/PR-25) conta no acumulado mas a... | Refatoração Lote-L50 | BK-0018, BK-0019, TP-0225 | Bloqueada |
-| 450 | TP-0140 | executor | ✔ | [U] Play Console: app com.gestaodapelada.app (PI-5) | L31 | — | Despriorizada |
-| 451 | TP-0141 | executor | ✔ | /.well-known/assetlinks.json servido pelo Worker | L31 | TP-0088, TP-0140 | Despriorizada |
-| 452 | TP-0142 | executor | ✔ | Projeto TWA (Bubblewrap) em frontend/twa | L31 | TP-0006, TP-0108, TP-0139, TP-0140, TP-0141 | Despriorizada |
-| 453 | TP-0143 | executor | ✔ | [U] Teste fechado da Play (12 testadores, 14 dias) | L31 | TP-0139, TP-0141, TP-0142 | Despriorizada |
-| 454 | TP-0144 | executor | ✔ | [U] Publicação da TWA em produção | L31 | TP-0143 | Despriorizada |
+| 442 | RTP-0201 | executor | ✔ | G-26 desatualizada: lista só periodos-corrigir e reativar, mas inativar, inicio-editar... | Refatoração Revisão 2026-10-22 | — | Aprovada |
+| 443 | RTP-0202 | executor | ✔ | Editar partida trava jogadores sem teste de ordem (Baixa) | Refatoração Revisão 2026-10-22 | — | Aprovada |
+| 444 | RTP-0203 | executor | ✔ | Consolidar o preparo repetido e as checagens de ordem em g26/ordem.test.ts | Refatoração Revisão 2026-10-22 (2) | — | Não executada |
+| 445 | RTP-0204 | executor | ✔ | Remover resíduo ler.test.ts.tmp.* e ignorar *.tmp.* no .gitignore | Refatoração Revisão 2026-10-22 (2) | — | Não executada |
+| 446 | BK-0009 | coordenador | ✔ | Ajustar SDD/ADR-010/URL_PUBLICA/CORS/deploy.yml ao domínio prod-ljs.workers.dev e aos acei | — | — | Aprovada |
+| 447 | BK-0012 | coordenador | ✔ | Quando e onde registrar a contração do CHECK de posicao (tirar defensor/meio_campo de joga | — | — | Aprovada |
+| 448 | BK-0013 | coordenador | ✔ | ADR-008 §3 decide gerar e chamar navigator.share no mesmo gesto; o app agora sempre mostra | — | — | Aprovada |
+| 449 | BK-0014 | coordenador | ✔ | Texto do '–' no ranking e no PDF (hoje só 'Ainda não fazia parte do grupo') também vale pa | — | — | Aprovada |
+| 450 | BK-0019 | coordenador | ✔ | Código e testes de domínio prontos (82 verdes, tsc ok), mas regressao-periodos.test.ts (AP | — | — | Não executada |
+| 451 | RTP-0197 | executor | ✔ | Decidir: presença gravada fora de período (legado, I-48/PR-25) conta no acumulado mas a... | Refatoração Lote-L50 | BK-0018, BK-0019, TP-0225 | Bloqueada |
+| 452 | TP-0140 | executor | ✔ | [U] Play Console: app com.gestaodapelada.app (PI-5) | L31 | — | Despriorizada |
+| 453 | TP-0141 | executor | ✔ | /.well-known/assetlinks.json servido pelo Worker | L31 | TP-0088, TP-0140 | Despriorizada |
+| 454 | TP-0142 | executor | ✔ | Projeto TWA (Bubblewrap) em frontend/twa | L31 | TP-0006, TP-0108, TP-0139, TP-0140, TP-0141 | Despriorizada |
+| 455 | TP-0143 | executor | ✔ | [U] Teste fechado da Play (12 testadores, 14 dias) | L31 | TP-0139, TP-0141, TP-0142 | Despriorizada |
+| 456 | TP-0144 | executor | ✔ | [U] Publicação da TWA em produção | L31 | TP-0143 | Despriorizada |
