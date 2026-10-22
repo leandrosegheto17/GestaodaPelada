@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import type { Kysely } from 'kysely';
+import {
+  Kysely,
+  PostgresAdapter,
+  PostgresIntrospector,
+  PostgresQueryCompiler,
+  type DatabaseConnection,
+  type Driver,
+} from 'kysely';
 import { embrulhar } from '../../src/infraestrutura/db/cliente.js';
 import type { TabelasBanco } from '../../src/infraestrutura/db/tipos.js';
 import { JaAtivo, PeriodoInvalido } from '../../src/infraestrutura/db/repositorios/jogadores.js';
@@ -88,10 +95,30 @@ describe('corrigirPeriodo', () => {
 
   describe('mapeamento de constraints do banco', () => {
     function executorQueFalhaCom(erro: unknown) {
-      const cadeia: Record<string, unknown> = {};
-      for (const m of ['set', 'where']) cadeia[m] = () => cadeia;
-      cadeia.executeTakeFirst = () => Promise.reject(erro);
-      return embrulhar({ updateTable: () => cadeia } as unknown as Kysely<TabelasBanco>, true);
+      const conexao: DatabaseConnection = {
+        executeQuery: () => Promise.reject(erro),
+        streamQuery: () => {
+          throw erro;
+        },
+      };
+      const driver: Driver = {
+        init: () => Promise.resolve(),
+        acquireConnection: () => Promise.resolve(conexao),
+        beginTransaction: () => Promise.resolve(),
+        commitTransaction: () => Promise.resolve(),
+        rollbackTransaction: () => Promise.resolve(),
+        releaseConnection: () => Promise.resolve(),
+        destroy: () => Promise.resolve(),
+      };
+      const kysely = new Kysely<TabelasBanco>({
+        dialect: {
+          createAdapter: () => new PostgresAdapter(),
+          createDriver: () => driver,
+          createIntrospector: (db) => new PostgresIntrospector(db),
+          createQueryCompiler: () => new PostgresQueryCompiler(),
+        },
+      });
+      return embrulhar(kysely, true);
     }
     const corrigir = (erro: unknown) =>
       corrigirPeriodo(executorQueFalhaCom(erro), 'g', 'j', 'p', { fim: '2026-01-01' });
