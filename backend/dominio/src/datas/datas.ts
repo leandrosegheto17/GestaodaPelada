@@ -39,6 +39,15 @@ export function mesSeguinte(mes: Mes): Mes {
   return m === 12 ? `${String(ano + 1).padStart(4, '0')}-01` : `${String(ano).padStart(4, '0')}-${doisDigitos(m + 1)}`;
 }
 
+/** Texto `AAAA-MM-DD` que existe no calendário (recusa `2026-02-30`, hora, espaços e não texto). */
+export function ehDataValida(valor: unknown): valor is Data {
+  if (typeof valor !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(valor)) return false;
+  const [a, m, d] = partes(valor);
+  const t = new Date(0);
+  t.setUTCFullYear(a, m - 1, d);
+  return t.getUTCFullYear() === a && t.getUTCMonth() === m - 1 && t.getUTCDate() === d;
+}
+
 /** Negativo, zero ou positivo. O formato fixo torna a comparação de texto correta. */
 export function compararDatas(a: Data, b: Data): number {
   return a < b ? -1 : a > b ? 1 : 0;

@@ -9,6 +9,7 @@ export * from './atividade/situacao-rodada.js';
 export * from './atividade/validar-periodos.js';
 export * from './atividade/cobertura-periodos.js';
 export * from './atividade/periodos-corrigiveis.js';
+export * from './atividade/avaliar-periodos.js';
 export * from './ranking/ordem.js';
 export * from './ranking/navegacao.js';
 export * from './ranking/ranking.js';
