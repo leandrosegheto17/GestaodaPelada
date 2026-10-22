@@ -1,4 +1,4 @@
-import type { ConfigPesos, JogadorDoRanking, PartidaDoRanking, PresencaDoRanking } from '@pelada/dominio';
+import type { ConfigPesos, JogadorDoRanking, PartidaDoRanking, PeriodoComId, PresencaDoRanking } from '@pelada/dominio';
 import type { ExecutorDb } from '../../infraestrutura/db/index.js';
 import * as jogadores from '../../infraestrutura/db/repositorios/jogadores.js';
 import * as partidas from '../../infraestrutura/db/repositorios/partidas.js';
@@ -10,6 +10,8 @@ export interface HistoricoDoGrupo {
   partidas: PartidaDoRanking[];
   presencas: PresencaDoRanking[];
   configsPesos: ConfigPesos[];
+  /** Períodos de cada jogador (por id do jogador) com o id gravado, para quem corrige datas. */
+  periodosComId: ReadonlyMap<string, PeriodoComId[]>;
 }
 
 /**
@@ -29,6 +31,9 @@ export async function carregarHistoricoGrupo(ex: ExecutorDb, grupoId: string, at
     partidas: historico.partidas.map(paraPartidaDominio),
     presencas: historico.presencas.map(paraPresencaDominio),
     configsPesos: pesosAte(configs, ate).map(paraConfigPesosDominio),
+    periodosComId: new Map(
+      lista.map((j) => [j.id, j.periodos.map((p) => ({ id: p.id, inicio: p.inicio, fim: p.fim }))]),
+    ),
   };
 }
 
