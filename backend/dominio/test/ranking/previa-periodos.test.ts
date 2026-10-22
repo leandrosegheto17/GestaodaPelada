@@ -37,6 +37,20 @@ describe('previaDosPeriodos', () => {
     expect(r.posicaoDepois).toBe(r.posicaoAntes);
   });
 
+  it('quem saiu e voltou: presença gravada entre o retorno novo e o antigo passa a constar e a contar', () => {
+    const primeiro = { inicio: '2026-01-01', fim: '2026-09-01' as string | null };
+    const saiuEVoltou = { ...alvo([primeiro, { inicio: '2026-10-20', fim: null }]), inicioPontuacao: '2026-01-01' };
+    const r = previa(
+      [primeiro, { inicio: '2026-10-12', fim: null }],
+      [presenca('v', '2026-10-15'), presenca('v', '2026-09-28')],
+      [saiuEVoltou, rival('r1', 40)],
+    );
+    expect(r.rodadasQuePassamAConstar).toContainEqual({ data: '2026-10-15', situacao: 'presente' });
+    expect(r.rodadasQuePassamAConstar.map((x) => x.data)).not.toContain('2026-09-28');
+    expect(r.acumuladoAntes).toBe(0);
+    expect(r.acumuladoDepois).toBe(1);
+  });
+
   it('presença já lançada na data já constava na grade: nada passa a constar e o acumulado não muda', () => {
     const presencas = [
       presenca('v', '2026-10-12', 'presente'),

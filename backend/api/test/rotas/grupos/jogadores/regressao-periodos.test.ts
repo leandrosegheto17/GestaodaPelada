@@ -75,7 +75,7 @@ describe('correção de período chega a todos os consumidores (workerd)', () =>
         { data: d(-26), situacao: 'falta' },
         { data: d(-24), situacao: 'falta' },
       ],
-      rodadasQueDeixamDeConstar: [],
+      rodadasQueDeixamDeConstar: [{ data: d(-50) }],
     });
     for (const mes of Object.keys(depois.pdf)) {
       const col = (f: typeof antes) => f.pdf[mes]!.colunas.map((c) => c.data);

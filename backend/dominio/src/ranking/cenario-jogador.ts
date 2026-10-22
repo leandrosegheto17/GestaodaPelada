@@ -1,12 +1,13 @@
 import { ativosEm } from '../atividade/atividade.js';
-import type { Data } from '../datas/datas.js';
-import { acumuladoPorInicio } from '../pontuacao/acumulado-inicio.js';
+import { mesDe, type Data } from '../datas/datas.js';
+import { acumuladoPorInicio, inicioDoPeriodo } from '../pontuacao/acumulado-inicio.js';
 import { criarResolvedorDePesos } from '../pontuacao/pesos.js';
 import type { ConfigPesos } from '../pontuacao/tipos.js';
 import { ordenarPorRanking } from './ordem.js';
 import {
   acumuladosDosAtivos,
   agruparPresencasPorJogador,
+  periodoDoMes,
   type JogadorDoRanking,
   type PartidaDoRanking,
   type PresencaDoRanking,
@@ -61,7 +62,14 @@ export function compararCenarios(entrada: EntradaCenarios): ComparacaoDeCenarios
       referencia: hoje,
       periodos: jogador.periodos,
     });
-    const rodadas = rodadasDoJogador(jogador.periodos, entrada.partidas, situacoes, resolver, jogador.inicioPontuacao);
+    // Cada rodada é cortada no início do período do mês dela, como no ranking e no PDF.
+    const rodadas = entrada.partidas.map((partida) => {
+      const inicio =
+        jogador.inicioPontuacao === undefined
+          ? undefined
+          : inicioDoPeriodo(jogador.inicioPontuacao, jogador.periodos, periodoDoMes(hoje, mesDe(partida.data)));
+      return rodadasDoJogador(jogador.periodos, [partida], situacoes, resolver, inicio)[0]!;
+    });
     return { acumulado, posicao, rodadas };
   };
   const antes = cenario(entrada.alvoAntes);
