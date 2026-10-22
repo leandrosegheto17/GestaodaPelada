@@ -1,7 +1,7 @@
 # THREAT-MODEL
 
-Modelo de ameaças enxuto (STRIDE) do Pelada. Atualizado na auditoria de release de 2026-10-21. Evidência executada em
-`.md/.seguranca/2026-10-21/` e `.md/.seguranca/sondas.json`. Requisitos de origem: `SDD.md` §7, `GUARDRAILS.md`.
+Modelo de ameaças enxuto (STRIDE) do Pelada. Atualizado na auditoria de release de 2026-10-22. Evidência executada em
+`.md/.seguranca/2026-10-22/`, `.md/.seguranca/sondas.json` e `.md/.seguranca/sondas-autenticadas*.py`. Requisitos de origem: `SDD.md` §7, `GUARDRAILS.md`.
 
 ## Ativos
 
@@ -49,7 +49,8 @@ Operador (máquina local, `DATABASE_URL` própria) -> Neon por script. GitHub Ac
 | E: admin de um grupo no outro | Middleware de vínculo + repositório com `grupoId` + suíte de isolamento; 404 | Admin da quinta em 6 rotas do grupo do domingo -> 404 (e o inverso); admin comum em `/api/dono/*` -> 404 |
 | T: entrada inválida | Esquema estrito do contrato no servidor | `pontuacaoInicial` fora de 0 a 9999, posição inexistente, campo extra, peso fora de -10 a 10 -> 422 |
 | I: financeiro sem permissão | 403 sem `acessa_financeiro` | Testes do QA (TP-0205) |
-| E/T: data de início da pontuação (TP-0209): `POST …/jogadores/:id/inicio/previa` e `PUT …/jogadores/:id/inicio` | Mesma guarda de admin vinculado (sessão, `X-Pelada`, escopo completo, 404 fora do grupo), corpo estrito `{ data }` com data de calendário e `<= hoje` (servidor), transação com trava da linha e auditoria `jogador_inicio_alterado` (datas e acumulados, sem dado pessoal) | 71 sondas autenticadas (`sondas-autenticadas.py`, 2 grupos e 3 contas): sem cookie/forjado 401, sem `X-Pelada` 403, senha temporária 403, grupo/jogador alheio e id inválido 404, formato/futura/campo extra/tipo/SQLi/corpo malformado 422, 1 MB 413; público sem `inicioPontuacao`. **Falha:** sem limite inferior, `1900-01-01` é aceita e `0000-01-01` na gravação responde 500 (RTP aberta, Baixo) |
+| E/T: data de início da pontuação (TP-0209): `POST …/jogadores/:id/inicio/previa` e `PUT …/jogadores/:id/inicio` | Mesma guarda de admin vinculado (sessão, `X-Pelada`, escopo completo, 404 fora do grupo), corpo estrito `{ data }` com data de calendário, `>= 2000-01-01` (`PISO_INICIO`) e `<= hoje` (servidor), transação com trava da linha e auditoria `jogador_inicio_alterado` (datas e acumulados, sem dado pessoal) | 71 sondas autenticadas (`sondas-autenticadas.py`, 2 grupos e 3 contas), 0 falhas: sem cookie/forjado 401, sem `X-Pelada` 403, senha temporária 403, grupo/jogador alheio e id inválido 404, formato/futura/campo extra/tipo/SQLi/corpo malformado 422, 1 MB 413. **Piso conferido:** `0000-01-01`, `0001-01-01` e `1900-01-01` agora 422 (antes: 500 e aceita); fecha o RTP-0185 |
+| E/T/I: períodos do jogador (lote TP-0210 a TP-0231): `GET …/jogadores/:id/periodos`, `PUT …/jogadores/:id/periodos/:periodoId` (corrigir saída e/ou retorno), `POST …/periodos/:periodoId/previa`, `POST …/jogadores/:id/reativar/previa` e `POST …/jogadores/:id/reativar` com `dataRetorno` opcional | Mesma guarda de admin vinculado; `uuidDaRota` em `id` e `periodoId` (não UUID = 404); todas as consultas e o `UPDATE periodos_ativos` filtram por `periodo`, `jogador` **e** `grupo_id` (período de outro jogador ou grupo = 404); corpo estrito (`saida`/`retorno`/`dataRetorno` são `data`, ao menos um, campo extra recusado); `<= hoje` no servidor; regra de domínio única para a prévia e a gravação (`avaliarPedidoDePeriodos`), que devolve 422 por campo com texto fixo (sem eco do valor); correção e reativar retroativo em `emTransacao` com `jogadores.travar` antes da escrita e `auditoria.registrar` (datas, acumulado e posição, sem apelido, telefone nem e-mail); constraints `periodo_fim_depois_inicio` e `periodos_um_aberto` viram 422/409 sem mensagem do banco; prévias só leem; resposta da listagem tem só `id`, `tipo`, `inicio`, `fim`, `corrigivel`; G-26 (proposta) com checagem `checar-escrita-periodo.mjs` no CI | 225 sondas autenticadas (`sondas-autenticadas-periodos.py`, 2 grupos e 3 contas), 0 falhas: sem cookie/forjado 401, sem `X-Pelada` 403, senha temporária 403, admin do outro grupo e par cruzado 404, período de outro jogador do mesmo grupo 404, id/período não UUID e SQLi 404, jogador ativo 409; datas `01/09/2026`, 30/02, mês 13, dia 00, futura, amanhã, `9999-12-31`, `0000-01-01`, `0001-01-01`, `1900-01-01`, `1999-12-31`, SQLi, hora, vazia, espaços, unicode e script: 422 em todas (nenhuma 5xx); tipo errado (número/null/array/objeto/booleano), campo extra, corpo array, JSON malformado, corpo vazio: 422; 1 MB: 413; verbos errados 404/405; caminho feliz: prévias 200 sem gravar, correção com data igual `alterado:false`, reativar retroativo 200 e depois 409, correção real de retorno 200 (duas) com auditoria só com datas e números; mais 35 sondas sem credencial no `sondas.json` (401/403/422) |
 
 ### 4. Importação do legado por script (ADR-021)
 
@@ -76,6 +77,7 @@ Operador (máquina local, `DATABASE_URL` própria) -> Neon por script. GitHub Ac
 | I: cache de resposta com dado de outro grupo | Cache do Hyperdrive desligado (G-17), conferido no `deploy.yml` antes de publicar |
 | T/I: Neon exposto | Não exposto ao navegador; TLS |
 | R: perda de dado na migração | Branch de restauração + dump cifrado antes de migrar |
+| T/R: migração que contrai o esquema (`202610210000_contrai_posicao`: converte `defensor`/`meio_campo` e recria o CHECK de posição) | Roda depois do branch + dump do `deploy.yml`; `UPDATE` antes do `DROP/ADD CONSTRAINT` na mesma migração; `checar-migracao-aditiva` aceita a contração prevista em `QUEBRAS.md`. Conferido no banco de desenvolvimento: CHECK com as 7 posições e 0 linhas com posição antiga |
 
 ### 7. `deploy.yml` e CI
 
@@ -95,7 +97,7 @@ T-13 (enumeração de slug), ausência de RLS na Fase 1, sem criptografia por ca
 
 Resolvidos na 2ª auditoria de 2026-10-20 (RTP-0169 a 0175): nosniff em `/api/*` (30 sondas com o cabeçalho exigido em 200/401/403/404/422), ações do GitHub por SHA, `.gitignore` do legado.
 
-0. Data de início sem limite inferior (`0000-01-01` gera 500 no `PUT …/inicio`; `1900-01-01` é aceita). Baixo, só admin autenticado, sem vazamento, transação reverte.
+0. ~~Data de início sem limite inferior (RTP-0185)~~ **RESOLVIDO** em 2026-10-22: piso `2000-01-01`; `0000-01-01`, `0001-01-01` e `1900-01-01` respondem 422 (71 sondas).
 1. `pnpm-missing-minimum-release-age` ainda acusado pelo semgrep (RTP-0176). Baixo.
 2. `braces@3.0.3` dev-only (GHSA-vfj7-8cjw-p6xm), sem versão corrigida. Baixo, monitorado.
 3. Verificação do limite de taxa e dos cabeçalhos no host publicado: obrigatória após o deploy (não aplicável ao ambiente local; sem staging, ADR-020).

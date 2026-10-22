@@ -299,6 +299,526 @@
       }
     },
     {
+      "nome": "admin: periodos listar sem cookie",
+      "metodo": "GET",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001/periodos",
+      "status_esperado": [
+        401,
+        403
+      ]
+    },
+    {
+      "nome": "admin: periodos listar cookie forjado",
+      "metodo": "GET",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001/periodos",
+      "status_esperado": [
+        401,
+        403
+      ],
+      "cabecalhos": {
+        "Cookie": "__Host-sessao=forjado"
+      }
+    },
+    {
+      "nome": "admin: periodos listar id nao UUID sem cookie",
+      "metodo": "GET",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/%27%3BDROP%20TABLE%20jogadores--/periodos",
+      "status_esperado": [
+        400,
+        401,
+        403,
+        404
+      ]
+    },
+    {
+      "nome": "admin: periodos corrigir sem cookie",
+      "metodo": "PUT",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001/periodos/00000000-0000-4000-8000-0000000000aa",
+      "status_esperado": [
+        401,
+        403
+      ],
+      "corpo": "{\"saida\": \"2026-09-01\"}",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1"
+      }
+    },
+    {
+      "nome": "admin: periodos corrigir cookie forjado",
+      "metodo": "PUT",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001/periodos/00000000-0000-4000-8000-0000000000aa",
+      "status_esperado": [
+        401,
+        403
+      ],
+      "corpo": "{\"saida\": \"2026-09-01\"}",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1",
+        "Cookie": "__Host-sessao=forjado"
+      }
+    },
+    {
+      "nome": "admin: periodos corrigir sem X-Pelada (CSRF)",
+      "metodo": "PUT",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001/periodos/00000000-0000-4000-8000-0000000000aa",
+      "status_esperado": [
+        401,
+        403
+      ],
+      "corpo": "{\"saida\": \"2026-09-01\"}",
+      "cabecalhos": {
+        "Content-Type": "application/json"
+      }
+    },
+    {
+      "nome": "admin: periodos corrigir data malformada sem cookie",
+      "metodo": "PUT",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001/periodos/00000000-0000-4000-8000-0000000000aa",
+      "status_esperado": [
+        400,
+        401,
+        403,
+        422
+      ],
+      "corpo": "{\"saida\": \"2099-99-99'; DROP TABLE periodos_ativos;--\"}",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1"
+      }
+    },
+    {
+      "nome": "admin: periodos corrigir data extrema 0000 sem cookie",
+      "metodo": "PUT",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001/periodos/00000000-0000-4000-8000-0000000000aa",
+      "status_esperado": [
+        400,
+        401,
+        403,
+        422
+      ],
+      "corpo": "{\"saida\": \"0000-01-01\"}",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1"
+      }
+    },
+    {
+      "nome": "admin: periodos corrigir data extrema 9999 sem cookie",
+      "metodo": "PUT",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001/periodos/00000000-0000-4000-8000-0000000000aa",
+      "status_esperado": [
+        400,
+        401,
+        403,
+        422
+      ],
+      "corpo": "{\"saida\": \"9999-12-31\"}",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1"
+      }
+    },
+    {
+      "nome": "admin: periodos corrigir data 30/02 sem cookie",
+      "metodo": "PUT",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001/periodos/00000000-0000-4000-8000-0000000000aa",
+      "status_esperado": [
+        400,
+        401,
+        403,
+        422
+      ],
+      "corpo": "{\"saida\": \"2026-02-30\"}",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1"
+      }
+    },
+    {
+      "nome": "admin: periodos corrigir corpo malformado sem cookie",
+      "metodo": "PUT",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001/periodos/00000000-0000-4000-8000-0000000000aa",
+      "status_esperado": [
+        400,
+        401,
+        403,
+        422
+      ],
+      "corpo": "{nao json",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1"
+      }
+    },
+    {
+      "nome": "admin: periodos previa sem cookie",
+      "metodo": "POST",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001/periodos/00000000-0000-4000-8000-0000000000aa/previa",
+      "status_esperado": [
+        401,
+        403
+      ],
+      "corpo": "{\"retorno\": \"2026-09-01\"}",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1"
+      }
+    },
+    {
+      "nome": "admin: periodos previa cookie forjado",
+      "metodo": "POST",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001/periodos/00000000-0000-4000-8000-0000000000aa/previa",
+      "status_esperado": [
+        401,
+        403
+      ],
+      "corpo": "{\"retorno\": \"2026-09-01\"}",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1",
+        "Cookie": "__Host-sessao=forjado"
+      }
+    },
+    {
+      "nome": "admin: periodos previa sem X-Pelada (CSRF)",
+      "metodo": "POST",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001/periodos/00000000-0000-4000-8000-0000000000aa/previa",
+      "status_esperado": [
+        401,
+        403
+      ],
+      "corpo": "{\"retorno\": \"2026-09-01\"}",
+      "cabecalhos": {
+        "Content-Type": "application/json"
+      }
+    },
+    {
+      "nome": "admin: periodos previa data malformada sem cookie",
+      "metodo": "POST",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001/periodos/00000000-0000-4000-8000-0000000000aa/previa",
+      "status_esperado": [
+        400,
+        401,
+        403,
+        422
+      ],
+      "corpo": "{\"retorno\": \"2099-99-99'; DROP TABLE periodos_ativos;--\"}",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1"
+      }
+    },
+    {
+      "nome": "admin: periodos previa data extrema 0000 sem cookie",
+      "metodo": "POST",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001/periodos/00000000-0000-4000-8000-0000000000aa/previa",
+      "status_esperado": [
+        400,
+        401,
+        403,
+        422
+      ],
+      "corpo": "{\"retorno\": \"0000-01-01\"}",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1"
+      }
+    },
+    {
+      "nome": "admin: periodos previa data extrema 9999 sem cookie",
+      "metodo": "POST",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001/periodos/00000000-0000-4000-8000-0000000000aa/previa",
+      "status_esperado": [
+        400,
+        401,
+        403,
+        422
+      ],
+      "corpo": "{\"retorno\": \"9999-12-31\"}",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1"
+      }
+    },
+    {
+      "nome": "admin: periodos previa data 30/02 sem cookie",
+      "metodo": "POST",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001/periodos/00000000-0000-4000-8000-0000000000aa/previa",
+      "status_esperado": [
+        400,
+        401,
+        403,
+        422
+      ],
+      "corpo": "{\"retorno\": \"2026-02-30\"}",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1"
+      }
+    },
+    {
+      "nome": "admin: periodos previa corpo malformado sem cookie",
+      "metodo": "POST",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001/periodos/00000000-0000-4000-8000-0000000000aa/previa",
+      "status_esperado": [
+        400,
+        401,
+        403,
+        422
+      ],
+      "corpo": "{nao json",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1"
+      }
+    },
+    {
+      "nome": "admin: reativar previa sem cookie",
+      "metodo": "POST",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001/reativar/previa",
+      "status_esperado": [
+        401,
+        403
+      ],
+      "corpo": "{\"dataRetorno\": \"2026-09-01\"}",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1"
+      }
+    },
+    {
+      "nome": "admin: reativar previa cookie forjado",
+      "metodo": "POST",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001/reativar/previa",
+      "status_esperado": [
+        401,
+        403
+      ],
+      "corpo": "{\"dataRetorno\": \"2026-09-01\"}",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1",
+        "Cookie": "__Host-sessao=forjado"
+      }
+    },
+    {
+      "nome": "admin: reativar previa sem X-Pelada (CSRF)",
+      "metodo": "POST",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001/reativar/previa",
+      "status_esperado": [
+        401,
+        403
+      ],
+      "corpo": "{\"dataRetorno\": \"2026-09-01\"}",
+      "cabecalhos": {
+        "Content-Type": "application/json"
+      }
+    },
+    {
+      "nome": "admin: reativar previa data malformada sem cookie",
+      "metodo": "POST",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001/reativar/previa",
+      "status_esperado": [
+        400,
+        401,
+        403,
+        422
+      ],
+      "corpo": "{\"dataRetorno\": \"2099-99-99'; DROP TABLE periodos_ativos;--\"}",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1"
+      }
+    },
+    {
+      "nome": "admin: reativar previa data extrema 0000 sem cookie",
+      "metodo": "POST",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001/reativar/previa",
+      "status_esperado": [
+        400,
+        401,
+        403,
+        422
+      ],
+      "corpo": "{\"dataRetorno\": \"0000-01-01\"}",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1"
+      }
+    },
+    {
+      "nome": "admin: reativar previa data extrema 9999 sem cookie",
+      "metodo": "POST",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001/reativar/previa",
+      "status_esperado": [
+        400,
+        401,
+        403,
+        422
+      ],
+      "corpo": "{\"dataRetorno\": \"9999-12-31\"}",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1"
+      }
+    },
+    {
+      "nome": "admin: reativar previa data 30/02 sem cookie",
+      "metodo": "POST",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001/reativar/previa",
+      "status_esperado": [
+        400,
+        401,
+        403,
+        422
+      ],
+      "corpo": "{\"dataRetorno\": \"2026-02-30\"}",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1"
+      }
+    },
+    {
+      "nome": "admin: reativar previa corpo malformado sem cookie",
+      "metodo": "POST",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001/reativar/previa",
+      "status_esperado": [
+        400,
+        401,
+        403,
+        422
+      ],
+      "corpo": "{nao json",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1"
+      }
+    },
+    {
+      "nome": "admin: reativar com dataRetorno sem cookie",
+      "metodo": "POST",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001/reativar",
+      "status_esperado": [
+        401,
+        403
+      ],
+      "corpo": "{\"dataRetorno\": \"2026-09-01\"}",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1"
+      }
+    },
+    {
+      "nome": "admin: reativar com dataRetorno cookie forjado",
+      "metodo": "POST",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001/reativar",
+      "status_esperado": [
+        401,
+        403
+      ],
+      "corpo": "{\"dataRetorno\": \"2026-09-01\"}",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1",
+        "Cookie": "__Host-sessao=forjado"
+      }
+    },
+    {
+      "nome": "admin: reativar com dataRetorno sem X-Pelada (CSRF)",
+      "metodo": "POST",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001/reativar",
+      "status_esperado": [
+        401,
+        403
+      ],
+      "corpo": "{\"dataRetorno\": \"2026-09-01\"}",
+      "cabecalhos": {
+        "Content-Type": "application/json"
+      }
+    },
+    {
+      "nome": "admin: reativar com dataRetorno data malformada sem cookie",
+      "metodo": "POST",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001/reativar",
+      "status_esperado": [
+        400,
+        401,
+        403,
+        422
+      ],
+      "corpo": "{\"dataRetorno\": \"2099-99-99'; DROP TABLE periodos_ativos;--\"}",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1"
+      }
+    },
+    {
+      "nome": "admin: reativar com dataRetorno data extrema 0000 sem cookie",
+      "metodo": "POST",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001/reativar",
+      "status_esperado": [
+        400,
+        401,
+        403,
+        422
+      ],
+      "corpo": "{\"dataRetorno\": \"0000-01-01\"}",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1"
+      }
+    },
+    {
+      "nome": "admin: reativar com dataRetorno data extrema 9999 sem cookie",
+      "metodo": "POST",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001/reativar",
+      "status_esperado": [
+        400,
+        401,
+        403,
+        422
+      ],
+      "corpo": "{\"dataRetorno\": \"9999-12-31\"}",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1"
+      }
+    },
+    {
+      "nome": "admin: reativar com dataRetorno data 30/02 sem cookie",
+      "metodo": "POST",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001/reativar",
+      "status_esperado": [
+        400,
+        401,
+        403,
+        422
+      ],
+      "corpo": "{\"dataRetorno\": \"2026-02-30\"}",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1"
+      }
+    },
+    {
+      "nome": "admin: reativar com dataRetorno corpo malformado sem cookie",
+      "metodo": "POST",
+      "caminho": "/api/grupos/57c0a466-4db9-46dd-bbd4-76cfdfa4f4cb/jogadores/00000000-0000-4000-8000-000000000001/reativar",
+      "status_esperado": [
+        400,
+        401,
+        403,
+        422
+      ],
+      "corpo": "{nao json",
+      "cabecalhos": {
+        "Content-Type": "application/json",
+        "X-Pelada": "1"
+      }
+    },
+    {
       "nome": "sessao/eu sem cookie",
       "metodo": "GET",
       "caminho": "/api/sessao/eu",

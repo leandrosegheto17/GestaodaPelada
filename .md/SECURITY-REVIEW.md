@@ -1,5 +1,64 @@
 # SECURITY-REVIEW
 
+## Auditoria de release 2026-10-22 — DevSecOps — APROVADA COM DÉBITO
+
+**Pendente de aceite do usuário no pedido de deploy:** o item NÃO EXECUTADO desta auditoria (limite de taxa da Cloudflare em `/api/sessao/entrar` e `/api/publico/*` e cabeçalhos no host publicado). Motivo: não há staging (ADR-020) e DAST em produção é proibido; o aceite de 2026-10-21 valia para aquele deploy. Prazo proposto: conferência passiva (`curl -I` na URL pública) logo depois do deploy.
+
+Escopo: o que mudou desde a auditoria de 2026-10-21 (`83909c5b..HEAD`, 126 arquivos): lote de períodos do jogador (TP-0210 a TP-0231 e RTP-0186 a RTP-0204): rotas `GET …/periodos`, `PUT …/periodos/:periodoId`, `POST …/periodos/:periodoId/previa`, `POST …/reativar/previa` e `POST …/reativar` com `dataRetorno`; piso da data de início (RTP-0185); migração `202610210000_contrai_posicao`; checagem `checar-escrita-periodo.mjs` (G-26) no `ci.yml`; telas novas do jogador. Só produção (ADR-020): teste ativo só local (API `127.0.0.1:8787`, banco de desenvolvimento `pelada` semeado); nada contra produção, nada apagado, `pelada_teste` não usado. Brutos em `.md/.seguranca/2026-10-22/` (`dast-api-auth/periodos.json`, `dast-api-auth/inicio.json`, `dast-web/`, `resumo-dast.md`, `zap.json`, `semgrep.json`, `osv-scanner.json`, `gitleaks.json`).
+
+### Executado (evidência com comando e saída)
+
+| Item | Comando | Ferramenta | Resultado | Saída completa |
+|---|---|---|---|---|
+| Dependências de produção | `pnpm audit --prod --json` | pnpm 11.23.0 | 0 vulnerabilidades | `dependencias-node.json` |
+| Dependências, todos os lockfiles | `osv-scanner scan source -r` (Docker) | osv-scanner (imagem `latest`) | 1: `braces@3.0.3` (GHSA-vfj7-8cjw-p6xm), dev-only via stylelint; igual a 21/10; sem versão corrigida | `osv-scanner.json` |
+| Segredos no histórico inteiro | `gitleaks git` | gitleaks 8.30.1 | 36, nos mesmos 3 commits de 21/10 (`d273d665` 21, `50b1fa6b` 14, `bca136ab` 1, contagem por commit conferida no JSON); nenhum commit do lote tem achado; falsos positivos já classificados | `gitleaks.json` |
+| SAST | `semgrep scan --config p/default p/secrets p/owasp-top-ten` (Docker) | semgrep (imagem `latest`) | ERROR 13, WARNING 31, MEDIUM 1 (21/10: 13/28/1). Nenhum caminho em `backend/api/src`, `backend/dominio`, `backend/contrato` ou `frontend/` | `semgrep.json` |
+| DAST da API (sondas do projeto) | `seguranca.py --dast http://127.0.0.1:8787 --sondas .md/.seguranca/sondas.json` | seguranca.py + urllib | 77 sondas (35 novas para o lote), 0 reprovadas, `nosniff` exigido em todas as respostas | `dast-sondas.json`, `resumo-dast.md` |
+| ZAP baseline | idem (Docker) | zaproxy/zap-stable | 0 alto, 0 médio, 3 baixos (COEP/COOP/CORP, igual e aceitável) | `zap.json` |
+| Front servido pelo Worker | `seguranca.py --dast … --sondas .md/.seguranca/sondas-web.json` | seguranca.py | 3/3, 0 falhas; CSP restritiva, nosniff, referrer-policy `same-origin`, permissions-policy (`curl -sI` em `/`) | `dast-web/` |
+| Sondas autenticadas da data de início | `python .md/.seguranca/sondas-autenticadas.py http://127.0.0.1:8787 …/inicio.json` | Python 3 + urllib, 3 contas, 2 grupos | 71 sondas, 0 falhas (em 21/10: 4 falhas, 1 defeito). `0000-01-01`, `0001-01-01` e `1900-01-01` agora 422 | `dast-api-auth/inicio.json` |
+| Sondas autenticadas do lote de períodos | `python .md/.seguranca/sondas-autenticadas-periodos.py http://127.0.0.1:8787 …/periodos.json` | Python 3 + urllib, 3 contas, 2 grupos | 225 sondas, 0 falhas: 153x422, 33x404, 11x200, 10x401, 9x403, 6x413, 3x409; nenhuma 5xx; nosniff e sem stack/SQL/caminho em todas | `dast-api-auth/periodos.json` |
+| Checagens estáticas do projeto (G-14, G-21, G-23, G-24, G-25, G-26) | `node backend/scripts/checagens/checar-{escrita-periodo,escrita-e-dono,grupo-id,migracao-aditiva,acoes-fixadas,ids-tarefa}.mjs` | node 24.16.0 | todas com código de saída 0 (299, 570, 20 e 13 arquivos/migrações conferidos nas quatro que imprimem contagem) | terminal |
+| Contrato compatível | `pnpm --filter @pelada/contrato checar-compatibilidade` | pnpm 11.23.0 | "Contrato compatível com o snapshot." | terminal |
+| Banco (psql no `gestaodapelada-db-1`, PostgreSQL 16.15) | `select …` em `auditoria`, `contas`, `sessoes`, `pg_constraint` | psql | auditoria de `jogador_periodo_corrigido`, `jogador_reativado_retroativo` e `jogador_inicio_alterado` só com datas, acumulados, posição e id do período (0 linhas com `@`, telefone, apelido ou senha); hash de senha `$2a$12$` (60); token de sessão guardado com 32 bytes; CHECK de posição com as 7 posições e 0 linhas com posição antiga | terminal |
+
+### Comparação com a auditoria de 21/10
+
+- **gitleaks**: 36 = 36, mesmos 3 commits e mesmas contagens por commit.
+- **OSV**: 1 = 1 (`braces`).
+- **semgrep**: ERROR 13 = 13 (o `spawn-shell-true` de `.claude/scripts/comparar-visual.mjs` só mudou de linha, 166, depois de o arquivo encolher); WARNING 28 -> 31. Os 3 WARNING novos, conferidos no JSON, são falsos positivos sem entrada externa: (1) e (2) `detect-non-literal-regexp` em `backend/scripts/checagens/checar-escrita-periodo.mjs:83-84` (checagem do CI; o padrão é montado com nomes de funções de escrita e identificadores de `import` lidos do próprio código-fonte do repositório, sem dado de usuário, e a execução é só no CI); (3) `dynamic-urllib-use-detected` em `.md/.seguranca/sondas-autenticadas.py:24` (script de sonda; a URL vem do argumento e o script recusa qualquer base que não seja `127.0.0.1`/`localhost`). Nenhum no código publicado.
+- `pnpm-missing-minimum-release-age` (1 MEDIUM) permanece: é o RTP-0176, não duplicado.
+
+### Verificação por item do lote (executado)
+
+- **Autenticação e CSRF** nas 4 rotas novas de escrita/prévia e na listagem: sem cookie 401; cookie forjado 401; sem `X-Pelada` 403; conta com senha temporária (escopo restrito) 401/403.
+- **Isolamento (SDD §7, Autorização)**: admin do outro grupo 404; par grupo/jogador cruzado 404; período de **outro jogador do mesmo grupo** 404 (IDOR de período); período e jogador inexistentes 404; ids não UUID e com SQLi 404; reativar de jogador ativo 409 sem gravar. Leitura de código: `corrigirPeriodo` e a leitura de existência filtram por `periodo`, `jogador` e `grupo_id`.
+- **Validação (datas malformadas e extremas)**: 17 variações de data em 5 campos (`saida`, `retorno`, `dataRetorno`, mais as prévias) mais tipos errados, campo extra, array, JSON malformado, corpo vazio e 1 MB: 422/413, sem 5xx, sem eco do valor enviado.
+- **Gravação**: reativar com retorno retroativo 200 e depois 409; correção de retorno 200 duas vezes (ida e volta) com auditoria; correção com data igual responde `alterado: false` sem gravar nem auditar.
+- **Dados pessoais**: ranking público sem período, e-mail nem id de conta; listagem de períodos só com `id`, `tipo`, `inicio`, `fim`, `corrigivel`; `Cache-Control: no-store` e `nosniff` em `/api/grupos/*` (conferido com `curl -si` na listagem).
+- **RTP-0185 (data de início sem piso): RESOLVIDO** e verificado (71 sondas, 0 falhas).
+
+### Somente lido (não conta como teste)
+
+- Revisão do diff `83909c5b..HEAD` em `backend/api/src` e `frontend/web/src`: SQL só por Kysely/`sql` com parâmetros nos repositórios novos; sem `eval`, `sql.raw`, `innerHTML`, `dangerouslySetInnerHTML`, `localStorage`/`sessionStorage`, `document.cookie`, `console.log` nem `fetch` direto nas telas novas (grep sobre as linhas adicionadas). Ordem `travar` -> escrita -> `auditoria.registrar` na mesma transação em `periodos-corrigir` e `reativar`; a ordem em `inativar`, `inicio-editar`, lançar presença e editar partida é coberta pelo teste de ordem do CI (G-26), **não rodado nesta auditoria** (exige o banco de teste, fora do escopo autorizado).
+- Configuração (grep e `git diff 83909c5b..HEAD`): só `ci.yml` (+1 passo `checar-escrita-periodo.mjs`) e `.gitignore` (+3 linhas) mudaram; `deploy.yml`, `wrangler.jsonc`, `pnpm-workspace.yaml` e lockfile sem alteração; `grep "uses:" … | grep -vE "@[0-9a-f]{40}"` não devolve ação externa por tag; `blockExoticSubdeps: true`, `minimumReleaseAge: 1440`, `trustPolicy: no-downgrade`.
+- SDD §7 conferido contra as sondas acima: autenticação, sessão (`__Host-sessao`), RBAC por grupo com 404, criptografia (bcrypt 12, SHA-256), isolamento, superfície (`no-store`, `nosniff`, CSP no front) e LGPD (auditoria e listagem sem dado pessoal): sem divergência.
+
+### Achados
+
+Nenhum Crítico, Alto, Médio nem Baixo novo. Observações sem severidade de segurança (não viram tarefa): (a) as mensagens 422 de tipo errado e campo extra vêm do Zod em inglês (`Invalid input: …`, `Unrecognized key: …`), sem valor sensível (a chave citada é a que o próprio cliente enviou); (b) o proxy `/api` do servidor de desenvolvimento do front (`127.0.0.1:5173`) respondeu 502 neste ambiente e esse servidor não envia os cabeçalhos de segurança (eles vêm do Worker); por isso o front foi auditado onde é publicado (assets servidos pelo Worker em `:8787`).
+
+### Resíduo no banco de desenvolvimento
+
+As sondas criaram **um** jogador de teste no Racha de Domingo (`SondaAudit-10-22`, id `873599a3-7262-4751-a469-8c85fb442538`, ativo, com 2 períodos e as linhas de auditoria correspondentes) e a sonda da data de início regravou e restaurou `2026-07-04` no início do primeiro jogador da Pelada de Quinta. Nada foi apagado.
+
+### Não executado
+
+(1) Limite de taxa da Cloudflare em `/api/sessao/entrar` e `/api/publico/*` e cabeçalhos no host publicado: o binding do limitador não existe no ambiente local; sem staging (ADR-020); DAST em produção é proibido. Verificação passiva obrigatória depois do deploy (`curl -I` na URL pública: `Set-Cookie`, nosniff, CSP). (2) Teste de ordem/concorrência da G-26 e suíte de isolamento por rota (`pnpm --filter @pelada/api test`): dependem do banco `pelada_teste`, que esta auditoria não podia usar; ficam cobertos pelo CI da `main`, que deve estar verde no commit a publicar.
+
+Débito aberto (Baixo): RTP-0176 (`minimumReleaseAge` 1440 acusado pelo semgrep) e `braces` dev-only (monitorado). RTP-0185 fechado. Nenhum Crítico/Alto. Veredito: APROVADA COM DÉBITO, condicionada ao aceite do usuário do item (1) no pedido de deploy.
+
 ## Auditoria de release 2026-10-21 — DevSecOps — APROVADA COM DÉBITO
 
 **Risco aceito pelo usuário em 2026-10-21 (ao pedir o deploy):** o item NÃO EXECUTADO desta auditoria — limite de taxa da Cloudflare em `/api/sessao/entrar` e `/api/publico/*` e cabeçalhos no host publicado. Motivo: não há staging (ADR-020) e DAST em produção é proibido. Prazo: conferência passiva (`curl -I` na URL pública) logo depois do deploy. Débito aberto: RTP-0185 (Baixa).
