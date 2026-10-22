@@ -103,8 +103,7 @@ export function Component() {
   };
 
   const aoInativar = (dataSaida: string) => {
-    setFalhaNaSituacao(false);
-    inativar.mutate({ dataSaida }, { onSuccess: () => setDialogo(null), onError: () => setFalhaNaSituacao(true) });
+    inativar.mutate({ dataSaida }, { onSuccess: () => setDialogo(null) });
   };
 
   const aoExcluir = () => {
@@ -164,9 +163,12 @@ export function Component() {
           apelido={jogador.apelido}
           hoje={hoje}
           enviando={inativar.isPending}
-          falhou={falhaNaSituacao}
+          erro={inativar.error}
           aoInativar={aoInativar}
-          aoCancelar={() => setDialogo(null)}
+          aoCancelar={() => {
+            inativar.reset();
+            setDialogo(null);
+          }}
         />
       ) : null}
       {dialogo === 'inicio' && jogador ? (

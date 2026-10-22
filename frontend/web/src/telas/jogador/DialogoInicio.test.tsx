@@ -212,6 +212,30 @@ describe('DialogoInicio (T16): erros', () => {
     expect(confirmar).toBeDisabled();
   });
 
+  it('422 da regra do início depois da saída: mensagem literal no campo, Confirmar desabilitado e foco', async () => {
+    const resposta = fixture('erro-inicio-depois-da-saida.json') as { erro: { campos: { data: string } } };
+    let recusar = true;
+    api({
+      previa: () =>
+        recusar
+          ? HttpResponse.json(resposta, { status: 422 })
+          : HttpResponse.json(fixture('inicio-previa-avancar.json')),
+    });
+    const { campo, confirmar, dialogo } = montar();
+    informar(campo, '2026-10-15');
+    const alerta = await within(dialogo).findByRole('alert');
+    expect(alerta).toHaveTextContent(resposta.erro.campos.data);
+    expect(campo).toBeInvalid();
+    expect(campo).toHaveAccessibleDescription(expect.stringContaining(resposta.erro.campos.data));
+    expect(campo).toHaveFocus();
+    expect(confirmar).toBeDisabled();
+    expect(await violacoes(dialogo)).toEqual([]);
+    recusar = false;
+    informar(campo, '2026-10-01');
+    await within(dialogo).findByText(/Acumulado de 18/);
+    expect(within(dialogo).queryByRole('alert')).toBeNull();
+  });
+
   it('falha de rede na prévia: mensagem e "Tentar de novo" refaz a chamada', async () => {
     let falhar = true;
     api({ previa: () => (falhar ? HttpResponse.error() : HttpResponse.json(fixture('inicio-previa-avancar.json'))) });

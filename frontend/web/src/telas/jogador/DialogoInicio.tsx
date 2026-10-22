@@ -1,11 +1,11 @@
 import { inicioCorpo, type InicioPreviaResposta } from '@pelada/contrato';
-import { useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { Botao } from '../../componentes/basicos/Botao';
 import { Faixa } from '../../componentes/basicos/Faixa';
 import { CampoData } from '../../componentes/campos/CampoData';
 import { Dialogo } from '../../componentes/dialogos/Dialogo';
 import { useAlterarInicio, useInicioPrevia } from '../../dados/elenco';
-import { deErroApi, deValidacao } from '../../dados/errosDeCampos';
+import { deValidacao, mensagemDoCampo as mensagemDoCampoApi } from '../../dados/errosDeCampos';
 import estilos from './jogador.module.css';
 
 interface Props {
@@ -30,7 +30,7 @@ function fraseDaPrevia(previa: InicioPreviaResposta, recuando: boolean): string 
   return `Acumulado de ${antes} ${antes === 1 ? 'ponto' : 'pontos'} passa a ${depois}${posicao}.${rodadas}`;
 }
 
-const mensagemDoCampo = (erro: unknown) => deErroApi(erro)?.['data'];
+const mensagemDoCampo = (erro: unknown) => mensagemDoCampoApi(erro, 'data');
 
 /** Alterar a data de início: prévia da API ao informar uma data diferente; só confirma depois dela. */
 export function DialogoInicio({ grupoId, jogadorId, hoje, atual, aoCancelar, aoAlterado }: Props) {
@@ -59,6 +59,12 @@ export function DialogoInicio({ grupoId, jogadorId, hoje, atual, aoCancelar, aoA
     erroLocal ?? (consulta ? (mensagemDoCampo(falhaDaPrevia) ?? mensagemDoCampo(gravar.error)) : undefined);
   const redeAoGravar = gravar.isError && !mensagemDoCampo(gravar.error);
 
+  const idCampo = useId();
+  const recusaDoServidor = erroLocal === undefined ? erroDoCampo : undefined;
+  useEffect(() => {
+    if (recusaDoServidor) document.getElementById(idCampo)?.focus();
+  }, [recusaDoServidor, idCampo]);
+
   let texto = '';
   if (igual) texto = 'Nada a alterar.';
   else if (consulta && previa.isPending) texto = 'Calculando…';
@@ -83,6 +89,7 @@ export function DialogoInicio({ grupoId, jogadorId, hoje, atual, aoCancelar, aoA
     >
       <CampoData
         rotulo="Data de início"
+        id={idCampo}
         valor={data}
         aoMudar={aoMudar}
         max={hoje}

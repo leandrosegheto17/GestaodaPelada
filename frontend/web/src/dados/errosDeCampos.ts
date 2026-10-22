@@ -8,6 +8,11 @@ export function deErroApi(erro: unknown): ErrosDeCampos | null {
   return { ...erro.campos };
 }
 
+/** Mensagem pronta da API para um campo, ou `undefined` se o erro não for um 422 desse campo. */
+export function mensagemDoCampo(erro: unknown, campo: string): string | undefined {
+  return deErroApi(erro)?.[campo];
+}
+
 /** Resultado de `safeParse` de um schema do contrato (só o que precisamos dele). */
 export type ResultadoValidacao =
   | { success: true }
