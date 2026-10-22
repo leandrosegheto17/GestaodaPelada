@@ -20,7 +20,7 @@ import { useGrupo } from '../../dados/grupo';
 import { recursos } from '../../config/recursos';
 import { DialogoInativar } from './DialogoInativar';
 import { DialogoInicio } from './DialogoInicio';
-import { FaixasDaFicha } from './FaixasDaFicha';
+import { FaixasDaFicha, type FaixaDeDatas } from './FaixasDaFicha';
 import { FormularioJogador } from './FormularioJogador';
 import { SecaoNotas } from './SecaoNotas';
 import { SecaoSituacao } from './SecaoSituacao';
@@ -48,6 +48,7 @@ export function Component() {
   const salvo = salvoNaFicha || (localizacao.state as { salvo?: boolean } | null)?.salvo === true;
   const [dialogo, setDialogo] = useState<'inativar' | 'excluir' | 'inicio' | null>(null);
   const [inicioAlterado, setInicioAlterado] = useState(false);
+  const [datas, setDatas] = useState<FaixaDeDatas | null>(null);
   const [recusadaPorHistorico, setRecusadaPorHistorico] = useState<string | null>(null);
   const [falhaNaSituacao, setFalhaNaSituacao] = useState(false);
 
@@ -123,6 +124,7 @@ export function Component() {
       <Voltar para={`${base}/jogadores`} rotulo="Jogadores" />
       <TituloPagina>{novo ? 'Novo jogador' : (jogador?.apelido ?? '')}</TituloPagina>
       <FaixasDaFicha
+        datas={datas}
         salvo={salvo}
         inicioAlterado={inicioAlterado}
         recusadaPorHistorico={recusadaPorHistorico}
@@ -151,7 +153,7 @@ export function Component() {
         <SecaoSituacao
           grupoId={grupoId}
           jogador={jogador}
-          aoCorrigir={() => undefined}
+          aoDatas={setDatas}
           aoInativar={() => setDialogo('inativar')}
           aoReativar={() => reativar.mutate(undefined, { onError: () => setFalhaNaSituacao(true) })}
           aoExcluir={() => setDialogo('excluir')}

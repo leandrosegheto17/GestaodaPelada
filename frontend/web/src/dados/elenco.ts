@@ -24,7 +24,7 @@ export function useJogadores(grupoId: string) {
   });
 }
 
-const caminhoJogador = (grupoId: string, jogadorId: string) =>
+export const caminhoJogador = (grupoId: string, jogadorId: string) =>
   `/grupos/${encodeURIComponent(grupoId)}/jogadores/${encodeURIComponent(jogadorId)}`;
 
 /** Ficha do jogador (dados, situação, nível e notas). Sempre busca de novo ao abrir. */
@@ -58,7 +58,7 @@ export interface CorpoJogador {
 }
 
 /** Mudanças no elenco invalidam o grupo inteiro (lista, início com `jogadoresAtivos`, ranking de notas). */
-function useInvalidarGrupo(grupoId: string) {
+export function useInvalidarGrupo(grupoId: string) {
   const cliente = useQueryClient();
   return () => cliente.invalidateQueries({ queryKey: chaveGrupo(grupoId) });
 }

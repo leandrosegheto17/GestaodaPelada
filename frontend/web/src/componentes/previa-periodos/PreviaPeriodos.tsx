@@ -2,7 +2,7 @@ import type { PeriodoPreviaResposta } from '@pelada/contrato';
 import { pontosEscritos } from '../../formatacao';
 import { Botao } from '../basicos/Botao';
 import { Faixa } from '../basicos/Faixa';
-import { listaDeDatas } from './listaDeDatas';
+import { fraseDasRodadasQueEntram, fraseDasRodadasQueSaem } from './frasesDasRodadas';
 import estilos from './PreviaPeriodos.module.css';
 
 export type EstadoPrevia =
@@ -24,20 +24,11 @@ function fraseDaPosicao({ posicaoAntes: antes, posicaoDepois: depois }: PeriodoP
   return antes === depois ? `Posição ${antes}, não muda.` : `Posição de ${antes} para ${depois}.`;
 }
 
-function frasesDasRodadas({
-  rodadasQuePassamAConstar: entram,
-  rodadasQueDeixamDeConstar: saem,
-}: PeriodoPreviaResposta): string[] {
-  const frases: string[] = [];
-  if (entram.length > 0) {
-    const verbo = entram.length === 1 ? '1 rodada passa' : `${entram.length} rodadas passam`;
-    frases.push(`${verbo} a constar: ${listaDeDatas(entram.map((r) => r.data))}.`);
-  }
-  if (saem.length > 0) {
-    const verbo = saem.length === 1 ? '1 rodada deixa' : `${saem.length} rodadas deixam`;
-    frases.push(`${verbo} de constar: ${listaDeDatas(saem.map((r) => r.data))}.`);
-  }
-  return frases;
+function frasesDasRodadas(previa: PeriodoPreviaResposta): string[] {
+  return [
+    fraseDasRodadasQueEntram(previa.rodadasQuePassamAConstar),
+    fraseDasRodadasQueSaem(previa.rodadasQueDeixamDeConstar),
+  ].filter((frase) => frase !== null);
 }
 
 function Pronta({ previa }: { previa: PeriodoPreviaResposta }) {

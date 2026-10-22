@@ -6,7 +6,7 @@ import estilos from './Dialogo.module.css';
 
 interface Props {
   titulo: string;
-  descricao?: string;
+  descricao?: ReactNode;
   /** Ação destrutiva: vira `alertdialog` e Esc não fecha. O véu nunca fecha. */
   destrutivo?: boolean;
   /** Esc fecha (padrão: sim, exceto no destrutivo). Na confirmação, Esc equivale a "Cancelar". */
