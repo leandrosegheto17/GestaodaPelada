@@ -13,6 +13,11 @@ export function mensagemDoCampo(erro: unknown, campo: string): string | undefine
   return deErroApi(erro)?.[campo];
 }
 
+export const ehNaoEncontrado = (erro: unknown) => erro instanceof ErroApi && erro.status === 404;
+
+/** Falha que não é recusa de campo nem 404: rede, indisponibilidade. */
+export const ehFalhaDeRede = (erro: unknown) => erro != null && deErroApi(erro) === null && !ehNaoEncontrado(erro);
+
 /** Resultado de `safeParse` de um schema do contrato (só o que precisamos dele). */
 export type ResultadoValidacao =
   | { success: true }

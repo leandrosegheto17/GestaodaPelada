@@ -5,6 +5,7 @@ import type { PeriodoDoJogador } from '../../dados/elenco';
 import { useGrupo } from '../../dados/grupo';
 import { dataCompleta } from '../../formatacao';
 import { DialogoCorrigirDatas } from './DialogoCorrigirDatas';
+import { DialogoReativar } from './DialogoReativar';
 import type { FaixaDeDatas } from './FaixasDaFicha';
 import { ListaPeriodos } from './ListaPeriodos';
 import estilos from './jogador.module.css';
@@ -12,18 +13,17 @@ import estilos from './jogador.module.css';
 interface Props {
   grupoId: string;
   jogador: JogadorDetalhe;
-  /** Resultado de "Corrigir datas" (ou `null` ao abrir de novo) para a ficha mostrar sob o título. */
+  /** Resultado de "Corrigir datas" ou de "Reativar" (ou `null` ao abrir de novo) para a ficha mostrar sob o título. */
   aoDatas: (resultado: FaixaDeDatas | null) => void;
   aoInativar: () => void;
-  aoReativar: () => void;
   aoExcluir: () => void;
-  reativando: boolean;
 }
 
 /** Situação do jogador: ativo (Inativar, Excluir) ou inativo (Reativar). */
-export function SecaoSituacao({ grupoId, jogador, aoDatas, aoInativar, aoReativar, aoExcluir, reativando }: Props) {
+export function SecaoSituacao({ grupoId, jogador, aoDatas, aoInativar, aoExcluir }: Props) {
   const id = 's-sit';
   const [periodo, setPeriodo] = useState<PeriodoDoJogador | null>(null);
+  const [reativando, setReativando] = useState(false);
   const hoje = useGrupo(grupoId).data?.hoje;
   const { ativo, desde } = jogador.situacao;
   return (
@@ -54,7 +54,13 @@ export function SecaoSituacao({ grupoId, jogador, aoDatas, aoInativar, aoReativa
               Inativar
             </Botao>
           ) : (
-            <Botao variante="secundario" carregando={reativando} onClick={aoReativar}>
+            <Botao
+              variante="secundario"
+              onClick={() => {
+                aoDatas(null);
+                setReativando(true);
+              }}
+            >
               Reativar
             </Botao>
           )}
@@ -77,6 +83,23 @@ export function SecaoSituacao({ grupoId, jogador, aoDatas, aoInativar, aoReativa
           }}
           aoNaoEncontrado={() => {
             setPeriodo(null);
+            aoDatas({ tipo: 'naoEncontrado' });
+          }}
+        />
+      ) : null}
+      {reativando && hoje ? (
+        <DialogoReativar
+          grupoId={grupoId}
+          jogadorId={jogador.id}
+          apelido={jogador.apelido}
+          hoje={hoje}
+          aoCancelar={() => setReativando(false)}
+          aoReativado={(dataRetorno, previa) => {
+            setReativando(false);
+            aoDatas({ tipo: 'reativado', apelido: jogador.apelido, dataRetorno, previa });
+          }}
+          aoNaoEncontrado={() => {
+            setReativando(false);
             aoDatas({ tipo: 'naoEncontrado' });
           }}
         />

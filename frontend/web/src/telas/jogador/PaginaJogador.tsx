@@ -11,7 +11,6 @@ import {
   useExcluirJogador,
   useInativarJogador,
   useJogador,
-  useReativarJogador,
   type CorpoJogador,
 } from '../../dados/elenco';
 import { ErroApi } from '../../dados/erros';
@@ -39,7 +38,6 @@ export function Component() {
   const criar = useCriarJogador(grupoId);
   const editar = useEditarJogador(grupoId, jogadorId ?? '');
   const inativar = useInativarJogador(grupoId, jogadorId ?? '');
-  const reativar = useReativarJogador(grupoId, jogadorId ?? '');
   const excluir = useExcluirJogador(grupoId, jogadorId ?? '');
 
   const [errosDoServidor, setErrosDoServidor] = useState<ErrosDeCampos>({});
@@ -155,9 +153,7 @@ export function Component() {
           jogador={jogador}
           aoDatas={setDatas}
           aoInativar={() => setDialogo('inativar')}
-          aoReativar={() => reativar.mutate(undefined, { onError: () => setFalhaNaSituacao(true) })}
           aoExcluir={() => setDialogo('excluir')}
-          reativando={reativar.isPending}
         />
       ) : null}
       {dialogo === 'inativar' && jogador ? (

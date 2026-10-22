@@ -6,8 +6,7 @@ import { CampoData } from '../../componentes/campos/CampoData';
 import { Dialogo } from '../../componentes/dialogos/Dialogo';
 import { PreviaPeriodos, type EstadoPrevia } from '../../componentes/previa-periodos';
 import { usePeriodos, type PeriodoDoJogador } from '../../dados/elenco';
-import { ErroApi } from '../../dados/erros';
-import { deErroApi, deValidacao, mensagemDoCampo } from '../../dados/errosDeCampos';
+import { deValidacao, ehFalhaDeRede, ehNaoEncontrado, mensagemDoCampo } from '../../dados/errosDeCampos';
 import { caminhoPeriodo, useCorrigirPeriodo, usePreviaPeriodos } from '../../dados/periodos';
 import { dataCompleta } from '../../formatacao';
 
@@ -36,9 +35,6 @@ const corpoDe = ({ corrigivel }: PeriodoDoJogador, v: Valores): PeriodoCorrigirC
   ...(corrigivel.retorno ? { retorno: v.retorno } : {}),
 });
 const mesmoCorpo = (a: PeriodoCorrigirCorpo, b: PeriodoCorrigirCorpo) => a.saida === b.saida && a.retorno === b.retorno;
-const ehNaoEncontrado = (erro: unknown) => erro instanceof ErroApi && erro.status === 404;
-/** Falha que não é recusa de campo nem 404: rede, indisponibilidade. */
-const ehFalhaDeRede = (erro: unknown) => erro != null && deErroApi(erro) === null && !ehNaoEncontrado(erro);
 
 /** Corrigir saída e/ou retorno de um período: prévia da API ao informar uma data diferente; só confirma depois dela. */
 export function DialogoCorrigirDatas({

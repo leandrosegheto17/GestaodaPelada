@@ -336,13 +336,16 @@ describe('PaginaJogador (T16): ficha', () => {
     ).toBeInTheDocument();
   });
 
-  it('inativo: mostra Reativar e envia POST /reativar', async () => {
+  it('inativo: Reativar abre o diálogo e envia POST /reativar com a data de retorno', async () => {
     const base = fixture('jogador-toninho.json') as Record<string, JsonBodyType>;
     api({ jogador: { ...base, situacao: { ativo: false, desde: '2026-08-31' } } });
     montar(FICHA);
     expect(await screen.findByText('Inativo desde 31/08/2026.')).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: 'Reativar' }));
+    const dialogo = await screen.findByRole('dialog', { name: 'Reativar Toninho' });
+    await userEvent.click(within(dialogo).getByRole('button', { name: 'Reativar' }));
     await waitFor(() => expect(chamadas[0]?.caminho).toBe(`${API_FICHA}/reativar`));
+    expect(chamadas[0]?.corpo).toEqual({ dataRetorno: '2026-10-22' });
   });
 
   it('excluir: D2 com foco em Cancelar; 204 volta à lista', async () => {

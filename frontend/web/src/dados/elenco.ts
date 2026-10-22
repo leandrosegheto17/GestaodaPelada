@@ -109,7 +109,8 @@ export function useInativarJogador(grupoId: string, jogadorId: string) {
 export function useReativarJogador(grupoId: string, jogadorId: string) {
   const invalidar = useInvalidarGrupo(grupoId);
   return useMutation({
-    mutationFn: () => escrever('POST', `${caminhoJogador(grupoId, jogadorId)}/reativar`, {}, semCorpo),
+    mutationFn: (corpo: { dataRetorno?: string }) =>
+      escrever('POST', `${caminhoJogador(grupoId, jogadorId)}/reativar`, corpo, semCorpo),
     onSuccess: invalidar,
   });
 }

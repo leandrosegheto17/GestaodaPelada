@@ -4,10 +4,14 @@ import { Botao } from '../../componentes/basicos/Botao';
 import { BotaoLink } from '../../componentes/basicos/BotaoLink';
 import { Faixa } from '../../componentes/basicos/Faixa';
 import { fraseDasRodadasQueEntram } from '../../componentes/previa-periodos';
+import { dataCompleta } from '../../formatacao';
 import estilos from './jogador.module.css';
 
-/** Resultado de "Corrigir datas" que a ficha mostra sob o título. */
-export type FaixaDeDatas = { tipo: 'corrigidas'; previa: PeriodoPreviaResposta } | { tipo: 'naoEncontrado' };
+/** Resultado de "Corrigir datas" ou de "Reativar" que a ficha mostra sob o título. */
+export type FaixaDeDatas =
+  | { tipo: 'corrigidas'; previa: PeriodoPreviaResposta }
+  | { tipo: 'reativado'; apelido: string; dataRetorno: string; previa: PeriodoPreviaResposta | null }
+  | { tipo: 'naoEncontrado' };
 
 /** Rodadas que passaram a constar e o aviso da API; `null` quando não há o que avisar. */
 function textoDeAtencao({ rodadasQuePassamAConstar, aviso }: PeriodoPreviaResposta): string | null {
@@ -16,7 +20,7 @@ function textoDeAtencao({ rodadasQuePassamAConstar, aviso }: PeriodoPreviaRespos
 }
 
 interface Props {
-  /** Correção de datas feita ou recusada por jogador inexistente. */
+  /** Correção de datas ou reativação feita, ou recusada por jogador inexistente. */
   datas: FaixaDeDatas | null;
   salvo: boolean;
   inicioAlterado: boolean;
@@ -36,12 +40,20 @@ export function FaixasDaFicha({
   aoInativarEmVezDeExcluir,
 }: Props) {
   const { grupoId = '' } = useParams();
-  const atencao = datas?.tipo === 'corrigidas' ? textoDeAtencao(datas.previa) : null;
+  const previa = datas && datas.tipo !== 'naoEncontrado' ? datas.previa : null;
+  const atencao = previa ? textoDeAtencao(previa) : null;
   return (
     <>
       {datas?.tipo === 'corrigidas' ? (
         <div className={estilos.faixaSalvo}>
           <Faixa tipo="sucesso">Datas corrigidas.</Faixa>
+        </div>
+      ) : null}
+      {datas?.tipo === 'reativado' ? (
+        <div className={estilos.faixaSalvo}>
+          <Faixa tipo="sucesso">
+            {datas.apelido} reativado desde {dataCompleta(datas.dataRetorno)}.
+          </Faixa>
         </div>
       ) : null}
       {atencao ? (
