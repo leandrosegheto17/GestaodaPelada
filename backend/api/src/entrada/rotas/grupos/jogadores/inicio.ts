@@ -1,14 +1,13 @@
-import { CODIGOS_ERRO, inicioCorpo } from '@pelada/contrato';
+import { inicioCorpo } from '@pelada/contrato';
 import { Hono } from 'hono';
 import { editarInicio } from '../../../../aplicacao/elenco/inicio-editar.js';
 import { previaInicio } from '../../../../aplicacao/elenco/inicio-previa.js';
 import type { AppEnv } from '../../../app.js';
 import { lerCorpo } from '../../../corpo.js';
-import { corpoErro, naoEncontrado } from '../../../erros.js';
+import { naoEncontrado, recusaDeCampo } from '../../../erros.js';
 import { uuidDaRota } from '../../../parametros.js';
 
-const recusa = (mensagem: string) =>
-  corpoErro(CODIGOS_ERRO.validacao, 'Corrija os campos indicados.', { data: mensagem });
+const recusa = (mensagem: string) => recusaDeCampo('data', mensagem);
 
 /** `POST /api/grupos/:grupoId/jogadores/:id/inicio/previa`: efeito de trocar a data de início; não grava. */
 export const rotaJogadorInicioPrevia = new Hono<AppEnv>().post(
