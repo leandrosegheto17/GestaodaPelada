@@ -14,6 +14,19 @@ describe('Botao', () => {
     expect(botao).toHaveAttribute('type', 'button');
   });
 
+  it('só a variante texto leva o marcador que a Faixa usa para herdar a cor', () => {
+    render(
+      <>
+        <Botao variante="texto">A</Botao>
+        <Botao variante="textoDestrutivo">B</Botao>
+        <Botao>C</Botao>
+      </>,
+    );
+    expect(screen.getByRole('button', { name: 'A' })).toHaveAttribute('data-variante', 'texto');
+    expect(screen.getByRole('button', { name: 'B' })).not.toHaveAttribute('data-variante');
+    expect(screen.getByRole('button', { name: 'C' })).not.toHaveAttribute('data-variante');
+  });
+
   it('carregando mostra o rótulo de carregamento, não dispara onClick e continua focável', async () => {
     const aoClicar = vi.fn();
     render(

@@ -33,6 +33,7 @@ export function Botao({
       {...resto}
       type={type}
       className={classesBotao({ variante, bloco, topo, carregando })}
+      data-variante={variante === 'texto' ? 'texto' : undefined}
       aria-disabled={carregando || undefined}
       aria-busy={carregando || undefined}
       onClick={aoClicar}

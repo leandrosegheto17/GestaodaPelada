@@ -23,7 +23,8 @@
   background: var(--cor-erro-fundo);
   color: var(--cor-erro-texto);
 }
-.faixa a {
+.faixa a,
+.faixa :global([data-variante='texto']) {
   color: inherit;
 }
 .texto {
