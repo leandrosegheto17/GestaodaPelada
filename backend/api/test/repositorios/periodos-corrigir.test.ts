@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { PeriodoInvalido } from '../../src/infraestrutura/db/repositorios/jogadores.js';
+import type { Kysely } from 'kysely';
+import { embrulhar } from '../../src/infraestrutura/db/cliente.js';
+import type { TabelasBanco } from '../../src/infraestrutura/db/tipos.js';
+import { JaAtivo, PeriodoInvalido } from '../../src/infraestrutura/db/repositorios/jogadores.js';
 import * as jogadores from '../../src/infraestrutura/db/repositorios/jogadores.js';
 import { corrigirPeriodo } from '../../src/infraestrutura/db/repositorios/periodos-corrigir.js';
 import { emTransacao } from '../../src/infraestrutura/db/index.js';
@@ -81,5 +84,29 @@ describe('corrigirPeriodo', () => {
     await expect(
       emTransacao(db, (tx) => corrigirPeriodo(tx, base.grupo.id, id, fechado.id, { inicio: d(-100) })),
     ).rejects.toBeInstanceOf(PeriodoInvalido);
+  });
+
+  describe('mapeamento de constraints do banco', () => {
+    function executorQueFalhaCom(erro: unknown) {
+      const cadeia: Record<string, unknown> = {};
+      for (const m of ['set', 'where']) cadeia[m] = () => cadeia;
+      cadeia.executeTakeFirst = () => Promise.reject(erro);
+      return embrulhar({ updateTable: () => cadeia } as unknown as Kysely<TabelasBanco>, true);
+    }
+    const corrigir = (erro: unknown) =>
+      corrigirPeriodo(executorQueFalhaCom(erro), 'g', 'j', 'p', { fim: '2026-01-01' });
+
+    it('periodos_um_aberto vira JaAtivo', async () => {
+      await expect(corrigir({ constraint: 'periodos_um_aberto' })).rejects.toBeInstanceOf(JaAtivo);
+    });
+
+    it('periodo_fim_depois_inicio vira PeriodoInvalido', async () => {
+      await expect(corrigir({ constraint: 'periodo_fim_depois_inicio' })).rejects.toBeInstanceOf(PeriodoInvalido);
+    });
+
+    it('outro erro é repassado sem mapeamento', async () => {
+      const erro = new Error('falha qualquer');
+      await expect(corrigir(erro)).rejects.toBe(erro);
+    });
   });
 });
