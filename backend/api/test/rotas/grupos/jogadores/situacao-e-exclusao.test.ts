@@ -208,6 +208,29 @@ describe('inativar e reativar (workerd)', () => {
     ]);
   });
 
+  it('inativar: saída do 1º período antes da data de início da pontuação dá 422 e o período segue aberto', async () => {
+    const db = await abrir();
+    const cen = await montar(db);
+    const g = cen.grupoA.id;
+    const id = await criarJogador(db, g, cen.adminA.id, { dataEntrada: ENTRADA });
+    const inicioPontuacao = diaRelativo(-100);
+    await emTransacao(db, (tx) =>
+      jogadoresRepo.alterarInicio(tx, g, id, { inicio: inicioPontuacao, autor: cen.adminA.id, agora: AGORA }),
+    );
+    const r = await cliente(cen.adminA.cookie).post(`/api/grupos/${g}/jogadores/${id}/inativar`, {
+      dataSaida: diaRelativo(-150),
+    });
+    expect(r.status).toBe(422);
+    expect(r.corpo).toMatchObject({
+      erro: {
+        campos: {
+          dataSaida: `A saída do primeiro período não pode ser antes da data de início da pontuação (${formatarDataBr(inicioPontuacao)}). Para ir antes, altere primeiro a data de início.`,
+        },
+      },
+    });
+    expect((await jogadoresRepo.buscar(db, g, id))?.periodos).toMatchObject([{ inicio: ENTRADA, fim: null }]);
+  });
+
   it('inativar: no-store, sem sessão 401 e sem X-Pelada 403', async () => {
     const db = await abrir();
     const cen = await montar(db);
