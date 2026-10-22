@@ -44,6 +44,7 @@ export function ordenarPrioridade(entrada: EntradaPrioridade): string[] {
         presencas: presencasPorJogador.get(j.id) ?? [],
         configs: resolver,
         referencia,
+        periodos: j.periodos,
       }),
     ]),
   );

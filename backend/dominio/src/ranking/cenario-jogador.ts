@@ -59,6 +59,7 @@ export function compararCenarios(entrada: EntradaCenarios): ComparacaoDeCenarios
       presencas: presencasDoAlvo,
       configs: resolver,
       referencia: hoje,
+      periodos: jogador.periodos,
     });
     const rodadas = rodadasDoJogador(jogador.periodos, entrada.partidas, situacoes, resolver, jogador.inicioPontuacao);
     return { acumulado, posicao, rodadas };

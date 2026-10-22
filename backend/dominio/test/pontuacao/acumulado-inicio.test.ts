@@ -157,3 +157,51 @@ describe('inicioEfetivo', () => {
     expect(inicioEfetivo({ inicioPontuacao: undefined, periodos: [] })).toBeUndefined();
   });
 });
+
+describe('acumuladoPorInicio com períodos (saiu e voltou)', () => {
+  // Kim: 1º período 2022-07-03 a 2023-08-28 (21 presenças de 1 ponto no período) e retorno em 2026-10-04 com 2 presenças.
+  const periodos = [
+    { inicio: '2022-07-03', fim: '2023-08-28' },
+    { inicio: '2026-10-04', fim: null },
+  ];
+  const antigas = Array.from({ length: 21 }, (_, i) =>
+    p(`2022-${String(7 + Math.floor(i / 4)).padStart(2, '0')}-${String(3 + (i % 4) * 7).padStart(2, '0')}`),
+  );
+  const kim = [...antigas, p('2026-10-04'), p('2026-10-11')];
+  const conta2 = (referencia: string, periodoEm?: string) =>
+    acumuladoPorInicio({
+      inicio: '2022-07-03',
+      pontuacaoInicial: 0,
+      presencas: kim,
+      configs: [antiga, nova],
+      referencia,
+      periodos,
+      ...(periodoEm ? { periodoEm } : {}),
+    });
+
+  it('hoje, depois do retorno, conta só o período atual', () => {
+    expect(conta2('2026-10-22')).toBe(2);
+  });
+
+  it('o PTS INICIAL do mês do retorno é 0 (período do mês, soma até a véspera)', () => {
+    expect(conta2('2026-09-30', '2026-10-31')).toBe(0);
+  });
+
+  it('mês do 1º período não muda: segue a data de início', () => {
+    expect(conta2('2023-02-28')).toBe(antigas.filter((x) => x.data <= '2023-02-28').length);
+    expect(conta2('2023-08-28')).toBe(21);
+  });
+
+  it('quem nunca saiu não muda', () => {
+    const um = [{ inicio: '2022-07-03', fim: null }];
+    const r = acumuladoPorInicio({
+      inicio: '2022-07-03',
+      pontuacaoInicial: 0,
+      presencas: kim,
+      configs: [antiga, nova],
+      referencia: '2026-10-22',
+      periodos: um,
+    });
+    expect(r).toBe(23);
+  });
+});

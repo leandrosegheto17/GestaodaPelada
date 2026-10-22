@@ -1,9 +1,9 @@
 import { ativosEm } from '../atividade/atividade.js';
 import { somarDias } from '../datas/datas.js';
 import { criarResolvedorDePesos } from '../pontuacao/pesos.js';
-import { acumuladoPorInicio } from '../pontuacao/acumulado-inicio.js';
+import { acumuladoPorInicio, inicioDoPeriodo } from '../pontuacao/acumulado-inicio.js';
 import { rodadasDoJogador, type Rodada } from '../ranking/rodadas.js';
-import { agruparPresencasPorJogador, calcularRanking, type EntradaRanking } from '../ranking/ranking.js';
+import { agruparPresencasPorJogador, calcularRanking, periodoDoMes, type EntradaRanking } from '../ranking/ranking.js';
 import { escolherColunasPdf, type ColunaPdf } from './colunas.js';
 
 export interface LinhaPdf {
@@ -41,12 +41,17 @@ export function calcularPdf(entrada: EntradaRanking): ProjecaoPdf {
   const linhas = ranking.linhas.map((linha): LinhaPdf => {
     const presencas = presencasPorJogador.get(linha.jogadorId) ?? [];
     const jogador = ativos.get(linha.jogadorId);
+    const periodoEm = periodoDoMes(entrada.hoje, entrada.mes);
+    const inicio =
+      jogador?.inicioPontuacao === undefined
+        ? undefined
+        : inicioDoPeriodo(jogador.inicioPontuacao, jogador.periodos, periodoEm);
     const rodadas = rodadasDoJogador(
       jogador?.periodos ?? [],
       colunas,
       new Map(presencas.map((p) => [p.partidaId, p.situacao])),
       resolver,
-      jogador?.inicioPontuacao,
+      inicio,
     );
     return {
       jogadorId: linha.jogadorId,
@@ -59,6 +64,8 @@ export function calcularPdf(entrada: EntradaRanking): ProjecaoPdf {
             presencas,
             configs: resolver,
             referencia: somarDias(primeira.data, -1),
+            periodos: jogador?.periodos,
+            periodoEm,
           })
         : linha.ptsFinal,
       rodadas,

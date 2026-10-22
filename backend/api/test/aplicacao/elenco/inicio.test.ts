@@ -253,14 +253,14 @@ describe('editarInicio', () => {
     expect(await estado(db, g, vandre)).toEqual({ inicio: d(-30), periodos: [{ inicio: d(-30), fim: null }] });
   });
 
-  it('reativar não muda S nem pontos (RN-29)', async () => {
+  it('reativar não muda S gravado, mas a contagem recomeça no retorno', async () => {
     const { db, g, vandre, contexto } = await cenario(await abrir());
     await editarInicio(db, g, vandre, d(-10), contexto);
     await emTransacao(db, (tx) => jogadores.inativar(tx, g, vandre, d(-2)));
     expect(await reativarJogador(db, g, vandre, HOJE)).toMatchObject({ tipo: 'ok' });
     expect((await estado(db, g, vandre)).inicio).toBe(d(-10));
     expect(await previaInicio(db, g, vandre, d(-10), HOJE)).toMatchObject({
-      previa: { acumuladoAntes: 2, acumuladoDepois: 2 },
+      previa: { acumuladoAntes: 0, acumuladoDepois: 0 },
     });
   });
 

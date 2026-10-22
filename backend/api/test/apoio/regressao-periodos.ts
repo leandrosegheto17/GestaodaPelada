@@ -175,11 +175,18 @@ export function porData(f: Foto, apelido: string) {
 export const acumulado = (f: Foto, apelido: string) =>
   f.ranking[mesDe(HOJE_TESTE)]!.linhas.find((l) => l.apelido === apelido)!;
 
-/** PDF e ranking contam a mesma história; o PTS FINAL de um mês é o PTS INICIAL do seguinte. */
+/**
+ * PDF e ranking contam a mesma história; o PTS FINAL de um mês é o PTS INICIAL do seguinte, salvo no mês
+ * em que o alvo volta ao grupo: o retorno zera a contagem (começa em 0, sem a pontuação inicial).
+ */
 export function conferirCoerencia(f: Foto) {
+  const retornos = f.periodos.slice(1).map((p) => mesDe(p.inicio));
   MESES.slice(1).forEach((mes, i) => {
     const anterior = new Map(f.ranking[MESES[i]!]!.linhas.map((l) => [l.apelido, l.ptsFinal]));
-    for (const l of f.ranking[mes]!.linhas) expect(l.ptsInicial, `${l.apelido} ${mes}`).toBe(anterior.get(l.apelido));
+    for (const l of f.ranking[mes]!.linhas) {
+      const reinicio = l.apelido === 'Alvo' && retornos.includes(mes);
+      expect(l.ptsInicial, `${l.apelido} ${mes}`).toBe(reinicio ? 0 : anterior.get(l.apelido));
+    }
   });
   for (const mes of MESES) {
     const pdf = f.pdf[mes]!;
@@ -187,7 +194,10 @@ export function conferirCoerencia(f: Foto) {
       f.ranking[mes]!.linhas.map((l) => [l.posicao, l.apelido, l.ptsFinal]),
     );
     for (const l of pdf.linhas) {
-      expect(l.rodadas.reduce((s, x) => s + (x.pontos ?? 0), l.ptsInicial)).toBe(l.ptsFinal);
+      expect(
+        l.rodadas.reduce((s, x) => s + (x.pontos ?? 0), l.ptsInicial),
+        `PDF ${l.apelido} ${mes}`,
+      ).toBe(l.ptsFinal);
     }
   }
   for (const texto of f.textosPublicos) expect(texto).not.toMatch(/auditoria|acumuladoAntes|posicaoAntes/);

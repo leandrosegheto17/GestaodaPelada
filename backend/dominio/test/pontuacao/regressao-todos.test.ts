@@ -42,16 +42,18 @@ describe('resultado de todos os jogadores com o histórico grande', () => {
     expect(resultados(base.jogadores).prioridade).toMatchSnapshot();
   });
 
-  it('data de início igual ao início do primeiro período não muda nada', () => {
-    const comInicio = base.jogadores.map((j) => ({ ...j, inicioPontuacao: j.periodos[0]!.inicio }));
+  // Quem saiu e voltou conta só a partir do retorno; a equivalência vale para quem nunca saiu.
+  const nuncaSaiu = (j: JogadorDoRanking) => j.periodos.length === 1;
+
+  it('data de início igual ao início do primeiro período não muda nada (quem nunca saiu)', () => {
+    const comInicio = base.jogadores.map((j) => (nuncaSaiu(j) ? { ...j, inicioPontuacao: j.periodos[0]!.inicio } : j));
     expect(resultados(comInicio)).toEqual(resultados(base.jogadores));
   });
 
-  it('data de início igual à primeira presença não muda nada', () => {
-    const comInicio = base.jogadores.map((j) => ({
-      ...j,
-      inicioPontuacao: primeiraPresenca(j.id) ?? j.periodos[0]!.inicio,
-    }));
+  it('data de início igual à primeira presença não muda nada (quem nunca saiu)', () => {
+    const comInicio = base.jogadores.map((j) =>
+      nuncaSaiu(j) ? { ...j, inicioPontuacao: primeiraPresenca(j.id) ?? j.periodos[0]!.inicio } : j,
+    );
     // Antes da primeira presença a rodada passa de falta (0) para "–"; os totais são os mesmos.
     expect(resultados(comInicio, '0')).toEqual(resultados(base.jogadores, '0'));
   });

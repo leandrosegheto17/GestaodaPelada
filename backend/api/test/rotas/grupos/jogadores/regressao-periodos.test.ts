@@ -49,13 +49,13 @@ async function corrigir(
 vi.setConfig({ testTimeout: 30_000 });
 
 describe('correção de período chega a todos os consumidores (workerd)', () => {
-  it('retorno antecipado de d(-20) para d(-28) sem presença nas rodadas ganhas: só a grade muda', async () => {
+  it('retorno antecipado de d(-20) para d(-28) sem presença nas rodadas ganhas: o total atual não muda', async () => {
     const { antes, depois, previa } = await corrigir({}, 'retorno', { retorno: d(-28) });
     expect(depois.periodos.map(({ inicio, fim }) => ({ inicio, fim }))).toEqual([
       { inicio: d(-60), fim: d(-45) },
       { inicio: d(-28), fim: null },
     ]);
-    expect(placar(depois)).toEqual(placar(antes));
+    expect(placar(depois).at(-1)).toEqual(placar(antes).at(-1));
     conferirOutrosIguais(antes, depois);
     const a = porData(antes, 'Alvo');
     const p = porData(depois, 'Alvo');
@@ -63,7 +63,9 @@ describe('correção de período chega a todos os consumidores (workerd)', () =>
       expect(a[data]).toEqual({ situacao: 'fora', pontos: null });
       expect(p[data]).toEqual({ situacao: 'falta', pontos: 0 });
     }
-    expect({ ...a, [d(-26)]: p[d(-26)], [d(-24)]: p[d(-24)] }).toEqual(p);
+    // No mês do retorno a grade só mostra o que conta desde o retorno: a rodada do 1º período vira "–".
+    expect(p[d(-50)]).toEqual({ situacao: 'fora', pontos: null });
+    expect({ ...a, [d(-26)]: p[d(-26)], [d(-24)]: p[d(-24)], [d(-50)]: p[d(-50)] }).toEqual(p);
     expect(previa).toMatchObject({
       acumuladoAntes: acumulado(antes, 'Alvo').ptsFinal,
       acumuladoDepois: acumulado(depois, 'Alvo').ptsFinal,
@@ -81,13 +83,14 @@ describe('correção de período chega a todos os consumidores (workerd)', () =>
     }
   });
 
-  it('presença antiga gravada numa rodada ganha: acumulado, posição e grade já a contavam', async () => {
+  it('presença gravada numa rodada que o retorno antecipado passa a cobrir: o total atual a conta', async () => {
     const { antes, depois, previa } = await corrigir({ presencaNaGanha: true }, 'retorno', { retorno: d(-28) });
-    expect(placar(depois)).toEqual(placar(antes));
     conferirOutrosIguais(antes, depois);
+    const rodada = porData(depois, 'Alvo')[d(-26)]!;
     expect(porData(antes, 'Alvo')[d(-26)]?.situacao).toBe('presente');
-    expect(porData(depois, 'Alvo')[d(-26)]?.situacao).toBe('presente');
-    expect(previa.acumuladoDepois).toBe(previa.acumuladoAntes);
+    expect(rodada.situacao).toBe('presente');
+    expect(acumulado(depois, 'Alvo').ptsFinal - acumulado(antes, 'Alvo').ptsFinal).toBe(rodada.pontos);
+    expect(previa.acumuladoAntes).toBe(acumulado(antes, 'Alvo').ptsFinal);
     expect(previa.acumuladoDepois).toBe(acumulado(depois, 'Alvo').ptsFinal);
     expect(previa.rodadasQuePassamAConstar).toEqual([{ data: d(-24), situacao: 'falta' }]);
   });
@@ -140,17 +143,18 @@ describe('correção de período chega a todos os consumidores (workerd)', () =>
     expect(depois.simulador[d(-26)]).not.toContain('Alvo');
   });
 
-  it('histórico importado do legado: lesionado no intervalo "—" não trava nem muda o placar', async () => {
+  it('histórico importado do legado: lesionado no intervalo "—" não trava nem muda o total atual', async () => {
     const { antes, depois } = await corrigir({ lesionadoNoVao: true }, 'retorno', { retorno: d(-28) });
-    expect(placar(depois)).toEqual(placar(antes));
+    expect(placar(depois).at(-1)).toEqual(placar(antes).at(-1));
     expect(acumulado(depois, 'Alvo')).toEqual(acumulado(antes, 'Alvo'));
     conferirOutrosIguais(antes, depois);
-    expect(porData(antes, 'Alvo')[d(-40)]).toEqual(porData(depois, 'Alvo')[d(-40)]);
+    expect(porData(antes, 'Alvo')[d(-40)]).toEqual({ situacao: 'lesionado', pontos: 1 });
+    expect(porData(depois, 'Alvo')[d(-40)]).toEqual({ situacao: 'fora', pontos: null });
     expect(depois.detalhe[d(-40)]).toContainEqual(['Alvo', 'lesionado']);
     expect(antes.detalhe[d(-40)]).toContainEqual(['Alvo', 'lesionado']);
   });
 
-  it('reativar com retorno retroativo: as rodadas cobertas aparecem como falta e o acumulado não muda', async () => {
+  it('reativar com retorno retroativo: as rodadas cobertas aparecem como falta e a contagem recomeça no retorno', async () => {
     const r = await montarRegressao(await abrir(), fabrica, { semRetorno: true });
     const antes = await fotografia(r);
     const resposta = await r.dono.post(`/api/grupos/${r.g}/jogadores/${r.alvo}/reativar`, { dataRetorno: d(-28) });
@@ -166,7 +170,7 @@ describe('correção de período chega a todos os consumidores (workerd)', () =>
     ]);
     expect(antes.ranking[MESES.at(-1)!]!.linhas.map((l) => l.apelido)).not.toContain('Alvo');
     conferirOutrosIguais(antes, depois);
-    expect(acumulado(depois, 'Alvo').ptsFinal).toBe(7 + porData(depois, 'Alvo')[d(-50)]!.pontos!);
+    expect(acumulado(depois, 'Alvo').ptsFinal).toBe(0);
     for (const data of [d(-26), d(-24), d(-19), d(-15)]) {
       expect(porData(antes, 'Alvo')[data]).toBeUndefined();
       expect(porData(depois, 'Alvo')[data]).toEqual({ situacao: 'falta', pontos: 0 });

@@ -1,7 +1,7 @@
 import { ativosEm, type Periodo } from '../atividade/atividade.js';
-import { primeiroDia, somarDias, type Data, type Mes } from '../datas/datas.js';
+import { compararDatas, primeiroDia, somarDias, ultimoDia, type Data, type Mes } from '../datas/datas.js';
 import { criarResolvedorDePesos, type ResolvedorDePesos } from '../pontuacao/pesos.js';
-import { acumuladoPorInicio } from '../pontuacao/acumulado-inicio.js';
+import { acumuladoPorInicio, inicioDoPeriodo } from '../pontuacao/acumulado-inicio.js';
 import type { ConfigPesos, PresencaDoJogador, SituacaoPresenca } from '../pontuacao/tipos.js';
 import {
   limitesDeMes,
@@ -61,6 +61,12 @@ export interface ResultadoRanking {
   limites: LimitesDeMes;
 }
 
+/** Data que escolhe o período do jogador num mês exibido: o fim do mês, ou hoje se o mês ainda não acabou. */
+export function periodoDoMes(hoje: Data, mes: Mes): Data {
+  const fim = ultimoDia(mes);
+  return compararDatas(hoje, fim) < 0 ? hoje : fim;
+}
+
 /** Presenças de cada jogador com a data e a chuva da partida; presença de partida desconhecida é ignorada. */
 export function agruparPresencasPorJogador(
   partidas: readonly PartidaDoRanking[],
@@ -99,6 +105,7 @@ export function acumuladosDosAtivos(
         presencas: presencasPorJogador.get(j.id) ?? [],
         configs: resolver,
         referencia,
+        periodos: j.periodos,
       }),
     ]),
   );
@@ -119,19 +126,24 @@ export function calcularRanking(entrada: EntradaRanking): ResultadoRanking {
 
   const linhas = ordem.map(({ jogador, posicao }): LinhaRanking => {
     const presencas = presencasPorJogador.get(jogador.id) ?? [];
+    const periodoEm = periodoDoMes(hoje, mes);
     const ptsInicial = acumuladoPorInicio({
       inicio: jogador.inicioPontuacao,
       pontuacaoInicial: jogador.pontuacaoInicial,
       presencas,
       configs: resolver,
       referencia: vespera,
+      periodos: jogador.periodos,
+      periodoEm,
     });
     const rodadas = rodadasDoJogador(
       jogador.periodos,
       doMes,
       new Map(presencas.map((p) => [p.partidaId, p.situacao])),
       resolver,
-      jogador.inicioPontuacao,
+      jogador.inicioPontuacao === undefined
+        ? undefined
+        : inicioDoPeriodo(jogador.inicioPontuacao, jogador.periodos, periodoEm),
     );
     const ptsFinal = rodadas.reduce((soma, r) => soma + (r.pontos ?? 0), ptsInicial);
     return {
