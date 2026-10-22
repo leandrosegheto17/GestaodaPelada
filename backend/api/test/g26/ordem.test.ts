@@ -5,6 +5,7 @@ import { editarInicio } from '../../src/aplicacao/elenco/inicio-editar.js';
 import { inativarJogador } from '../../src/aplicacao/elenco/inativar.js';
 import { corrigirPeriodoDoJogador } from '../../src/aplicacao/elenco/periodos-corrigir.js';
 import { reativarJogador } from '../../src/aplicacao/elenco/reativar.js';
+import { editarPartida } from '../../src/aplicacao/partidas/editar.js';
 import { lancarPartida } from '../../src/aplicacao/partidas/lancar.js';
 import type { Db } from '../../src/infraestrutura/db/index.js';
 import * as auditoria from '../../src/infraestrutura/db/repositorios/auditoria.js';
@@ -156,44 +157,71 @@ describe('POST reativar retroativo', () => {
   });
 });
 
+/** Grupo com três jogadores ativos; devolve os ids e as marcações em ordem inversa de id. */
+async function cenarioPartida(db: Db) {
+  const cen = await montarCenario(db, fabrica);
+  const g = cen.grupoA.id;
+  await pesos.criarPadrao(db, g, {
+    pesos: PESOS_PADRAO,
+    vigenteDesde: d(-400),
+    registradoPor: cen.adminA.id,
+    agora: AGORA_TESTE,
+  });
+  const ids = [
+    await criarJogador(db, g, cen.adminA.id, { dataEntrada: d(-60) }),
+    await criarJogador(db, g, cen.adminA.id, { dataEntrada: d(-60) }),
+    await criarJogador(db, g, cen.adminA.id, { dataEntrada: d(-60) }),
+  ];
+  const marcacoes = [...ids]
+    .sort()
+    .reverse()
+    .map((jogadorId) => ({ jogadorId, situacao: 'presente' as const }));
+  const contexto = { autorContaId: cen.adminA.id, agora: AGORA_TESTE, hoje: HOJE_TESTE };
+  return { g, ids, marcacoes, contexto };
+}
+
+/** Confere travas em ordem crescente de id, todas antes da gravação e no mesmo tx dela. */
+function conferirTravas(
+  db: Db,
+  ids: string[],
+  travar: { mock: { calls: unknown[][]; invocationCallOrder: number[] } },
+  gravar: { mock: { calls: unknown[][]; invocationCallOrder: number[] } },
+) {
+  expect(travar.mock.calls.map((c) => c[2])).toEqual([...ids].sort());
+  expect(Math.max(...travar.mock.invocationCallOrder)).toBeLessThan(gravar.mock.invocationCallOrder[0]!);
+  const tx = travar.mock.calls[0]![0];
+  expect(tx).not.toBe(db);
+  travar.mock.calls.forEach((c) => expect(c[0]).toBe(tx));
+  expect(gravar.mock.calls[0]![0]).toBe(tx);
+}
+
 describe('POST partida (lançar presença)', () => {
   it('trava os marcados em ordem de id, antes de gravar, na mesma transação', async () => {
     const db = await abrir();
-    const cen = await montarCenario(db, fabrica);
-    const g = cen.grupoA.id;
-    await pesos.criarPadrao(db, g, {
-      pesos: PESOS_PADRAO,
-      vigenteDesde: d(-400),
-      registradoPor: cen.adminA.id,
-      agora: AGORA_TESTE,
-    });
-    const ids = [
-      await criarJogador(db, g, cen.adminA.id, { dataEntrada: d(-60) }),
-      await criarJogador(db, g, cen.adminA.id, { dataEntrada: d(-60) }),
-      await criarJogador(db, g, cen.adminA.id, { dataEntrada: d(-60) }),
-    ];
+    const { g, ids, marcacoes, contexto } = await cenarioPartida(db);
     const travar = vi.spyOn(jogadores, 'travar');
     const gravar = vi.spyOn(partidas, 'criar');
-    const desordenados = [...ids].sort().reverse();
 
-    await lancarPartida(
-      db,
-      g,
-      {
-        data: d(-5),
-        choveu: false,
-        marcacoes: desordenados.map((jogadorId) => ({ jogadorId, situacao: 'presente' as const })),
-      },
-      { autorContaId: cen.adminA.id, agora: AGORA_TESTE, hoje: HOJE_TESTE },
-    );
+    await lancarPartida(db, g, { data: d(-5), choveu: false, marcacoes }, contexto);
 
-    expect(travar.mock.calls.map((c) => c[2])).toEqual([...ids].sort());
-    const ultimaTrava = Math.max(...travar.mock.invocationCallOrder);
-    expect(ultimaTrava).toBeLessThan(gravar.mock.invocationCallOrder[0]!);
-    const tx = travar.mock.calls[0]![0];
-    expect(tx).not.toBe(db);
-    travar.mock.calls.forEach((c) => expect(c[0]).toBe(tx));
-    expect(gravar.mock.calls[0]![0]).toBe(tx);
+    conferirTravas(db, ids, travar, gravar);
+  });
+});
+
+describe('PUT partida (editar presença)', () => {
+  it('trava os marcados em ordem de id, antes de gravar, na mesma transação', async () => {
+    const db = await abrir();
+    const { g, ids, marcacoes, contexto } = await cenarioPartida(db);
+    await lancarPartida(db, g, { data: d(-5), choveu: false, marcacoes: marcacoes.slice(0, 1) }, contexto);
+    const travar = vi.spyOn(jogadores, 'travar');
+    const gravar = vi.spyOn(partidas, 'substituir');
+    const registrar = vi.fn(auditoria.registrar);
+
+    await editarPartida(db, g, d(-5), { choveu: true, marcacoes }, contexto, registrar);
+
+    conferirTravas(db, ids, travar, gravar);
+    expect(registrar.mock.calls[0]![0]).toBe(gravar.mock.calls[0]![0]);
+    expect(Math.max(...travar.mock.invocationCallOrder)).toBeLessThan(registrar.mock.invocationCallOrder[0]!);
   });
 });
 
