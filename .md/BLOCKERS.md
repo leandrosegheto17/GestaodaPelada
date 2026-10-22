@@ -170,3 +170,12 @@
 - Impacto se não resolvido: RTP-0197 não fecha sem rodar os 7 testes de regressao-periodos; asserções ajustadas sem execução
 - Sugestão: Apagar a conta órfã do pelada_teste e rodar /executar --tarefa RTP-0197 (só rodar o teste e fechar)
 - Status: Resolvido (2026-10-22): Conta órfã não existe mais no pelada_teste (0 e-mails fora de .invalid); regressao-periodos.test.ts roda 7 de 7 e tsc limpo. Um teste estourava o timeout padrão de 5 s (cada teste leva ~5 s), então o arquivo ganhou vi.setConfig({ testTimeout: 30_000 })
+
+## Bloqueio 020 — 2026-10-22 (BK-0020)
+- Reportado por: coordenador (/revisar)
+- Escalado para: usuário
+- Artefato/trecho afetado: —
+- Descrição: Redação nova do texto de reativar 'Volta a aparecer no ranking e nas partidas; a data de início e os pontos não mudam.' para quem saiu e voltou (a contagem recomeça no retorno)
+- Impacto se não resolvido: Texto aprovado no mockup (t16), no app (DialogoReativar.tsx, SecaoSituacao.tsx e testes) e no UX-SPEC; hoje é falso, e a mudança começa pelo mockup
+- Sugestão: Volta a aparecer no ranking e nas partidas. A pontuação passa a contar a partir da data de retorno; o histórico e os meses anteriores não mudam. Depois do BK, abrir RTP de Frontend (mockup, depois app e testes) e fechar a frase na RTP-0213
+- Status: Em aberto
