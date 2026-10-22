@@ -2,7 +2,7 @@
 
 ## Auditoria de release 2026-10-22 — DevSecOps — APROVADA COM DÉBITO
 
-**Pendente de aceite do usuário no pedido de deploy:** o item NÃO EXECUTADO desta auditoria (limite de taxa da Cloudflare em `/api/sessao/entrar` e `/api/publico/*` e cabeçalhos no host publicado). Motivo: não há staging (ADR-020) e DAST em produção é proibido; o aceite de 2026-10-21 valia para aquele deploy. Prazo proposto: conferência passiva (`curl -I` na URL pública) logo depois do deploy.
+**Risco aceito pelo usuário em 2026-10-22 (resposta "sim" ao pedido de confirmação do deploy):** o item NÃO EXECUTADO desta auditoria (limite de taxa da Cloudflare em `/api/sessao/entrar` e `/api/publico/*` e cabeçalhos no host publicado). Motivo: não há staging (ADR-020) e DAST em produção é proibido; o aceite de 2026-10-21 valia para aquele deploy. Prazo proposto: conferência passiva (`curl -I` na URL pública) logo depois do deploy.
 
 Escopo: o que mudou desde a auditoria de 2026-10-21 (`83909c5b..HEAD`, 126 arquivos): lote de períodos do jogador (TP-0210 a TP-0231 e RTP-0186 a RTP-0204): rotas `GET …/periodos`, `PUT …/periodos/:periodoId`, `POST …/periodos/:periodoId/previa`, `POST …/reativar/previa` e `POST …/reativar` com `dataRetorno`; piso da data de início (RTP-0185); migração `202610210000_contrai_posicao`; checagem `checar-escrita-periodo.mjs` (G-26) no `ci.yml`; telas novas do jogador. Só produção (ADR-020): teste ativo só local (API `127.0.0.1:8787`, banco de desenvolvimento `pelada` semeado); nada contra produção, nada apagado, `pelada_teste` não usado. Brutos em `.md/.seguranca/2026-10-22/` (`dast-api-auth/periodos.json`, `dast-api-auth/inicio.json`, `dast-web/`, `resumo-dast.md`, `zap.json`, `semgrep.json`, `osv-scanner.json`, `gitleaks.json`).
 
