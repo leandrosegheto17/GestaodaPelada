@@ -50,6 +50,15 @@
 // fundo é real no app e vazia no mockup). Com recorte, ".conteudo" deixa de ser ocultado.
 // "userAgent": "<string>" (opcional, por tela) define o user agent só do lado da aplicação (usado quando
 // o app muda conforme a plataforma, como a folha de instalar no iOS/Android).
+// "passos": [ ... ] (opcional, por tela) interações executadas só no lado da aplicação, em ordem,
+// depois do carregamento e antes do print (estados que exigem toque, digitação ou diálogo). Cada passo:
+//   { "clicar": "<seletor Playwright>", "indice": 0 }            (ex.: "role=button[name='Reativar']")
+//   { "preencher": "<seletor>", "valor": "2026-10-07", "indice": 0 }
+//   { "esperar": "<seletor>" }                                    (espera ficar visível)
+//   { "aguardarMs": 300 }
+// Uma resposta com "pendente": true nunca responde; com "abortar": true a chamada falha como
+// se não houvesse conexão. Em tela com passos, "pendente" vale só para a chamada disparada por
+// eles (a página carrega normalmente).
 // Respostas da tela têm prioridade sobre as globais. "pendente": true nunca responde
 // (mantém a tela em "carregando"). Caminhos são relativos à pasta do telas.json.
 //
@@ -132,6 +141,7 @@ async function registrarRespostas(pagina, respostas, pastaConfig) {
   for (const r of [...respostas].reverse()) {
     await pagina.route(r.url, async (rota) => {
       if (r.pendente) return; // nunca responde: mantém o estado "carregando"
+      if (r.abortar) return rota.abort("connectionrefused"); // simula a falta de conexão
       const corpo = r.arquivo ? readFileSync(join(pastaConfig, r.arquivo), "utf8") : "";
       await rota.fulfill({
         status: r.status ?? 200,
@@ -139,6 +149,23 @@ async function registrarRespostas(pagina, respostas, pastaConfig) {
         body: corpo,
       });
     });
+  }
+}
+
+// Executa, na ordem, os passos de interação de um estado (só no lado da aplicação).
+async function executarPassos(pagina, passos) {
+  for (const passo of passos) {
+    if (passo.clicar !== undefined) {
+      await pagina.locator(passo.clicar).nth(passo.indice ?? 0).click({ timeout: 15000 });
+    } else if (passo.preencher !== undefined) {
+      await pagina.locator(passo.preencher).nth(passo.indice ?? 0).fill(String(passo.valor ?? ""), { timeout: 15000 });
+    } else if (passo.esperar !== undefined) {
+      await pagina.locator(passo.esperar).first().waitFor({ state: "visible", timeout: 15000 });
+    } else if (passo.aguardarMs !== undefined) {
+      await pagina.waitForTimeout(passo.aguardarMs);
+    } else {
+      throw new Error(`passo desconhecido: ${JSON.stringify(passo)}`);
+    }
   }
 }
 
@@ -154,6 +181,7 @@ async function capturar(navegador, viewport, url, opcoes) {
     await pagina.waitForSelector(opcoes.esperar, { timeout: 15000 }).catch(() => {});
   }
   await prepararPagina(pagina, opcoes.ocultar);
+  if (opcoes.passos?.length) await executarPassos(pagina, opcoes.passos);
   // Estado carregando: o app só mostra o esqueleto depois do atraso de 300 ms e do carregamento da rota.
   await pagina.waitForTimeout(opcoes.pendente ? 1500 : 300);
   // O mockup é um print estático, sem estado de foco; o app foca o primeiro controle ao abrir a folha.
@@ -297,7 +325,8 @@ async function main() {
       if (filtroTelas && !filtroTelas.has(tela.id)) continue;
       const estado = tela.estado ?? "sucesso";
       const respostas = [...(tela.respostas ?? []), ...(mapa.respostas ?? [])];
-      const pendente = respostas.some((r) => r.pendente);
+      // Com passos, a resposta pendente vale só para a chamada disparada por eles; a página carrega normalmente.
+      const pendente = !tela.passos?.length && respostas.some((r) => r.pendente);
       const recorte = tela.recorte ?? null;
       // Com recorte, o `.conteudo` guarda a própria folha no app: esconder a página de fundo
       // esconderia a folha, então o seletor sai da lista (o recorte já a ignora).
@@ -315,7 +344,7 @@ async function main() {
             ocultar, esperar: null, pastaConfig, recorte: recorte?.mockup,
           });
           const pngApp = await capturar(navegador, viewport, baseUrl + tela.rota, {
-            ocultar, esperar: pendente ? null : tela.esperar, respostas, pendente, pastaConfig, recorte: recorte?.app, userAgent: tela.userAgent,
+            ocultar, esperar: pendente ? null : tela.esperar, respostas, pendente, pastaConfig, recorte: recorte?.app, userAgent: tela.userAgent, passos: tela.passos,
           });
           const r = await diferenca(navegador, pngMockup, pngApp, limiar);
           writeFileSync(join(saida, `${rotulo}--mockup.png`), pngMockup);
