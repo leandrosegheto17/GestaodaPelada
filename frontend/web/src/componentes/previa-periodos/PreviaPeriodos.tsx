@@ -1,5 +1,5 @@
 import type { PeriodoPreviaResposta } from '@pelada/contrato';
-import { pontosEscritos } from '../../formatacao';
+import { formatarPontos, pontosEscritos } from '../../formatacao';
 import { Botao } from '../basicos/Botao';
 import { Faixa } from '../basicos/Faixa';
 import { fraseDasRodadasQueEntram, fraseDasRodadasQueSaem } from './frasesDasRodadas';
@@ -14,7 +14,7 @@ export type EstadoPrevia =
 function fraseDoAcumulado({ acumuladoAntes: antes, acumuladoDepois: depois }: PeriodoPreviaResposta): string {
   return antes === depois
     ? `Acumulado de ${pontosEscritos(antes)} não muda.`
-    : `Acumulado de ${pontosEscritos(antes)} passa a ${depois}.`;
+    : `Acumulado de ${pontosEscritos(antes)} passa a ${formatarPontos(depois)}.`;
 }
 
 function fraseDaPosicao({ posicaoAntes: antes, posicaoDepois: depois }: PeriodoPreviaResposta): string | null {

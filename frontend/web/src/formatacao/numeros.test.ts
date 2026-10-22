@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatarNivel, formatarPontos, pontosFalados } from './numeros';
+import { formatarNivel, formatarPontos, pontosEscritos, pontosFalados } from './numeros';
 
 describe('formatarPontos', () => {
   it('usa U+2212 para negativos', () => {
@@ -11,6 +11,17 @@ describe('formatarPontos', () => {
 
   it('não inteiro lança', () => {
     expect(() => formatarPontos(1.5)).toThrow(RangeError);
+  });
+});
+
+describe('pontosEscritos', () => {
+  it.each([
+    [1, '1 ponto'],
+    [0, '0 pontos'],
+    [18, '18 pontos'],
+    [-1, '−1 ponto'],
+  ])('%i', (n, texto) => {
+    expect(pontosEscritos(n)).toBe(texto);
   });
 });
 

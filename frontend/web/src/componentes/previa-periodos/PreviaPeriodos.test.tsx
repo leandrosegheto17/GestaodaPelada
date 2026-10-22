@@ -66,6 +66,11 @@ describe('PreviaPeriodos pronta', () => {
     expect(screen.getByText('Elas valem 0 ponto até você lançar a presença em Editar partida.')).toBeTruthy();
   });
 
+  it('acumulado negativo usa U+2212 nos dois números', () => {
+    render(pronta({ acumuladoAntes: -1, acumuladoDepois: -3, posicaoAntes: 15, posicaoDepois: 15 }));
+    expect(screen.getByText('Acumulado de −1 ponto passa a −3. Posição 15, não muda.')).toBeTruthy();
+  });
+
   it('acumulado muda, singular de ponto e posição de N para M', () => {
     render(pronta({ acumuladoAntes: 1, acumuladoDepois: 3, posicaoAntes: 15, posicaoDepois: 12 }));
     expect(screen.getByText('Acumulado de 1 ponto passa a 3. Posição de 15 para 12.')).toBeTruthy();
