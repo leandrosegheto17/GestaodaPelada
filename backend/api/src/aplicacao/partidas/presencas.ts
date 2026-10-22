@@ -1,5 +1,6 @@
 import type { SituacaoPresenca } from '@pelada/contrato';
-import type { ExecutorDb } from '../../infraestrutura/db/index.js';
+import type { ExecutorDb, Tx } from '../../infraestrutura/db/index.js';
+import * as jogadores from '../../infraestrutura/db/repositorios/jogadores.js';
 import type { PresencaGravada } from '../../infraestrutura/db/repositorios/partidas.js';
 import { ativosNaData } from '../elenco/ativos.js';
 
@@ -55,6 +56,16 @@ export function validarMarcacoes(
     linhas,
     contagem: { presentes: conta('presente'), lesionados: conta('lesionado'), expulsos: conta('expulso') },
   };
+}
+
+/**
+ * Trava os jogadores marcados até o fim da transação, em ordem crescente de id (a mesma ordem
+ * evita deadlock entre lançamentos concorrentes). Id de outro grupo ou inexistente é ignorado:
+ * quem rejeita é a validação.
+ */
+export async function travarMarcados(tx: Tx, grupoId: string, marcacoes: readonly Marcacao[]): Promise<void> {
+  const ids = [...new Set(marcacoes.map((m) => m.jogadorId))].sort();
+  for (const id of ids) await jogadores.travar(tx, grupoId, id);
 }
 
 /** Carrega os ativos na data e valida. Aceita uma transação, para rodar dentro da do chamador. */

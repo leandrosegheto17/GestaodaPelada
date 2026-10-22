@@ -5,10 +5,12 @@ import { editarInicio } from '../../src/aplicacao/elenco/inicio-editar.js';
 import { inativarJogador } from '../../src/aplicacao/elenco/inativar.js';
 import { corrigirPeriodoDoJogador } from '../../src/aplicacao/elenco/periodos-corrigir.js';
 import { reativarJogador } from '../../src/aplicacao/elenco/reativar.js';
+import { lancarPartida } from '../../src/aplicacao/partidas/lancar.js';
 import type { Db } from '../../src/infraestrutura/db/index.js';
 import * as auditoria from '../../src/infraestrutura/db/repositorios/auditoria.js';
 import * as jogadores from '../../src/infraestrutura/db/repositorios/jogadores.js';
 import * as correcao from '../../src/infraestrutura/db/repositorios/periodos-corrigir.js';
+import * as partidas from '../../src/infraestrutura/db/repositorios/partidas.js';
 import * as pesos from '../../src/infraestrutura/db/repositorios/pesos.js';
 import { montarCenario } from '../apoio/cenario-acesso.js';
 import { usarDb } from '../apoio/db-teste.js';
@@ -151,6 +153,47 @@ describe('POST reativar retroativo', () => {
     ).rejects.toThrow('auditoria fora');
 
     expect((await jogadores.buscar(db, g, id))?.periodos).toHaveLength(1);
+  });
+});
+
+describe('POST partida (lançar presença)', () => {
+  it('trava os marcados em ordem de id, antes de gravar, na mesma transação', async () => {
+    const db = await abrir();
+    const cen = await montarCenario(db, fabrica);
+    const g = cen.grupoA.id;
+    await pesos.criarPadrao(db, g, {
+      pesos: PESOS_PADRAO,
+      vigenteDesde: d(-400),
+      registradoPor: cen.adminA.id,
+      agora: AGORA_TESTE,
+    });
+    const ids = [
+      await criarJogador(db, g, cen.adminA.id, { dataEntrada: d(-60) }),
+      await criarJogador(db, g, cen.adminA.id, { dataEntrada: d(-60) }),
+      await criarJogador(db, g, cen.adminA.id, { dataEntrada: d(-60) }),
+    ];
+    const travar = vi.spyOn(jogadores, 'travar');
+    const gravar = vi.spyOn(partidas, 'criar');
+    const desordenados = [...ids].sort().reverse();
+
+    await lancarPartida(
+      db,
+      g,
+      {
+        data: d(-5),
+        choveu: false,
+        marcacoes: desordenados.map((jogadorId) => ({ jogadorId, situacao: 'presente' as const })),
+      },
+      { autorContaId: cen.adminA.id, agora: AGORA_TESTE, hoje: HOJE_TESTE },
+    );
+
+    expect(travar.mock.calls.map((c) => c[2])).toEqual([...ids].sort());
+    const ultimaTrava = Math.max(...travar.mock.invocationCallOrder);
+    expect(ultimaTrava).toBeLessThan(gravar.mock.invocationCallOrder[0]!);
+    const tx = travar.mock.calls[0]![0];
+    expect(tx).not.toBe(db);
+    travar.mock.calls.forEach((c) => expect(c[0]).toBe(tx));
+    expect(gravar.mock.calls[0]![0]).toBe(tx);
   });
 });
 

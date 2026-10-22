@@ -3,7 +3,7 @@ import { emTransacao, type Db } from '../../infraestrutura/db/index.js';
 import * as auditoria from '../../infraestrutura/db/repositorios/auditoria.js';
 import * as partidas from '../../infraestrutura/db/repositorios/partidas.js';
 import { carregarPartida } from './detalhe.js';
-import { prepararPresencas, type Marcacao } from './presencas.js';
+import { prepararPresencas, travarMarcados, type Marcacao } from './presencas.js';
 
 export class PartidaNaoEncontrada extends Error {
   constructor() {
@@ -24,6 +24,7 @@ export async function editarPartida(
   registrarAuditoria: typeof auditoria.registrar = auditoria.registrar,
 ): Promise<PartidaDetalhe> {
   await emTransacao(db, async (tx) => {
+    await travarMarcados(tx, grupoId, entrada.marcacoes);
     const { linhas, contagem } = await prepararPresencas(tx, grupoId, data, entrada.marcacoes);
     const alterada = await partidas.substituir(tx, grupoId, data, {
       choveu: entrada.choveu,

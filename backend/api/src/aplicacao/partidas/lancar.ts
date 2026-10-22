@@ -4,7 +4,7 @@ import * as auditoria from '../../infraestrutura/db/repositorios/auditoria.js';
 import * as eventos from '../../infraestrutura/db/repositorios/eventos.js';
 import * as partidas from '../../infraestrutura/db/repositorios/partidas.js';
 import { carregarPartida } from './detalhe.js';
-import { prepararPresencas, type Marcacao } from './presencas.js';
+import { prepararPresencas, travarMarcados, type Marcacao } from './presencas.js';
 
 export interface DependenciasLancar {
   registrarEvento: (ex: ExecutorDb, grupoId: string, data: string, momento: Date) => Promise<void>;
@@ -29,6 +29,7 @@ export async function lancarPartida(
   deps: DependenciasLancar = PADRAO,
 ): Promise<PartidaDetalhe> {
   await emTransacao(db, async (tx) => {
+    await travarMarcados(tx, grupoId, entrada.marcacoes);
     const { linhas, contagem } = await prepararPresencas(tx, grupoId, entrada.data, entrada.marcacoes);
     const id = await partidas.criar(tx, grupoId, {
       data: entrada.data,
