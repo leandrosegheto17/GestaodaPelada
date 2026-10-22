@@ -11,6 +11,7 @@ import * as pesos from '../../../../src/infraestrutura/db/repositorios/pesos.js'
 import * as habilidades from '../../../../src/infraestrutura/db/repositorios/habilidades.js';
 import * as partidas from '../../../../src/infraestrutura/db/repositorios/partidas.js';
 import { montarCenario } from '../../../apoio/cenario-acesso.js';
+import { formatarDataBr } from '../../../../src/aplicacao/elenco/mensagens-periodos.js';
 import { clienteTeste } from '../../../apoio/cliente.js';
 import { usarDbDoWorker } from '../../../apoio/db-worker.js';
 import { criarJogador } from '../../../apoio/fabricas/jogadores.js';
@@ -46,7 +47,11 @@ describe('inativar e reativar (workerd)', () => {
     const id = await criarJogador(db, g, cen.adminA.id, { dataEntrada: ENTRADA });
     const url = `/api/grupos/${g}/jogadores/${id}/inativar`;
     expect((await cliente(cen.adminA.cookie).post(url, { dataSaida: diaRelativo(1) })).status).toBe(422);
-    expect((await cliente(cen.adminA.cookie).post(url, { dataSaida: diaRelativo(-251) })).status).toBe(422);
+    const antesDaEntrada = await cliente(cen.adminA.cookie).post(url, { dataSaida: diaRelativo(-251) });
+    expect(antesDaEntrada.status).toBe(422);
+    expect(antesDaEntrada.corpo).toMatchObject({
+      erro: { campos: { dataSaida: expect.stringMatching(/\(\d{2}\/\d{2}\/\d{4}\)/) } },
+    });
     const r = await cliente(cen.adminA.cookie).post(url, {});
     expect(r.status).toBe(200);
     expect(jogadorDetalhe.parse(r.corpo).situacao).toEqual({ ativo: false, desde: HOJE });
@@ -118,8 +123,18 @@ describe('inativar e reativar (workerd)', () => {
     const url = `/api/grupos/${g}/jogadores/${id}/inativar`;
     const r = await cliente(cen.adminA.cookie).post(url, { dataSaida: PRESENCA });
     expect(r.status).toBe(422);
-    expect(r.corpo).toMatchObject({ erro: { campos: { dataSaida: expect.any(String) } } });
+    const dataBr = formatarDataBr(PRESENCA);
+    expect(r.corpo).toMatchObject({
+      erro: {
+        campos: {
+          dataSaida: `Há presença do jogador em ${dataBr}. A saída precisa ser em ${formatarDataBr(diaRelativo(-1))} ou depois. Para usar uma data anterior, remova a presença em Editar partida.`,
+        },
+      },
+    });
+    expect((await jogadoresRepo.buscar(db, g, id))?.periodos).toMatchObject([{ inicio: ENTRADA, fim: null }]);
     expect((await cliente(cen.adminA.cookie).post(url, { dataSaida: diaRelativo(-1) })).status).toBe(200);
+    const auditorias = await kyselyDe(db).selectFrom('auditoria').select('id').where('entidade_id', '=', id).execute();
+    expect(auditorias).toEqual([]);
   });
 
   it('inativar: saída igual à entrada e ontem passam; o fim gravado aparece em buscar e o jogador sai de ativosNaData', async () => {
@@ -175,7 +190,13 @@ describe('inativar e reativar (workerd)', () => {
     await cliente(cen.adminA.cookie).post(`/api/grupos/${g}/jogadores/${id}/reativar`);
     const antes = await cliente(cen.adminA.cookie).post(url, { dataSaida: diaRelativo(-1) });
     expect(antes.status).toBe(422);
-    expect(antes.corpo).toMatchObject({ erro: { campos: { dataSaida: expect.any(String) } } });
+    expect(antes.corpo).toMatchObject({
+      erro: {
+        campos: {
+          dataSaida: `A saída não pode ser antes do início deste período (${formatarDataBr(HOJE)}).`,
+        },
+      },
+    });
     expect((await jogadoresRepo.buscar(db, g, id))?.periodos).toMatchObject([
       { inicio: ENTRADA, fim: SAIDA_ANTIGA },
       { inicio: HOJE, fim: null },

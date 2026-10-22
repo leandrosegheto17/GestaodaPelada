@@ -215,15 +215,4 @@ describe('repositório de jogadores', () => {
     );
     expect(await jogadores.buscar(db, base.grupo.id, id)).not.toBeNull();
   });
-
-  it('temPresencaDesde (limite inclusivo, respeita o grupo)', async () => {
-    const db = await abrir();
-    const base = await criarBase(db, fabrica);
-    const id = await criarJogador(db, base.grupo.id, base.contaId);
-    await presenca(base.grupo.id, base.contaId, id, d(-100));
-    expect(await jogadores.temPresencaDesde(db, base.grupo.id, id, d(-100))).toBe(true);
-    expect(await jogadores.temPresencaDesde(db, base.grupo.id, id, d(-101))).toBe(true);
-    expect(await jogadores.temPresencaDesde(db, base.grupo.id, id, d(-99))).toBe(false);
-    expect(await jogadores.temPresencaDesde(db, base.outroGrupo.id, id, d(-101))).toBe(false);
-  });
 });

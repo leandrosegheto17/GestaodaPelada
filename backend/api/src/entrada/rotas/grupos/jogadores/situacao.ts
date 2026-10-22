@@ -1,11 +1,10 @@
 import { CODIGOS_ERRO, inativarCorpo, reativarCorpoComHoje } from '@pelada/contrato';
 import { Hono } from 'hono';
 import { inativarJogador } from '../../../../aplicacao/elenco/inativar.js';
-import { MSG_PRESENCA_DESDE_A_SAIDA } from '../../../../aplicacao/elenco/mensagens.js';
 import { reativarJogador } from '../../../../aplicacao/elenco/reativar.js';
 import type { AppEnv } from '../../../app.js';
 import { lerCorpo } from '../../../corpo.js';
-import { conflito, corpoErro, naoEncontrado, recusaDeCampo } from '../../../erros.js';
+import { conflito, naoEncontrado, recusaDeCampo } from '../../../erros.js';
 import { uuidDaRota } from '../../../parametros.js';
 
 /** `POST /api/grupos/:grupoId/jogadores/:id/inativar`: data de saída (padrão hoje, nunca futura). */
@@ -25,18 +24,8 @@ export const rotaJogadorInativar = new Hono<AppEnv>().post('/api/grupos/:grupoId
       return naoEncontrado(c);
     case 'ja_inativo':
       return conflito(c, CODIGOS_ERRO.jogadorJaInativo, 'O jogador já está inativo.');
-    case 'saida_antes_da_entrada':
-      return c.json(
-        corpoErro(CODIGOS_ERRO.validacao, 'Corrija os campos indicados.', {
-          dataSaida: 'A data de saída não pode ser anterior à entrada.',
-        }),
-        422,
-      );
-    case 'presenca_desde_a_saida':
-      return c.json(
-        corpoErro(CODIGOS_ERRO.validacao, 'Corrija os campos indicados.', { dataSaida: MSG_PRESENCA_DESDE_A_SAIDA }),
-        422,
-      );
+    case 'invalida':
+      return c.json(recusaDeCampo(r.campo, r.mensagem), 422);
   }
 });
 

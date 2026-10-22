@@ -1,20 +1,20 @@
-import { validarPeriodos } from '@pelada/dominio';
 import type { JogadorDetalhe } from '@pelada/contrato';
 import type { Db } from '../../infraestrutura/db/index.js';
 import * as jogadores from '../../infraestrutura/db/repositorios/jogadores.js';
 import { PeriodoInvalido } from '../../infraestrutura/db/repositorios/jogadores.js';
+import { avaliarPedidoDePeriodos } from './avaliacao-periodos.js';
 import { carregarDetalhe } from './detalhe.js';
 
 export type ResultadoInativar =
   | { tipo: 'ok'; jogador: JogadorDetalhe }
   | { tipo: 'nao_encontrado' }
   | { tipo: 'ja_inativo' }
-  | { tipo: 'saida_antes_da_entrada' }
-  | { tipo: 'presenca_desde_a_saida' };
+  | { tipo: 'invalida'; campo: 'dataSaida'; mensagem: string };
 
 /**
  * Fecha o período aberto na data de saída: a partir dessa data o jogador sai das linhas do
  * ranking e do lançamento (intervalo semiaberto). Presenças e pontos já acumulados ficam.
+ * A validação da data é a avaliação comum de períodos, a mesma da correção e do retorno.
  */
 export async function inativarJogador(
   db: Db,
@@ -25,16 +25,16 @@ export async function inativarJogador(
 ): Promise<ResultadoInativar> {
   const jogador = await jogadores.buscar(db, grupoId, jogadorId);
   if (!jogador) return { tipo: 'nao_encontrado' };
-  const aberto = jogador.periodos.findIndex((p) => p.fim === null);
-  if (aberto < 0) return { tipo: 'ja_inativo' };
-  const fechado = jogador.periodos.map((p, i) => (i === aberto ? { ...p, fim: dataSaida } : p));
-  if (!validarPeriodos(fechado).ok) return { tipo: 'saida_antes_da_entrada' };
-  if (await jogadores.temPresencaDesde(db, grupoId, jogadorId, dataSaida)) return { tipo: 'presenca_desde_a_saida' };
+  if (!jogador.periodos.some((p) => p.fim === null)) return { tipo: 'ja_inativo' };
+  const r = await avaliarPedidoDePeriodos(db, grupoId, jogadorId, { operacao: 'inativar', saida: dataSaida }, { hoje });
+  if (r.tipo === 'nao_encontrado') return { tipo: 'nao_encontrado' };
+  if (r.tipo === 'recusa') return { tipo: 'invalida', campo: 'dataSaida', mensagem: r.mensagem };
   try {
-    const r = await jogadores.inativar(db, grupoId, jogadorId, dataSaida);
-    if (r === 'sem_periodo_aberto') return { tipo: 'ja_inativo' };
+    if ((await jogadores.inativar(db, grupoId, jogadorId, dataSaida)) === 'sem_periodo_aberto') {
+      return { tipo: 'ja_inativo' };
+    }
   } catch (erro) {
-    if (erro instanceof PeriodoInvalido) return { tipo: 'saida_antes_da_entrada' };
+    if (erro instanceof PeriodoInvalido) return { tipo: 'invalida', campo: 'dataSaida', mensagem: erro.message };
     throw erro;
   }
   const atualizado = await carregarDetalhe(db, grupoId, jogadorId, hoje);
