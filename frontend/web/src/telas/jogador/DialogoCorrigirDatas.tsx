@@ -10,7 +10,6 @@ import { ErroApi } from '../../dados/erros';
 import { deErroApi, deValidacao, mensagemDoCampo } from '../../dados/errosDeCampos';
 import { caminhoPeriodo, useCorrigirPeriodo, usePreviaPeriodos } from '../../dados/periodos';
 import { dataCompleta } from '../../formatacao';
-import estilos from './jogador.module.css';
 
 type NomeCampo = 'saida' | 'retorno';
 type Valores = Record<NomeCampo, string>;
@@ -95,7 +94,7 @@ export function DialogoCorrigirDatas({
   }, [recusado, idBase]);
 
   const prontaPara = previa.isSuccess && consulta && mesmoCorpo(previa.variables, corpo) ? previa.data : undefined;
-  let estadoPrevia: EstadoPrevia | null = null;
+  let estadoPrevia: EstadoPrevia = { estado: 'vazia', texto: igual ? 'Nada a alterar.' : '' };
   if (consulta && previa.isPending) estadoPrevia = { estado: 'calculando' };
   else if (prontaPara) estadoPrevia = { estado: 'pronta', previa: prontaPara };
   else if (consulta && ehFalhaDeRede(previa.error)) {
@@ -164,13 +163,7 @@ export function DialogoCorrigirDatas({
           erroComoAlerta
         />
       ) : null}
-      {estadoPrevia ? (
-        <PreviaPeriodos {...estadoPrevia} />
-      ) : (
-        <div aria-live="polite">
-          <p className={estilos.paragrafo}>{igual ? 'Nada a alterar.' : ''}</p>
-        </div>
-      )}
+      <PreviaPeriodos {...estadoPrevia} />
       {gravar.isError && ehFalhaDeRede(gravar.error) ? (
         <Faixa
           tipo="erro"

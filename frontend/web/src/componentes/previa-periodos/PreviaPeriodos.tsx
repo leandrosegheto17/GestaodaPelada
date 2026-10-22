@@ -6,6 +6,7 @@ import { fraseDasRodadasQueEntram, fraseDasRodadasQueSaem } from './frasesDasRod
 import estilos from './PreviaPeriodos.module.css';
 
 export type EstadoPrevia =
+  | { estado: 'vazia'; texto?: string }
   | { estado: 'calculando' }
   | { estado: 'pronta'; previa: PeriodoPreviaResposta }
   | { estado: 'falhaRede'; aoTentar: () => void };
@@ -49,12 +50,19 @@ function Pronta({ previa }: { previa: PeriodoPreviaResposta }) {
   );
 }
 
-/** Prévia de corrigir datas e de reativar com retorno retroativo, numa região que o leitor de tela anuncia. */
+/**
+ * Prévia de corrigir datas e de reativar com retorno retroativo. A região que o leitor de tela anuncia
+ * fica sempre montada (vazia, ou com `texto`, quando não há prévia); a faixa de falha de rede vem fora dela.
+ */
 export function PreviaPeriodos(props: EstadoPrevia) {
   return (
-    <div aria-live="polite">
-      {props.estado === 'calculando' ? <p className={estilos.paragrafo}>Calculando…</p> : null}
-      {props.estado === 'pronta' ? <Pronta previa={props.previa} /> : null}
+    <>
+      <div aria-live="polite">
+        {props.estado === 'vazia' ? <p className={estilos.paragrafo}>{props.texto}</p> : null}
+        {props.estado === 'calculando' ? <p className={estilos.paragrafo}>Calculando…</p> : null}
+        {props.estado === 'pronta' ? <Pronta previa={props.previa} /> : null}
+        {props.estado === 'falhaRede' ? <p className={estilos.paragrafo}></p> : null}
+      </div>
       {props.estado === 'falhaRede' ? (
         <Faixa
           tipo="erro"
@@ -67,6 +75,6 @@ export function PreviaPeriodos(props: EstadoPrevia) {
           Não foi possível calcular. Verifique a conexão.
         </Faixa>
       ) : null}
-    </div>
+    </>
   );
 }
