@@ -1322,3 +1322,6 @@ APROVADA — só teste, nada em src/, dados sintéticos sem segredo/PII, ordem/m
 
 ## RTP-0204 — DevSecOps — 2026-10-22
 APROVADA; 0 críticos/0 não críticos; resíduo sem segredo/PII (só código de teste e UUID de fixture), `*.tmp.*` não esconde arquivo rastreado nem configuração, sem rotação nem limpeza de histórico.
+
+## RTP-0197 — DevSecOps — 2026-10-22
+APROVADA — mudança só na decisão de situação da grade em rodadas.ts, sem import/dependência nova, sem exposição entre jogadores/grupos, G-25 preservado (acumuladoPorInicio intocado; dominio 82/82); 0 críticos, 0 não críticos.

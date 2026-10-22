@@ -244,7 +244,7 @@ O contrato detalhado (OpenAPI) nasce por endpoint no `API-CONTRACT.yaml`, durant
 
 ### Datas de saída e de retorno do jogador (reabertura 4.4, RF-75 a RF-82)
 
-Vocabulário (PRD-TECNICO §1.17): **período** = intervalo semiaberto `[início, fim)` de atividade do jogador; **saída** = `fim`; **retorno** = `início` de um período que não é o primeiro. O início do 1º período é a data de início da pontuação e só muda pela rota de `inicio` (ADR-023). O acumulado (RN-25) **não olha períodos**; corrigi-los muda quem aparece nas rodadas, no ranking, no lançamento, no simulador e no financeiro, e nunca um ponto.
+Vocabulário (PRD-TECNICO §1.17): **período** = intervalo semiaberto `[início, fim)` de atividade do jogador; **saída** = `fim`; **retorno** = `início` de um período que não é o primeiro. O início do 1º período é a data de início da pontuação e só muda pela rota de `inicio` (ADR-023). O acumulado (RN-25) **não olha períodos**; corrigi-los muda quem aparece nas rodadas, no ranking, no lançamento, no simulador e no financeiro, e nunca um ponto. **Presença gravada fora de período (legado, I-48/PR-25; decisão do BK-0018, 2026-10-22):** como o acumulado a conta, a grade também a mostra — `rodadasDoJogador` devolve a situação e os pontos da presença quando existe presença na data, mesmo sem período ativo; "–" (`fora`) fica só para a data sem presença e sem período ativo, ou anterior à data de início da pontuação (que o acumulado também ignora). Assim PTS FINAL do mês = PTS INICIAL do seguinte. Não muda ponto (RNF-13), logo não exige o Gestor.
 
 **Rotas** (todas sob `/api/grupos/:grupoId/jogadores/:id`, atrás do middleware de vínculo: jogador, período ou grupo de outro lugar respondem 404 genérico; escrita exige `X-Pelada: 1`; G-03, G-04, G-09):
 

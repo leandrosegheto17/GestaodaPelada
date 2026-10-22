@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-22 13:34
+Atualizado: 2026-10-22 15:11
 
-Resumo: Não executada 1 · Em execução 1 · Aprovada 448 · Bloqueada 1 · Despriorizada 5 · total 456
+Resumo: Aprovada 451 · Despriorizada 5 · total 456
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -238,7 +238,7 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 223 | TP-0217 | executor | ✔ | aplicacao/elenco: avaliação comum do pedido de períodos (a única porta da prévia, da gr... | L49 | TP-0053, TP-0212, TP-0213, TP-0214, TP-0216 | Aprovada |
 | 224 | TP-0218 | executor | ✔ | Endpoint GET /api/grupos/:g/jogadores/:id/periodos | L49 | TP-0013, TP-0032, TP-0033, TP-0069, TP-0211, TP-0214, TP-0215 | Aprovada |
 | 225 | TP-0219 | executor | ✔ | Endpoint POST /api/grupos/:g/jogadores/:id/periodos/:periodoId/previa | L49 | TP-0013, TP-0032, TP-0033, TP-0215, TP-0217 | Aprovada |
-| 226 | BK-0016 | coordenador | ✔ | avaliarPedidoDePeriodos (TP-0217) não devolve ja_ativo para reativar: jogador ativo cairia | — | — | Em execução |
+| 226 | BK-0016 | coordenador | ✔ | avaliarPedidoDePeriodos (TP-0217) não devolve ja_ativo para reativar: jogador ativo cairia | — | — | Aprovada |
 | 227 | TP-0220 | executor | ✔ | Endpoint POST /api/grupos/:g/jogadores/:id/reativar/previa | L49 | BK-0016, TP-0013, TP-0032, TP-0033, TP-0215, TP-0217 | Aprovada |
 | 228 | TP-0221 | executor | ✔ | Endpoint PUT /api/grupos/:g/jogadores/:id/periodos/:periodoId (corrigir saída e retorno) | L50 | TP-0013, TP-0030, TP-0032, TP-0033, TP-0209, TP-0214, TP-0215, TP-0217 | Aprovada |
 | 229 | BK-0017 | coordenador | ✔ | Banco pelada_teste com conta órfã 'Dono' (id 59dcf429-813e-46c0-8f06-f47c074d0bb7, e-mail | — | — | Aprovada |
@@ -451,19 +451,19 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 436 | RTP-0193 | executor | ✔ | reativar: reaproveitar a mensagem de sobreposição em vez de repetir o texto (achado do... | Refatoração Lote-L50 | TP-0222 | Aprovada |
 | 437 | RTP-0196 | executor | ✔ | Teste de rota da regra (g) no inativar: saída do 1º período antes da data de início (or... | Refatoração Lote-L50 | TP-0223 | Aprovada |
 | 438 | BK-0018 | coordenador | ✔ | Decidir a regra: presença gravada fora de período (legado, I-48/PR-25) conta no acumulado | — | — | Aprovada |
-| 439 | RTP-0198 | executor | ✔ | Inativar: avaliar e gravar dentro de transação com trava do jogador (achado DevSecOps d... | Refatoração Lote-L50 | TP-0223 | Aprovada |
-| 440 | RTP-0199 | executor | ✔ | Teste de ordem da G-26 para editarInicio (achado do QA de TP-0226) | Refatoração Lote-L50 | TP-0226 | Aprovada |
-| 441 | RTP-0200 | executor | ✔ | Lançamento de presença trava os jogadores (serializa com inativar/reativar/correção) | Refatoração Lote-L50 | RTP-0198 | Aprovada |
-| 442 | RTP-0201 | executor | ✔ | G-26 desatualizada: lista só periodos-corrigir e reativar, mas inativar, inicio-editar... | Refatoração Revisão 2026-10-22 | — | Aprovada |
-| 443 | RTP-0202 | executor | ✔ | Editar partida trava jogadores sem teste de ordem (Baixa) | Refatoração Revisão 2026-10-22 | — | Aprovada |
-| 444 | RTP-0203 | executor | ✔ | Consolidar o preparo repetido e as checagens de ordem em g26/ordem.test.ts | Refatoração Revisão 2026-10-22 (2) | — | Aprovada |
-| 445 | RTP-0204 | executor | ✔ | Remover resíduo ler.test.ts.tmp.* e ignorar *.tmp.* no .gitignore | Refatoração Revisão 2026-10-22 (2) | — | Aprovada |
-| 446 | BK-0009 | coordenador | ✔ | Ajustar SDD/ADR-010/URL_PUBLICA/CORS/deploy.yml ao domínio prod-ljs.workers.dev e aos acei | — | — | Aprovada |
-| 447 | BK-0012 | coordenador | ✔ | Quando e onde registrar a contração do CHECK de posicao (tirar defensor/meio_campo de joga | — | — | Aprovada |
-| 448 | BK-0013 | coordenador | ✔ | ADR-008 §3 decide gerar e chamar navigator.share no mesmo gesto; o app agora sempre mostra | — | — | Aprovada |
-| 449 | BK-0014 | coordenador | ✔ | Texto do '–' no ranking e no PDF (hoje só 'Ainda não fazia parte do grupo') também vale pa | — | — | Aprovada |
-| 450 | BK-0019 | coordenador | ✔ | Código e testes de domínio prontos (82 verdes, tsc ok), mas regressao-periodos.test.ts (AP | — | — | Não executada |
-| 451 | RTP-0197 | executor | ✔ | Decidir: presença gravada fora de período (legado, I-48/PR-25) conta no acumulado mas a... | Refatoração Lote-L50 | BK-0018, BK-0019, TP-0225 | Bloqueada |
+| 439 | BK-0019 | coordenador | ✔ | Código e testes de domínio prontos (82 verdes, tsc ok), mas regressao-periodos.test.ts (AP | — | — | Aprovada |
+| 440 | RTP-0197 | executor | ✔ | Decidir: presença gravada fora de período (legado, I-48/PR-25) conta no acumulado mas a... | Refatoração Lote-L50 | BK-0018, BK-0019, TP-0225 | Aprovada |
+| 441 | RTP-0198 | executor | ✔ | Inativar: avaliar e gravar dentro de transação com trava do jogador (achado DevSecOps d... | Refatoração Lote-L50 | TP-0223 | Aprovada |
+| 442 | RTP-0199 | executor | ✔ | Teste de ordem da G-26 para editarInicio (achado do QA de TP-0226) | Refatoração Lote-L50 | TP-0226 | Aprovada |
+| 443 | RTP-0200 | executor | ✔ | Lançamento de presença trava os jogadores (serializa com inativar/reativar/correção) | Refatoração Lote-L50 | RTP-0198 | Aprovada |
+| 444 | RTP-0201 | executor | ✔ | G-26 desatualizada: lista só periodos-corrigir e reativar, mas inativar, inicio-editar... | Refatoração Revisão 2026-10-22 | — | Aprovada |
+| 445 | RTP-0202 | executor | ✔ | Editar partida trava jogadores sem teste de ordem (Baixa) | Refatoração Revisão 2026-10-22 | — | Aprovada |
+| 446 | RTP-0203 | executor | ✔ | Consolidar o preparo repetido e as checagens de ordem em g26/ordem.test.ts | Refatoração Revisão 2026-10-22 (2) | — | Aprovada |
+| 447 | RTP-0204 | executor | ✔ | Remover resíduo ler.test.ts.tmp.* e ignorar *.tmp.* no .gitignore | Refatoração Revisão 2026-10-22 (2) | — | Aprovada |
+| 448 | BK-0009 | coordenador | ✔ | Ajustar SDD/ADR-010/URL_PUBLICA/CORS/deploy.yml ao domínio prod-ljs.workers.dev e aos acei | — | — | Aprovada |
+| 449 | BK-0012 | coordenador | ✔ | Quando e onde registrar a contração do CHECK de posicao (tirar defensor/meio_campo de joga | — | — | Aprovada |
+| 450 | BK-0013 | coordenador | ✔ | ADR-008 §3 decide gerar e chamar navigator.share no mesmo gesto; o app agora sempre mostra | — | — | Aprovada |
+| 451 | BK-0014 | coordenador | ✔ | Texto do '–' no ranking e no PDF (hoje só 'Ainda não fazia parte do grupo') também vale pa | — | — | Aprovada |
 | 452 | TP-0140 | executor | ✔ | [U] Play Console: app com.gestaodapelada.app (PI-5) | L31 | — | Despriorizada |
 | 453 | TP-0141 | executor | ✔ | /.well-known/assetlinks.json servido pelo Worker | L31 | TP-0088, TP-0140 | Despriorizada |
 | 454 | TP-0142 | executor | ✔ | Projeto TWA (Bubblewrap) em frontend/twa | L31 | TP-0006, TP-0108, TP-0139, TP-0140, TP-0141 | Despriorizada |

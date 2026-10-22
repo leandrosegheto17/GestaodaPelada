@@ -317,7 +317,7 @@ Não tem layout próprio: é processamento. Se a URL tiver o slug, ou se houver 
   - **Pts inicial:** acumulado até o início do mês exibido (= Pts final do mês anterior), em tom secundário;
   - **uma coluna por partida do mês:**
     - cabeçalho "dd/mm" com ícone de **sol** (sem chuva) ou **nuvem** (com chuva), e texto oculto ", sem chuva" / ", com chuva";
-    - na célula, os **pontos daquela rodada** (ex.: 1, 2, −1, 0) dentro de uma marca na cor da situação: verde presente, amarelo lesionado, vermelho expulso, cinza falta, e "–" quando o jogador estava fora do grupo ou a rodada é anterior à data de início da pontuação (RN-25, TP-0209; texto decidido no BK-0014, 2026-10-21);
+    - na célula, os **pontos daquela rodada** (ex.: 1, 2, −1, 0) dentro de uma marca na cor da situação: verde presente, amarelo lesionado, vermelho expulso, cinza falta, e "–" quando o jogador estava fora do grupo (sem presença gravada na data) ou a rodada é anterior à data de início da pontuação (RN-25, TP-0209; texto decidido no BK-0014, 2026-10-21). Presença gravada em data fora de período (legado, I-48) mostra os pontos e a cor da situação, como qualquer presença, porque o acumulado a conta (BK-0018, 2026-10-22);
     - pista de forma: lesionado com "L" no canto, expulso com "E" no canto, falta com contorno tracejado;
     - leitor de tela: "Presente, 2 pontos", "Lesionado, 1 ponto", "Expulso, menos 1 ponto", "Falta, 0 pontos", "Fora do grupo ou antes da data de início";
   - **Pts final:** Pts inicial + rodadas do mês. No mês corrente, é o acumulado até hoje. Fica em destaque;

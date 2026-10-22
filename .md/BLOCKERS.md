@@ -142,7 +142,7 @@
 - Descrição: avaliarPedidoDePeriodos (TP-0217) não devolve ja_ativo para reativar: jogador ativo cairia em 422 (regra e) e não no 409 do aceite; decidir se se acrescenta { tipo: 'ja_ativo' } em backend/api/src/aplicacao/elenco/avaliacao-periodos.ts (~4 linhas, arquivo da TP-0217) ou se a TP-0220 checa fora da avaliação
 - Impacto se não resolvido: TP-0220 e dependentes (reativar/previa) paradas
 - Sugestão: Autorizar o acréscimo de ja_ativo na avaliação comum (4 linhas, com teste) e reexecutar a TP-0220
-- Status: Em aberto
+- Status: Resolvido (2026-10-22): Alternativa A: avaliarPedidoDePeriodos devolve ja_ativo (com teste); TP-0220 reexecuta com o acréscimo no escopo
 
 ## Bloqueio 017 — 2026-10-21 (BK-0017)
 - Reportado por: Executor
@@ -151,4 +151,22 @@
 - Descrição: Banco pelada_teste com conta órfã 'Dono' (id 59dcf429-813e-46c0-8f06-f47c074d0bb7, e-mail leandrosegheto17@gmail.com), deixada por um 'pnpm test' que rodou a suíte inteira; todo montarCenario falha com contas_email_unico. O DELETE foi negado pelo classificador de permissão. Código e testes da TP-0222 estão escritos mas NÃO rodados (backend/api: reativar.ts, situacao.ts, casos.ts, reativar-retroativo.test.ts, sem commit)
 - Impacto se não resolvido: Todas as tarefas com teste de rota/banco ficam sem como serem verificadas até a linha ser removida
 - Sugestão: Usuário apaga a linha órfã do banco de teste (ou autoriza o DELETE), depois /executar --tarefa TP-0222 para rodar os testes e fechar
-- Status: Em aberto
+- Status: Resolvido (2026-10-22): Conta órfã 'Dono' (59dcf429-813e-46c0-8f06-f47c074d0bb7) e a sessão presa a ela removidas do pelada_teste pelo usuário; verificado: 0 linhas restantes
+
+## Bloqueio 018 — 2026-10-22 (BK-0018)
+- Reportado por: Executor
+- Escalado para: Coordenador (Gestor se mudar ponto)
+- Artefato/trecho afetado: RTP-0197
+- Descrição: Decidir a regra: presença gravada fora de período (legado, I-48/PR-25) conta no acumulado (RN-25) mas a grade mostra '–', então PTS FINAL do mês fica menor que o PTS INICIAL seguinte (8 x 9); registrar a decisão no SDD/PRD antes de implementar
+- Impacto se não resolvido: Os 2 testes de legado em regressao-periodos.test.ts dispensam PTS FINAL=PTS INICIAL para o Alvo
+- Sugestão: Opção A: acumulado ignora presença fora de período (muda ponto, Gestor). Opção B: grade/PTS FINAL exibe os pontos dessa presença.
+- Status: Resolvido (2026-10-22): Decidido (Coordenador, sem mudar ponto): opção B — a grade/PTS FINAL exibe os pontos da presença gravada fora de período (rodadasDoJogador usa a situação da presença quando existe na data e não é anterior ao início da pontuação); o acumulado não muda. Registrado em SDD (§ períodos), UX-SPEC (grade) e PRD-TECNICO (I-48). RTP-0197 desbloqueada para implementar.
+
+## Bloqueio 019 — 2026-10-22 (BK-0019)
+- Reportado por: Executor
+- Escalado para: usuário
+- Artefato/trecho afetado: RTP-0197
+- Descrição: Código e testes de domínio prontos (82 verdes, tsc ok), mas regressao-periodos.test.ts (API) não roda: conta órfã de novo no pelada_teste (contas_email_unico, como no BK-0017); usuário remove a linha e roda o teste
+- Impacto se não resolvido: RTP-0197 não fecha sem rodar os 7 testes de regressao-periodos; asserções ajustadas sem execução
+- Sugestão: Apagar a conta órfã do pelada_teste e rodar /executar --tarefa RTP-0197 (só rodar o teste e fechar)
+- Status: Resolvido (2026-10-22): Conta órfã não existe mais no pelada_teste (0 e-mails fora de .invalid); regressao-periodos.test.ts roda 7 de 7 e tsc limpo. Um teste estourava o timeout padrão de 5 s (cada teste leva ~5 s), então o arquivo ganhou vi.setConfig({ testTimeout: 30_000 })

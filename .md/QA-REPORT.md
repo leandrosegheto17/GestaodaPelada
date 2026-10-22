@@ -1301,3 +1301,6 @@ APROVADA — 10 testes verdes, prettier/tsc OK, asserções de ordem/tx/rollback
 
 ## RTP-0204 — QA — 2026-10-22
 APROVADA; 0 críticos/0 não críticos; resíduo removido, `*.tmp.*` ignorado sem regra perdida, nenhum rastreado casa, ler.test.ts 7/7 verde.
+
+## RTP-0197 — QA — 2026-10-22
+APROVADA — opção B do BK-0018 verificada (api 7/7, dominio 479/479, tsc limpo); 0 críticos, 0 não críticos; excluir.test.ts é poluição do banco, não regressão.
