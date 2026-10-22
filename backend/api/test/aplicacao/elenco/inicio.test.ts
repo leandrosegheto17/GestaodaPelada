@@ -2,6 +2,7 @@ import { PESOS_PADRAO } from '@pelada/dominio';
 import { describe, expect, it, vi } from 'vitest';
 import { editarInicio } from '../../../src/aplicacao/elenco/inicio-editar.js';
 import { previaInicio } from '../../../src/aplicacao/elenco/inicio-previa.js';
+import { mensagemInicioDepoisDaSaida } from '../../../src/aplicacao/elenco/mensagens-periodos.js';
 import { reativarJogador } from '../../../src/aplicacao/elenco/reativar.js';
 import { kyselyDe } from '../../../src/infraestrutura/db/cliente.js';
 import { emTransacao, type Db } from '../../../src/infraestrutura/db/index.js';
@@ -129,7 +130,8 @@ describe('previaInicio', () => {
       expect(await previaInicio(db, g, vandre, antigo, HOJE)).toMatchObject({ tipo: 'invalida' });
     }
     const depoisDaSaida = await previaInicio(db, g, vandre, d(-2), HOJE);
-    expect(depoisDaSaida).toMatchObject({ tipo: 'invalida' });
+    expect(depoisDaSaida).toEqual({ tipo: 'invalida', mensagem: mensagemInicioDepoisDaSaida(d(-3)) });
+    expect(depoisDaSaida).toMatchObject({ mensagem: expect.stringContaining('Corrija antes a data de saída') });
     expect(await previaInicio(db, cen.grupoB.id, vandre, d(-10), HOJE)).toEqual({ tipo: 'nao_encontrado' });
   });
 });

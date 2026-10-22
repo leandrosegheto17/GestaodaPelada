@@ -2,7 +2,8 @@ import { MENSAGEM_ANTES_DO_PISO, PISO_INICIO } from '@pelada/contrato';
 import { previaDoInicio, type JogadorDoRanking, type PreviaInicio } from '@pelada/dominio';
 import type { ExecutorDb } from '../../infraestrutura/db/index.js';
 import { carregarHistoricoGrupo, type HistoricoDoGrupo } from '../pontuacao/historico.js';
-import { MSG_INICIO_DEPOIS_DA_SAIDA, MSG_INICIO_NO_FUTURO } from './mensagens.js';
+import { MSG_INICIO_NO_FUTURO } from './mensagens.js';
+import { mensagemInicioDepoisDaSaida } from './mensagens-periodos.js';
 
 export type ResultadoPreviaInicio =
   { tipo: 'ok'; previa: PreviaInicio } | { tipo: 'nao_encontrado' } | { tipo: 'invalida'; mensagem: string };
@@ -35,7 +36,7 @@ export function motivoDeRecusa(contexto: ContextoInicio, novoInicio: string, hoj
   if (novoInicio < PISO_INICIO) return MENSAGEM_ANTES_DO_PISO;
   if (novoInicio > hoje) return MSG_INICIO_NO_FUTURO;
   const fimDoPrimeiro = contexto.jogador.periodos[0]?.fim;
-  if (fimDoPrimeiro && novoInicio > fimDoPrimeiro) return MSG_INICIO_DEPOIS_DA_SAIDA;
+  if (fimDoPrimeiro && novoInicio > fimDoPrimeiro) return mensagemInicioDepoisDaSaida(fimDoPrimeiro);
   return null;
 }
 

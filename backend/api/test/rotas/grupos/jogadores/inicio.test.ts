@@ -2,6 +2,7 @@ import { inicioEditarResposta, inicioPreviaResposta } from '@pelada/contrato';
 import { PESOS_PADRAO } from '@pelada/dominio';
 import { randomUUID } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
+import { mensagemInicioDepoisDaSaida } from '../../../../src/aplicacao/elenco/mensagens-periodos.js';
 import { kyselyDe } from '../../../../src/infraestrutura/db/cliente.js';
 import { emTransacao, type Db } from '../../../../src/infraestrutura/db/index.js';
 import * as jogadores from '../../../../src/infraestrutura/db/repositorios/jogadores.js';
@@ -151,6 +152,10 @@ describe('PUT /api/grupos/:g/jogadores/:id/inicio (workerd)', () => {
     const depois = await cliente(cen.adminA.cookie).put(inicio(g, id), { data: d(-2) });
     expect(depois.status).toBe(422);
     expect(depois.texto).not.toContain(d(-2));
+    expect(campos(depois)).toEqual({ data: mensagemInicioDepoisDaSaida(d(-5)) });
+    const previaRecusada = await cliente(cen.adminA.cookie).post(previa(g, id), { data: d(-2) });
+    expect(previaRecusada.status).toBe(422);
+    expect(campos(previaRecusada)).toEqual({ data: mensagemInicioDepoisDaSaida(d(-5)) });
     expect((await cliente().put(inicio(g, id), { data: d(-10) })).status).toBe(401);
     expect((await cliente(cen.adminB.cookie).put(inicio(g, id), { data: d(-10) })).status).toBe(404);
     expect((await cliente(cen.adminB.cookie).put(inicio(cen.grupoB.id, id), { data: d(-10) })).status).toBe(404);
