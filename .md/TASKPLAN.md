@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-22 16:24
+Atualizado: 2026-10-22 19:07
 
-Resumo: Não executada 2 · Aprovada 451 · Despriorizada 5 · total 458
+Resumo: Não executada 1 · Aprovada 457 · Despriorizada 5 · total 463
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -458,16 +458,21 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 443 | RTP-0200 | executor | ✔ | Lançamento de presença trava os jogadores (serializa com inativar/reativar/correção) | Refatoração Lote-L50 | RTP-0198 | Aprovada |
 | 444 | RTP-0201 | executor | ✔ | G-26 desatualizada: lista só periodos-corrigir e reativar, mas inativar, inicio-editar... | Refatoração Revisão 2026-10-22 | — | Aprovada |
 | 445 | RTP-0202 | executor | ✔ | Editar partida trava jogadores sem teste de ordem (Baixa) | Refatoração Revisão 2026-10-22 | — | Aprovada |
-| 446 | RTP-0205 | executor | ✔ | situacaoNaRodada ficou com o parâmetro situacao sem uso e com a regra antiga | Refatoração Revisão 2026-10-22 | — | Não executada |
-| 447 | RTP-0206 | executor | ✔ | pnpm snapshot do contrato grava JSON sem formatar numa pasta que o format:check confere | Refatoração Revisão 2026-10-22 | — | Não executada |
-| 448 | RTP-0203 | executor | ✔ | Consolidar o preparo repetido e as checagens de ordem em g26/ordem.test.ts | Refatoração Revisão 2026-10-22 (2) | — | Aprovada |
-| 449 | RTP-0204 | executor | ✔ | Remover resíduo ler.test.ts.tmp.* e ignorar *.tmp.* no .gitignore | Refatoração Revisão 2026-10-22 (2) | — | Aprovada |
-| 450 | BK-0009 | coordenador | ✔ | Ajustar SDD/ADR-010/URL_PUBLICA/CORS/deploy.yml ao domínio prod-ljs.workers.dev e aos acei | — | — | Aprovada |
-| 451 | BK-0012 | coordenador | ✔ | Quando e onde registrar a contração do CHECK de posicao (tirar defensor/meio_campo de joga | — | — | Aprovada |
-| 452 | BK-0013 | coordenador | ✔ | ADR-008 §3 decide gerar e chamar navigator.share no mesmo gesto; o app agora sempre mostra | — | — | Aprovada |
-| 453 | BK-0014 | coordenador | ✔ | Texto do '–' no ranking e no PDF (hoje só 'Ainda não fazia parte do grupo') também vale pa | — | — | Aprovada |
-| 454 | TP-0140 | executor | ✔ | [U] Play Console: app com.gestaodapelada.app (PI-5) | L31 | — | Despriorizada |
-| 455 | TP-0141 | executor | ✔ | /.well-known/assetlinks.json servido pelo Worker | L31 | TP-0088, TP-0140 | Despriorizada |
-| 456 | TP-0142 | executor | ✔ | Projeto TWA (Bubblewrap) em frontend/twa | L31 | TP-0006, TP-0108, TP-0139, TP-0140, TP-0141 | Despriorizada |
-| 457 | TP-0143 | executor | ✔ | [U] Teste fechado da Play (12 testadores, 14 dias) | L31 | TP-0139, TP-0141, TP-0142 | Despriorizada |
-| 458 | TP-0144 | executor | ✔ | [U] Publicação da TWA em produção | L31 | TP-0143 | Despriorizada |
+| 446 | RTP-0205 | executor | ✔ | situacaoNaRodada ficou com o parâmetro situacao sem uso e com a regra antiga | Refatoração Revisão 2026-10-22 | — | Aprovada |
+| 447 | RTP-0206 | executor | ✔ | pnpm snapshot do contrato grava JSON sem formatar numa pasta que o format:check confere | Refatoração Revisão 2026-10-22 | — | Aprovada |
+| 448 | RTP-0207 | executor | ✔ | Jogador que saiu e voltou: o acumulado atual conta só a partir do retorno (caso Kim: 69... | Refatoração Revisão 2026-10-22 | — | Aprovada |
+| 449 | RTP-0208 | executor | ✔ | format:check da raiz falha em 17 arquivos fora do snapshot (achado do QA da RTP-0206) | Refatoração Revisão 2026-10-22 | — | Aprovada |
+| 450 | RTP-0209 | executor | ✔ | Teste da saída formatada do snapshot do contrato (lacuna do aceite da RTP-0206) | Refatoração Revisão 2026-10-22 | RTP-0206 | Aprovada |
+| 451 | RTP-0210 | executor | ✔ | Fixar fim de linha LF no repositório (.gitattributes), já que o prettier aceita CRLF co... | Refatoração Revisão 2026-10-22 | RTP-0208 | Aprovada |
+| 452 | RTP-0211 | executor | ✔ | Prévia (compararCenarios) monta a grade com o início bruto, enquanto o acumulado usa o... | Refatoração Revisão 2026-10-22 | RTP-0207 | Não executada |
+| 453 | RTP-0203 | executor | ✔ | Consolidar o preparo repetido e as checagens de ordem em g26/ordem.test.ts | Refatoração Revisão 2026-10-22 (2) | — | Aprovada |
+| 454 | RTP-0204 | executor | ✔ | Remover resíduo ler.test.ts.tmp.* e ignorar *.tmp.* no .gitignore | Refatoração Revisão 2026-10-22 (2) | — | Aprovada |
+| 455 | BK-0009 | coordenador | ✔ | Ajustar SDD/ADR-010/URL_PUBLICA/CORS/deploy.yml ao domínio prod-ljs.workers.dev e aos acei | — | — | Aprovada |
+| 456 | BK-0012 | coordenador | ✔ | Quando e onde registrar a contração do CHECK de posicao (tirar defensor/meio_campo de joga | — | — | Aprovada |
+| 457 | BK-0013 | coordenador | ✔ | ADR-008 §3 decide gerar e chamar navigator.share no mesmo gesto; o app agora sempre mostra | — | — | Aprovada |
+| 458 | BK-0014 | coordenador | ✔ | Texto do '–' no ranking e no PDF (hoje só 'Ainda não fazia parte do grupo') também vale pa | — | — | Aprovada |
+| 459 | TP-0140 | executor | ✔ | [U] Play Console: app com.gestaodapelada.app (PI-5) | L31 | — | Despriorizada |
+| 460 | TP-0141 | executor | ✔ | /.well-known/assetlinks.json servido pelo Worker | L31 | TP-0088, TP-0140 | Despriorizada |
+| 461 | TP-0142 | executor | ✔ | Projeto TWA (Bubblewrap) em frontend/twa | L31 | TP-0006, TP-0108, TP-0139, TP-0140, TP-0141 | Despriorizada |
+| 462 | TP-0143 | executor | ✔ | [U] Teste fechado da Play (12 testadores, 14 dias) | L31 | TP-0139, TP-0141, TP-0142 | Despriorizada |
+| 463 | TP-0144 | executor | ✔ | [U] Publicação da TWA em produção | L31 | TP-0143 | Despriorizada |

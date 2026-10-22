@@ -1384,3 +1384,21 @@ APROVADA; 0 críticos/0 não críticos; resíduo sem segredo/PII (só código de
 
 ## RTP-0197 — DevSecOps — 2026-10-22
 APROVADA — mudança só na decisão de situação da grade em rodadas.ts, sem import/dependência nova, sem exposição entre jogadores/grupos, G-25 preservado (acumuladoPorInicio intocado; dominio 82/82); 0 críticos, 0 não críticos.
+
+## RTP-0205 — DevSecOps — 2026-10-22
+APROVADA, 0 críticos/0 não críticos; diff de src só em situacao-rodada.ts e 1 linha de rodadas.ts, comportamento idêntico, sem dependência nova (git show --stat, grep de chamadores e de padrões de risco limpos).
+
+## RTP-0206 — DevSecOps — 2026-10-22
+APROVADA; 0 achados; comando encadeado fixo e restrito à pasta, sem dependência nova, JSON parseado idêntico ao HEAD (80 arquivos) e teste de remoção de campo passando (9/9).
+
+## RTP-0209 — DevSecOps — 2026-10-22
+APROVADA; 0 achados; só escreve em mkdtemp e limpa (0 resíduos), execFileSync sem shell com args em array, sem dependência nova nem segredo, snapshot intocado (executado).
+
+## RTP-0208 — DevSecOps — 2026-10-22
+APROVADA — diff é só `"endOfLine": "auto"` em .prettierrc.json (ci.yml/package.json intactos, índice 100% LF, sem impacto em scripts/CI); 0 críticos, 0 não críticos novos; lacuna CRLF já coberta pela RTP-0210.
+
+## RTP-0210 — DevSecOps — 2026-10-22
+APROVADA — commit toca só .gitattributes; 379 binários i/-text intactos, 0 .bat/.cmd/.ps1, 5 .sh i/lf corretos; 0 achados.
+
+## RTP-0207 — DevSecOps — 2026-10-22
+APROVADA em segurança. G-25 mantida (único `acumuladoPorInicio`, grep sem cálculo paralelo), sem mudança de autorização, isolamento ou dado exposto, `periodos` só com datas, sem dependência nova. Domínio pontuacao+ranking 86/86 executado. 0 críticos, 0 não críticos.

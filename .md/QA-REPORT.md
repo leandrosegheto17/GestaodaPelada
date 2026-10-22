@@ -1304,3 +1304,21 @@ APROVADA; 0 críticos/0 não críticos; resíduo removido, `*.tmp.*` ignorado se
 
 ## RTP-0197 — QA — 2026-10-22
 APROVADA — opção B do BK-0018 verificada (api 7/7, dominio 479/479, tsc limpo); 0 críticos, 0 não críticos; excluir.test.ts é poluição do banco, não regressão.
+
+## RTP-0205 — QA — 2026-10-22
+APROVADA, 0 críticos/0 não críticos; vitest 143 verdes, tsc dominio+api e prettier limpos, assinatura de 2 parâmetros e testes de entrada/inativação/reativação mantidos.
+
+## RTP-0206 — QA — 2026-10-22
+APROVADA; 0 críticos, 2 não críticos (format:check da raiz falha em 17 arquivos alheios; sem teste da saída formatada); snapshot 2x idempotente, 448 testes e checar-compatibilidade verdes.
+
+## RTP-0209 — QA — 2026-10-22
+APROVADA; 0 críticos, 0 não críticos; 2 testes novos verdes (450 no pacote), não toca o snapshot, limpa o temporário e falha sob mutação (sem `--write`).
+
+## RTP-0208 — QA — 2026-10-22
+APROVADA — format:check verde, commit só .prettierrc.json, índice/CI em LF, arquivo mal formatado ainda reprovado, contrato 450 testes verdes; 0 críticos, 1 não crítico (auto não barra CRLF commitado; sugestão .gitattributes).
+
+## RTP-0210 — QA — 2026-10-22
+APROVADA — .gitattributes correto; renormalize em clone descartável sem diff de conteúdo, binários e contagens eol intactos, prettier --check verde; 0 achados.
+
+## RTP-0207 — QA — 2026-10-22
+APROVADA — domínio 477/477 e API 220/220, tsc limpos, caso Kim (6 / PTS INICIAL 0) coberto; 0 críticos, 1 não crítico (prévia usa início bruto na grade).
