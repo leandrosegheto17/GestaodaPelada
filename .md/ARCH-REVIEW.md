@@ -1,5 +1,27 @@
 # Revisão de arquitetura
 
+## Revisão 2026-10-22 (3) — pré-deploy, depois da RTP-0197 (regra da grade com presença fora de período)
+
+Números do saude.py: 0 arquivos acima do limite · 4 blocos duplicados (34 linhas, os mesmos já descartados) · 3 IDs de tarefa (todos em `evidencia/s-01`) · 2 pastas com acesso a dados (`backend/api/src`, `evidencia/s-01`) · 0 imports indevidos entre aplicações · 0 conversões forçadas · 8 comentários de cópia (falsos positivos). Comparação visual (13:05, depois do último commit de `frontend/web/src`): 153 de 153 OK, 0 DIVERGE (a única ocorrência de "DIVERGE" no log é a legenda). Mudança desde a revisão (2): `rodadasDoJogador` usa a presença gravada mesmo sem período (RTP-0197), `vi.setConfig` em `regressao-periodos.test.ts`, formatação de `casos.ts`/`periodos-listar.test.ts`, contagem 7 em `elenco-periodos.test.ts`.
+
+**Não há achado de severidade Alta aberto. Nada impede o `/deploy`.**
+
+| # | Achado | Item do checklist | Severidade | Onde | Destino |
+|---|---|---|---|---|---|
+| 1 | `situacaoNaRodada` ainda tem o 3º parâmetro `situacao` e o comentário/teste da regra antiga (presença em data sem período vira `fora`); depois da RTP-0197 o único chamador passa 2 argumentos e a grade decide a presença antes; o teste afirma o contrário da regra nova | 4, 17 | Baixa | `backend/dominio/src/atividade/situacao-rodada.ts`; `backend/dominio/test/atividade/atividade.test.ts:11-26` | RTP-0205 |
+| 2 | `serializar` (`snapshot-lib.ts:41`) grava `JSON.stringify` sem formatar, mas `snapshot/*.json` segue o prettier e o CI roda `format:check`; regerar o snapshot modifica dezenas de arquivos só de formato (~45 hoje no `git status`) e esconde a mudança real de contrato | 17 | Baixa | `backend/contrato/ferramentas/snapshot-lib.ts:41,96-104`; `backend/contrato/package.json` (script `snapshot`) | RTP-0206 |
+
+Descartados:
+- Coerência documento × código da RTP-0197: PRD I-48, SDD §(linha 247) e UX-SPEC (linha 320) já dizem que a presença gravada fora de período aparece na grade e que "–" fica para sem presença e sem período ou antes do início; `rodadas.ts` faz exatamente isso, com acumulado intocado (G-25) e os consumidores (`ranking.ts`, `cenario-jogador.ts`, `projecao.ts`) só chamam a função única. A prévia (`previa-periodos.ts`) passa a não listar rodadas com presença gravada, com teste ajustado.
+- Regra de negócio fora do domínio: nada novo em `backend/api` nem em `frontend/web`; a RTP-0197 só toca `backend/dominio/src/ranking/rodadas.ts` em `src`.
+- `contagem 7` em `elenco-periodos.test.ts`: o número guarda que a regex acha todos os arquivos de períodos do mockup; mudar o mockup começa pelo mockup e o teste avisa. Refinamento marginal, sem RTP.
+- `vi.setConfig({ testTimeout })` em `regressao-periodos.test.ts`: mesmo padrão de `test/scripts/dono.test.ts`, escopo do arquivo.
+- Formatação de `casos.ts`/`periodos-listar.test.ts`: só prettier, sem mudança de conteúdo.
+- Linhas vazadas em `pelada_teste` (`excluir.test.ts`): ambiente, já registrado pelo QA da RTP-0197/0200.
+- Blocos duplicados `AreaDono`/`GrupoDono`, `ranking`/`prioridade`, `PaginaGrupo`/`PaginaPontuacao`, `pesos.ts`/`tipos.ts`, IDs em `evidencia/s-01`, acesso a dados em `backend/api/src` e `evidencia/s-01`, e os 8 comentários de cópia: os mesmos já descartados.
+
+Sem achado nos itens: 1 a 3, 5 a 16 e 18. Itens 11, 13 e 14 por amostragem do relatório. Não rodei `git` (sem acesso a shell nesta sessão): o escopo da mudança veio da leitura dos arquivos e do `RTP-0197.md`.
+
 ## Revisão 2026-10-22 (2) — pré-deploy, depois das RTP-0201 e RTP-0202
 
 Números do saude.py: 0 arquivos acima do limite · 4 blocos duplicados (34 linhas, os mesmos já descartados) · 3 IDs de tarefa (todos em `evidencia/s-01`) · 2 pastas com acesso a dados (`backend/api/src`, `evidencia/s-01`) · 0 imports indevidos entre aplicações · 0 conversões forçadas · 8 comentários de cópia (falsos positivos). Comparação visual: 153 de 153 OK, 0 DIVERGE; diff de `tokens.css` vazio. Fora do escopo: BK-0018/BK-0019, RTP-0197 e as alterações não commitadas em `backend/dominio` e `test/apoio/regressao-periodos*`; linhas vazadas em `pelada_teste` (ambiente).
