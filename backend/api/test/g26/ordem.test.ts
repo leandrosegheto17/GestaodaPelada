@@ -24,8 +24,8 @@ const abrir = usarDb(fabrica);
 
 afterEach(() => vi.restoreAllMocks());
 
-/** Entrada em d(-60) e saída em d(-45): o jogador está inativo. */
-async function cenario(db: Db) {
+/** Monta o cenário de acesso e os pesos padrão do grupo A. */
+async function prepararGrupo(db: Db) {
   const cen = await montarCenario(db, fabrica);
   const g = cen.grupoA.id;
   await pesos.criarPadrao(db, g, {
@@ -34,6 +34,12 @@ async function cenario(db: Db) {
     registradoPor: cen.adminA.id,
     agora: AGORA_TESTE,
   });
+  return { cen, g };
+}
+
+/** Entrada em d(-60) e saída em d(-45): o jogador está inativo. */
+async function cenario(db: Db) {
+  const { cen, g } = await prepararGrupo(db);
   const id = await criarJogador(db, g, cen.adminA.id, { dataEntrada: d(-60) });
   await jogadores.inativar(db, g, id, d(-45));
   const periodo = (await jogadores.buscar(db, g, id))?.periodos[0];
@@ -51,6 +57,17 @@ function espionar(escrita: 'corrigirPeriodo' | 'reativar') {
 const ordem = (...espioes: { mock: { invocationCallOrder: number[] } }[]) =>
   espioes.map((e) => e.mock.invocationCallOrder[0]!);
 
+type Espiao = { mock: { calls: unknown[][]; invocationCallOrder: number[] } };
+
+/** Confere que os espiões foram chamados na ordem dada, todos no mesmo tx e esse tx não é o db. */
+function conferirOrdemNoTx(db: Db, travar: Espiao, ...demais: Espiao[]) {
+  const chamadas = ordem(travar, ...demais);
+  chamadas.slice(1).forEach((atual, i) => expect(chamadas[i]).toBeLessThan(atual!));
+  const tx = travar.mock.calls[0]![0];
+  expect(tx).not.toBe(db);
+  demais.forEach((e) => expect(e.mock.calls[0]![0]).toBe(tx));
+}
+
 describe('PUT periodos (corrigir)', () => {
   it('trava o jogador, grava e audita na mesma transação, nessa ordem', async () => {
     const db = await abrir();
@@ -67,13 +84,7 @@ describe('PUT periodos (corrigir)', () => {
     );
 
     expect(r.tipo).toBe('ok');
-    const [t, w, a] = ordem(travar, gravar, registrar);
-    expect(t).toBeLessThan(w!);
-    expect(w).toBeLessThan(a!);
-    const tx = travar.mock.calls[0]![0];
-    expect(tx).not.toBe(db);
-    expect(gravar.mock.calls[0]![0]).toBe(tx);
-    expect(registrar.mock.calls[0]![0]).toBe(tx);
+    conferirOrdemNoTx(db, travar, gravar, registrar);
   });
 
   it('sem a auditoria a correção não vale: falha ao auditar desfaz a escrita', async () => {
@@ -99,14 +110,7 @@ describe('PUT periodos (corrigir)', () => {
 describe('POST inativar', () => {
   it('trava o jogador, avalia e grava na mesma transação, nessa ordem', async () => {
     const db = await abrir();
-    const cen = await montarCenario(db, fabrica);
-    const g = cen.grupoA.id;
-    await pesos.criarPadrao(db, g, {
-      pesos: PESOS_PADRAO,
-      vigenteDesde: d(-400),
-      registradoPor: cen.adminA.id,
-      agora: AGORA_TESTE,
-    });
+    const { cen, g } = await prepararGrupo(db);
     const id = await criarJogador(db, g, cen.adminA.id, { dataEntrada: d(-60) });
     const travar = vi.spyOn(jogadores, 'travar');
     const avaliar = vi.spyOn(avaliacao, 'avaliarPedidoDePeriodos');
@@ -115,13 +119,7 @@ describe('POST inativar', () => {
     const r = await inativarJogador(db, g, id, d(-10), HOJE_TESTE);
 
     expect(r.tipo).toBe('ok');
-    const [t, a, w] = ordem(travar, avaliar, gravar);
-    expect(t).toBeLessThan(a!);
-    expect(a).toBeLessThan(w!);
-    const tx = travar.mock.calls[0]![0];
-    expect(tx).not.toBe(db);
-    expect(avaliar.mock.calls[0]![0]).toBe(tx);
-    expect(gravar.mock.calls[0]![0]).toBe(tx);
+    conferirOrdemNoTx(db, travar, avaliar, gravar);
     expect((await jogadores.buscar(db, g, id))?.periodos[0]?.fim).toBe(d(-10));
   });
 });
@@ -135,13 +133,7 @@ describe('POST reativar retroativo', () => {
     const r = await reativarJogador(db, g, id, HOJE_TESTE, { dataRetorno: d(-20), autor, agora: AGORA_TESTE });
 
     expect(r.tipo).toBe('ok');
-    const [t, w, a] = ordem(travar, gravar, registrar);
-    expect(t).toBeLessThan(w!);
-    expect(w).toBeLessThan(a!);
-    const tx = travar.mock.calls[0]![0];
-    expect(tx).not.toBe(db);
-    expect(gravar.mock.calls[0]![0]).toBe(tx);
-    expect(registrar.mock.calls[0]![0]).toBe(tx);
+    conferirOrdemNoTx(db, travar, gravar, registrar);
   });
 
   it('sem a auditoria o retorno retroativo não vale: falha ao auditar desfaz a escrita', async () => {
@@ -159,14 +151,7 @@ describe('POST reativar retroativo', () => {
 
 /** Grupo com três jogadores ativos; devolve os ids e as marcações em ordem inversa de id. */
 async function cenarioPartida(db: Db) {
-  const cen = await montarCenario(db, fabrica);
-  const g = cen.grupoA.id;
-  await pesos.criarPadrao(db, g, {
-    pesos: PESOS_PADRAO,
-    vigenteDesde: d(-400),
-    registradoPor: cen.adminA.id,
-    agora: AGORA_TESTE,
-  });
+  const { cen, g } = await prepararGrupo(db);
   const ids = [
     await criarJogador(db, g, cen.adminA.id, { dataEntrada: d(-60) }),
     await criarJogador(db, g, cen.adminA.id, { dataEntrada: d(-60) }),
@@ -227,14 +212,7 @@ describe('PUT partida (editar presença)', () => {
 
 describe('PUT inicio (editarInicio)', () => {
   async function cenarioAtivo(db: Db) {
-    const cen = await montarCenario(db, fabrica);
-    const g = cen.grupoA.id;
-    await pesos.criarPadrao(db, g, {
-      pesos: PESOS_PADRAO,
-      vigenteDesde: d(-400),
-      registradoPor: cen.adminA.id,
-      agora: AGORA_TESTE,
-    });
+    const { cen, g } = await prepararGrupo(db);
     const id = await criarJogador(db, g, cen.adminA.id, { dataEntrada: d(-60) });
     const antes = (await jogadores.buscar(db, g, id))?.inicioPontuacao;
     return { g, id, autor: cen.adminA.id, antes };
@@ -250,13 +228,7 @@ describe('PUT inicio (editarInicio)', () => {
     const r = await editarInicio(db, g, id, d(-50), { hoje: HOJE_TESTE, autor, agora: AGORA_TESTE });
 
     expect(r).toMatchObject({ tipo: 'ok', alterado: true });
-    const [t, w, a] = ordem(travar, gravar, registrar);
-    expect(t).toBeLessThan(w!);
-    expect(w).toBeLessThan(a!);
-    const tx = travar.mock.calls[0]![0];
-    expect(tx).not.toBe(db);
-    expect(gravar.mock.calls[0]![0]).toBe(tx);
-    expect(registrar.mock.calls[0]![0]).toBe(tx);
+    conferirOrdemNoTx(db, travar, gravar, registrar);
   });
 
   it('sem a auditoria a alteração não vale: falha ao auditar desfaz a escrita', async () => {
