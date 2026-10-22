@@ -26,7 +26,6 @@ jobs:
       - run: pnpm lint
       - run: node backend/scripts/checagens/checar-migracao-aditiva.mjs
       - run: node backend/scripts/checagens/checar-grupo-id.mjs
-      - run: node backend/scripts/checagens/checar-escrita-e-dono.mjs
       - run: node backend/scripts/checagens/checar-escrita-periodo.mjs
       - run: pnpm --filter @pelada/contrato checar-compatibilidade
       - run: pnpm format:check
@@ -64,6 +63,8 @@ jobs:
           --health-retries 10
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
       - uses: ./.github/actions/preparar-node
       # Cada fatia tem o seu Postgres: os arquivos de teste seguem em série dentro dela.
       - run: pnpm --filter @pelada/api test --shard=${{ matrix.fatia }}/3
@@ -121,6 +122,8 @@ jobs:
         fatia: [1, 2]
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
       - uses: ./.github/actions/preparar-node
       - run: pnpm --filter @pelada/web exec playwright install --with-deps chromium
       - run: pnpm --filter @pelada/web build

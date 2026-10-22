@@ -11,6 +11,7 @@ import {
   semRelogio,
 } from './eslint/regras-sintaxe.mjs';
 import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
+import peladaPlugin from './eslint/plugin-pelada.mjs';
 
 const PROIBIDAS_BASE = [
   'prisma',
@@ -261,6 +262,31 @@ export default tseslint.config(
         semAsUnknownAs,
       ),
     },
+  },
+  {
+    // G-11: o papel de dono só é escrito por backend/scripts, pelas migrações e por criarContaDono (regra por AST).
+    files: ['**/*.{ts,tsx,js,mjs}'],
+    // As ferramentas do contrato só leem `eDono` dos schemas para recusá-lo na entrada.
+    ignores: ['backend/scripts/**', 'backend/contrato/ferramentas/**', '**/migracoes/**', '**/test/**', '**/*.test.*'],
+    plugins: { pelada: peladaPlugin },
+    rules: { 'pelada/sem-escrita-dono': 'error' },
+  },
+  {
+    // G-26: periodos_ativos só é escrita pelos dois repositórios do período (regra por AST).
+    files: ['backend/**/*.{ts,tsx,js,mjs}'],
+    ignores: [
+      'backend/api/src/infraestrutura/db/repositorios/jogadores.ts',
+      'backend/api/src/infraestrutura/db/repositorios/periodos-corrigir.ts',
+      '**/migracoes/**',
+      '**/test/**',
+      '**/*.test.*',
+    ],
+    plugins: { pelada: peladaPlugin },
+    rules: { 'pelada/sem-escrita-periodo': 'error' },
+  },
+  {
+    files: ['backend/api/src/infraestrutura/db/repositorios/contas.ts'],
+    rules: { 'pelada/sem-escrita-dono': ['error', { funcoesPermitidas: ['criarContaDono'] }] },
   },
   {
     files: ['frontend/web/**'],

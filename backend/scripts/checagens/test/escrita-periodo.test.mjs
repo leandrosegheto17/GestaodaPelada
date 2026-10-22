@@ -1,3 +1,4 @@
+import { ESLint } from 'eslint';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -6,6 +7,17 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 const SCRIPT = resolve(import.meta.dirname, '..', 'checar-escrita-periodo.mjs');
 const temporarias = [];
+
+const RAIZ_PROJETO = resolve(import.meta.dirname, '../../../..');
+const eslint = new ESLint({ cwd: RAIZ_PROJETO });
+
+/** Achados da regra G-26 para `codigo` quando ele está em `arquivo` (caminho relativo à raiz do projeto). */
+async function achadosPeriodo(codigo, arquivo) {
+  const [resultado] = await eslint.lintText(codigo, { filePath: resolve(RAIZ_PROJETO, arquivo) });
+  const erro = resultado.messages.find((m) => m.fatal);
+  if (erro) throw new Error(`erro de sintaxe no fixture: ${erro.message}`);
+  return resultado.messages.filter((m) => m.ruleId === 'pelada/sem-escrita-periodo').length;
+}
 
 function repositorio(arquivos) {
   const raiz = mkdtempSync(join(tmpdir(), 'periodo-'));
@@ -34,10 +46,10 @@ const base = {
   [`${REPOS}/jogadores.ts`]: 'export async function reativar() { await sql`UPDATE periodos_ativos SET fim = null`; }\n',
   [`${REPOS}/periodos-corrigir.ts`]: "banco.updateTable('periodos_ativos').set({ fim: 1 });\n",
 };
-const sql = (corpo) => ({ ...base, [`${SRC}/aplicacao/x.ts`]: corpo });
+const APLICACAO = `${SRC}/aplicacao/x.ts`;
 const rota = (nome, corpo, extra = {}) => ({ ...base, [`${ROTAS}/${nome}`]: corpo, ...extra });
 
-describe('escrita em periodos_ativos fora do repositório', () => {
+describe('regra pelada/sem-escrita-periodo: escrita em periodos_ativos fora do repositório', () => {
   it.each([
     'await sql`UPDATE periodos_ativos SET inicio = ${d}`;',
     'await sql`update periodos_ativos set fim = ${d}`;',
@@ -51,10 +63,14 @@ describe('escrita em periodos_ativos fora do repositório', () => {
     "const t = 'periodos' + '_ativos';\nawait db.updateTable(t).set({ fim: d }).execute();",
     'const t = `periodos_${x}`;\nawait db.updateTable(t).set({ fim: d }).execute();',
     "await db\n  .with('x', (qb) => qb)\n  .insertInto('periodos_ativos')\n  .values(v)\n  .execute();",
-  ])('barra %s', (corpo) => {
-    const r = rodar(sql(corpo));
-    expect(r.status).toBe(1);
-    expect(r.saida).toContain(`${SRC}/aplicacao/x.ts`);
+    // Contornos que a checagem por texto não via.
+    "const t = 'periodos' + x;\nawait db.updateTable(t).set({ fim: d }).execute();",
+    "await db.mergeInto('periodos_ativos').using('x', 'a', 'b').execute();",
+    'await sql`WITH x AS (SELECT 1) UPDATE ONLY periodos_ativos SET fim = 1`;',
+    "await client.query('INSERT INTO periodos_ativos (inicio) VALUES ($1)', [d]);",
+    "await client.query('MERGE INTO public.periodos_ativos USING x ON true');",
+  ])('barra: %s', async (codigo) => {
+    expect(await achadosPeriodo(codigo, APLICACAO)).toBeGreaterThan(0);
   });
 
   it.each([
@@ -65,19 +81,49 @@ describe('escrita em periodos_ativos fora do repositório', () => {
     "/* await db.updateTable('periodos_ativos').set({}) */ const a = 1;",
     "const texto = 'UPDATE jogadores SET x = 1';",
     "await db.deleteFrom('periodos_ativos').execute();",
-  ])('aceita %s', (corpo) => {
-    expect(rodar(sql(corpo)).status).toBe(0);
+    'await sql`SELECT id FROM periodos_ativos WHERE jogador_id = ${j} FOR UPDATE`;',
+    'await sql`INSERT INTO jogadores (nome) SELECT nome FROM periodos_ativos`;',
+  ])('aceita: %s', async (codigo) => {
+    expect(await achadosPeriodo(codigo, APLICACAO)).toBe(0);
   });
 
-  it('aceita a escrita nos dois repositórios do período e ignora testes e migrações', () => {
+  it('não confere os dois repositórios do período, os testes nem as migrações', async () => {
     const escrita = 'await sql`UPDATE periodos_ativos SET fim = 1`;';
+    for (const arquivo of [
+      `${REPOS}/jogadores.ts`,
+      `${REPOS}/periodos-corrigir.ts`,
+      'backend/api/test/x.ts',
+      `${SRC}/infraestrutura/db/migracoes/x.ts`,
+    ]) {
+      expect(await achadosPeriodo(escrita, arquivo)).toBe(0);
+    }
+  });
+
+  it('confere os outros repositórios', async () => {
     expect(
-      rodar({
-        ...base,
-        'backend/api/test/x.ts': escrita,
-        [`${SRC}/infraestrutura/db/migracoes/x.sql`]: 'UPDATE periodos_ativos SET fim = 1;',
-      }).status,
-    ).toBe(0);
+      await achadosPeriodo('await sql`UPDATE periodos_ativos SET fim = 1`;', `${REPOS}/partidas.ts`),
+    ).toBeGreaterThan(0);
+  });
+});
+
+describe('arquivo .sql fora das migrações', () => {
+  const sqlSolto = (corpo) =>
+    rodar({ ...base, 'backend/scripts/ops/x.sql': corpo, [`${SRC}/aplicacao/y.ts`]: 'export {};' });
+
+  it.each([
+    'UPDATE periodos_ativos SET fim = 1;',
+    'update\n  public."periodos_ativos"\nset fim = 1;',
+    'INSERT INTO periodos_ativos (a) VALUES (1);',
+  ])('barra %s', (corpo) => {
+    expect(sqlSolto(corpo).status).toBe(1);
+  });
+
+  it.each([
+    'SELECT * FROM periodos_ativos;',
+    '-- UPDATE periodos_ativos SET fim = 1\nSELECT 1;',
+    "SELECT 'UPDATE periodos_ativos';",
+  ])('aceita %s', (corpo) => {
+    expect(sqlSolto(corpo).status).toBe(0);
   });
 });
 

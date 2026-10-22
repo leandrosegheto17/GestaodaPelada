@@ -37,17 +37,26 @@ jobs:
           RUN_ID: ${{ github.run_id }}
         run: |
           set -euo pipefail
+          if [[ ! "${NEON_API_KEY:-}" =~ ^[A-Za-z0-9_-]+$ ]]; then
+            echo "NEON_API_KEY ausente ou com caracteres fora de [A-Za-z0-9_-]." >&2
+            exit 1
+          fi
+          # O token vai num arquivo de configuração do curl (modo 600), fora de argv; a validação acima
+          # impede que aspas ou quebra de linha injetem diretivas nele.
+          config="${RUNNER_TEMP}/neon.curl"
+          trap 'rm -f "$config"' EXIT
+          (umask 077; printf 'header = "Authorization: Bearer %s"\n' "$NEON_API_KEY" > "$config")
+          neon() { curl -fsS --config "$config" "$@"; }
           pai="production"
           api="https://console.neon.tech/api/v2/projects/${NEON_PROJECT_ID}/branches"
-          cabecalho="Authorization: Bearer ${NEON_API_KEY}"
-          id_pai="$(curl -fsS -H "$cabecalho" "$api" | pnpm --silent exec tsx backend/scripts/ops/restauracao-neon-cli.ts pai "$pai" --executar)"
+          id_pai="$(neon "$api" | pnpm --silent exec tsx backend/scripts/ops/restauracao-neon-cli.ts pai "$pai" --executar)"
           nome="restauracao-${AMBIENTE}-${RUN_ID}"
-          curl -fsS -X POST -H "$cabecalho" -H 'Content-Type: application/json' \
+          neon -X POST -H 'Content-Type: application/json' \
             -d "{\"branch\":{\"name\":\"${nome}\",\"parent_id\":\"${id_pai}\"}}" "$api" >/dev/null
           echo "nome=${nome}" >> "$GITHUB_OUTPUT"
           # Mantém só os 2 branches de restauração mais novos (limite do plano gratuito).
-          curl -fsS -H "$cabecalho" "$api" | pnpm --silent exec tsx backend/scripts/ops/restauracao-neon-cli.ts antigos "$AMBIENTE" --executar |
-            while read -r antigo; do curl -fsS -X DELETE -H "$cabecalho" "${api}/${antigo}" >/dev/null; done
+          neon "$api" | pnpm --silent exec tsx backend/scripts/ops/restauracao-neon-cli.ts antigos "$AMBIENTE" --executar |
+            while read -r antigo; do neon -X DELETE "${api}/${antigo}" >/dev/null; done
 
       - name: Dump cifrado antes da migração
         uses: ./.github/actions/dump-cifrado

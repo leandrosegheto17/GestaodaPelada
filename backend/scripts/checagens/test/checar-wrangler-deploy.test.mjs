@@ -70,6 +70,16 @@ describe('checar-wrangler-deploy', () => {
     ['Justfile', 'publicar:\n  wrangler deploy\n'],
     ['GNUmakefile', 'publicar:\n\twrangler deploy\n'],
     ['.github/workflows/Deploy.yml', '      - run: wrangler deploy\n'],
+    // Só o parser enxerga: bloco `run: |` com barra invertida, YAML ilegível (falha fechado), script de package.json.
+    ['.github/workflows/outro.yml', '      - run: |\n          pnpm exec wrangler \\\n            deploy\n'],
+    [
+      '.github/workflows/outro.yml',
+      '      - run: |\n          echo ok\n          pnpm exec wrangler pages deploy dist\n',
+    ],
+    ['.github/workflows/outro.yml', 'jobs:\n  a: [\n'],
+    ['.github/workflows/outro.yml', '      - {uses: cloudflare/wrangler-action@v3}\n'],
+    ['package.json', '{ "name": "x", "scripts": { "a": "echo ok", "b": "pnpm exec wrangler deploy" } }\n'],
+    ['package.json', '{ "scripts": { "a": "x" '],
   ])('falha: %s', (nome, texto) => {
     expect(rodar(repositorio({ [nome]: texto }))).toBe(1);
   });
@@ -93,6 +103,11 @@ describe('checar-wrangler-deploy', () => {
     ['Dockerfile', 'RUN npx wrangler versions upload\n'],
     ['scripts/r.ps1', 'wrangler.exe versions upload\n'],
     ['scripts/r.py', "print('wrangler deployments list')\n"],
+    // O parser ignora comentário de YAML e texto de package.json que não é script.
+    ['.github/workflows/outro.yml', '      # - run: wrangler deploy\n      - run: echo ok\n'],
+    ['.github/workflows/outro.yml', '      - name: wrangler deploy\n        run: echo ok\n'],
+    ['.github/workflows/outro.yml', "      - run: 'echo ok'\n        env:\n          DESCRICAO: wrangler deploy\n"],
+    ['package.json', '{ "name": "x", "description": "usa wrangler deploy", "scripts": { "a": "echo ok" } }\n'],
   ])('passa: %s', (nome, texto) => {
     expect(rodar(repositorio({ [nome]: texto, 'src/ok.ts': 'export {};\n' }))).toBe(0);
   });

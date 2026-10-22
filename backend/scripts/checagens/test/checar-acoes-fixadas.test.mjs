@@ -30,7 +30,7 @@ afterEach(() => {
 
 describe('checar-acoes-fixadas', () => {
   it.each([
-    ['ação por SHA', { '.github/workflows/a.yml': `      - uses: actions/checkout@${SHA} # v4\n` }],
+    ['ação por SHA', { '.github/workflows/a.yml': `      - uses: actions/cache@${SHA} # v4\n` }],
     ['ação local', { '.github/workflows/a.yml': '      - uses: ./.github/actions/x\n' }],
     ['action composta por SHA', { '.github/actions/x/action.yml': `    - uses: a/b@${SHA}\n` }],
     ['uses entre aspas por SHA', { '.github/workflows/a.yml': `      - uses: "a/b@${SHA}"\n` }],
@@ -54,6 +54,55 @@ describe('checar-acoes-fixadas', () => {
     const r = rodar(repositorio(arquivos));
     expect(r.status).toBe(1);
     expect(r.stderr).toMatch(/\.github\/.*\.yml:1: /);
+  });
+
+  it.each([
+    [
+      'checkout sem persist-credentials',
+      `jobs:\n  a:\n    steps:\n      - uses: actions/checkout@${SHA}\n`,
+      /\.github\/workflows\/a\.yml:4: .*sem persist-credentials: false/,
+    ],
+    [
+      'checkout com persist-credentials true',
+      `jobs:\n  a:\n    steps:\n      - uses: actions/checkout@${SHA}\n        with:\n          persist-credentials: true\n`,
+      /sem persist-credentials: false/,
+    ],
+    [
+      'checkout só com fetch-depth',
+      `jobs:\n  a:\n    steps:\n      - uses: actions/checkout@${SHA}\n        with:\n          fetch-depth: 0\n`,
+      /sem persist-credentials: false/,
+    ],
+    [
+      'checkout em flow style',
+      `jobs:\n  a:\n    steps:\n      - {uses: "actions/checkout@${SHA}"}\n`,
+      /sem persist-credentials: false/,
+    ],
+    ['workflow reutilizável por tag', 'jobs:\n  a:\n    uses: org/repo/.github/workflows/x.yml@v1\n', /x\.yml@v1/],
+    ['uses que não é texto', 'jobs:\n  a:\n    steps:\n      - uses: [a, b]\n', /uses que não é texto/],
+    ['YAML inválido', 'jobs:\n  a: [\n', /YAML ilegível/],
+    ['chave duplicada', `jobs:\n  a:\n    steps:\n      - uses: a/b@${SHA}\n        uses: a/b@v1\n`, /YAML ilegível/],
+  ])('falha: %s', (_nome, texto, esperado) => {
+    const r = rodar(repositorio({ '.github/workflows/a.yml': texto }));
+    expect(r.status).toBe(1);
+    expect(r.stderr).toMatch(esperado);
+  });
+
+  it.each([
+    [
+      'checkout com persist-credentials false',
+      `jobs:\n  a:\n    steps:\n      - uses: actions/checkout@${SHA}\n        with:\n          persist-credentials: false\n`,
+    ],
+    [
+      'checkout com persist-credentials "false"',
+      `jobs:\n  a:\n    steps:\n      - uses: actions/checkout@${SHA}\n        with:\n          persist-credentials: 'false'\n`,
+    ],
+    ['uses só em comentário', 'jobs:\n  a:\n    steps:\n      # - uses: a/b@v1\n      - run: echo ok\n'],
+    ['uses só em texto de run', 'jobs:\n  a:\n    steps:\n      - run: \'echo "uses: a/b@v1"\'\n'],
+    ['action composta sem checkout', `runs:\n  using: composite\n  steps:\n    - uses: a/b@${SHA}\n`],
+  ])('passa: %s', (_nome, texto) => {
+    const r = rodar(repositorio({ '.github/workflows/a.yml': texto }));
+    expect(r.stderr).toBe('');
+    expect(r.status).toBe(0);
   });
 
   it.each([

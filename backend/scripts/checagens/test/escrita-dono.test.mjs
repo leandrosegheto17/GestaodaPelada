@@ -1,34 +1,25 @@
-import { execFileSync, spawnSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
-import { dirname, join, resolve } from 'node:path';
-import { afterEach, describe, expect, it } from 'vitest';
+import { ESLint } from 'eslint';
+import { resolve } from 'node:path';
+import { describe, expect, it } from 'vitest';
 
-const SCRIPT = resolve(import.meta.dirname, '..', 'checar-escrita-e-dono.mjs');
-const temporarias = [];
+const RAIZ = resolve(import.meta.dirname, '../../../..');
+const eslint = new ESLint({ cwd: RAIZ });
+const REGRA = 'pelada/sem-escrita-dono';
 
-function repositorio(arquivos) {
-  const raiz = mkdtempSync(join(tmpdir(), 'dono-'));
-  temporarias.push(raiz);
-  execFileSync('git', ['init', '-q'], { cwd: raiz });
-  for (const [nome, texto] of Object.entries(arquivos)) {
-    mkdirSync(dirname(join(raiz, nome)), { recursive: true });
-    writeFileSync(join(raiz, nome), texto);
-  }
-  return raiz;
+/** Quantos achados da regra G-11 o código tem quando está em `arquivo` (caminho relativo à raiz). */
+async function achados(codigo, arquivo) {
+  const [resultado] = await eslint.lintText(codigo, { filePath: resolve(RAIZ, arquivo) });
+  // Código que não compila não pode contar como "sem achados".
+  const erro = resultado.messages.find((m) => m.fatal);
+  if (erro) throw new Error(`erro de sintaxe no fixture: ${erro.message}`);
+  return resultado.messages.filter((m) => m.ruleId === REGRA).length;
 }
 
-const rodar = (raiz, ambiente = process.env) =>
-  spawnSync(process.execPath, [SCRIPT, raiz], { encoding: 'utf8', env: ambiente }).status;
-
-afterEach(() => {
-  while (temporarias.length) rmSync(temporarias.pop(), { recursive: true, force: true });
-});
-
+const ROTA = 'backend/api/src/entrada/rotas/x.ts';
+const CONTAS = 'backend/api/src/infraestrutura/db/repositorios/contas.ts';
 const CAMPOS_LONGOS = Array.from({ length: 40 }, (_, i) => `campo${i}: 1`).join(', ');
-const rota = (corpo) => ({ 'backend/api/src/entrada/rotas/x.ts': corpo });
 
-describe('checar-escrita-e-dono', () => {
+describe('regra pelada/sem-escrita-dono (G-11)', () => {
   it.each([
     'await sql`INSERT INTO contas (email, e_dono) VALUES (${e}, true)`;',
     'await sql`UPDATE contas SET e_dono = true WHERE id = ${id}`;',
@@ -62,8 +53,25 @@ describe('checar-escrita-e-dono', () => {
     "const o = {};\no.eDono >>= 1;\nawait db.updateTable('c').set(o).execute();",
     "const o = {};\no.eDono <<= 1;\nawait db.updateTable('c').set(o).execute();",
     "const o = {};\no.eDono >>>= 1;\nawait db.updateTable('c').set(o).execute();",
-  ])('falha: %s', (corpo) => {
-    expect(rodar(repositorio(rota(corpo)))).toBe(1);
+    // Contornos que a checagem por texto não via.
+    'const eDono = true;\nawait db.insertInto("c").values({ eDono }).execute();',
+    "await db.updateTable('c').set('e_dono', true).execute();",
+    "await db.insertInto('c').columns(['nome', 'e_dono']).values(['a', true]).execute();",
+    "const o = {};\no.eDono++;\nawait db.updateTable('c').set(o).execute();",
+    "const o = { ['e_' + 'dono']: true };\nawait db.updateTable('c').set(o).execute();",
+    "const o = { [`e_dono`]: true };\nawait db.updateTable('c').set(o).execute();",
+    "const o = { eDono: await ler() };\nawait db.updateTable('c').set(o).execute();",
+    "const o = { eDono: `${x}` };\nawait db.updateTable('c').set(o).execute();",
+    "const nome = 'e_' + parte;\nawait db.updateTable('c').set({ [nome]: true }).execute();",
+    "const o = {};\no[`eDono`] = true;\nawait db.updateTable('c').set(o).execute();",
+    "const o = {};\no?.['e_dono'];\no.eDono = v;\nawait db.updateTable('c').set(o).execute();",
+    "await db.updateTable('c').set({ ...base, e_dono: true }).execute();",
+    "await db.insertInto('c').values([{ nome: 'a', e_dono: true }, { nome: 'b' }]).execute();",
+    "await db.updateTable('c').set((eb) => ({ e_dono: eb.val(true) })).execute();",
+    "await sql.raw('UPDATE contas SET e_dono = true');",
+    "await c.query('INSERT INTO contas (e_dono) VALUES (true)');",
+  ])('falha: %s', async (codigo) => {
+    expect(await achados(codigo, ROTA)).toBeGreaterThan(0);
   });
 
   it.each([
@@ -79,47 +87,57 @@ describe('checar-escrita-e-dono', () => {
     'if (conta.eDono === true) { x(); }',
     'export const ler = (c) => ({ eDono: c.eDono, outro: f(c) });',
     'export const s = { eDono: z.boolean(), n: 1 };',
+    'export const s = { eDono: z.boolean().optional(), n: 1 };',
     'if (c["e_dono"] === true || c.eDono !== false) { x(); }',
     'if (c.eDono <= 1 || c.eDono >= 1 || c.eDono != 2) { x(); }',
     "const u = 'http://x'; // db.insertInto('c').values({ e_dono: true })\nexport {};",
-    "const u = 'a--b'; -- values({ e_dono: true })\nexport {};",
-  ])('passa: %s', (corpo) => {
-    expect(rodar(repositorio(rota(corpo)))).toBe(0);
+    'export const ler = (c) => ({ eDono: c.conta?.eDono, n: 1 });',
+    'export const ler = (c) => ({ eDono: c.eDono === true });',
+    'const { eDono } = sessao.conta;\nexport { eDono };',
+    "const COLUNAS = ['id', 'e_dono'] as const;\nexport { COLUNAS };",
+    "export const eDonoSempre = 'e_dono';",
+  ])('passa: %s', async (codigo) => {
+    expect(await achados(codigo, ROTA)).toBe(0);
   });
 
-  it('passa em backend/scripts, migrações e testes', () => {
-    const sql = 'INSERT INTO contas (e_dono) VALUES (true);';
-    const raiz = repositorio({
-      'backend/scripts/dono.ts': `await sql\`${sql}\`;`,
-      'backend/api/src/infraestrutura/db/migracoes/202610010000_x.sql': sql,
-      'backend/api/test/apoio/x.ts': `await sql\`${sql}\`;`,
-      'backend/api/src/entrada/ok.ts': 'export {};',
-    });
-    expect(rodar(raiz)).toBe(0);
+  it('não confere backend/scripts, migrações, testes nem as ferramentas do contrato', async () => {
+    const escrita = "await db.insertInto('contas').values({ e_dono: true }).execute();";
+    const sql = 'await sql`INSERT INTO contas (e_dono) VALUES (true)`;';
+    for (const arquivo of [
+      'backend/scripts/dono.ts',
+      'backend/api/src/infraestrutura/db/migracoes/x.ts',
+      'backend/api/test/apoio/x.ts',
+      'backend/api/src/entrada/x.test.ts',
+      'backend/contrato/ferramentas/x.ts',
+    ]) {
+      expect(await achados(escrita, arquivo)).toBe(0);
+      expect(await achados(sql, arquivo)).toBe(0);
+    }
   });
 
-  describe('contas.ts', () => {
-    const CAMINHO = 'backend/api/src/infraestrutura/db/repositorios/contas.ts';
+  describe('repositório de contas', () => {
     const criarDono =
       "export async function criarContaDono(ex) {\n  await ex.insertInto('contas').values({ e_dono: true }).execute();\n}\n";
     const outra =
       "export async function promoverADono(ex, id) {\n  await ex.updateTable('contas').set({ e_dono: true }).execute();\n}\n";
+    const comoConstante =
+      "export const criarContaDono = async (ex) => {\n  await ex.insertInto('contas').values({ e_dono: true }).execute();\n};\n";
 
-    it('passa: só criarContaDono escreve e_dono', () => {
-      expect(rodar(repositorio({ [CAMINHO]: criarDono }))).toBe(0);
+    it('passa: só criarContaDono escreve o papel', async () => {
+      expect(await achados(criarDono, CONTAS)).toBe(0);
+      expect(await achados(comoConstante, CONTAS)).toBe(0);
     });
 
-    it('falha: outra função do arquivo escreve e_dono', () => {
-      expect(rodar(repositorio({ [CAMINHO]: criarDono + '\n' + outra }))).toBe(1);
+    it('falha: outra função do arquivo escreve o papel', async () => {
+      expect(await achados(`${criarDono}\n${outra}`, CONTAS)).toBeGreaterThan(0);
     });
 
-    it('falha: outra função antes de criarContaDono escreve e_dono', () => {
-      expect(rodar(repositorio({ [CAMINHO]: outra + '\n' + criarDono }))).toBe(1);
+    it('falha: outra função antes de criarContaDono escreve o papel', async () => {
+      expect(await achados(`${outra}\n${criarDono}`, CONTAS)).toBeGreaterThan(0);
     });
-  });
 
-  it('falha fechado: sem arquivos de código e sem git', () => {
-    expect(rodar(repositorio({ 'README.md': 'x' }))).toBe(2);
-    expect(rodar(repositorio(rota('export {};')), { ...process.env, PATH: '' })).toBe(2);
+    it('falha: a exceção vale só em contas.ts', async () => {
+      expect(await achados(criarDono, ROTA)).toBeGreaterThan(0);
+    });
   });
 });
