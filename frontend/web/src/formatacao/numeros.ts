@@ -19,6 +19,11 @@ export function formatarDecimal1(valor: number): string {
   return formatoDecimal1.format(valor);
 }
 
+/** Pontos escritos com a unidade no singular ou plural: `1` → `1 ponto`, `18` → `18 pontos`. */
+export function pontosEscritos(n: number): string {
+  return `${formatarPontos(n)} ${Math.abs(n) === 1 ? 'ponto' : 'pontos'}`;
+}
+
 /** Nível do jogador com uma casa: `6.1` → `6,1`, `6` → `6,0`. */
 export function formatarNivel(nivel: number): string {
   if (!Number.isFinite(nivel)) throw new RangeError(`Nível inválido: ${nivel}.`);
