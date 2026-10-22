@@ -139,11 +139,19 @@ export function jogadorEditarCorpo(hoje: string) {
 
 export const inativarCorpoBase = z.strictObject({ dataSaida: data.optional() });
 
-export const reativarCorpo = z.strictObject({});
+/** Sem corpo e `{}` reativam com retorno hoje. */
+export const reativarCorpo = z.strictObject({ dataRetorno: data.optional() });
 
 export function inativarCorpo(hoje: string) {
   return z.strictObject({
     dataSaida: data.refine((d) => d <= hoje, 'A data não pode ser no futuro.').optional(),
+  });
+}
+
+/** Reativar com a regra que depende de `hoje`: o retorno não pode ser no futuro. */
+export function reativarCorpoComHoje(hoje: string) {
+  return z.strictObject({
+    dataRetorno: data.refine((d) => d <= hoje, 'A data não pode ser no futuro.').optional(),
   });
 }
 
@@ -190,6 +198,7 @@ export const esquemasElenco: Esquemas = {
   'elenco.corpo': { direcao: 'entrada', schema: jogadorCorpoBase },
   'elenco.editar.corpo': { direcao: 'entrada', schema: jogadorEditarCorpoBase },
   'elenco.inativar.corpo': { direcao: 'entrada', schema: inativarCorpoBase },
+  'elenco.reativar.corpo': { direcao: 'entrada', schema: reativarCorpo },
   'elenco.inicio.previa.corpo': { direcao: 'entrada', schema: inicioCorpoBase },
   'elenco.inicio.previa.resposta': { direcao: 'resposta', schema: inicioPreviaResposta },
   'elenco.inicio.editar.corpo': { direcao: 'entrada', schema: inicioCorpoBase },

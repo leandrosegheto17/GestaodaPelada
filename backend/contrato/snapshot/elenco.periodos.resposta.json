@@ -1,0 +1,56 @@
+{
+  "direcao": "resposta",
+  "esquema": {
+    "additionalProperties": false,
+    "properties": {
+      "periodos": {
+        "items": {
+          "additionalProperties": false,
+          "properties": {
+            "corrigivel": {
+              "additionalProperties": false,
+              "properties": {
+                "retorno": {
+                  "type": "boolean"
+                },
+                "saida": {
+                  "type": "boolean"
+                }
+              },
+              "required": ["saida", "retorno"],
+              "type": "object"
+            },
+            "fim": {
+              "anyOf": [
+                {
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "inicio": {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "type": "string"
+            },
+            "tipo": {
+              "enum": ["entrada", "retorno"],
+              "type": "string"
+            }
+          },
+          "required": ["id", "tipo", "inicio", "fim", "corrigivel"],
+          "type": "object"
+        },
+        "type": "array"
+      }
+    },
+    "required": ["periodos"],
+    "type": "object"
+  }
+}

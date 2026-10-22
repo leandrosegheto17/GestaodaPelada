@@ -1,0 +1,87 @@
+{
+  "direcao": "resposta",
+  "esquema": {
+    "additionalProperties": false,
+    "properties": {
+      "acumuladoAntes": {
+        "maximum": 9007199254740991,
+        "minimum": -9007199254740991,
+        "type": "integer"
+      },
+      "acumuladoDepois": {
+        "maximum": 9007199254740991,
+        "minimum": -9007199254740991,
+        "type": "integer"
+      },
+      "aviso": {
+        "type": ["string", "null"]
+      },
+      "posicaoAntes": {
+        "anyOf": [
+          {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "posicaoDepois": {
+        "anyOf": [
+          {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "rodadasQueDeixamDeConstar": {
+        "items": {
+          "additionalProperties": false,
+          "properties": {
+            "data": {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "type": "string"
+            }
+          },
+          "required": ["data"],
+          "type": "object"
+        },
+        "type": "array"
+      },
+      "rodadasQuePassamAConstar": {
+        "items": {
+          "additionalProperties": false,
+          "properties": {
+            "data": {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "type": "string"
+            },
+            "situacao": {
+              "enum": ["ausente", "presente", "lesionado", "expulso", "falta"],
+              "type": "string"
+            }
+          },
+          "required": ["data", "situacao"],
+          "type": "object"
+        },
+        "type": "array"
+      }
+    },
+    "required": [
+      "acumuladoAntes",
+      "acumuladoDepois",
+      "posicaoAntes",
+      "posicaoDepois",
+      "rodadasQuePassamAConstar",
+      "rodadasQueDeixamDeConstar",
+      "aviso"
+    ],
+    "type": "object"
+  }
+}

@@ -3,6 +3,7 @@ import type { Esquemas } from './registro-tipos.js';
 import { esquemasAdmins } from './admins.js';
 import { esquemasDono } from './dono.js';
 import { esquemasElenco } from './elenco.js';
+import { esquemasElencoPeriodos } from './elenco-periodos.js';
 import { esquemasFinanceiro } from './financeiro.js';
 import { esquemasGrupo } from './grupo.js';
 import { esquemasHabilidades } from './habilidades.js';
@@ -25,6 +26,7 @@ export const REGISTRO: Esquemas = {
   ...esquemasAdmins,
   ...esquemasDono,
   ...esquemasElenco,
+  ...esquemasElencoPeriodos,
   ...esquemasFinanceiro,
   ...esquemasGrupo,
   ...esquemasHabilidades,
