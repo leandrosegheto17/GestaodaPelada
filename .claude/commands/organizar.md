@@ -78,6 +78,13 @@ linhas dessas tarefas e das suas dependências —, `SDD.md`, `GUARDRAILS.md`,
    ID no TASK.md: <TP-0001 (ou T-001, em TASK.md antigo)> · Lote: <lote> · Agente: <executor | coordenador> · Chapéu: <chapéu> · Est: <est> · Dep: <dependências> · Status no TASK.md: <status>
    Reqs: <requisitos> · Aceite: <critério de aceite, copiado do TASK.md>
 
+   ## 0. Regra de domínio — exemplos
+   <SÓ para tarefa que implementa ou altera regra de negócio (regra 9 abaixo); nas demais,
+   omita a seção inteira. Tabela "entrada → resultado esperado", com os casos de borda e,
+   quando existir, o caso real do cliente. Sempre nasce como
+   `PENDENTE: tabela de exemplos a aprovar pelo usuário` na primeira linha, até o usuário
+   aprovar (`taskplan.py dominio <ID> --aprovar`)>
+
    ## 1. Plano de execução
    **Reaproveitamento:** <o que já existe no código e esta tarefa deve USAR (módulo,
    função, componente, com caminho); o que esta tarefa precisa e já existe em outro
@@ -99,9 +106,14 @@ linhas dessas tarefas e das suas dependências —, `SDD.md`, `GUARDRAILS.md`,
    ## 2. Plano de teste
    <casos de teste que cobrem o critério de aceite, no nível certo (unitário,
    integração, componente, e2e), dados/fixtures, casos de borda e de erro, o que
-   a cobertura exigida em "Testes e diretrizes" pede, comando para rodar>
+   a cobertura exigida em "Testes e diretrizes" pede, comando para rodar.
+   **Cada caso é uma linha com código: `- C1: <o que prova>`, `- C2: …`** (um por
+   comportamento, não por arquivo). O Executor mapeia cada `Cn` a um teste em `## 4` e o QA
+   confere com `taskplan.py cobertura <ID>`; caso sem código não é conferido. Em tarefa com
+   `## 0.`, um caso por linha da tabela de exemplos>
 
    ## 3. Plano de validação de segurança
+   **Risco:** <alto | baixo> — <uma frase com o motivo> (regra 10 abaixo)
    <requisitos de segurança do SDD/GUARDRAILS aplicáveis a esta tarefa
    (autenticação, autorização, isolamento por usuário, validação de entrada,
    dados pessoais/LGPD, segredos, logs/auditoria, dependências), o que verificar
@@ -134,6 +146,22 @@ linhas dessas tarefas e das suas dependências —, `SDD.md`, `GUARDRAILS.md`,
    nos estados e tamanhos do aceite, com o limite de pixels.
 8. Retorne um relatório de até 10 linhas: IDs gravados, IDs com `PENDENTE` e a
    pergunta de cada um.
+9. **Regra de negócio exige exemplos antes do código** (`CONVENCOES-DE-CODIGO.md` §10). Se a
+   tarefa implementa ou altera cálculo, período, pontuação, elegibilidade, valor financeiro ou
+   qualquer regra do `PRD-TECNICO.md` (RN-…), escreva a seção `## 0.` com uma **proposta** de
+   tabela de exemplos, tirada do PRD, dos dados do legado e dos casos reais do cliente que
+   estiverem nos documentos (não invente números: onde faltar, pergunte em `PENDENTE:`), e deixe a
+   primeira linha como `PENDENTE: tabela de exemplos a aprovar pelo usuário`. O `taskplan.py proxima`
+   não entrega ao `/executar` tarefa com `## 0.` pendente.
+10. **Risco de segurança, em uma palavra.** `**Risco:** alto` para tarefa que toca autenticação,
+    autorização/isolamento por grupo ou dono, SQL/migração/esquema, rota ou parser de entrada,
+    CI/deploy/workflow/Docker, dependência, segredo ou log; `baixo` para o resto (tela, texto,
+    estilo, teste puro, refatoração sem mudar comportamento). Na dúvida, `alto`. O `/validar` usa
+    isso para escolher a profundidade (`taskplan.py risco <ID>`) e reclassifica se o diff mostrar
+    outra coisa.
+11. **Tarefa `RTP-…`:** o cabeçalho do arquivo leva a linha `Classe: <classe>` (uma de
+    teste-faltante, dominio, seguranca-deploy, guarda, visual, duplicacao-tamanho, concorrencia,
+    docs, ferramental, outro; grave com `taskplan.py classe <ID> <classe>`).
 
 ## 3. Conferir e encerrar
 
@@ -143,8 +171,10 @@ ou seção: redespache só essas tarefas, **uma vez**; se faltar de novo, liste-
 como falhas no resumo.
 
 Apresente o resumo: quantas tarefas foram organizadas (por lote), quantas puladas
-por já terem arquivo, quantas com `PENDENTE` (com a pergunta de cada uma) e
-quantas falharam. Informe que os arquivos estão em `.md/.taskplan/` e **não foram
+por já terem arquivo, quantas com `PENDENTE` (com a pergunta de cada uma), **quantas aguardam a
+aprovação dos exemplos de domínio** (ID + a tabela proposta, em uma linha cada; aprovar com
+`python .claude/scripts/taskplan.py dominio <ID> --aprovar` depois de ajustar o arquivo, se for
+o caso) e quantas falharam. Informe que os arquivos estão em `.md/.taskplan/` e **não foram
 commitados**. Depois, rode a Seção 4 e feche com a contagem por estado.
 **Pare aqui.** Não dispare nenhum outro comando.
 

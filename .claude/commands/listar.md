@@ -78,6 +78,10 @@ com o `BK-` logo antes dela (BK primeiro, bloqueada depois). Este comando é som
   validação)" — convém validá-la antes de executar a dependente.
 - **Sem plano**: Estado executável mas `Plano —`. Não é elegível; falta
   `/organizar`.
+- **Aguardando domínio**: Estado `Não executada` com plano cuja seção `## 0.` está `PENDENTE`
+  (`python .claude/scripts/taskplan.py dominio <ID>` → `PENDENTE`; só consulte para as tarefas que seriam
+  elegíveis). Não é elegível até você aprovar os exemplos
+  (`taskplan.py dominio <ID> --aprovar`). Na `Observação`: "aprovar exemplos de domínio".
 - **Em execução**: a `Reserva:` está `Em execução`, `Em QA` ou `Em DevSecOps` por
   outra sessão (mostre a etapa e há quanto tempo); se o `atualizado` tem mais de
   2 h, marque "reserva velha — possivelmente abandonada". Não é elegível.
@@ -104,7 +108,7 @@ pendências e pare.
 sem lista com marcadores. Uma linha por tarefa, **na ordem do `TASKPLAN.md`** (Seção 2), com as colunas
 fixas: `#` (a numeração do `TASKPLAN.md`, sem renumerar), `Tarefa` (ID como está no `TASKPLAN.md`),
 `Agente` (`executor` ou `coordenador`), `Título`, `Lote`, `Exe`, `QA`, `Sec`, `Estado` (o do `TASKPLAN.md`),
-`Classificação` (elegível / em execução / sem plano / aguardando `<dependência>` / aguardando QA / aguardando
+`Classificação` (elegível / em execução / sem plano / aguardando `<dependência>` / aguardando domínio / aguardando QA / aguardando
 Sec / bloqueada / do coordenador / indeterminada) e `Observação` (curta: para `BK`, quem decide ("Escala para") e
 o que ele destrava; para bloqueada, `aguarda BK-nnnn` e, se foi para o fim, "movida para o fim: nada depende
 dela"; para "dep. em validação" ou reserva velha, o aviso; para indeterminada, o motivo). Critério de aceite fica
@@ -112,5 +116,8 @@ de fora — está no arquivo da tarefa.
 
 Antes da tabela, **uma única frase** de resumo (ex.: `3 em aberto: 1 elegível, 1 do coordenador, 1 bloqueada`).
 Depois da tabela, a legenda numa linha: `✔` aprovada · `…` em andamento · `—` ainda não passou.
+Em seguida, **uma linha** com a causa do retrabalho: rode `python .claude/scripts/taskplan.py classes` e escreva
+`RTP por classe: teste-faltante 12 · seguranca-deploy 8 · … (total N, M abertas)` (maior primeiro; `sem-classe`
+são as anteriores à medição). Se não houver nenhuma RTP, omita a linha.
 
 Termine a resposta aí — não sugira rodar `/executar` ou qualquer outro comando; a decisão de agir é do usuário.

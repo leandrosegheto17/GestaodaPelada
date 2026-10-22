@@ -54,6 +54,13 @@ interface gráfica (só API/CLI) pula B2 e B3 e diz isso no UX-SPEC §0.
 | **B2** | 2-3 **direções visuais** (uma tela-chave, PC e celular) em `.md/mockup/direcoes/` (skill `visual-mockup-drafting`) | Qual direção (ou mistura) |
 | **B3** | **Mockup completo** em `.md/mockup/` (toda tela × PC e celular × estados, `tokens.css`, fontes, respostas da API, `telas.json`) + `UX-SPEC.md` fechado com §0 e §3 apontando para o mockup | Aprovação de SDD + UX-SPEC + mockup juntos |
 
+**Uma fonte só para o visual (B3).** O mockup não é um desenho à parte: `tokens.css`, a base
+(`base.css`) e as classes de componente do mockup são o **mesmo CSS que o app usa**. O Coordenador
+fecha o B3 dizendo **onde o app os importa** (pacote ou pasta de estilos compartilhada, no `SDD.md`)
+e o Loop C cria uma tarefa de **fundação visual** (a primeira de interface) que faz esse vínculo.
+Tela feita copiando o valor para outro CSS é o que gerava as dezenas de ajustes "mockup × app" de
+largura, ícone e espaçamento. Pedido de mudança visual altera o mockup (ver Seção 6) e o app o herda.
+
 ### 2a. Rodada inicial (dispatch novo)
 
 1. **Anuncie** que vai acionar o Coordenador para produzir um rascunho de SDD.md
@@ -126,6 +133,13 @@ ao usuário o número de telas × estados conferidos. Sem mockup aprovado
    duas tarefas) volta ao Coordenador via `SendMessage` para corrigir antes de
    apresentar. Os avisos ("nenhuma tarefa cria") são mostrados ao usuário: ou o
    artefato já existe no repositório, ou falta tarefa.
+4b. **Duas marcas no `TASK.md` que alimentam o `/organizar`**: (a) tarefa que implementa ou altera
+   **regra de negócio** (cálculo, período, pontuação, elegibilidade, valor) recebe `Regra de negócio:
+   RN-…` na coluna *Testes e diretrizes* — o `/organizar` gera para ela a seção `## 0.` com a tabela
+   de exemplos que **você aprova antes do `/executar`** (`CONVENCOES-DE-CODIGO.md` §10); (b) tarefa de
+   tela tem no *Aceite* a comparação visual do mockup (estados e tamanhos) e depende da fundação
+   visual (Seção 2, "Uma fonte só para o visual"). Tarefa que cria guarda/parser de segurança traz a
+   matriz adversarial e a análise por AST (`CONVENCOES-DE-CODIGO.md` §9).
 5. Se o Coordenador sinalizar bloqueio: trate como bloqueio (Seção 7).
 
 ### 3b. Rodadas seguintes (mesma instância, via `SendMessage`)

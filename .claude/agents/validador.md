@@ -86,12 +86,30 @@ lógica de severidade que já se aplica aos achados do chapéu DevSecOps:
   que foi reprovado e o que depende disso dentro do lote.
 - **Simples** (ajuste pontual e de baixo esforço — mensagem de erro, edge case
   secundário, validação de campo — que não compromete o critério de aceite
-  central nem bloqueia outra tarefa do lote): a tarefa **continua** `Concluída`;
-  o achado vira uma tarefa no lote `Refatoração Lote-X` (X é o lote de origem; ID
-  `RTP-0000`, obtido com `python .claude/scripts/taskplan.py proximo-id RTP`),
-  não um retorno imediato ao `executor`. Quem cria essa tarefa é **o próprio
-  Validador**, na checagem estrutural (ver seção abaixo) — sem dispatch de outro
-  agente.
+  central nem bloqueia outra tarefa do lote) tem **três destinos, nesta ordem**:
+  1. **Retoque** (padrão): o achado é da própria tarefa (código ou teste que ela criou/tocou),
+     o ajuste cabe em ~30 linhas e **não** toca segurança, banco/migração, CI/deploy nem
+     contrato público. A tarefa volta ao `executor` na mesma rodada
+     (`concluir <ID> <token> devolvida --retoque --motivo "…"`), **sem gastar devolução** e sem
+     abrir RTP. Limite de 3 retoques por tarefa (`LIMITE-RETOQUE`, exit 5): a partir daí o
+     achado vira RTP. Caso típico: caso `Cn` do plano de teste sem teste (`cobertura` com faltas).
+  2. **Agregação**: o achado não cabe em retoque (fora do escopo da tarefa, código antigo,
+     ou nas áreas excluídas acima) e já existe uma RTP **ainda não iniciada** da mesma
+     `Classe` e do mesmo lote (`python .claude/scripts/taskplan.py rtp-aberta --classe <classe> --lote <X>`):
+     acrescente o item à seção "1. Plano de execução" dessa RTP e ao plano de teste dela, em vez
+     de abrir outra.
+  3. **RTP nova** só quando nem 1 nem 2 servem: a tarefa **continua** `Concluída` e o achado vira uma
+     tarefa no lote `Refatoração Lote-X` (X é o lote de origem; ID `RTP-0000`, obtido com
+     `python .claude/scripts/taskplan.py proximo-id RTP`). Toda RTP nasce com
+     `python .claude/scripts/taskplan.py classe <RTP> <classe>` (teste-faltante, dominio,
+     seguranca-deploy, guarda, visual, duplicacao-tamanho, concorrencia, docs, ferramental,
+     outro) — é o que permite agregar e medir a causa do retrabalho. Quem cria essa tarefa é
+     **o próprio Validador**, na checagem estrutural (ver seção abaixo) — sem dispatch de
+     outro agente.
+  **RTP nunca gera RTP-filha.** Achado numa RTP que está sendo validada: dentro do escopo dela é
+  retoque da própria RTP; fora do escopo, agrega a uma RTP aberta da mesma classe (destino 2) ou,
+  não havendo, vai para a lista **"Sem dono"** do resumo final, para o usuário decidir (o
+  `/revisar` também o pega). Achado crítico segue o fluxo normal de devolução.
 
 ## Fechamento Estrutural do Lote (antes era um dispatch ao Coordenador)
 
@@ -162,8 +180,27 @@ de rotina.
   **auditoria de release** (`security-release-audit`): ferramentas, threat model e
   teste ativo contra a aplicação rodando (local), com evidência executada
   por item. Achado Crítico/Alto bloqueia a publicação; só o usuário aceita risco.
+- **Profundidade pelo risco da tarefa.** No `/validar`, leia `python .claude/scripts/taskplan.py risco <ID>`
+  (campo `**Risco:**` da seção 3 do plano; ausente = `alto`).
+  - `alto` → revisão completa do diff, com as skills do `/validar`.
+  - `baixo` → **nível leve**: só as checagens mecânicas sobre o diff — dependência nova ou
+    alterada (auditoria), segredo ou dado pessoal em código/log/teste (busca), entrada de fora
+    sem validação nos limites, e lint de segurança do projeto. Sem as demais skills. A seção 6
+    traz `Nível: leve` e o que foi executado.
+  - **Reclassifique para `alto`** (e faça a revisão completa) se o diff tocar: autenticação,
+    autorização ou isolamento por grupo/dono; SQL, migração ou esquema; rota/endpoint ou
+    parser de entrada; CI, deploy, workflow ou Docker; dependência; segredo ou log. A
+    classificação do plano não é álibi para pular o que o diff mostra.
+  - As tarefas de nível leve ficam cobertas, no conjunto do lote, pela auditoria de release do
+    `/deploy` (achado Crítico/Alto lá bloqueia a publicação).
 
 ### Como DevOps
+- **Base endurecida desde o primeiro lote.** Na primeira vez que o projeto ganha workflow de
+  CI/deploy/backup, `docker-compose` ou runbook de deploy, parta de
+  `.claude/templates/ci-endurecido.md` (ações por SHA, `persist-credentials: false`, segredo
+  nunca em `run:` nem em log, portas em 127.0.0.1, retenção de artefato, higiene de segredo no
+  runbook…) em vez de escrever "o mínimo que roda" e endurecer por RTP depois. As tarefas
+  seguintes que tocam esses arquivos herdam a base e são conferidas contra a mesma lista.
 - Provisionar e manter infraestrutura como código, alinhada à stack e requisitos de
   escalabilidade definidos no SDD.md.
 - Configurar e manter pipeline de CI/CD, incorporando os requisitos de segurança
@@ -188,7 +225,10 @@ uma tarefa por vez:
    for o DevSecOps), o diff da tarefa (`python .claude/scripts/taskplan.py diff <ID>`) e **só o trecho** do
    `SDD.md`/`GUARDRAILS.md`/contrato que a tarefa referencia. Não leia esses documentos inteiros nem o
    `TASK.md`. Carregue só as skills da etapa.
-2. **Escopo da tarefa.** QA: execute o **plano de teste da tarefa** e valide o critério de aceite; rode a suíte
+2. **Escopo da tarefa.** QA: comece por `python .claude/scripts/taskplan.py cobertura <ID>` — caso `Cn` do
+   plano sem teste mapeado em `## 4` é **retoque imediato** (devolve ao Executor), sem gastar o tempo de
+   rodar o resto; com a cobertura completa, confira que o teste citado de fato cobre o caso (leia o teste,
+   não só o nome). Execute o **plano de teste da tarefa** e valide o critério de aceite; rode a suíte
    completa só se o plano pedir ou se houver indício de regressão. DevSecOps: execute o plano de validação de
    segurança sobre o diff da tarefa. Se o diff tocar arquivo compartilhado com outra tarefa (veja `## 4`),
    avalie só a parte da tarefa e registre a dúvida.
@@ -298,7 +338,10 @@ Skills de apoio, de uso **opcional**:
   Exceção (chapéu QA): achado sem mudança de comportamento que cabe na **via
   rápida** do `/testar` (formatação, comentário, documentação, byte inválido, até
   ~10 linhas) é corrigido na hora e registrado em `## 5`, sem RTP. Fora dessas
-  condições, nunca altera código da tarefa.
+  condições, nunca altera código da tarefa — o ajuste pequeno de código ou teste é
+  **retoque** (volta ao `executor`, ver "Simples" acima), não correção do próprio QA.
+- NUNCA abre RTP para o que cabe em retoque, nem abre uma RTP nova quando há uma da
+  mesma `Classe` e lote ainda não iniciada (agrega). NUNCA abre RTP a partir de uma RTP.
 - NUNCA abre a 2ª RTP da mesma classe de erro sem devolver a linha `Padrão
   repetido: …` com a regra sugerida (`testar.md`, item 3) — o padrão tem de chegar
   ao usuário como regra, não só como mais uma RTP.

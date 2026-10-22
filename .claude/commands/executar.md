@@ -1,6 +1,6 @@
 ---
 description: Etapa 1 do fluxo — aciona só o agente Executor para implementar as tarefas elegíveis (estado Não executada ou devolvida), em sequência, a partir de .md/.taskplan/<ID>.md, e grava o resultado no próprio arquivo e no TASKPLAN. Não testa nem valida segurança (isso é /testar e /validar) e não chama outro comando. Sem argumento pega a próxima tarefa elegível; --tarefa <ID> executa só essa (ou retoma uma bloqueada; BK-/SPK- vão para o Coordenador); --lote N e --continuar [N] [--nocontext] [--nocommit] [--paralelo [N]] encadeiam as tarefas e, em bloqueio, registram e seguem para a próxima elegível. Durante a rodada só o arquivo de cada tarefa é escrito; TASK.md e TASKPLAN.md são consolidados uma vez no fim. Não dispara /deploy sozinho.
-argument-hint: [vazio = próxima tarefa | --tarefa <ID, inclusive BK-/SPK- do Coordenador> | --lote N | --continuar [N] [--nocontext] [--nocommit] [--paralelo [N]] [--lotes-distintos]]
+argument-hint: [vazio = próxima tarefa | --tarefa <ID, inclusive BK-/SPK- do Coordenador> | --lote N | --tarefas ID,ID | --continuar [N] [--nocontext] [--nocommit] [--paralelo [N]] [--lotes-distintos]]
 ---
 
 # Comando `/executar` — etapa 1: Executor
@@ -85,6 +85,10 @@ Interprete `$ARGUMENTS`:
   - **`--worktree`**: roda a chamada numa worktree git separada, em vez da `main` (Seção 3-0, "Onde o código roda").
   - **`--lotes-distintos`** (só com `--paralelo`): limita a rodada a **no máximo uma tarefa por lote**, o que
     reduz a chance de duas tarefas editarem o mesmo arquivo (modo mais conservador; a rodada fica menor).
+  - **`--tarefas ID,ID,…`** (lista; usado pelo `/desenvolver` na passada vertical): restringe a fila às
+    tarefas da lista — `taskplan.py proxima --apenas ID,ID` —, com a mesma elegibilidade e o mesmo
+    encadeamento de `--continuar` (uma após a outra, ou `--paralelo`). Sem outro modo, equivale a
+    `--continuar` limitado a essas tarefas. Vale igual no `/testar` e no `/validar`.
 
 **Modo contínuo (`--lote` e `--continuar`)**: sempre que for possível, o bloqueio
 de uma tarefa é **registrado** (Seção 6) e o comando **segue para a próxima tarefa
@@ -116,7 +120,9 @@ o `TASKPLAN.md` não existir, **pare** e sugira `/organizar`.
    nunca devolve `BK-`/`SPK-` (tarefas do Coordenador, resolvidas com o usuário). Ele devolve a próxima elegível (uma linha: ID, chave `TP-`, estado, lote, título) ou
    `NENHUMA` com o motivo. **Despriorizada** (`/despriorizar`) nunca é elegível nem é entregue: o `proxima` a ignora e `reservar`/`iniciar` recusam (exit 4); `--tarefa <ID>` sobre ela: explique e **pare** (`/despriorizar --desfazer <ID>` a traz de volta). Uma tarefa que depende de despriorizada espera (dependência aberta). **Elegível** = tem plano em `.taskplan`; estado Não
    executada ou Em execução/devolvida pelo QA ou pela segurança (nunca já executada,
-   `Aprovada`, `Bloqueada` ou `Dividida`); **dependências resolvidas** (todas `Aprovada`; `Dividida` conta só com
+   `Aprovada`, `Bloqueada` ou `Dividida`); **sem exemplos de domínio pendentes** (seção `## 0.` do
+   plano com `PENDENTE:` — o usuário aprova com `taskplan.py dominio <ID> --aprovar`; o motivo aparece em
+   `NENHUMA` como `aguarda exemplos de domínio`); **dependências resolvidas** (todas `Aprovada`; `Dividida` conta só com
    todas as partes `Aprovada`; `Bloqueada` não resolve); e **sem reserva ativa de
    outra sessão**. A ordem é a do `TASKPLAN.md` (a do `TASK.md`, com dependências
    antes). `T-001` e `TP-0001` são a mesma tarefa.
@@ -204,6 +210,12 @@ qualquer dúvida/risco. Inclua no prompt a seção "Modo de trabalho no `/execut
 depois: confie no retorno e no `concluir`. Em reexecução, o prompt inclui os achados críticos a corrigir
 (das seções 5 ou 6 da rodada anterior).
 
+**Gate de cobertura antes de fechar**: com o retorno `OK`, rode
+`python .claude/scripts/taskplan.py cobertura <ID>`. `faltam=` não vazio (exit 1): redespache o
+`executor` **uma vez**, só para os casos `Cn` que faltam (escrever o teste e mapear em `## 4`); se
+ainda faltar, feche mesmo assim — o `/testar` o devolverá como retoque — e registre `Cobertura
+incompleta: Cn…` no resumo. `SEM-CODIGOS`: plano antigo, siga sem o gate.
+
 Ao voltar, confira o canário de contexto. `subagent_tokens` > ~300 mil tokens, ou
 desvio grande de escopo/estimativa sinalizado pelo Executor: a tarefa está grande
 demais — **divida-a** (Seção 5b) em vez de bloquear, e siga com a primeira parte.
@@ -211,7 +223,9 @@ Lacuna/inconsistência no `SDD.md`/`UX-SPEC.md`: **bloqueio crítico** (Seção 
 Fora isso, a etapa fechou: `concluir <ID> <token> executada [--snap]` (Status local + reserva), e commite
 (regra acima, salvo `--nocommit`).
 **Tarefa devolvida** (veio do `/testar` ou do `/validar` com `Em andamento`): o prompt inclui os
-achados críticos da seção 5 ou 6 da rodada anterior; o limite de **2 devoluções** somadas é
+achados da seção 5 ou 6 da rodada anterior — **críticos** (devolução) ou **de retoque**
+(`Retoques:` no cabeçalho aumentou; o prompt diz "retoque: corrija só estes achados", sem ampliar
+escopo, e o Executor registra `### Retoque n` em `## 4`); o limite de **2 devoluções** somadas é
 controlado por quem devolve (ver `/testar`, Seção 3d) — na 3ª, a tarefa chega aqui como bloqueio.
 
 ### 3e. Rodada paralela (`--paralelo N`, só `--lote`/`--continuar`)
@@ -272,7 +286,11 @@ seções (plano de execução, de teste e de validação de segurança).
 ### 5a. Refatoração (achado não crítico) — `RTP-0000`
 
 Aberta pelo `/testar` ou pelo `/validar` (o próprio `validador` que achou o problema; este
-arquivo só descreve o procedimento, que os dois comandos usam):
+arquivo só descreve o procedimento, que os dois comandos usam). **Só se o achado não coube em
+retoque (volta ao Executor na mesma tarefa) nem em agregação**: antes de abrir, rode
+`python .claude/scripts/taskplan.py rtp-aberta --classe <classe> --lote <X>`; se devolver um ID, acrescente
+o item ao plano dessa RTP (execução e teste, com os códigos `Cn` seguintes) em vez de abrir outra. **Uma
+RTP nunca abre RTP**: achado numa RTP é retoque dela, agregação ou "Sem dono" no resumo do fim.
 
 1. **Ajusta o `TASK.md` pelo script** (sem ler o arquivo):
    `python .claude/scripts/taskplan.py proximo-id RTP` devolve o próximo `RTP-nnnn`; depois
@@ -283,7 +301,10 @@ arquivo só descreve o procedimento, que os dois comandos usam):
    que a originou. Sem redecompor nada além do achado (uso restrito das skills de
    decomposição, ver `validador.md`).
 2. **Cria `.md/.taskplan/RTP-nnnn.md`**, no formato do `/organizar` (com
-   `Reserva: Livre`), curto e específico do achado.
+   `Reserva: Livre`, o plano de teste com casos `C1`, `C2`… e `**Risco:** alto|baixo` na seção 3),
+   curto e específico do achado. Em seguida grave a classe da causa:
+   `python .claude/scripts/taskplan.py classe RTP-nnnn <teste-faltante|dominio|seguranca-deploy|guarda|visual|duplicacao-tamanho|concorrencia|docs|ferramental|outro>`
+   — é o que alimenta a agregação acima e a contagem do `/listar`.
 
 ### 5b. Divisão de tarefa grande — `TP-0000a`, `TP-0000b`…
 

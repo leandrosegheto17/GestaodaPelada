@@ -1,6 +1,6 @@
 ---
 description: Etapa 2 do fluxo — aciona o agente Validador no chapéu QA para testar as tarefas já executadas (estado Executada/aguarda teste), em sequência, contra o plano de teste e o critério de aceite de .md/.taskplan/<ID>.md; grava o resultado no arquivo da tarefa. Aprova (QA ✔), devolve ao /executar em achado crítico ou abre RTP em achado não crítico. Não implementa nem valida segurança e não chama outro comando. Sem argumento pega a próxima tarefa elegível; --tarefa <ID> testa só essa; --lote N e --continuar [N] [--nocontext] [--nocommit] [--paralelo [N]] [--lotes-distintos] encadeiam as tarefas. Durante a rodada só o arquivo de cada tarefa é escrito; TASK.md e TASKPLAN.md são consolidados no fim. Não dispara /deploy sozinho.
-argument-hint: [vazio = próxima tarefa | --tarefa <ID> | --lote N | --continuar [N] [--nocontext] [--nocommit] [--paralelo [N]] [--lotes-distintos]]
+argument-hint: [vazio = próxima tarefa | --tarefa <ID> | --lote N | --tarefas ID,ID | --continuar [N] [--nocontext] [--nocommit] [--paralelo [N]] [--lotes-distintos]]
 ---
 
 # Comando `/testar` — etapa 2: QA
@@ -46,6 +46,8 @@ comando: o controle volta ao `/desenvolver`.
    chapéu QA, **só nesta tarefa**: skills `acceptance-criteria-validation`,
    `non-functional-validation`, `bug-documentation` e `qa-report-drafting`
    (`cross-platform-integration-testing` quando a tarefa tocar mais de uma plataforma). Ele
+   **começa por `python .claude/scripts/taskplan.py cobertura <ID>`** (todo caso `Cn` do plano de
+   teste tem teste mapeado em `## 4`? faltou = retoque imediato, sem rodar o resto) e
    **lê o `.md/.taskplan/<ID>.md`** (plano de teste e resultado da execução) e o diff da tarefa
    (`python .claude/scripts/taskplan.py diff <ID>`; se a tarefa tocou arquivo compartilhado, o diff pode
    incluir edição de outra — leia-o junto com a lista de arquivos de `## 4`), executa o plano de teste,
@@ -67,9 +69,20 @@ comando: o controle volta ao `/desenvolver`.
      escopo/arquitetura, ou quebra algo de que outra tarefa depende): `concluir <ID> <token> devolvida
      --motivo "<resumo>"` — Status `Em andamento`, achados em `## Achados` (e na seção 5). O próximo
      `/executar` a pega. O script **conta a devolução** (Seção 3d).
-   - **Achado não crítico** (ajuste pontual de baixo esforço): **não volta** — `qa-ok` e o
-     `validador` abre uma **`RTP-0000`** (`executar.md`, Seção 5a: linha no `TASK.md` + arquivo
-     em `.md/.taskplan/`), conferida com `taskplan.py tarefa <RTP>`.
+   - **Achado não crítico** (ajuste pontual de baixo esforço) — três destinos, **nesta ordem**
+     (detalhe em `agents/validador.md`, "Simples"):
+     1. **Retoque**: achado da própria tarefa, ~30 linhas ou menos, fora de segurança, banco,
+        CI/deploy e contrato público. `concluir <ID> <token> devolvida --retoque --motivo "<achados>"`
+        — a tarefa volta ao Executor **sem gastar devolução** e sem RTP (`RETOQUE n de 3`; no
+        `LIMITE-RETOQUE`, exit 5, siga para 2 ou 3). **Caso `Cn` do plano sem teste é sempre
+        retoque.** Os achados ficam em `## 5` da rodada para o Executor corrigir só eles.
+     2. **Agregar**: `taskplan.py rtp-aberta --classe <classe> --lote <X>` devolveu uma RTP ainda
+        não iniciada — acrescente o item ao plano dela (execução e teste) e `qa-ok`.
+     3. **RTP nova**: `qa-ok` e o `validador` abre uma **`RTP-0000`** (`executar.md`, Seção 5a:
+        linha no `TASK.md` + arquivo em `.md/.taskplan/` + `taskplan.py classe <RTP> <classe>`),
+        conferida com `taskplan.py tarefa <RTP>`.
+     **Quando a tarefa em teste é uma `RTP-…`, o achado nunca vira outra RTP**: dentro do escopo
+     dela é retoque; fora, agrega (2) ou vai para a lista "Sem dono" do resumo final.
    - **Via rápida** (achado não crítico **sem mudança de comportamento**): o próprio `validador`
      corrige na hora em vez de abrir RTP, quando **todas** as condições valem: só formatação (rodando
      o formatador do projeto), comentário falso ou com ID de tarefa, texto de README/documentação de
@@ -88,7 +101,8 @@ comando: o controle volta ao `/desenvolver`.
 
 ### 3d. Limite de devoluções
 
-No máximo **2 devoluções** por tarefa, **somando as do `/testar` e as do `/validar`**. O
+No máximo **2 devoluções** por tarefa, **somando as do `/testar` e as do `/validar`** (o **retoque**
+tem contador próprio — `Retoques:`, até 3 — e não entra nessa conta). O
 `concluir ... devolvida` conta sozinho (linha `Devoluções:` do arquivo da tarefa): na 3ª ele **não
 devolve** e responde `LIMITE` (exit 3) — aí é **bloqueio crítico** (`executar.md`, Seção 6: `bloquear`),
 com o resumo do que falhou em cada volta. Tarefa bloqueada aqui, depois de `desbloquear`, volta à fila do
@@ -100,5 +114,7 @@ com o resumo do que falhou em cada volta. Tarefa bloqueada aqui, depois de `desb
 
 Rode `taskplan.py consolidar` (também monta a entrada de `QA-REPORT.md` a partir da linha `Resumo para o relatório:`). Resumo curto por tarefa: veredito, achados, RTP criadas, estado agora.
 No modo contínuo, o resumo final traz: aprovadas (`QA ✔`), devolvidas ao `/executar` (ID + motivo),
-bloqueadas, RTP abertas, correções da via rápida, linhas `Padrão repetido` e puladas. Termine sugerindo `/validar` (e `/executar` se houve devolução).
+**retoques** (ID + n), bloqueadas, RTP abertas (com a `Classe`), achados agregados a RTP existente,
+achados **"Sem dono"** (de RTP, fora do escopo e sem RTP da mesma classe para receber), correções da
+via rápida, linhas `Padrão repetido` e puladas. Termine sugerindo `/validar` (e `/executar` se houve devolução ou retoque).
 Nunca dispare `/deploy`.

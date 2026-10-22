@@ -189,7 +189,7 @@ Detalhe operacional em `.claude/commands/executar.md` (mecânica comum), `testar
   `.md/.taskplan/<ID>.md` e no `TASKPLAN.md` (estado) e termina sugerindo o próximo passo; quem
   roda o próximo comando é o usuário. A fila de cada um vem de
   `taskplan.py proxima --etapa exe|qa|sec`.
-- **Mesmo comportamento nos três**: `--tarefa <ID>`, `--lote N`, `--continuar [N]`,
+- **Mesmo comportamento nos três**: `--tarefa <ID>`, `--lote N`, `--tarefas ID,ID`, `--continuar [N]`,
   `--nocontext` (ver "Checagem de contexto"), `--nocommit`, `--paralelo [N]` e `--lotes-distintos` funcionam igual, assim
   como a reserva por sessão, o bloqueio, a worktree em `--tarefa` e a `main` em `--continuar`.
 - **Paralelismo opcional — `--paralelo [N]`** (só `--lote`/`--continuar`; N de 2 a 20, sem N = 5; padrão **1**, um
@@ -247,10 +247,30 @@ Detalhe operacional em `.claude/commands/executar.md` (mecânica comum), `testar
 - **Divisão**: tarefa grande demais (desvio de escopo/estimativa, canário de contexto
   do Executor) é **quebrada** em `TP-0000a`, `TP-0000b`… pelo `/executar` — `TASK.md`
   atualizado e arquivo em `.taskplan` para cada parte —, em vez de bloquear; ver convenção acima.
-- **Achado não crítico**: a tarefa segue aprovada naquela etapa e o `validador`
-  abre uma **nova tarefa em `Refatoração Lote-X`** (ID `RTP-0000`): ajusta o
-  `TASK.md` (linha completa + dependências) **e** cria o `.md/.taskplan/RTP-0000.md`
-  com os três planos. Só vale com as duas coisas feitas; a tarefa de origem não é reaberta.
+- **Achado não crítico** — três destinos, **nesta ordem** (`validador.md`, "Simples"):
+  1. **Retoque**: achado da própria tarefa, ~30 linhas ou menos, fora de segurança, banco, CI/deploy
+     e contrato público → a tarefa volta ao Executor na mesma rodada
+     (`concluir … devolvida --retoque`), **sem gastar devolução** e sem RTP; até 3 retoques
+     (`Retoques:`; `LIMITE-RETOQUE`, exit 5). Caso `Cn` do plano de teste sem teste é sempre retoque.
+  2. **Agregação**: `taskplan.py rtp-aberta --classe X --lote L` achou RTP ainda não iniciada da mesma
+     `Classe` → o item entra no plano dela.
+  3. **RTP nova**: a tarefa segue aprovada naquela etapa e o `validador` abre uma **nova tarefa em
+     `Refatoração Lote-X`** (ID `RTP-0000`): ajusta o `TASK.md` (linha completa + dependências) **e**
+     cria o `.md/.taskplan/RTP-0000.md` com os três planos, e grava a classe (`taskplan.py classe`). Só
+     vale com as duas coisas feitas; a tarefa de origem não é reaberta.
+  **Uma RTP nunca gera RTP-filha**: achado numa RTP é retoque dela, agregação ou "Sem dono" no resumo.
+  `taskplan.py classes` e a linha final do `/listar` mostram a RTP por causa (teste-faltante, dominio,
+  seguranca-deploy, guarda, visual, duplicacao-tamanho, concorrencia, docs, ferramental, outro).
+- **Cobertura do plano de teste**: os casos do `## 2.` são numerados (`C1`, `C2`…); o Executor mapeia
+  cada um em `## 4` (`Cn → arquivo::teste`) e `taskplan.py cobertura <ID>` confere. O `/executar` roda o
+  gate antes de fechar a etapa (um redespache só para o que falta) e o `/testar` começa por ele.
+- **Regra de negócio com exemplos aprovados**: tarefa com seção `## 0.` `PENDENTE` (tabela de exemplos
+  proposta pelo `/organizar`) não sai na fila do `/executar` até `taskplan.py dominio <ID> --aprovar`.
+- **Segurança pelo risco**: `**Risco:** alto|baixo` na seção 3 do plano (`taskplan.py risco <ID>`, ausente =
+  alto). `/validar` faz revisão completa no `alto` e **nível leve** (checagens mecânicas) no `baixo`,
+  reclassificando para `alto` se o diff tocar autenticação/autorização, SQL/migração, rota/parser de
+  entrada, CI/deploy/Docker, dependência, segredo ou log. As leves ficam cobertas, no conjunto, pela
+  auditoria de release do `/deploy`.
 - **Veredito**: QA em `.md/QA-REPORT.md`, DevSecOps em `.md/SECURITY-REVIEW.md`, uma
   entrada por tarefa.
 - **Lote pronto** = todas as suas tarefas com `QA ✔ · Sec ✔` (nenhuma
@@ -259,9 +279,12 @@ Detalhe operacional em `.claude/commands/executar.md` (mecânica comum), `testar
   repetindo a checagem de contexto antes de cada tarefa nova (salvo `--nocontext`), sem parar
   em bloqueio.
 - **Nunca** dispara `/deploy`.
-- **`/desenvolver` (orquestrador, exceção à regra acima)**: chama `/executar`, `/testar` e `/validar`, nessa ordem, cada
-  um com `--continuar` e os repasses (`--nocontext`, `--nocommit`, `--paralelo`, `--lotes-distintos`), enquanto
-  `taskplan.py fila` mostrar tarefas elegíveis para a etapa; ao esvaziar as três, repete a passada (a execução volta a
+- **`/desenvolver` (orquestrador, exceção à regra acima)**: por padrão faz a **passada vertical** — pega um grupo
+  de N tarefas independentes (`proxima --n N`, N = `--paralelo` ou 1) e as leva por `/executar --tarefas G` →
+  `/testar --tarefas G` → `/validar --tarefas G`, com devoluções e retoques voltando ao Executor no mesmo ciclo,
+  até cada uma estar `Aprovada` ou `Bloqueada` (no máximo 6 voltas por grupo), e só então pega o próximo grupo;
+  depois drena o que sobrou em `qa`/`sec`. `--por-etapa` mantém o modo antigo (cada etapa com `--continuar`
+  enquanto `taskplan.py fila` mostrar elegíveis). Ao esvaziar as filas, repete a passada (a execução volta a
   ter elegíveis porque o `/validar` aprovou dependências ou algo foi devolvido) até as filas acabarem, o `estado` do
   `fila` parar de mudar (sem progresso), `--rodadas N` ou teto de contexto. Sem `--continuar`, uma passada só. É
   retomável: todo o estado está em disco. Bloqueios não o interrompem; ao fim ele lista os `BK-`/`SPK-` que esperam o

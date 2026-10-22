@@ -6,11 +6,11 @@ Uso (a partir da raiz do projeto):
   python .claude/scripts/taskplan.py gerar              # reconstrói o TASKPLAN.md a partir do TASK.md e de .md/.taskplan/
   python .claude/scripts/taskplan.py set ID ESTADO      # troca só o estado de uma linha (ID: TP-0001, RTP-0003, SPK-0001, BK-0002, T-001)
   python .claude/scripts/taskplan.py estados            # lista os estados válidos
-  python .claude/scripts/taskplan.py proxima [--etapa exe|qa|sec] [--lote N] [--pular ID,ID] [--n K] [--lotes-distintos]   # próxima(s) tarefa(s) elegível(is) da etapa (padrão exe)
+  python .claude/scripts/taskplan.py proxima [--etapa exe|qa|sec] [--lote N] [--pular ID,ID] [--n K] [--lotes-distintos] [--apenas ID,ID]   # próxima(s) tarefa(s) elegível(is) da etapa (padrão exe)
   python .claude/scripts/taskplan.py reservar ID TOKEN [--assumir] [--etapa "Em execução|Em QA|Em DevSecOps"]   # reserva por sessão (OK | OCUPADA)
   python .claude/scripts/taskplan.py etapa ID TOKEN "Em execução|Em QA|Em DevSecOps"
   python .claude/scripts/taskplan.py iniciar ID TOKEN [--etapa "Em execução|Em QA|Em DevSecOps"] [--snap]   # reservar + etapa + status local (+ snapshot "antes")
-  python .claude/scripts/taskplan.py concluir ID TOKEN executada|qa-ok|sec-ok|devolvida [--snap] [--motivo "..."]   # status local + libera a reserva (+ snapshot "depois"; devolução conta)
+  python .claude/scripts/taskplan.py concluir ID TOKEN executada|qa-ok|sec-ok|devolvida [--snap] [--motivo "..."] [--retoque]   # status local + libera a reserva (+ snapshot "depois"; devolução conta; --retoque = achado pequeno não crítico, até 3, sem gastar devolução; exit 5 no limite)
   python .claude/scripts/taskplan.py diff ID                          # diff da tarefa (snapshot antes..depois; senão commits que começam pelo ID)
   python .claude/scripts/taskplan.py fila [--bloqueios]               # /desenvolver: tamanho das filas exe/qa/sec, travadas e impressão digital do estado
   python .claude/scripts/taskplan.py consolidar                        # grava os Status locais no TASK.md, anexa os resumos de QA/Sec aos relatórios e regera o TASKPLAN.md (fim da rodada)
@@ -30,6 +30,12 @@ Uso (a partir da raiz do projeto):
   python .claude/scripts/taskplan.py despriorizar ID [--motivo "..."]   # decisão do usuário: vai para o fim da lista e é ignorada por executar/testar/validar; a versão de distribuição exige tê-la Aprovada
   python .claude/scripts/taskplan.py repriorizar ID                   # desfaz: restaura o Status que a tarefa tinha
   python .claude/scripts/taskplan.py ordenar                          # /organizar --ordenar: só reordena o TASKPLAN.md (fila final) e relata
+  python .claude/scripts/taskplan.py cobertura ID                    # cada caso C1, C2... do `## 2. Plano de teste` tem um teste mapeado em `## 4`? (completa = exit 0; faltam = exit 1)
+  python .claude/scripts/taskplan.py classe ID [VALOR]               # le/grava a Classe: da RTP (teste-faltante, dominio, seguranca-deploy, guarda, visual, duplicacao-tamanho, concorrencia, docs, ferramental, outro)
+  python .claude/scripts/taskplan.py classes                         # RTP por Classe: total, abertas e aprovadas (mede a causa do retrabalho)
+  python .claude/scripts/taskplan.py rtp-aberta --classe X [--lote L]   # RTP ainda nao iniciada da mesma Classe e lote, para agregar o achado em vez de abrir outra (ID | NENHUMA)
+  python .claude/scripts/taskplan.py risco ID                        # nivel de seguranca da tarefa (`**Risco:** alto|baixo` na secao 3 do plano; ausente = alto)
+  python .claude/scripts/taskplan.py dominio ID [--aprovar]          # exemplos de dominio do plano (`## 0.`): PENDENTE | APROVADO | NAO-SE-APLICA; --aprovar libera a tarefa para o /executar
   python .claude/scripts/taskplan.py migrar [--confirmar] [--sem-git]  # /organizar --migrar (ver abaixo). Sem --confirmar é só relatório.
 
 A FILA É A ORDEM DO TASKPLAN.md: /executar (`proxima`) e /listar leem a mesma ordem. `gerar` já a entrega final:
@@ -72,6 +78,7 @@ import time
 
 try:
     sys.stdout.reconfigure(encoding='utf-8')
+    sys.stderr.reconfigure(encoding='utf-8')
 except Exception:
     pass
 
@@ -730,13 +737,13 @@ def lote_casa(lote, n):
 
 
 # ----------------------------------------------------------------- comandos
-def _elegiveis(etapa, lote=None, pular=(), k=1, distintos=False):
+def _elegiveis(etapa, lote=None, pular=(), k=1, distintos=False, apenas=None):
     """Tarefas elegíveis da etapa (exe|qa|sec) na ordem da fila + contagem dos motivos de exclusão."""
     usados = set()
     rows = taskplan_rows()
     by = {r['key']: r for r in rows}
     out, motivos = [], {'sem plano': 0, 'dependência aberta': 0, 'reservada': 0, 'bloqueada/dividida': 0,
-                        'do coordenador (BK/SPK)': 0, 'despriorizada': 0, 'outros': 0}
+                        'do coordenador (BK/SPK)': 0, 'despriorizada': 0, 'aguarda exemplos de domínio': 0, 'outros': 0}
     ELEG = ETAPAS_ELEG[etapa]
     for r in rows:
         if r['estado'] in ('Aprovada',):
@@ -744,6 +751,8 @@ def _elegiveis(etapa, lote=None, pular=(), k=1, distintos=False):
         if lote and not lote_casa(r['lote'], lote):
             continue
         if r['key'] in pular:
+            continue
+        if apenas is not None and r['key'] not in apenas:
             continue
         if distintos and r['lote'] in usados:  # no máximo uma tarefa por lote (paralelismo seguro)
             continue
@@ -762,6 +771,9 @@ def _elegiveis(etapa, lote=None, pular=(), k=1, distintos=False):
         if not r['plano']:
             motivos['sem plano'] += 1
             continue
+        if etapa == 'exe' and dominio_estado(r['key']) == 'PENDENTE':  # regra de negócio sem exemplos aprovados: não se codifica
+            motivos['aguarda exemplos de domínio'] += 1
+            continue
         # só a execução espera as dependências; teste e segurança operam sobre código já executado
         if etapa == 'exe' and any(not (d in by and resolvida(by[d], by)) for d in r['dep'] if d in by):
             motivos['dependência aberta'] += 1
@@ -778,7 +790,7 @@ def _elegiveis(etapa, lote=None, pular=(), k=1, distintos=False):
 
 
 def cmd_proxima(args):
-    lote, pular, k, etapa, distintos = None, set(), 1, 'exe', False
+    lote, pular, k, etapa, distintos, apenas = None, set(), 1, 'exe', False, None
     i = 0
     while i < len(args):
         if args[i] == '--lotes-distintos':
@@ -791,11 +803,13 @@ def cmd_proxima(args):
             lote = args[i + 1]; i += 2
         elif args[i] == '--pular':
             pular = {norm(x) for x in args[i + 1].split(',') if x}; i += 2
+        elif args[i] == '--apenas':
+            apenas = {norm(x) for x in args[i + 1].split(',') if x}; i += 2
         elif args[i] == '--n':
             k = int(args[i + 1]); i += 2
         else:
             i += 1
-    out, motivos, _ = _elegiveis(etapa, lote, pular, k, distintos)
+    out, motivos, _ = _elegiveis(etapa, lote, pular, k, distintos, apenas)
     for r in out:
         print('%s	%s	%s	%s	%s' % (r['id'], r['key'], r['estado'], r['lote'], r['titulo']))
     if not out:
@@ -1292,6 +1306,7 @@ def cmd_iniciar(args):
     print('INICIADA %s (%s)' % (key, etapa))
 
 
+LIMITE_RETOQUES = 3
 RESULTADOS = {
     'executada': 'Concluída · aguarda QA',
     'qa-ok': 'Concluída · QA ✔',
@@ -1309,7 +1324,15 @@ def cmd_concluir(args):
     ri = reserva_info(key)
     if not ri or ri[1] != token:
         sys.exit('RESERVA PERDIDA (sessão %s)' % (ri[1] if ri else '-'))
-    if res == 'devolvida':
+    if res == 'devolvida' and '--retoque' in o:  # achado não crítico pequeno: volta ao Executor sem gastar devolução
+        n = int(get_cab(key, 'Retoques:') or 0) + 1
+        if n > LIMITE_RETOQUES:
+            print('LIMITE-RETOQUE\t%s\t%d retoques: abra RTP (agregando por classe) ou bloqueie; status inalterado' % (key, n))
+            sys.exit(5)
+        set_cab(key, 'Retoques:', str(n))
+        motivo = o[o.index('--motivo') + 1] if '--motivo' in o else ''
+        print('RETOQUE\t%s\t%d de %d%s' % (key, n, LIMITE_RETOQUES, ('\t' + motivo) if motivo else ''))
+    elif res == 'devolvida':
         n = int(get_cab(key, 'Devoluções:') or 0) + 1
         if n > 2:
             print('LIMITE\t%s\t%d devoluções: 3ª é bloqueio crítico (use `bloquear`); status inalterado' % (key, n))
@@ -1484,6 +1507,154 @@ def cmd_tarefa(args):
                 plan_path(key) if r['plano'] else 'SEM PLANO', ri[0] if ri else '—'))
             return
     sys.exit('tarefa %s não está no TASKPLAN.md' % args[0])
+
+
+# ----------------------------------------------------------------- cobertura, classe, risco, domínio
+CLASSES = ('teste-faltante', 'dominio', 'seguranca-deploy', 'guarda', 'visual', 'duplicacao-tamanho',
+           'concorrencia', 'docs', 'ferramental', 'outro')
+COD_DEF_RE = re.compile(r'^\s*(?:[-*+]\s*)?(?:\*\*|`)?C(\d{1,3})\b')
+COD_MAP_RE = re.compile(r'\bC(\d{1,3})\b\s*(?:→|->|=>|:|=)\s*(\S.*)')
+SEM_TESTE_RE = re.compile(r'(?i)não coberto|nao coberto|pendente|sem teste|falta')
+
+
+def _secao(lines, prefixo):
+    """Linhas da seção `## <prefixo>…` até o próximo `## `."""
+    out, dentro = [], False
+    for l in lines:
+        if l.startswith('## '):
+            if dentro:
+                break
+            dentro = l[3:].startswith(prefixo)
+            continue
+        if dentro:
+            out.append(l)
+    return out
+
+
+def cmd_cobertura(args):
+    """Cada caso Cn do plano de teste (seção 2) precisa de um `Cn → arquivo::teste` (ou `Cn → N/A: motivo`) na seção 4."""
+    key = norm(args[0])
+    if not os.path.exists(plan_path(key)):
+        sys.exit('tarefa %s sem arquivo em .md/.taskplan/' % key)
+    lines = read_lines(plan_path(key))
+    defs = []
+    for l in _secao(lines, '2.'):
+        m = COD_DEF_RE.match(l)
+        if m and 'C%s' % m.group(1) not in defs:
+            defs.append('C%s' % m.group(1))
+    if not defs:
+        print('SEM-CODIGOS\t%s\tplano de teste sem casos C1, C2… (tarefa anterior à regra): conferência manual' % key)
+        return
+    cobertos, dispensados = set(), set()
+    for l in _secao(lines, '4.'):
+        for m in COD_MAP_RE.finditer(l):
+            if SEM_TESTE_RE.search(m.group(2)):
+                continue
+            c = 'C%s' % m.group(1)
+            if re.match(r'(?i)^(n/?a|dispensado)', m.group(2).strip('*` ')):
+                dispensados.add(c)
+            else:
+                cobertos.add(c)
+    faltam = [c for c in defs if c not in cobertos and c not in dispensados]
+    print('COBERTURA\t%s\tdefinidos=%d cobertos=%d dispensados=%s faltam=%s' % (
+        key, len(defs), len([c for c in defs if c in cobertos]), ','.join(sorted(dispensados)) or '-', ','.join(faltam) or '-'))
+    if faltam:
+        sys.exit(1)
+
+
+def cmd_classe(args):
+    key = norm(args[0])
+    if len(args) == 1:
+        print(get_cab(key, 'Classe:') or 'sem-classe')
+        return
+    if args[1] not in CLASSES:
+        sys.exit('classe inválida: %r (válidas: %s)' % (args[1], ', '.join(CLASSES)))
+    if not set_cab(key, 'Classe:', args[1]):
+        sys.exit('tarefa %s sem arquivo em .md/.taskplan/' % key)
+    print('CLASSE\t%s\t%s' % (key, args[1]))
+
+
+def cmd_classes(args):
+    cont = {}
+    for r in taskplan_rows():
+        if not r['key'].startswith('RTP-'):
+            continue
+        c = get_cab(r['key'], 'Classe:') or 'sem-classe'
+        d = cont.setdefault(c, [0, 0, 0])
+        d[0] += 1
+        d[1 if r['estado'] != 'Aprovada' else 2] += 1
+    tot = sum(v[0] for v in cont.values())
+    print('RTP por classe (total %d)' % tot)
+    for c, v in sorted(cont.items(), key=lambda kv: -kv[1][0]):
+        print('%s\ttotal=%d\tabertas=%d\taprovadas=%d\t%d%%' % (c, v[0], v[1], v[2], round(100 * v[0] / tot) if tot else 0))
+
+
+def cmd_rtp_aberta(args):
+    """RTP ainda não iniciada da mesma Classe (e lote): o achado novo é agregado a ela em vez de abrir outra."""
+    o = parse_opts(args)
+    if 'classe' not in o:
+        sys.exit('falta --classe')
+    for r in taskplan_rows():
+        if not r['key'].startswith('RTP-') or r['estado'] != 'Não executada':
+            continue
+        if 'lote' in o and not (r['lote'] == o['lote'] or r['lote'].endswith('Lote-' + o['lote'].lstrip('L').lstrip('0'))):
+            continue
+        ri = reserva_info(r['key'])
+        if ri and ri[0] in ('Em execução', 'Em QA', 'Em DevSecOps'):
+            continue
+        if get_cab(r['key'], 'Classe:') == o['classe']:
+            print(r['id'])
+            return
+    print('NENHUMA')
+
+
+def risco_da(key):
+    """(nível, explícito) lido de `**Risco:** alto|baixo` nas primeiras linhas da seção 3 do plano."""
+    if not os.path.exists(plan_path(key)):
+        return 'alto', False
+    for l in _secao(read_lines(plan_path(key)), '3.')[:12]:
+        m = re.search(r'(?i)risco[^:]*:\**\s*\**(alto|baixo)', l)
+        if m:
+            return m.group(1).lower(), True
+    return 'alto', False
+
+
+def cmd_risco(args):
+    nivel, explicito = risco_da(norm(args[0]))
+    print(nivel if explicito else nivel + '\tpadrao (tarefa sem **Risco:** na seção 3)')
+
+
+def dominio_estado(key):
+    """Seção `## 0.` do plano (exemplos numéricos da regra de negócio): PENDENTE | APROVADO | NAO-SE-APLICA."""
+    if not os.path.exists(plan_path(key)):
+        return 'NAO-SE-APLICA'
+    sec = [l for l in _secao(read_lines(plan_path(key)), '0.') if l.strip()]
+    if not sec:
+        return 'NAO-SE-APLICA'
+    if any(re.match(r'(?i)^\W*pendente', l) for l in sec):
+        return 'PENDENTE'
+    return 'APROVADO'
+
+
+def cmd_dominio(args):
+    key = norm(args[0])
+    est = dominio_estado(key)
+    if '--aprovar' in args:
+        if est != 'PENDENTE':
+            sys.exit('tarefa %s: exemplos de domínio %s, nada a aprovar' % (key, est))
+        with Lock(key):
+            lines = read_lines(plan_path(key))
+            dentro = False
+            for n, l in enumerate(lines):
+                if l.startswith('## '):
+                    dentro = l[3:].startswith('0.')
+                elif dentro and re.match(r'(?i)^\W*pendente', l):
+                    resto = re.sub(r'(?i)^\W*pendente\s*:?\s*', '', l)
+                    lines[n] = 'APROVADO em %s pelo usuário: %s' % (agora()[:10], resto)
+                    break
+            write_lines(plan_path(key), lines)
+        est = 'APROVADO'
+    print('DOMINIO\t%s\t%s' % (key, est))
 
 
 # ----------------------------------------------------------------- migração (/organizar --migrar)
@@ -1801,6 +1972,18 @@ def despachar(a):
         cmd_tarefa(a[1:])
     elif cmd == 'checar-deps':
         cmd_checar_deps(a[1:])
+    elif cmd == 'cobertura' and len(a) == 2:
+        cmd_cobertura(a[1:])
+    elif cmd == 'classe' and len(a) >= 2:
+        cmd_classe(a[1:])
+    elif cmd == 'classes':
+        cmd_classes(a[1:])
+    elif cmd == 'rtp-aberta':
+        cmd_rtp_aberta(a[1:])
+    elif cmd == 'risco' and len(a) == 2:
+        cmd_risco(a[1:])
+    elif cmd == 'dominio' and len(a) >= 2:
+        cmd_dominio(a[1:])
     else:
         print(__doc__)
         sys.exit(1)

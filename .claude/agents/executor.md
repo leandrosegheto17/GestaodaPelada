@@ -136,6 +136,11 @@ outras tarefas em paralelo e alterações pendentes na mesma árvore):
    (quem faz isso é o comando, via `taskplan.py`); sua entrega é o código, os testes e a seção
    `## 4. Resultado da execução` (o que foi feito, arquivos alterados, testes rodados e resultado,
    dúvidas/riscos).
+   **Retoque** (tarefa devolvida pelo QA/Sec com a marca `RETOQUE`, achado não crítico pequeno):
+   corrija **só os achados listados** em `## 5`/`## 6` da rodada anterior, no mesmo diff da
+   tarefa, sem ampliar o escopo nem refatorar em volta; acrescente `### Retoque n` em `## 4`
+   com o que mudou e rode de novo a lista "Antes de devolver" (inclusive `cobertura`). Retoque
+   não vira RTP e não gasta devolução.
 5. **Retorno curto.** O relato completo já está no arquivo. Devolva ao orquestrador **no máximo 4
    linhas**: `OK` ou `BLOQUEIO: <motivo>`, nº de arquivos alterados, testes (n passando/falhando) e
    risco principal. Sem copiar o relato nem listas longas.
@@ -156,6 +161,21 @@ quebrado e deve ser extraído. Resumo do que mais escapa:
 
 **Antes de devolver a tarefa**, confira no seu próprio diff (e registre em `## 4` o que achou):
 
+- [ ] **Cobertura do plano, caso a caso.** Cada caso `C1`, `C2`… da seção "2. Plano de
+      teste" tem, em `## 4`, uma linha `Cn → <arquivo de teste>::<nome do teste>` (ou
+      `Cn → N/A: <motivo>` quando o caso não se aplica de verdade). Rode
+      `python .claude/scripts/taskplan.py cobertura <ID>`: tem de responder `COBERTURA … faltam=-`
+      (`SEM-CODIGOS` = plano antigo, sem os códigos: confira à mão). Caso sem teste é tarefa
+      incompleta, não "lacuna a registrar" — o QA devolve na hora (retoque).
+- [ ] **Regra de negócio (seção "0. Regra de domínio" do plano):** a tabela de exemplos
+      aprovada pelo usuário é o **primeiro teste que você escreve** (um caso `Cn` por linha da
+      tabela). Se o código divergir de uma linha, o código está errado — não mude a tabela;
+      dúvida sobre o exemplo é bloqueio (`BK`), não decisão sua.
+- [ ] **Tela ou componente:** rode a comparação visual
+      (`node .claude/scripts/comparar-visual.mjs …`, comando no plano) nos estados e tamanhos do
+      aceite e abra os PNGs **você mesmo**, antes de devolver; divergência visível com o
+      mockup é corrigida aqui, não pelo QA. Se o mockup é que está errado, registre em `## 4` e
+      peça o ajuste do mockup na mesma tarefa — não deixe os dois diferentes.
 - [ ] Nenhum trecho de mais de ~10 linhas copiado de outro arquivo; nenhum comentário
       "mesma lógica de…"/"duplicado aqui".
 - [ ] Nenhum `TP-`/`RTP-`/`Lote` em código ou comentário que você escreveu ou tocou.
@@ -340,7 +360,8 @@ Definition of done por tarefa (Backend/Frontend/Mobile) — checklist binário:
       (quando aplicável)
 - [ ] Lista "Antes de devolver a tarefa" (seção Convenções de código) conferida e
       registrada em `## 4`
-- [ ] Testes automatizados escritos e passando, cobrindo o critério de aceite
+- [ ] Testes automatizados escritos e passando, cobrindo o critério de aceite **e todos os
+      casos `Cn` do plano de teste** (`taskplan.py cobertura <ID>` sem faltas)
 - [ ] Contrato de API documentado, quando a tarefa expõe endpoint
 - [ ] Requisitos de segurança aplicados na implementação, não pendentes
 - [ ] Integração com API **real** concluída — nenhuma pendência de mock

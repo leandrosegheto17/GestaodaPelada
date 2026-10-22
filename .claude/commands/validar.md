@@ -1,6 +1,6 @@
 ---
 description: Etapa 3 do fluxo — aciona o agente Validador no chapéu DevSecOps para validar a segurança das tarefas já testadas (estado Testada/aguarda segurança), em sequência, contra o plano de validação de segurança de .md/.taskplan/<ID>.md; grava o resultado no arquivo da tarefa. Dá o OK (Sec ✔ = tarefa Aprovada), devolve ao /executar em achado crítico ou abre RTP em achado não crítico. Não implementa nem testa e não chama outro comando. Sem argumento pega a próxima tarefa elegível; --tarefa <ID> valida só essa; --lote N e --continuar [N] [--nocontext] [--nocommit] [--paralelo [N]] [--lotes-distintos] encadeiam as tarefas. Durante a rodada só o arquivo de cada tarefa é escrito; TASK.md e TASKPLAN.md são consolidados no fim. Não dispara /deploy sozinho.
-argument-hint: [vazio = próxima tarefa | --tarefa <ID> | --lote N | --continuar [N] [--nocontext] [--nocommit] [--paralelo [N]] [--lotes-distintos]]
+argument-hint: [vazio = próxima tarefa | --tarefa <ID> | --lote N | --tarefas ID,ID | --continuar [N] [--nocontext] [--nocommit] [--paralelo [N]] [--lotes-distintos]]
 ---
 
 # Comando `/validar` — etapa 3: DevSecOps
@@ -42,7 +42,17 @@ comando: o controle volta ao `/desenvolver`.
 ## Ciclo da tarefa
 
 1. **Contexto, `iniciar`** como no `executar.md` (Seções 0 e 3-0), com `--etapa "Em DevSecOps"`.
-2. **Dispare `validador`** (`subagent_type: validador`, `run_in_background: false`) focado no
+2. **Nível pelo risco.** Rode `python .claude/scripts/taskplan.py risco <ID>` (`**Risco:**` da seção 3
+   do plano; ausente = `alto`) e diga o nível ao agente (`agents/validador.md`, "Profundidade pelo
+   risco da tarefa"):
+   - **`alto`**: revisão completa do diff, com todas as skills abaixo.
+   - **`baixo`**: **nível leve** — só as checagens mecânicas do diff (dependência nova/alterada,
+     segredo ou dado pessoal em código/log/teste, entrada de fora sem limite, lint de segurança do
+     projeto), **sem** as skills de análise. A seção 6 traz `Nível: leve`. Se o diff tocar
+     autenticação, autorização, SQL/migração/esquema, rota/parser de entrada, CI/deploy/Docker,
+     dependência, segredo ou log, o agente **reclassifica para `alto`** e faz a revisão completa.
+     O conjunto das tarefas leves do lote é coberto pela auditoria de release do `/deploy`.
+3. **Dispare `validador`** (`subagent_type: validador`, `run_in_background: false`) focado no
    chapéu DevSecOps, **só nesta tarefa**: skills `static-security-analysis`,
    `security-requirement-validation`, `sensitive-data-exposure-check`, `compliance-validation`
    (quando houver dado pessoal) e `security-report-drafting`. Ele **lê o
@@ -57,7 +67,7 @@ comando: o controle volta ao `/desenvolver`.
    roda a auditoria de dependências; e a seção 6 separa o que foi **lido** do que foi **executado** (comando +
    resultado). A varredura completa com ferramentas e o teste ativo contra a aplicação rodando são do
    `/deploy` (auditoria de release, `security-release-audit`).
-3. **Resultado** (`concluir`):
+4. **Resultado** (`concluir`):
    - **OK de segurança** (sem achado alto/crítico, compliance obrigatório atendido):
      `concluir <ID> <token> sec-ok` — `Concluída · QA ✔ · Sec ✔`; a tarefa fica **`Aprovada`** e libera
      as dependentes (que o `/executar` passa a enxergar como elegíveis).
@@ -66,11 +76,17 @@ comando: o controle volta ao `/desenvolver`.
      `## Achados` (e na seção 6). O próximo `/executar` a pega e, depois, ela passa de novo por
      `/testar` e `/validar`. O script conta a devolução, somada às do `/testar` (limite de 2; na 3ª ele
      responde `LIMITE` e é bloqueio crítico — `testar.md`, Seção 3d).
-   - **Achado não crítico** (baixa/média, débito): `sec-ok` e o `validador` abre uma
-     **`RTP-0000`** (`executar.md`, Seção 5a), conferida com `taskplan.py tarefa <RTP>`. Achado de
-     segurança **não** tem via rápida. Achado repetido (2ª RTP da mesma classe, ex.: falta de limite de
-     entrada) gera a linha `Padrão repetido: …` como no `testar.md` (item 3), levada ao resumo do fim.
-4. **Commit** (padrão): o que a validação produziu (seção 6, RTP) com a mensagem
+   - **Achado não crítico** (baixa/média, débito), mesmos três destinos do `testar.md` (item 3), nesta
+     ordem: **retoque** (`concluir <ID> <token> devolvida --retoque --motivo "…"`: só achado da própria
+     tarefa, ~30 linhas, **fora das áreas de segurança, banco, CI/deploy e contrato** — logo, achado de
+     segurança propriamente dito quase nunca é retoque), **agregar** a RTP aberta da mesma classe
+     (`taskplan.py rtp-aberta --classe seguranca-deploy|… --lote X`) ou **RTP nova** (`sec-ok`; o
+     `validador` abre a **`RTP-0000`** — `executar.md`, Seção 5a — e grava a `Classe` com
+     `taskplan.py classe`), conferida com `taskplan.py tarefa <RTP>`. Achado de segurança **não** tem via
+     rápida. **Em tarefa `RTP-…` o achado nunca vira outra RTP** (retoque, agregação ou "Sem dono" no
+     resumo). Achado repetido (2ª RTP da mesma classe, ex.: falta de limite de entrada) gera a linha
+     `Padrão repetido: …` como no `testar.md` (item 3), levada ao resumo do fim.
+5. **Commit** (padrão): o que a validação produziu (seção 6, RTP) com a mensagem
    `<ID>: segurança aprovada|devolvida`, pelas regras de onde o código roda. Com `--nocommit`, não commite.
 
 **Publicação**: commit local apenas; push e espera do CI seguem a Seção 4b do `executar.md` (um push por chamada, só com autorização).
@@ -79,5 +95,5 @@ comando: o controle volta ao `/desenvolver`.
 
 Rode `taskplan.py consolidar` (também monta a entrada de `SECURITY-REVIEW.md` a partir da linha `Resumo para o relatório:`). Resumo curto por tarefa: veredito, achados, RTP criadas, estado agora.
 No modo contínuo, o resumo final traz: aprovadas (`Sec ✔`), devolvidas ao `/executar` (ID + motivo),
-bloqueadas, RTP abertas, puladas e **se algum lote ficou todo pronto para `/deploy`**. Termine sugerindo
+bloqueadas, retoques, RTP abertas (com a `Classe`) e achados agregados, achados "Sem dono", quantas tarefas passaram pelo nível leve, puladas e **se algum lote ficou todo pronto para `/deploy`**. Termine sugerindo
 `/executar` (se houve devolução ou há novas elegíveis) ou `/deploy`. Nunca dispare `/deploy`.

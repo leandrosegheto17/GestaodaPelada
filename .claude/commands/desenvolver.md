@@ -1,12 +1,12 @@
 ---
-description: Orquestra o ciclo completo sem supervisão (pensado para rodar à noite) — chama o /executar enquanto houver tarefas elegíveis, depois o /testar enquanto houver tarefas para testar, depois o /validar enquanto houver tarefas para validar, e volta ao /executar para uma nova rodada, até as filas acabarem ou ficarem travadas por bloqueios que dependem de você. Ao esvaziar as filas roda o /revisar (até 2 vezes por chamada) e, se ele abrir RTP, faz nova passada. Sem --continuar faz uma única passada. Repassa --nocontext, --nocommit, --paralelo e --lotes-distintos às etapas. Não dispara /deploy.
-argument-hint: [--continuar] [--nocontext] [--nocommit] [--paralelo [N]] [--lotes-distintos] [--rodadas N]
+description: Orquestra o ciclo completo sem supervisão (pensado para rodar à noite) — leva cada tarefa (ou grupo de N com --paralelo) por /executar → /testar → /validar até ser aprovada ou bloqueada, antes de começar a próxima (passada vertical; devoluções e retoques voltam ao Executor no mesmo ciclo), e repete até as filas acabarem ou ficarem travadas por bloqueios que dependem de você. Ao esvaziar as filas roda o /revisar (até 2 vezes por chamada) e, se ele abrir RTP, faz nova passada. Sem --continuar faz uma única passada. Com --por-etapa usa o modo antigo (todas as execuções, depois todos os testes, depois todas as validações). Repassa --nocontext, --nocommit, --paralelo e --lotes-distintos às etapas. Não dispara /deploy.
+argument-hint: [--continuar] [--nocontext] [--nocommit] [--paralelo [N]] [--lotes-distintos] [--rodadas N] [--por-etapa]
 ---
 
-# Comando `/desenvolver` — executar → testar → validar, em ciclo
+# Comando `/desenvolver` — executar → testar → validar, tarefa a tarefa
 
 Ao esvaziar as filas, ele também roda o `/revisar` (revisão de arquitetura do projeto inteiro) e, se a revisão
-abrir `RTP`, volta a executar — ver Seção 3, item 2.
+abrir `RTP`, volta a executar — ver Seção 3, item 5.
 
 Este comando é o **único** que encadeia os outros três (`/executar`, `/testar`, `/validar` continuam sem
 chamar um ao outro). Ele não implementa, testa nem audita nada por conta própria: só decide **qual etapa
@@ -24,6 +24,8 @@ Argumento recebido (pode estar vazio): $ARGUMENTS
 - **`--nocommit`**, **`--paralelo [N]`**, **`--lotes-distintos`**: repassados às etapas, com o mesmo
   significado e as mesmas restrições do `/executar` (ver `/comandos`).
 - **`--rodadas N`**: teto opcional de passadas (padrão: sem teto; a parada por falta de progresso basta).
+- **`--por-etapa`**: usa o modo antigo (todas as execuções, depois todos os testes, depois todas as
+  validações) em vez da passada vertical por tarefa (Seção 3).
 
 Argumento desconhecido: mostre as opções e **pare**. Nunca pergunte nada ao usuário durante o ciclo — ele
 não está presente; onde os comandos das etapas perguntariam (ex.: assumir reserva velha, retomar bloqueada),
@@ -46,19 +48,30 @@ O estado das filas vem de **uma chamada** barata, que não lê o `TASK.md`:
 (`exe`/`qa`/`sec` = tarefas elegíveis agora para `/executar`, `/testar` e `/validar`; `estado` = impressão
 digital de todas as tarefas: se não muda, nada andou.)
 
-**Uma passada**, nesta ordem:
+**Uma passada vertical** (padrão) — cada tarefa (ou grupo de N com `--paralelo N`) percorre
+**executar → testar → validar até ser aprovada ou bloqueada, antes de a próxima começar**. O contexto
+da tarefa ainda está quente quando o QA ou o Sec acham algo, e o conserto acontece no mesmo ciclo:
 
-1. Para cada etapa em **`exe` → `qa` → `sec`**:
-   1. Rode `fila`. Se a contagem da etapa for **0**, pule a etapa.
-   2. Chame o comando da etapa com `--continuar` mais os repasses (ex.: `/executar --continuar --nocontext
-      --paralelo 10`), pela ferramenta Skill. **Carregue cada skill uma vez por sessão**: nas rodadas
-      seguintes, siga de novo as instruções já carregadas em vez de invocar a Skill outra vez (só invoque
-      de novo se o contexto tiver sido compactado e as instruções sumido).
-   3. Ao voltar, rode `fila` outra vez. Se a contagem da etapa ainda for > 0 **e** o `estado` não mudou desde
-      antes da chamada, a etapa está **travada** (algo impede as tarefas restantes — falha de ambiente,
-      reserva alheia, plano ausente…): anote o motivo e passe à próxima etapa. Se a contagem ainda for > 0 mas
-      o `estado` mudou, houve progresso: repita 1.2–1.3.
-2. Fim da passada: rode `fila`.
+1. Rode `fila`. Monte o **grupo G**: `python .claude/scripts/taskplan.py proxima --etapa exe --n N
+   [--lotes-distintos]` (N = o valor de `--paralelo`, ou 1). As tarefas do grupo já têm dependências
+   `Aprovada`, então não dependem umas das outras. `NENHUMA` → passe ao item 4.
+2. **Ciclo do grupo** (repita até o grupo se esgotar ou travar):
+   1. `/executar --tarefas G` (mais os repasses). Ele pega as do grupo ainda elegíveis: novas e as
+      devolvidas/retocadas.
+   2. `/testar --tarefas G`. Achado crítico devolve; achado pequeno vira **retoque**; ambos voltam à
+      etapa 2.1 na mesma volta, sem passar pela fila geral.
+   3. `/validar --tarefas G`, com a profundidade pelo risco da tarefa. Devolução ou retoque volta à 2.1.
+   4. Confira: `proxima --etapa exe|qa|sec --apenas G` (as três). Se **todas** derem `NENHUMA`, o grupo
+      acabou (cada tarefa está `Aprovada`, `Bloqueada` ou no limite de devoluções, que já virou
+      bloqueio). Se ainda houver elegível e o `estado` (`fila`) **não mudou** desde o início da volta,
+      o grupo está **travado**: anote o motivo e saia do ciclo. No máximo **6 voltas** por grupo
+      (2 devoluções + 3 retoques + a final).
+3. Volte ao item 1 para o próximo grupo (nova checagem de contexto, salvo `--nocontext`). O
+   `estado` de `fila` comparado ao do início da **passada** diz se houve progresso.
+4. **Resíduo**: com a fila `exe` vazia, ainda pode haver `qa>0` ou `sec>0` (tarefas deixadas por
+   rodadas manuais ou interrompidas). Rode `/testar --continuar` e depois `/validar --continuar`
+   (com os repasses) para drená-las; se uma devolução reabrir `exe`, volte ao item 1.
+5. Fim da passada: rode `fila`.
    - **Todas as contagens = 0** → filas vazias: antes de parar, rode **`/revisar`** (pela
      ferramenta Skill, com `--nocommit` se esse foi um dos repasses), **no máximo 2 vezes
      por chamada do `/desenvolver`**. Se a revisão abriu `RTP`, a fila de execução volta
@@ -68,8 +81,19 @@ digital de todas as tarefas: se não muda, nada andou.)
    - **`estado` igual ao do início da passada** → sem progresso: **pare**.
    - **Sem `--continuar`** → **pare** depois desta passada.
    - **`--rodadas N` atingido** → **pare**.
-   - Caso contrário, comece **nova passada** (a execução volta a ter tarefas elegíveis porque o `/validar`
-     aprovou dependências e o `/testar`/`/validar` devolveram achados críticos).
+   - Caso contrário, comece **nova passada**.
+
+**`--por-etapa`** (modo antigo, para quando o paralelismo por etapa convém — por exemplo `--paralelo 20`
+numa fila grande e independente): a passada roda as etapas **`exe` → `qa` → `sec`** em bloco. Para cada
+uma: rode `fila`; contagem **0** → pule; senão chame o comando com `--continuar` mais os repasses
+(`/executar --continuar --nocontext --paralelo 10`); ao voltar, rode `fila` de novo — contagem > 0 com
+`estado` igual = etapa **travada** (anote o motivo e passe à próxima); `estado` mudou = progresso, repita.
+O fim da passada é o mesmo do item 5. Devoluções só voltam ao QA na passada seguinte, por isso este modo
+é mais lento para fechar tarefas e mais propenso a contexto frio.
+
+**Skills**: carregue cada skill uma vez por sessão; nas voltas seguintes, siga de novo as instruções já
+carregadas em vez de invocar a Skill outra vez (só invoque de novo se o contexto tiver sido compactado e
+as instruções sumido).
 
 **Entre etapas** mantenha o contexto enxuto: guarde só o resumo de 2–3 linhas que cada etapa devolveu (o
 que fechou, devolveu, bloqueou). Não reimprima listas.
@@ -88,7 +112,11 @@ Rode `python .claude/scripts/taskplan.py consolidar` e depois `python .claude/sc
 
 - **Por que parou**: filas vazias · sem progresso · `--rodadas` · teto de contexto · falha de ambiente.
 - **Balanço**: passadas feitas e, somando as etapas, quantas tarefas foram executadas, aprovadas em QA, aprovadas
-  em Sec (`Aprovada`), devolvidas, bloqueadas e quantas RTP foram abertas; `aprovadas` antes → depois.
+  em Sec (`Aprovada`, das quais quantas pelo nível leve), devolvidas, **retocadas**, bloqueadas e quantas RTP foram
+  abertas ou agregadas; `aprovadas` antes → depois.
+- **Causa do retrabalho**: rode `python .claude/scripts/taskplan.py classes` e traga a contagem de RTP por `Classe`.
+- **Sem dono**: achados de RTP fora do escopo que não couberam em nenhuma RTP aberta (listados pelo `/testar`
+  e `/validar`), para você decidir.
 - **Revisão de arquitetura**: quantas vezes o `/revisar` rodou, `RTP`/`BK` que ele abriu e se ainda há
   achado Alto aberto (que segura o `/deploy`).
 - **O que depende de você**: os `BK-`/`SPK-` abertos (ID + o que fazer, uma linha cada) e as tarefas
@@ -100,4 +128,6 @@ Rode `python .claude/scripts/taskplan.py consolidar` e depois `python .claude/sc
 - **Sem commit**: se usou `--nocommit`, lembre que as alterações estão acumuladas na `main` para você commitar.
 - **Próximo passo**: `/listar`, e `/deploy` se algum lote ficou todo pronto.
 
-Nunca dispare `/deploy`, `/organizar` nem qualquer outro comando além dos três e do `/revisar`.
+Nunca dispare `/deploy`, `/organizar` nem qualquer outro comando além dos três e do `/revisar`. Tarefa com
+exemplos de domínio pendentes (`aguarda exemplos de domínio`) fica fora da fila: liste-a no relatório para o
+usuário aprovar com `taskplan.py dominio <ID> --aprovar`.

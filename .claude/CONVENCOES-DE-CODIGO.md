@@ -90,6 +90,10 @@ repositório, arquivos de 400-570 linhas e 228 menções a IDs de tarefa nos com
   roda**. Em monorepo, `pnpm --filter <pacote> run …` roda dentro do pacote, não na raiz.
 - Publicação/deploy é um script dedicado (ou workflow), não uma cadeia de `&&` dentro do
   `package.json`.
+- Workflow, `docker-compose`, script de deploy/backup e runbook nascem a partir de
+  `.claude/templates/ci-endurecido.md` (ações por SHA, `persist-credentials: false`, segredo fora de
+  `run:` e de log, portas em 127.0.0.1…), não do "mínimo que roda". No projeto de origem, endurecer
+  depois custou dezenas de RTP.
 
 ## 7. Testes que tocam dados compartilhados
 
@@ -122,6 +126,26 @@ adversariais** no plano de teste: literais e comentários que escondem o padrão
 codificação não ASCII, ferramenta ausente ou falhando (tem de **falhar fechado**), entrada
 vazia. Sem a matriz, cada rodada de QA encontra o próximo desvio e vira uma RTP em cadeia.
 
+**Analise com árvore sintática, não com regex.** Guarda que inspeciona **código** (quem escreve
+em tal coluna, quem importa tal pacote, quem chama tal função) é uma **regra de linter** (ESLint
+com seletor AST, `no-restricted-syntax`/`no-restricted-imports`, semgrep, ts-morph), não um
+script com expressões regulares sobre o texto. Texto de código tem comentário, string, template,
+atribuição composta, alias e ponto-e-vírgula dentro de literal: cada um vira um "contorno" e, no
+projeto de origem, cada contorno foi uma RTP (~20 em três guardas). Parser caseiro de texto só
+com justificativa escrita no plano da tarefa (a ferramenta existente não consegue expressar a
+regra) e, ainda assim, com a matriz adversarial acima. Guarda sobre **arquivos de configuração**
+(YAML de workflow, JSON) usa o parser do formato, nunca regex sobre o texto.
+
+## 10. Regra de negócio nasce com exemplos aprovados
+
+Tarefa que implementa ou altera **regra de negócio** (cálculo, período, pontuação, elegibilidade,
+valor financeiro) traz, na seção "0. Regra de domínio" do plano, uma **tabela de exemplos**:
+entrada → resultado esperado, com os casos de borda (virada de período, retorno depois de saída,
+legado, zero, valor máximo) e pelo menos um caso real do cliente quando existir. O usuário aprova
+a tabela **antes** do `/executar` (`taskplan.py dominio <ID> --aprovar`); sem isso a tarefa não
+entra na fila. A tabela é o primeiro teste da tarefa. No projeto de origem, a regra de período
+foi redescoberta em ~20 RTP porque o exemplo numérico só apareceu na implementação.
+
 ---
 
 ## Como cada papel usa este arquivo
@@ -130,5 +154,5 @@ vazia. Sem a matriz, cada rodada de QA encontra o próximo desvio e vira uma RTP
 |---|---|
 | Coordenador (`implementation-guideline-drafting`) | A Seção 1 do `TASK.md` referencia este arquivo como camada base e só acrescenta o que é específico do projeto (limites diferentes, nomes de pastas). |
 | Executor | Segue as regras ao implementar; confere a lista "Antes de devolver" do `executor.md`. |
-| Validador (QA) | Violação de qualquer regra daqui é **achado não crítico** → abre `RTP` (ver `finding-severity-classification`), salvo a correção na hora da via rápida (`/testar`). Nunca "sem severidade". |
+| Validador (QA) | Violação de qualquer regra daqui é **achado não crítico**: **retoque** quando é da própria tarefa e pequeno, senão agrega a RTP aberta da mesma classe ou abre `RTP` (ver `finding-severity-classification` e `validador.md`), salvo a correção na hora da via rápida (`/testar`). Nunca "sem severidade". |
 | Coordenador (`/revisar`) | `architecture-health-review` mede o projeto inteiro contra este arquivo e abre `RTP` para o que escapou da validação por tarefa. |
