@@ -15,8 +15,8 @@ import { respostas } from './apoio/respostas.js';
 const lista = respostas(/^jogador-.*-periodos\.json$/);
 
 describe('respostas do mockup', () => {
-  it('encontra os 5 arquivos de períodos', () => {
-    expect(lista).toHaveLength(5);
+  it('encontra os 7 arquivos de períodos', () => {
+    expect(lista).toHaveLength(7);
   });
   it.each(lista)('$nome passa em periodosResposta', ({ json }) => {
     expect(periodosResposta.safeParse(json).success).toBe(true);
