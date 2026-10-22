@@ -77,6 +77,7 @@ export const CASOS: Record<string, Caso> = {
   'PATCH /api/grupos/:grupoId/admins/:contaId/financeiro': { tipo: 'financeiro', corpo: { acessaFinanceiro: true } },
   'GET /api/grupos/:grupoId/jogadores': { tipo: 'grupo' },
   'GET /api/grupos/:grupoId/jogadores/:id': { tipo: 'grupo' },
+  'GET /api/grupos/:grupoId/jogadores/:id/periodos': { tipo: 'grupo' },
   'POST /api/grupos/:grupoId/jogadores': {
     tipo: 'grupo',
     corpo: { apelido: 'Isolamento', anoNascimento: 1990, posicao: 'atacante' },
