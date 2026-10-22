@@ -200,6 +200,41 @@ describe('PUT /api/grupos/:g/jogadores/:id/periodos/:periodoId (workerd)', () =>
     expect(await eventos(db, g)).toHaveLength(0);
   });
 
+  it('a auditoria da correção e da alteração de início não aparece em rota pública nem no PDF', async () => {
+    const db = await abrir();
+    const { cen, g, id, entrada } = await cenario(db);
+    const slug = cen.grupoA.slug;
+    expect((await cliente(cen.adminA.cookie).put(url(g, id, entrada.id), { saida: d(-40) })).status).toBe(200);
+    expect(
+      (await cliente(cen.adminA.cookie).put(`/api/grupos/${g}/jogadores/${id}/inicio`, { data: d(-58) })).status,
+    ).toBe(200);
+    const banco = kyselyDe(db);
+    const acoes = ['jogador_periodo_corrigido', 'jogador_inicio_alterado'];
+    const eventosGravados = await banco
+      .selectFrom('auditoria')
+      .select(['acao', 'resumo'])
+      .where('grupo_id', '=', g)
+      .where('acao', 'in', acoes)
+      .execute();
+    expect(eventosGravados.map((e) => e.acao).sort()).toEqual([...acoes].sort());
+    const respostas = await Promise.all(
+      ['ranking', 'pdf'].map((rota) => cliente().get(`/api/publico/${slug}/${rota}`)),
+    );
+    for (const r of respostas) {
+      expect(r.status).toBe(200);
+      const texto = JSON.stringify(r.corpo);
+      for (const proibido of [...acoes, 'acumuladoAntes', 'acumuladoDepois', 'posicaoAntes', 'posicaoDepois']) {
+        expect(texto).not.toContain(proibido);
+      }
+      for (const e of eventosGravados) {
+        for (const [chave, valor] of Object.entries(e.resumo as Record<string, unknown>)) {
+          if (typeof valor === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(valor)) continue;
+          expect(texto).not.toContain(`"${chave}"`);
+        }
+      }
+    }
+  });
+
   it('sem sessão 401 e sem X-Pelada 403', async () => {
     const db = await abrir();
     const { cen, g, id, retorno } = await cenario(db);
