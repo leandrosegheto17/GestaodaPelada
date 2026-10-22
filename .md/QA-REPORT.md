@@ -1181,3 +1181,123 @@ APROVADA; 0 críticos, 0 não críticos; migrações 74/74, checagens 595/595, c
 
 ## RTP-0181 — QA — 2026-10-21
 APROVADA; 0 críticos, 0 não críticos; checar-compatibilidade 0, comparar.test 25/25, prettier limpo, texto das 4 linhas de pesos confere com a migração 202610200000.
+
+## RTP-0186 — QA — 2026-10-21
+APROVADA, 0 críticos e 0 não críticos; T01 em 13 comparações visuais com no máximo 0,06% de divergência, testes tabela-ranking/pdf 45 verdes, texto igual ao mockup/UX-SPEC.
+
+## TP-0210 — QA — 2026-10-21
+APROVADA — 9/9 testes passando, aceite cumprido, diff conforme CONVENCOES; 0 achados críticos, 0 não críticos.
+
+## TP-0211 — QA — 2026-10-21
+APROVADA; 0 críticos, 0 não críticos; 8/8 testes de periodos-corrigiveis passando e diff conforme as CONVENCOES.
+
+## TP-0213 — QA — 2026-10-21
+APROVADA; 16 testes verdes (previa-periodos + previa-inicio), 0 críticos/0 não críticos; acumulado igual antes/depois é coerente com RN-31/PR-22; 1 título de teste corrigido na via rápida.
+
+## TP-0214 — QA — 2026-10-21
+APROVADA; 0 críticos, 1 não crítico (RTP-0187: ramo JaAtivo sem teste, inalcançável pelo banco); 132 testes verdes e migração aditiva OK.
+
+## TP-0215 — QA — 2026-10-21
+APROVADA; 0 críticos, 0 não críticos; 74 testes verdes, checar-compatibilidade verde, QUEBRAS.md intocado, id de período por idResposta aceito.
+
+## RTP-0187 — QA — 2026-10-21
+APROVADA; 0 críticos, 1 não crítico (RTP-0189: `as unknown as` no stub do Kysely reprova o eslint, linha 94); vitest 7/7, tsc limpo, ramo periodos_um_aberto -> JaAtivo coberto.
+
+## TP-0212 — QA — 2026-10-21
+APROVADA; 0 críticos, 0 não críticos; 43 testes do escopo e 19 de datas passando, (a)-(h), ordem, alterado e entrada intacta cobertos, convenções sem desvio.
+
+## TP-0218 — QA — 2026-10-21
+APROVADA, 0 críticos / 0 não críticos; 78 testes (rota + isolamento) passando, tsc/eslint/checar-compatibilidade limpos, `descreverPeriodos` é o nome real da função do domínio.
+
+## TP-0227 — QA — 2026-10-21
+APROVADA; 0 achados; vitest 203/203, tsc/eslint limpos, comparação visual T16 (edicao, sem-habilidades, periodos, inativo; pc e celular) todas ≤ 0.57% com PNGs conferidos e mesma altura.
+
+## TP-0228 — QA — 2026-10-21
+APROVADA; 0 críticos, 2 não críticos (RTP-0188: acumulado novo sem formatarPontos; pontosEscritos sem teste próprio); 123 testes, tsc e eslint limpos, textos conferidos com UX-SPEC T16 e mockup.
+
+## TP-0231 — QA — 2026-10-21
+APROVADA; 0 críticos, 0 não críticos; 84 testes verdes, tsc/eslint limpos, chave `campos.dataSaida` confirmada no backend, visual automático T16 OK e estados de erro do diálogo conferidos por texto/teste.
+
+## RTP-0188 — QA — 2026-10-21
+APROVADA; 0 achados críticos, 0 não críticos; vitest 111/111, tsc e eslint limpos, U+2212 nos dois números do acumulado.
+
+## RTP-0189 — QA — 2026-10-21
+APROVADA — stub tipado com Kysely real (dialeto Postgres igual ao de produção), vitest 7/7, eslint 0, tsc limpo; 0 achados.
+
+## TP-0216 — QA — 2026-10-21
+APROVADA - 20/20 testes, tsc/eslint ok, textos T16 conferidos literalmente; 0 achados; prettier do teste corrigido na via rápida.
+
+## TP-0229 — QA — 2026-10-21
+DEVOLVIDA — 1 crítico (corrigir-erro-rede diverge do mockup: 14,7% pc / 13,1% celular, faixa colada ao campo e dentro da região live), 1 não crítico junto (região aria-live troca de elemento); demais estados corrigir*/corrigido dentro de 0,1% nos dois tamanhos; vitest 244 ok, tsc/eslint ok.
+
+## TP-0217 — QA — 2026-10-21
+APROVADA — 0 críticos, 0 não críticos; vitest elenco+pontuacao 84/84, tsc/eslint/prettier limpos, <=4 consultas e recusa igual db/tx comprovadas.
+
+## TP-0229 — QA — 2026-10-21
+APROVADA (rodada 2) — 0 críticos, 2 não críticos (RTP-0190 cor do "Tentar de novo" na faixa; RTP-0191 roteiro automático dos estados manuais do comparar-visual); corrigir-erro-rede 0,42% pc / 0,39% celular (era 14,7%/13,1%), demais corrigir* 0,05–0,10%, mesma altura, PNG abertos; região aria-live fixa; vitest 157 ok, tsc/eslint ok.
+
+## RTP-0190 — QA — 2026-10-22
+APROVADA; 0 críticos/0 não críticos; vitest 153 verdes e CV T16 erro-rede (3 estados, pc e celular) <= 0,07% com "Tentar de novo" vinho conferido no PNG.
+
+## RTP-0191 — QA — 2026-10-22
+APROVADA; 0 críticos, 1 não crítico (RTP-0195: script 390 linhas, padrão repetido de limite de tamanho); visual --tela T16 = 44 comparações OK, 18 estados manuais agora medidos (<=0,34%, limite 1%).
+
+## TP-0219 — QA — 2026-10-22
+APROVADA; 0 críticos, 0 não críticos; 89 testes verdes (rota, inicio, avaliação com histórico, isolamento), prévia sem escrita e 404/422 conforme aceite.
+
+## TP-0221 — QA — 2026-10-22
+APROVADA; 0 críticos, 1 não crítico (RTP-0192: teste de auditoria fora das rotas públicas/PDF); 85 testes do escopo passando (caso de uso, rota, isolamento).
+
+## TP-0230 — QA — 2026-10-22
+APROVADA; 0 críticos, 1 não crítico (RTP-0194: roteiro visual do estado reativado/corrigido); 212 testes ok (1 flaky de carga passa isolado), visual reativar* 0,00–0,09% pc/celular, PNG abertos.
+
+## RTP-0192 — QA — 2026-10-22
+APROVADA; 0 críticos, 0 não críticos; teste prova ausência das auditorias nas rotas públicas e no PDF (9/9 passando, pré-condição no banco).
+
+## RTP-0193 — QA — 2026-10-22
+APROVADA — 0 críticos/0 não críticos; 24 arquivos/181 testes verdes, texto de sobreposição em um só lugar (grep 1 ocorrência).
+
+## RTP-0194 — QA — 2026-10-22
+RTP-0194 APROVADA; T16 reativado/corrigido OK em pc (0,07%/0,04%) e celular (0,44%/0,41%), mesma altura, PNGs conferidos; 0 achados.
+
+## RTP-0195 — QA — 2026-10-22
+APROVADA; 0 críticos, 0 não críticos; comparar-visual.mjs 244 + captura 200 linhas, node --check OK, visual T16 48 OK (0,00–0,44%, alturas iguais) e T09 8 OK, comportamento idêntico.
+
+## TP-0223 — QA — 2026-10-22
+APROVADA; 0 críticos, 1 não crítico (RTP-0196: falta teste de rota da regra g); 99 testes verdes (situacao-e-exclusao, repositório, isolamento), grep de temPresencaDesde vazio.
+
+## TP-0224 — QA — 2026-10-22
+APROVADA; 0 críticos, 0 não críticos; 43 testes passando nos 4 arquivos do escopo, caso do PRD (recusa com limite, corrigir saída libera, saída antes do início = limite início) coberto.
+
+## TP-0225 — QA — 2026-10-22
+APROVADA; 0 críticos, 1 não crítico (RTP-0197: presença fora de período conta no acumulado mas a grade mostra "–", decide o Coordenador); 7 testes passando, aceite "sem mudar ponto" preservado.
+
+## RTP-0196 — QA — 2026-10-22
+APROVADA; 0 críticos, 0 não críticos; vitest do arquivo 16/16 e o caso novo afirma 422 com a mensagem exata da regra (g) via rota, período inalterado.
+
+## RTP-0198 — QA — 2026-10-22
+APROVADA — 0 críticos, 1 não crítico (RTP-0200: presença não usa jogadores.travar); 97 testes, tsc, checagem de escrita, eslint e prettier verdes.
+
+## TP-0226 — QA — 2026-10-22
+APROVADA; 0 críticos, 1 não crítico (RTP-0199: teste de ordem de editarInicio); lint, checagens e 6 testes g26 verdes, teste negativo da checagem confirmado.
+
+## RTP-0199 — QA — 2026-10-22
+APROVADA — bloco PUT inicio prova travar<gravar<auditar no mesmo tx e rollback na falha de auditoria; test/g26 9/9 verde; 0 achados.
+
+## RTP-0200 — QA — 2026-10-22
+APROVADA; 0 críticos, 0 não críticos; travas em ordem de id antes de gravar no mesmo tx comprovadas (274 testes verdes); excluir.test.ts falha por 5 partidas vazadas no banco de teste (ambiente, pedir limpeza).
+
+## TP-0220 — QA — 2026-10-22
+APROVADA — 0 críticos/0 não críticos; prévia de reativar cumpre o aceite e o BK-0016 (ja_ativo na avaliação comum); vitest 107/107 (rota, avaliação, isolamento) e tsc limpo.
+
+## RTP-0201 — QA — 2026-10-22
+APROVADA na rodada 2, 0 críticos/0 não críticos; diff de GUARDRAILS.md só com o texto da G-26 (marcador PROPOSTA mantido) e a linha nova do Log de 2026-10-22 pendente do gestor, Log de 2026-10-21 intacto, lista igual a ROTAS_QUE_ESCREVEM, script saída 0.
+
+## RTP-0202 — QA — 2026-10-22
+APROVADA; 0 críticos, 0 não críticos; test/g26 10/10 verde, bloco editar prova ordem/antes da gravação/mesmo tx e falha se travarMarcados for removido ou reordenado (prova por leitura; mutação real não executada).
+
+## RTP-0203 — QA — 2026-10-22
+APROVADA — 10 testes verdes, prettier/tsc OK, asserções de ordem/tx/rollback preservadas, prepararGrupo único; 0 críticos, 0 não críticos.
+
+## RTP-0204 — QA — 2026-10-22
+APROVADA; 0 críticos/0 não críticos; resíduo removido, `*.tmp.*` ignorado sem regra perdida, nenhum rastreado casa, ler.test.ts 7/7 verde.

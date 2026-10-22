@@ -1205,3 +1205,120 @@ APROVADA; 0 críticos, 0 não críticos; migração atômica e falha fechada, se
 
 ## RTP-0181 — DevSecOps — 2026-10-21
 APROVADA; 0 críticos, 0 não críticos; diff só de documento, gitleaks sem vazamentos, grep de segredos vazio, texto de pesos confere com a migração 202610200000.
+
+## RTP-0186 — DevSecOps — 2026-10-21
+APROVADA em segurança, 0 críticos e 0 não críticos; diff só de texto estático (sem HTML interpolado, dependência ou segredo), gitleaks limpo e eslint 0.
+
+## TP-0210 — DevSecOps — 2026-10-21
+APROVADA — diff puro e sem I/O/relógio/dado pessoal, fronteiras respeitadas, dependências intocadas; 0 achados.
+
+## TP-0211 — DevSecOps — 2026-10-21
+APROVADA; 0 críticos, 0 não críticos; função pura sem I/O/imports fora de datas e atividade, sem dado pessoal, sem mudança de dependências; 8/8 testes executados.
+
+## TP-0213 — DevSecOps — 2026-10-21
+APROVADA; revisão do diff + grep de fronteiras/G-25 e 36 testes de ranking verdes, 0 achados, sem mudança de dependências.
+
+## TP-0214 — DevSecOps — 2026-10-21
+APROVADA em segurança; 0 críticos, 0 novos não críticos (RTP-0187 do QA segue aberta); UPDATE filtra id+jogador+grupo, SQL parametrizado, migração aditiva OK e 14 testes verdes.
+
+## TP-0215 — DevSecOps — 2026-10-21
+APROVADA; 0 críticos, 0 não críticos; esquemas strict com data de calendário, sem dado sensível nem dependência alterada, 22 testes verdes.
+
+## TP-0212 — DevSecOps — 2026-10-21
+APROVADA; 0 críticos, 0 não críticos; matriz adversarial de datas (null, não texto, 0000-00-00, 2026-13-01, 02-30, hora, espaços, ano 99999, \n) executada: sem lançar exceção, sempre recusa (h); sem relógio/I-O/dependência nova.
+
+## TP-0218 — DevSecOps — 2026-10-21
+APROVADA, 0 críticos / 0 não críticos; diff lido (vínculo via middleware, grupoId do vinculo, query parametrizada por grupo, resposta mínima, no-store) e 78 testes de rota+isolamento executados passando.
+
+## TP-0227 — DevSecOps — 2026-10-21
+APROVADA; 0 achados; diff lido (sem innerHTML, ids com encodeURIComponent, resposta validada por esquema, erro genérico, autorização só na API), sem mudança de dependência.
+
+## TP-0228 — DevSecOps — 2026-10-21
+APROVADA; 0 críticos, 0 não críticos novos (RTP-0188 do QA segue); texto da API renderizado só como texto React (grep sem dangerouslySetInnerHTML/storage/fetch/log), sem lógica de autorização nem dado pessoal, sem mudança de dependência.
+
+## TP-0231 — DevSecOps — 2026-10-21
+APROVADA; 0 críticos, 0 não críticos; mensagem da API renderizada só como texto, erro de rede sem detalhe interno, sem autorização no cliente, sem mudança de dependência; grep de HTML inseguro limpo e 84 testes verdes.
+
+## RTP-0188 — DevSecOps — 2026-10-21
+OK; 0 achados críticos, 0 não críticos; revisão de leitura do diff: texto React, sem dado pessoal nem dependência nova.
+
+## RTP-0189 — DevSecOps — 2026-10-21
+APROVADA — diff só de teste (Kysely com Driver falso, sem rede), sem produção/segredo/dependência; 0 achados (revisão de leitura).
+
+## TP-0216 — DevSecOps — 2026-10-21
+APROVADA - revisão do diff sem achados (mensagens só com datas do domínio, formatação validada por regex ancorada, throws só em recusa malformada); 0 críticos, 0 não críticos.
+
+## TP-0217 — DevSecOps — 2026-10-21
+APROVADA — 0 críticos, 0 não críticos; revisão do diff: isolamento por grupo, SQL parametrizado, sem escrita e mensagens sem vazamento; grep sem escrita/hono e sem mudança de dependências.
+
+## TP-0229 — DevSecOps — 2026-10-21
+APROVADA — 0 críticos, 0 não críticos; sem XSS (texto React), ids com encodeURIComponent, corpo validado pelo contrato, erros sem vazamento, nada em storage/log (grep executado), sem mudança de dependência; autorização só no backend.
+
+## RTP-0190 — DevSecOps — 2026-10-22
+APROVADA; 0 críticos/0 não críticos; só CSS e atributo estático data-variante, sem mudança de superfície; revisão do diff + vitest do Botao (10 verdes).
+
+## RTP-0191 — DevSecOps — 2026-10-22
+APROVADA; 0 achados (ferramenta local, passos vêm de telas.json versionado, sem segredo/URL externa/dado real; node --check e grep de segredos executados limpos).
+
+## TP-0219 — DevSecOps — 2026-10-22
+APROVADA; 0 achados; diff somente leitura, 404 uniforme com período amarrado a jogador+grupo, CSRF herdado, 89 testes verdes executados.
+
+## TP-0221 — DevSecOps — 2026-10-22
+APROVADA; 0 críticos, 0 novos não críticos (RTP-0192 já aberta pela QA); diff lido e 85 testes do escopo executados passando; escopo por vínculo, UPDATE filtrado e auditoria sem PII confirmados.
+
+## TP-0222 — DevSecOps — 2026-10-22
+APROVADA em segurança; 0 críticos, 0 não críticos novos; escopo por grupo, travar+transação, corpo estrito e resumo de auditoria sem PII conferidos; 7 testes OK.
+
+## TP-0230 — DevSecOps — 2026-10-22
+APROVADA; 0 críticos, 0 não críticos; diff lido sem injeção de HTML, sem dado em log/URL/storage, validação final na API, ids codificados, 17 testes do reativar passando; sem dependência nova.
+
+## RTP-0192 — DevSecOps — 2026-10-22
+APROVADA; 0 críticos, 0 não críticos; teste anônimo de ranking/pdf sem as auditorias, pré-condição no banco, 9/9 passando, sem segredo/PII.
+
+## RTP-0193 — DevSecOps — 2026-10-22
+APROVADA — 0 críticos/0 não críticos; texto de erro idêntico e fixo, sem mudança de autorização; 24 arquivos/181 testes verdes.
+
+## RTP-0194 — DevSecOps — 2026-10-22
+RTP-0194 APROVADA em segurança (revisão do diff + 2 greps executados); respostas só fictícias, script local sem URL externa/segredo/exec novo; 0 achados.
+
+## RTP-0195 — DevSecOps — 2026-10-22
+APROVADA; 0 achados; código só movido (diff linha a linha conferido), imports locais/node: apenas, sem URL externa, segredo, exec novo ou ampliação de superfície.
+
+## TP-0223 — DevSecOps — 2026-10-22
+APROVADA; 0 críticos, 1 não crítico (RTP-0198: inativar sem transação/trava, corrida baixa só no mesmo grupo); escopo por grupo e mensagens sem vazamento; 99 testes verdes.
+
+## TP-0224 — DevSecOps — 2026-10-22
+APROVADA; 0 críticos, 0 não críticos; mensagem só com a data do próprio jogador, sem mudança de autorização ou SQL; 43 testes passando nos 4 arquivos do escopo.
+
+## TP-0225 — DevSecOps — 2026-10-22
+APROVADA em segurança; 0 críticos, 0 não críticos; só test/, sem PII/segredo, fábrica limpa no afterEach, sem import de teste em src, 7 testes passando.
+
+## RTP-0196 — DevSecOps — 2026-10-22
+APROVADA em segurança; 0 críticos, 0 não críticos; diff só de teste com dados sintéticos, sem src/ alterado, vitest do arquivo 16/16.
+
+## RTP-0198 — DevSecOps — 2026-10-22
+APROVADA (revisão do diff + 97 testes do escopo) — 0 críticos, 0 não críticos novos; escopo por grupo e trava/avaliação/gravação no mesmo tx confirmados; presença sem trava segue na RTP-0200.
+
+## TP-0226 — DevSecOps — 2026-10-22
+APROVADA (DevSecOps); 0 críticos, 0 não críticos; ci.yml só ganhou 1 passo sem segredo/ação nova, script só lê arquivos locais, checagem (298 arquivos), 220 testes e eslint verdes.
+
+## RTP-0199 — DevSecOps — 2026-10-22
+APROVADA — só teste em ordem.test.ts, nada em src/, dados sintéticos sem segredo/PII, teste falha se ordem/tx/rollback quebrarem; test/g26 9/9 verde; 0 achados.
+
+## RTP-0200 — DevSecOps — 2026-10-22
+APROVADA; 0 críticos, 0 não críticos; trava escopada por grupo (id alheio ignorado, validação rejeita como antes), ordem crescente sem deadlock e nº de travas limitado pelo corpo; ordem.test.ts 8 verdes, concorrência só por leitura.
+
+## TP-0220 — DevSecOps — 2026-10-22
+APROVADA — 0 achados; rota de prévia sem escrita, 404 uniforme por vínculo, corpo strict 422 por campo, 409 sem dados, auth/CSRF herdados; vitest 83/83 (rota + isolamento).
+
+## RTP-0201 — DevSecOps — 2026-10-22
+APROVADA em segurança, 0 achados; nenhuma regra enfraquecida, G-26 segue PROPOSTA, Log sem aprovação inventada, lista igual a ROTAS_QUE_ESCREVEM, sem segredo, script saída 0.
+
+## RTP-0202 — DevSecOps — 2026-10-22
+APROVADA em segurança; 0 críticos, 0 não críticos; só teste alterado (src intacto), dados sintéticos, mocks restaurados, cenário pela fábrica; test/g26 10/10 verde.
+
+## RTP-0203 — DevSecOps — 2026-10-22
+APROVADA — só teste, nada em src/, dados sintéticos sem segredo/PII, ordem/mesmo tx/rollback e restauração de mocks preservados, test/g26 10/10 verde; 0 críticos, 0 não críticos.
+
+## RTP-0204 — DevSecOps — 2026-10-22
+APROVADA; 0 críticos/0 não críticos; resíduo sem segredo/PII (só código de teste e UUID de fixture), `*.tmp.*` não esconde arquivo rastreado nem configuração, sem rotação nem limpeza de histórico.

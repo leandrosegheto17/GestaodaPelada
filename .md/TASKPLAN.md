@@ -5,9 +5,9 @@ que troca o estado da linha a cada etapa. O Status oficial continua no `TASK.md`
 arquivo do bloqueio); o detalhe de cada tarefa está em `.md/.taskplan/<ID>.md`. A ordem respeita as
 dependências. Agente: `executor` (TP/RTP) ou `coordenador` (BK/SPK, com o usuário).
 
-Atualizado: 2026-10-22 13:27
+Atualizado: 2026-10-22 13:34
 
-Resumo: Não executada 3 · Em execução 1 · Aprovada 446 · Bloqueada 1 · Despriorizada 5 · total 456
+Resumo: Não executada 1 · Em execução 1 · Aprovada 448 · Bloqueada 1 · Despriorizada 5 · total 456
 
 Estados: Não executada → Em execução → Executada (aguarda teste) → Em teste → Testada (aguarda segurança) → Em validação de segurança → Aprovada (e, à parte, Bloqueada, Dividida e Despriorizada — esta fica sempre no fim da lista e é ignorada por /executar, /testar e /validar). `Aprovada` = QA ✔ e Sec ✔ (tarefas antigas só `Concluída` aparecem como Aprovada).
 
@@ -456,8 +456,8 @@ Estados: Não executada → Em execução → Executada (aguarda teste) → Em t
 | 441 | RTP-0200 | executor | ✔ | Lançamento de presença trava os jogadores (serializa com inativar/reativar/correção) | Refatoração Lote-L50 | RTP-0198 | Aprovada |
 | 442 | RTP-0201 | executor | ✔ | G-26 desatualizada: lista só periodos-corrigir e reativar, mas inativar, inicio-editar... | Refatoração Revisão 2026-10-22 | — | Aprovada |
 | 443 | RTP-0202 | executor | ✔ | Editar partida trava jogadores sem teste de ordem (Baixa) | Refatoração Revisão 2026-10-22 | — | Aprovada |
-| 444 | RTP-0203 | executor | ✔ | Consolidar o preparo repetido e as checagens de ordem em g26/ordem.test.ts | Refatoração Revisão 2026-10-22 (2) | — | Não executada |
-| 445 | RTP-0204 | executor | ✔ | Remover resíduo ler.test.ts.tmp.* e ignorar *.tmp.* no .gitignore | Refatoração Revisão 2026-10-22 (2) | — | Não executada |
+| 444 | RTP-0203 | executor | ✔ | Consolidar o preparo repetido e as checagens de ordem em g26/ordem.test.ts | Refatoração Revisão 2026-10-22 (2) | — | Aprovada |
+| 445 | RTP-0204 | executor | ✔ | Remover resíduo ler.test.ts.tmp.* e ignorar *.tmp.* no .gitignore | Refatoração Revisão 2026-10-22 (2) | — | Aprovada |
 | 446 | BK-0009 | coordenador | ✔ | Ajustar SDD/ADR-010/URL_PUBLICA/CORS/deploy.yml ao domínio prod-ljs.workers.dev e aos acei | — | — | Aprovada |
 | 447 | BK-0012 | coordenador | ✔ | Quando e onde registrar a contração do CHECK de posicao (tirar defensor/meio_campo de joga | — | — | Aprovada |
 | 448 | BK-0013 | coordenador | ✔ | ADR-008 §3 decide gerar e chamar navigator.share no mesmo gesto; o app agora sempre mostra | — | — | Aprovada |
