@@ -37,7 +37,7 @@ describe('previaDosPeriodos', () => {
     expect(r.posicaoDepois).toBe(r.posicaoAntes);
   });
 
-  it('presença já lançada na data passa a constar com a situação certa e soma os pontos', () => {
+  it('presença já lançada na data passa a constar com a situação certa e o acumulado não muda', () => {
     const presencas = [
       presenca('v', '2026-10-12', 'presente'),
       presenca('v', '2026-10-15', 'lesionado'),
