@@ -153,7 +153,7 @@ const placar = (r: ReturnType<typeof calcularRanking>, semFinalDe?: string) =>
   }));
 
 describe('migração da data de início da pontuação', () => {
-  it('preenche a data de início e deixa o ranking de todos igual ao de antes', async () => {
+  it('preenche a data de início e deixa o ranking igual ao de antes, exceto quem saiu e voltou', async () => {
     const { cliente, url } = await bancoAntesDaMigracao();
     const db = criarDb({ connectionString: url }, { waitUntil: () => undefined });
     try {
@@ -179,7 +179,22 @@ describe('migração da data de início da pontuação', () => {
       const historico = await carregarHistoricoGrupo(db, grupo, HOJE);
       const depois = MESES.map((mes) => calcularRanking({ hoje: HOJE, mes, ...historico }));
       const vandreId = historico.jogadores.find((j) => j.apelido === 'Vandre')?.id;
-      expect(depois.map((r) => placar(r, vandreId))).toEqual(esperado.map((r) => placar(r, vandreId)));
+      // Quem saiu e voltou ("Saiu", retorno em 01/10) recomeça a contagem no retorno: só ele muda de pontos e de
+      // posição; os demais ficam como antes, na mesma ordem.
+      const saiuId = historico.jogadores.find((j) => j.apelido === 'Saiu')?.id;
+      const semSaiu = (r: ReturnType<typeof calcularRanking>) =>
+        placar(r, vandreId)
+          .filter((l) => l.id !== saiuId)
+          .map(({ posicao: _posicao, ...resto }) => resto);
+      expect(depois.map(semSaiu)).toEqual(esperado.map(semSaiu));
+      const saiu = (r: ReturnType<typeof calcularRanking> | undefined) => r?.linhas.find((l) => l.jogadorId === saiuId);
+      for (const i of [0, 1]) {
+        expect([saiu(depois[i])?.ptsInicial, saiu(depois[i])?.ptsFinal]).toEqual([
+          saiu(esperado[i])?.ptsInicial,
+          saiu(esperado[i])?.ptsFinal,
+        ]);
+      }
+      expect([saiu(depois[2])?.ptsInicial, saiu(depois[2])?.ptsFinal]).toEqual([0, 1]);
 
       // Só o jogador movido muda: o PTS FINAL de antes ignorava as presenças anteriores ao período (e por isso
       // não fechava com o PTS INICIAL do mês seguinte); agora fecha, e o acumulado de hoje é o mesmo de antes.
