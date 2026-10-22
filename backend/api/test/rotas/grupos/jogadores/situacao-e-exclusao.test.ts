@@ -1,11 +1,13 @@
 import { erroJogadorComHistorico, jogadorDetalhe } from '@pelada/contrato';
+import { PESOS_PADRAO } from '@pelada/dominio';
 import { randomUUID } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 import { ativosNaData } from '../../../../src/aplicacao/elenco/ativos.js';
-import { emTransacao } from '../../../../src/infraestrutura/db/index.js';
+import { emTransacao, type Db } from '../../../../src/infraestrutura/db/index.js';
 import { kyselyDe } from '../../../../src/infraestrutura/db/cliente.js';
 import * as financeiro from '../../../../src/infraestrutura/db/repositorios/financeiro.js';
 import * as jogadoresRepo from '../../../../src/infraestrutura/db/repositorios/jogadores.js';
+import * as pesos from '../../../../src/infraestrutura/db/repositorios/pesos.js';
 import * as habilidades from '../../../../src/infraestrutura/db/repositorios/habilidades.js';
 import * as partidas from '../../../../src/infraestrutura/db/repositorios/partidas.js';
 import { montarCenario } from '../../../apoio/cenario-acesso.js';
@@ -24,10 +26,22 @@ const SAIDA_ANTIGA = diaRelativo(-25);
 const PRESENCA = diaRelativo(-2);
 const cliente = (cookie: string) => clienteTeste({ relogio: relogioFixo(HOJE), cookie });
 
+/** Todo grupo real nasce com pesos; reativar calcula a prévia do ranking e exige ao menos uma configuração. */
+async function montar(db: Db) {
+  const cen = await montarCenario(db, fabrica);
+  await pesos.criarPadrao(db, cen.grupoA.id, {
+    pesos: PESOS_PADRAO,
+    vigenteDesde: diaRelativo(-400),
+    registradoPor: cen.adminA.id,
+    agora: AGORA,
+  });
+  return cen;
+}
+
 describe('inativar e reativar (workerd)', () => {
   it('inativa na data pedida (padrão hoje), recusa futura e anterior à entrada, e já inativo dá 409', async () => {
     const db = await abrir();
-    const cen = await montarCenario(db, fabrica);
+    const cen = await montar(db);
     const g = cen.grupoA.id;
     const id = await criarJogador(db, g, cen.adminA.id, { dataEntrada: ENTRADA });
     const url = `/api/grupos/${g}/jogadores/${id}/inativar`;
@@ -43,7 +57,7 @@ describe('inativar e reativar (workerd)', () => {
 
   it('reativa a partir de hoje, mantém o período anterior, recusa já ativo e permite reativar no mesmo dia', async () => {
     const db = await abrir();
-    const cen = await montarCenario(db, fabrica);
+    const cen = await montar(db);
     const g = cen.grupoA.id;
     const id = await criarJogador(db, g, cen.adminA.id, { dataEntrada: ENTRADA });
     const ativo = await cliente(cen.adminA.cookie).post(`/api/grupos/${g}/jogadores/${id}/reativar`);
@@ -67,7 +81,7 @@ describe('inativar e reativar (workerd)', () => {
 
   it('reativar: corpo com campo vira 422, {} é aceito e dois pedidos simultâneos dão um 200 e um 409', async () => {
     const db = await abrir();
-    const cen = await montarCenario(db, fabrica);
+    const cen = await montar(db);
     const g = cen.grupoA.id;
     const id = await criarJogador(db, g, cen.adminA.id, { dataEntrada: ENTRADA });
     const url = `/api/grupos/${g}/jogadores/${id}/reativar`;
@@ -89,7 +103,7 @@ describe('inativar e reativar (workerd)', () => {
 
   it('inativar: presença na data de saída ou depois dela dá 422 e o período segue aberto; saída depois da presença passa', async () => {
     const db = await abrir();
-    const cen = await montarCenario(db, fabrica);
+    const cen = await montar(db);
     const g = cen.grupoA.id;
     const id = await criarJogador(db, g, cen.adminA.id, { dataEntrada: ENTRADA });
     await emTransacao(db, (tx) =>
@@ -110,7 +124,7 @@ describe('inativar e reativar (workerd)', () => {
 
   it('inativar: saída igual à entrada e ontem passam; o fim gravado aparece em buscar e o jogador sai de ativosNaData', async () => {
     const db = await abrir();
-    const cen = await montarCenario(db, fabrica);
+    const cen = await montar(db);
     const g = cen.grupoA.id;
     const naEntrada = await criarJogador(db, g, cen.adminA.id, { dataEntrada: ENTRADA });
     const r = await cliente(cen.adminA.cookie).post(`/api/grupos/${g}/jogadores/${naEntrada}/inativar`, {
@@ -134,7 +148,7 @@ describe('inativar e reativar (workerd)', () => {
 
   it('inativar: data inexistente, vazia, malformada e campo extra dão 422 e o período segue aberto', async () => {
     const db = await abrir();
-    const cen = await montarCenario(db, fabrica);
+    const cen = await montar(db);
     const g = cen.grupoA.id;
     const id = await criarJogador(db, g, cen.adminA.id, { dataEntrada: ENTRADA });
     const url = `/api/grupos/${g}/jogadores/${id}/inativar`;
@@ -153,7 +167,7 @@ describe('inativar e reativar (workerd)', () => {
 
   it('inativar jogador reativado: saída antes do 2º período dá 422 e depois dele fecha só o período aberto', async () => {
     const db = await abrir();
-    const cen = await montarCenario(db, fabrica);
+    const cen = await montar(db);
     const g = cen.grupoA.id;
     const id = await criarJogador(db, g, cen.adminA.id, { dataEntrada: ENTRADA });
     const url = `/api/grupos/${g}/jogadores/${id}/inativar`;
@@ -175,7 +189,7 @@ describe('inativar e reativar (workerd)', () => {
 
   it('inativar: no-store, sem sessão 401 e sem X-Pelada 403', async () => {
     const db = await abrir();
-    const cen = await montarCenario(db, fabrica);
+    const cen = await montar(db);
     const g = cen.grupoA.id;
     const id = await criarJogador(db, g, cen.adminA.id, { dataEntrada: ENTRADA });
     const url = `/api/grupos/${g}/jogadores/${id}/inativar`;
@@ -189,7 +203,7 @@ describe('inativar e reativar (workerd)', () => {
 
   it('reativar mantém a presença do período antigo e ativosNaData inclui hoje e exclui hoje − 1', async () => {
     const db = await abrir();
-    const cen = await montarCenario(db, fabrica);
+    const cen = await montar(db);
     const g = cen.grupoA.id;
     const id = await criarJogador(db, g, cen.adminA.id, { dataEntrada: ENTRADA });
     await emTransacao(db, (tx) =>
@@ -216,7 +230,7 @@ describe('inativar e reativar (workerd)', () => {
 
   it('jogador de outro grupo, inexistente e malformado: 404', async () => {
     const db = await abrir();
-    const cen = await montarCenario(db, fabrica);
+    const cen = await montar(db);
     const id = await criarJogador(db, cen.grupoA.id, cen.adminA.id);
     for (const acao of ['inativar', 'reativar']) {
       expect(
@@ -236,7 +250,7 @@ describe('inativar e reativar (workerd)', () => {
 describe('DELETE /api/grupos/:g/jogadores/:id (workerd)', () => {
   it('sem histórico: 204 e auditoria só com o apelido', async () => {
     const db = await abrir();
-    const cen = await montarCenario(db, fabrica);
+    const cen = await montar(db);
     const g = cen.grupoA.id;
     const id = await criarJogador(db, g, cen.adminA.id, { apelido: 'Apagar' });
     const r = await cliente(cen.adminA.cookie).delete(`/api/grupos/${g}/jogadores/${id}`);
@@ -252,7 +266,7 @@ describe('DELETE /api/grupos/:g/jogadores/:id (workerd)', () => {
 
   it('com presença ou com nota: 409 jogador_com_historico e nada some', async () => {
     const db = await abrir();
-    const cen = await montarCenario(db, fabrica);
+    const cen = await montar(db);
     const g = cen.grupoA.id;
     const comPresenca = await criarJogador(db, g, cen.adminA.id, { apelido: 'ComPresenca' });
     const comNota = await criarJogador(db, g, cen.adminA.id, { apelido: 'ComNota' });
@@ -284,7 +298,7 @@ describe('DELETE /api/grupos/:g/jogadores/:id (workerd)', () => {
 
   it('só com pagamento de mensalidade: 409 jogador_com_historico e nada some', async () => {
     const db = await abrir();
-    const cen = await montarCenario(db, fabrica);
+    const cen = await montar(db);
     const g = cen.grupoA.id;
     const id = await criarJogador(db, g, cen.adminA.id, { apelido: 'ComPagamento' });
     await emTransacao(db, (tx) =>
@@ -304,7 +318,7 @@ describe('DELETE /api/grupos/:g/jogadores/:id (workerd)', () => {
 
   it('outro grupo e malformado: 404', async () => {
     const db = await abrir();
-    const cen = await montarCenario(db, fabrica);
+    const cen = await montar(db);
     const id = await criarJogador(db, cen.grupoA.id, cen.adminA.id);
     expect((await cliente(cen.adminB.cookie).delete(`/api/grupos/${cen.grupoB.id}/jogadores/${id}`)).status).toBe(404);
     expect((await cliente(cen.adminA.cookie).delete(`/api/grupos/${cen.grupoA.id}/jogadores/abc`)).status).toBe(404);
@@ -313,7 +327,7 @@ describe('DELETE /api/grupos/:g/jogadores/:id (workerd)', () => {
 
   it('segunda exclusão 404, no-store, sem sessão 401 e sem X-Pelada 403', async () => {
     const db = await abrir();
-    const cen = await montarCenario(db, fabrica);
+    const cen = await montar(db);
     const g = cen.grupoA.id;
     const id = await criarJogador(db, g, cen.adminA.id);
     const url = `/api/grupos/${g}/jogadores/${id}`;

@@ -143,3 +143,12 @@
 - Impacto se não resolvido: TP-0220 e dependentes (reativar/previa) paradas
 - Sugestão: Autorizar o acréscimo de ja_ativo na avaliação comum (4 linhas, com teste) e reexecutar a TP-0220
 - Status: Em aberto
+
+## Bloqueio 017 — 2026-10-21 (BK-0017)
+- Reportado por: Executor
+- Escalado para: usuário
+- Artefato/trecho afetado: TP-0222
+- Descrição: Banco pelada_teste com conta órfã 'Dono' (id 59dcf429-813e-46c0-8f06-f47c074d0bb7, e-mail leandrosegheto17@gmail.com), deixada por um 'pnpm test' que rodou a suíte inteira; todo montarCenario falha com contas_email_unico. O DELETE foi negado pelo classificador de permissão. Código e testes da TP-0222 estão escritos mas NÃO rodados (backend/api: reativar.ts, situacao.ts, casos.ts, reativar-retroativo.test.ts, sem commit)
+- Impacto se não resolvido: Todas as tarefas com teste de rota/banco ficam sem como serem verificadas até a linha ser removida
+- Sugestão: Usuário apaga a linha órfã do banco de teste (ou autoriza o DELETE), depois /executar --tarefa TP-0222 para rodar os testes e fechar
+- Status: Em aberto
