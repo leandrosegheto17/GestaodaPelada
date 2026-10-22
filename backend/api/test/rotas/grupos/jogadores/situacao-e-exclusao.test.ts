@@ -126,7 +126,7 @@ describe('inativar e reativar (workerd)', () => {
         .status,
     ).toBe(200);
     const gravado = await jogadoresRepo.buscar(db, g, ontem);
-    expect(gravado?.periodos).toEqual([{ inicio: ENTRADA, fim: vespera }]);
+    expect(gravado?.periodos).toMatchObject([{ inicio: ENTRADA, fim: vespera }]);
     expect((await ativosNaData(db, g, diaRelativo(-2))).map((j) => j.id)).toContain(ontem);
     expect((await ativosNaData(db, g, vespera)).map((j) => j.id)).not.toContain(ontem);
     expect((await ativosNaData(db, g, HOJE)).map((j) => j.id)).not.toContain(ontem);
@@ -148,7 +148,7 @@ describe('inativar e reativar (workerd)', () => {
     for (const corpo of invalidos) {
       expect((await cliente(cen.adminA.cookie).post(url, corpo)).status).toBe(422);
     }
-    expect((await jogadoresRepo.buscar(db, g, id))?.periodos).toEqual([{ inicio: ENTRADA, fim: null }]);
+    expect((await jogadoresRepo.buscar(db, g, id))?.periodos).toMatchObject([{ inicio: ENTRADA, fim: null }]);
   });
 
   it('inativar jogador reativado: saída antes do 2º período dá 422 e depois dele fecha só o período aberto', async () => {
@@ -162,12 +162,12 @@ describe('inativar e reativar (workerd)', () => {
     const antes = await cliente(cen.adminA.cookie).post(url, { dataSaida: diaRelativo(-1) });
     expect(antes.status).toBe(422);
     expect(antes.corpo).toMatchObject({ erro: { campos: { dataSaida: expect.any(String) } } });
-    expect((await jogadoresRepo.buscar(db, g, id))?.periodos).toEqual([
+    expect((await jogadoresRepo.buscar(db, g, id))?.periodos).toMatchObject([
       { inicio: ENTRADA, fim: SAIDA_ANTIGA },
       { inicio: HOJE, fim: null },
     ]);
     expect((await cliente(cen.adminA.cookie).post(url, { dataSaida: HOJE })).status).toBe(200);
-    expect((await jogadoresRepo.buscar(db, g, id))?.periodos).toEqual([
+    expect((await jogadoresRepo.buscar(db, g, id))?.periodos).toMatchObject([
       { inicio: ENTRADA, fim: SAIDA_ANTIGA },
       { inicio: HOJE, fim: HOJE },
     ]);

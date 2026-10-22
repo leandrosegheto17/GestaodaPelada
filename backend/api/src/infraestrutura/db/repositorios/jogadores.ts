@@ -24,6 +24,7 @@ export class JogadorComHistorico extends Error {
 }
 
 export interface PeriodoDoJogador {
+  id: string;
   inicio: string;
   fim: string | null;
 }
@@ -71,7 +72,7 @@ async function consultar(ex: ExecutorDb, grupoId: string, jogadorId: string | nu
   const resultado = await sql<LinhaJogador>`
     SELECT j.id, j.apelido, j.ano_nascimento, j.posicao, j.telefone, j.pontuacao_inicial,
            j.inicio_pontuacao::text AS inicio_pontuacao,
-           coalesce(json_agg(json_build_object('inicio', p.inicio::text, 'fim', p.fim::text) ORDER BY p.inicio)
+           coalesce(json_agg(json_build_object('id', p.id::text, 'inicio', p.inicio::text, 'fim', p.fim::text) ORDER BY p.inicio)
                     FILTER (WHERE p.id IS NOT NULL), '[]'::json) AS periodos
     FROM jogadores j
     LEFT JOIN periodos_ativos p ON p.jogador_id = j.id AND p.grupo_id = j.grupo_id

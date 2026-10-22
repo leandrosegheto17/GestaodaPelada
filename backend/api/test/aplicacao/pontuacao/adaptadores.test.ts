@@ -16,7 +16,7 @@ describe('adaptadores do histórico', () => {
       telefone: '11987654321',
       pontuacaoInicial: 40,
       inicioPontuacao: null,
-      periodos: [{ inicio: '2026-02-05', fim: null }],
+      periodos: [{ id: 'p1', inicio: '2026-02-05', fim: null }],
     });
     expect(r).toEqual({
       id: 'j1',
@@ -47,8 +47,8 @@ describe('adaptadores do histórico', () => {
   it('data de início gravada vale sobre o início do primeiro período', () => {
     const base = { id: 'j', apelido: 'x', anoNascimento: 1990, posicao: null, telefone: null, pontuacaoInicial: 0 };
     const periodos = [
-      { inicio: '2026-10-20', fim: null },
-      { inicio: '2026-12-01', fim: null },
+      { id: 'p1', inicio: '2026-10-20', fim: null },
+      { id: 'p2', inicio: '2026-12-01', fim: null },
     ];
     expect(paraJogadorDominio({ ...base, inicioPontuacao: '2026-09-20', periodos }).inicioPontuacao).toBe('2026-09-20');
     expect(paraJogadorDominio({ ...base, inicioPontuacao: null, periodos }).inicioPontuacao).toBe('2026-10-20');

@@ -86,8 +86,8 @@ describe('repositório de jogadores', () => {
       inicioPontuacao: ENTRADA,
     });
     expect(j?.periodos).toEqual([
-      { inicio: ENTRADA, fim: d(-200) },
-      { inicio: d(-150), fim: null },
+      { id: expect.any(String), inicio: ENTRADA, fim: d(-200) },
+      { id: expect.any(String), inicio: d(-150), fim: null },
     ]);
     expect(await editar(base.outroGrupo.id)).toBe(false);
   });
@@ -114,7 +114,11 @@ describe('repositório de jogadores', () => {
     });
     // Avançar não mexe nos períodos.
     expect(await alterar(base.grupo.id, d(-210))).toBe(true);
-    expect((await jogadores.buscar(db, base.grupo.id, id))?.periodos[0]).toEqual({ inicio: d(-260), fim: d(-200) });
+    expect((await jogadores.buscar(db, base.grupo.id, id))?.periodos[0]).toEqual({
+      id: expect.any(String),
+      inicio: d(-260),
+      fim: d(-200),
+    });
     expect(await alterar(base.outroGrupo.id, d(-300))).toBe(false);
     expect((await jogadores.buscar(db, base.grupo.id, id))?.inicioPontuacao).toBe(d(-210));
   });
@@ -126,7 +130,9 @@ describe('repositório de jogadores', () => {
     expect(await jogadores.inativar(db, base.outroGrupo.id, id, d(-100))).toBe('sem_periodo_aberto');
     expect(await emTransacao(db, (tx) => jogadores.excluir(tx, base.outroGrupo.id, id))).toBe(false);
     expect(await jogadores.temHistorico(db, base.outroGrupo.id, id)).toBe(false);
-    expect((await jogadores.buscar(db, base.grupo.id, id))?.periodos).toEqual([{ inicio: d(-300), fim: null }]);
+    expect((await jogadores.buscar(db, base.grupo.id, id))?.periodos).toEqual([
+      { id: expect.any(String), inicio: d(-300), fim: null },
+    ]);
     // @ts-expect-error criar exige Tx
     void jogadores.criar(db, base.grupo.id, { ...dados('SemTx'), autor: base.contaId }).catch(() => undefined);
   });

@@ -83,7 +83,7 @@ const eventos = async (db: Db, g: string) =>
 
 const estado = async (db: Db, g: string, id: string) => {
   const j = await jogadores.buscar(db, g, id);
-  return { inicio: j?.inicioPontuacao, periodos: j?.periodos };
+  return { inicio: j?.inicioPontuacao, periodos: j?.periodos.map(({ inicio, fim }) => ({ inicio, fim })) };
 };
 
 describe('previaInicio', () => {
