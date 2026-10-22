@@ -185,7 +185,7 @@ describe('migração da data de início da pontuação', () => {
       const semSaiu = (r: ReturnType<typeof calcularRanking>) =>
         placar(r, vandreId)
           .filter((l) => l.id !== saiuId)
-          .map(({ posicao: _posicao, ...resto }) => resto);
+          .map((l) => ({ id: l.id, ini: l.ini, fim: l.fim }));
       expect(depois.map(semSaiu)).toEqual(esperado.map(semSaiu));
       const saiu = (r: ReturnType<typeof calcularRanking> | undefined) => r?.linhas.find((l) => l.jogadorId === saiuId);
       for (const i of [0, 1]) {
