@@ -7,6 +7,7 @@ export * from './pontuacao/acumulado-inicio.js';
 export * from './atividade/atividade.js';
 export * from './atividade/situacao-rodada.js';
 export * from './atividade/validar-periodos.js';
+export * from './atividade/cobertura-periodos.js';
 export * from './ranking/ordem.js';
 export * from './ranking/navegacao.js';
 export * from './ranking/ranking.js';
