@@ -1,5 +1,7 @@
 import { PESOS_PADRAO } from '@pelada/dominio';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import * as avaliacao from '../../src/aplicacao/elenco/avaliacao-periodos.js';
+import { inativarJogador } from '../../src/aplicacao/elenco/inativar.js';
 import { corrigirPeriodoDoJogador } from '../../src/aplicacao/elenco/periodos-corrigir.js';
 import { reativarJogador } from '../../src/aplicacao/elenco/reativar.js';
 import type { Db } from '../../src/infraestrutura/db/index.js';
@@ -87,6 +89,36 @@ describe('PUT periodos (corrigir)', () => {
     ).rejects.toThrow('auditoria fora');
 
     expect((await jogadores.buscar(db, g, id))?.periodos[0]?.fim).toBe(d(-45));
+  });
+});
+
+describe('POST inativar', () => {
+  it('trava o jogador, avalia e grava na mesma transação, nessa ordem', async () => {
+    const db = await abrir();
+    const cen = await montarCenario(db, fabrica);
+    const g = cen.grupoA.id;
+    await pesos.criarPadrao(db, g, {
+      pesos: PESOS_PADRAO,
+      vigenteDesde: d(-400),
+      registradoPor: cen.adminA.id,
+      agora: AGORA_TESTE,
+    });
+    const id = await criarJogador(db, g, cen.adminA.id, { dataEntrada: d(-60) });
+    const travar = vi.spyOn(jogadores, 'travar');
+    const avaliar = vi.spyOn(avaliacao, 'avaliarPedidoDePeriodos');
+    const gravar = vi.spyOn(jogadores, 'inativar');
+
+    const r = await inativarJogador(db, g, id, d(-10), HOJE_TESTE);
+
+    expect(r.tipo).toBe('ok');
+    const [t, a, w] = ordem(travar, avaliar, gravar);
+    expect(t).toBeLessThan(a!);
+    expect(a).toBeLessThan(w!);
+    const tx = travar.mock.calls[0]![0];
+    expect(tx).not.toBe(db);
+    expect(avaliar.mock.calls[0]![0]).toBe(tx);
+    expect(gravar.mock.calls[0]![0]).toBe(tx);
+    expect((await jogadores.buscar(db, g, id))?.periodos[0]?.fim).toBe(d(-10));
   });
 });
 
