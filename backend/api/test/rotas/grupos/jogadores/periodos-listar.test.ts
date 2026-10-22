@@ -33,7 +33,13 @@ describe('GET /api/grupos/:g/jogadores/:id/periodos (workerd)', () => {
     expect(periodosResposta.safeParse(r.corpo).success).toBe(true);
     expect(r.corpo).toEqual({
       periodos: [
-        { id: p1!.id, tipo: 'entrada', inicio: '2026-02-05', fim: '2026-10-05', corrigivel: { saida: true, retorno: false } },
+        {
+          id: p1!.id,
+          tipo: 'entrada',
+          inicio: '2026-02-05',
+          fim: '2026-10-05',
+          corrigivel: { saida: true, retorno: false },
+        },
         { id: p2!.id, tipo: 'retorno', inicio: '2026-10-20', fim: null, corrigivel: { saida: false, retorno: true } },
       ],
     });
@@ -52,7 +58,13 @@ describe('GET /api/grupos/:g/jogadores/:id/periodos (workerd)', () => {
     const rt = await cliente(cen.adminA.cookie).get(url(g, toninho));
     expect(rt.corpo).toEqual({
       periodos: [
-        { id: pt!.id, tipo: 'entrada', inicio: '2026-02-05', fim: '2026-10-22', corrigivel: { saida: true, retorno: false } },
+        {
+          id: pt!.id,
+          tipo: 'entrada',
+          inicio: '2026-02-05',
+          fim: '2026-10-22',
+          corrigivel: { saida: true, retorno: false },
+        },
       ],
     });
     const ra = await cliente(cen.adminA.cookie).get(url(g, aberto));

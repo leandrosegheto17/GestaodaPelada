@@ -78,7 +78,10 @@ export const CASOS: Record<string, Caso> = {
   'GET /api/grupos/:grupoId/jogadores': { tipo: 'grupo' },
   'GET /api/grupos/:grupoId/jogadores/:id': { tipo: 'grupo' },
   'GET /api/grupos/:grupoId/jogadores/:id/periodos': { tipo: 'grupo' },
-  'POST /api/grupos/:grupoId/jogadores/:id/periodos/:periodoId/previa': { tipo: 'grupo', corpo: { saida: '2020-01-01' } },
+  'POST /api/grupos/:grupoId/jogadores/:id/periodos/:periodoId/previa': {
+    tipo: 'grupo',
+    corpo: { saida: '2020-01-01' },
+  },
   'POST /api/grupos/:grupoId/jogadores/:id/reativar/previa': { tipo: 'grupo', corpo: { dataRetorno: '2020-01-01' } },
   'PUT /api/grupos/:grupoId/jogadores/:id/periodos/:periodoId': { tipo: 'grupo', corpo: { saida: '2020-01-01' } },
   'POST /api/grupos/:grupoId/jogadores': {
