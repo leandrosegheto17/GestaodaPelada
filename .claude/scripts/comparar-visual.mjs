@@ -61,6 +61,11 @@
 // eles (a página carrega normalmente).
 // Respostas da tela têm prioridade sobre as globais. "pendente": true nunca responde
 // (mantém a tela em "carregando"). Caminhos são relativos à pasta do telas.json.
+// "sequencia": [ { "arquivo": "...", "status": 200 }, ... ] no lugar de "arquivo" responde a cada
+// chamada da URL com o item seguinte (o último se repete): serve para a leitura que muda depois
+// de uma gravação (ex.: ficha inativa que, depois de reativar, volta ativa).
+// "recorte" aceita lista de seletores em cada lado (ex.: ["a", "b"]): os elementos são capturados
+// um a um e empilhados na ordem dada, para comparar trechos separados da página.
 //
 // Código de saída: 0 = tudo dentro do limite; 1 = alguma comparação acima do limite
 // ou com erro; 2 = uso incorreto / dependência ausente.
@@ -139,13 +144,15 @@ async function registrarRespostas(pagina, respostas, pastaConfig) {
   // As da tela vêm primeiro na lista: no Playwright, a última rota registrada tem
   // prioridade, então registramos em ordem inversa.
   for (const r of [...respostas].reverse()) {
+    let chamadas = 0;
     await pagina.route(r.url, async (rota) => {
       if (r.pendente) return; // nunca responde: mantém o estado "carregando"
       if (r.abortar) return rota.abort("connectionrefused"); // simula a falta de conexão
-      const corpo = r.arquivo ? readFileSync(join(pastaConfig, r.arquivo), "utf8") : "";
+      const item = r.sequencia ? r.sequencia[Math.min(chamadas++, r.sequencia.length - 1)] : r;
+      const corpo = item.arquivo ? readFileSync(join(pastaConfig, item.arquivo), "utf8") : "";
       await rota.fulfill({
-        status: r.status ?? 200,
-        contentType: r.contentType ?? (r.status && r.status >= 400 ? "application/problem+json" : "application/json"),
+        status: item.status ?? 200,
+        contentType: item.contentType ?? (item.status && item.status >= 400 ? "application/problem+json" : "application/json"),
         body: corpo,
       });
     });
@@ -169,6 +176,55 @@ async function executarPassos(pagina, passos) {
   }
 }
 
+// Folha: captura só o elemento; a página de fundo (real no app, vazia no mockup) fica de fora.
+async function capturarElemento(pagina, seletor) {
+  const alvo = pagina.locator(seletor).first();
+  await alvo.waitFor({ state: "visible", timeout: 15000 });
+  // O conteúdo acima do elemento difere entre mockup e app e deixa o topo dele em frações de pixel
+  // diferentes; o texto é rasterizado conforme essa fração. Alinha o topo a um pixel inteiro nos dois lados.
+  await alvo.evaluate((el) => {
+    document.documentElement.style.paddingTop = "";
+    const topo = el.getBoundingClientRect().top + window.scrollY;
+    const folga = Math.ceil(topo - 0.001) - topo;
+    if (folga > 0.001) document.documentElement.style.paddingTop = `${folga}px`;
+  });
+  return alvo.screenshot();
+}
+
+// Junta os prints de vários elementos numa imagem só, um embaixo do outro.
+async function empilhar(navegador, pngs) {
+  const pagina = await navegador.newPage();
+  const base64 = await pagina.evaluate(async (fontes) => {
+    const imagens = await Promise.all(
+      fontes.map(
+        (src) =>
+          new Promise((ok, erro) => {
+            const img = new Image();
+            img.onload = () => ok(img);
+            img.onerror = erro;
+            img.src = src;
+          }),
+      ),
+    );
+    const largura = Math.max(...imagens.map((i) => i.width));
+    const altura = imagens.reduce((soma, i) => soma + i.height, 0);
+    const c = new OffscreenCanvas(largura, altura);
+    const ctx = c.getContext("2d");
+    let y = 0;
+    for (const img of imagens) {
+      ctx.drawImage(img, 0, y);
+      y += img.height;
+    }
+    const buffer = await (await c.convertToBlob({ type: "image/png" })).arrayBuffer();
+    let binario = "";
+    const bytes = new Uint8Array(buffer);
+    for (let i = 0; i < bytes.length; i += 0x8000) binario += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+    return btoa(binario);
+  }, pngs.map((p) => `data:image/png;base64,${p.toString("base64")}`));
+  await pagina.close();
+  return Buffer.from(base64, "base64");
+}
+
 async function capturar(navegador, viewport, url, opcoes) {
   const contexto = await navegador.newContext({
     viewport, deviceScaleFactor: 1, reducedMotion: "reduce",
@@ -190,17 +246,10 @@ async function capturar(navegador, viewport, url, opcoes) {
   });
   let png;
   if (opcoes.recorte) {
-    // Folha: captura só o elemento; a página de fundo (real no app, vazia no mockup) fica de fora.
-    const alvo = pagina.locator(opcoes.recorte).first();
-    await alvo.waitFor({ state: "visible", timeout: 15000 });
-    // O conteúdo acima do elemento difere entre mockup e app e deixa o topo dele em frações de pixel
-    // diferentes; o texto é rasterizado conforme essa fração. Alinha o topo a um pixel inteiro nos dois lados.
-    await alvo.evaluate((el) => {
-      const topo = el.getBoundingClientRect().top + window.scrollY;
-      const folga = Math.ceil(topo - 0.001) - topo;
-      if (folga > 0.001) document.documentElement.style.paddingTop = `${folga}px`;
-    });
-    png = await alvo.screenshot();
+    const seletores = [].concat(opcoes.recorte);
+    const pngs = [];
+    for (const seletor of seletores) pngs.push(await capturarElemento(pagina, seletor));
+    png = pngs.length === 1 ? pngs[0] : await empilhar(navegador, pngs);
   } else {
     png = await pagina.screenshot({ fullPage: true });
   }
