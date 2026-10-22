@@ -1,17 +1,7 @@
-import { ativosEm } from '../atividade/atividade.js';
 import { compararDatas, type Data } from '../datas/datas.js';
-import { acumuladoPorInicio } from '../pontuacao/acumulado-inicio.js';
-import { criarResolvedorDePesos } from '../pontuacao/pesos.js';
 import type { ConfigPesos } from '../pontuacao/tipos.js';
-import { ordenarPorRanking } from './ordem.js';
-import {
-  acumuladosDosAtivos,
-  agruparPresencasPorJogador,
-  type JogadorDoRanking,
-  type PartidaDoRanking,
-  type PresencaDoRanking,
-} from './ranking.js';
-import { rodadasDoJogador } from './rodadas.js';
+import { compararCenarios } from './cenario-jogador.js';
+import type { JogadorDoRanking, PartidaDoRanking, PresencaDoRanking } from './ranking.js';
 
 export interface EntradaPreviaInicio {
   hoje: Data;
@@ -42,8 +32,6 @@ export function previaDoInicio(entrada: EntradaPreviaInicio): PreviaInicio {
   const { hoje, jogadorId, novoInicio } = entrada;
   const alvo = entrada.jogadores.find((j) => j.id === jogadorId);
   if (!alvo) throw new Error('Jogador desconhecido.');
-  const resolver = criarResolvedorDePesos(entrada.configsPesos);
-  const presencasPorJogador = agruparPresencasPorJogador(entrada.partidas, entrada.presencas);
 
   const depois: JogadorDoRanking = {
     ...alvo,
@@ -52,35 +40,14 @@ export function previaDoInicio(entrada: EntradaPreviaInicio): PreviaInicio {
       i === 0 && compararDatas(novoInicio, p.inicio) < 0 ? { ...p, inicio: novoInicio } : p,
     ),
   };
-  const situacoes = new Map((presencasPorJogador.get(jogadorId) ?? []).map((p) => [p.partidaId, p.situacao]));
-  const rodadas = (j: JogadorDoRanking) =>
-    rodadasDoJogador(j.periodos, entrada.partidas, situacoes, resolver, j.inicioPontuacao);
-  const antesDasRodadas = rodadas(alvo);
-  const rodadasQuePassamAConstar = rodadas(depois).filter(
-    (r, i) => r.situacao !== 'fora' && antesDasRodadas[i]?.situacao === 'fora',
-  ).length;
-
-  const cenario = (jogador: JogadorDoRanking) => {
-    const outros = entrada.jogadores.filter((j) => j.id !== jogadorId);
-    const ativos = ativosEm([...outros, jogador], hoje);
-    const acumulados = acumuladosDosAtivos(ativos, presencasPorJogador, resolver, hoje);
-    const posicao = ordenarPorRanking(ativos, acumulados).find((c) => c.jogador.id === jogadorId)?.posicao ?? null;
-    const acumulado = acumuladoPorInicio({
-      inicio: jogador.inicioPontuacao,
-      pontuacaoInicial: jogador.pontuacaoInicial,
-      presencas: presencasPorJogador.get(jogadorId) ?? [],
-      configs: resolver,
-      referencia: hoje,
-    });
-    return { acumulado, posicao };
-  };
-  const antes = cenario(alvo);
-  const apos = cenario(depois);
+  const c = compararCenarios({ ...entrada, hoje, alvoAntes: alvo, alvoDepois: depois });
   return {
-    acumuladoAntes: antes.acumulado,
-    acumuladoDepois: apos.acumulado,
-    posicaoAntes: antes.posicao,
-    posicaoDepois: apos.posicao,
-    rodadasQuePassamAConstar,
+    acumuladoAntes: c.acumuladoAntes,
+    acumuladoDepois: c.acumuladoDepois,
+    posicaoAntes: c.posicaoAntes,
+    posicaoDepois: c.posicaoDepois,
+    rodadasQuePassamAConstar: c.rodadasDepois.filter(
+      (r, i) => r.situacao !== 'fora' && c.rodadasAntes[i]?.situacao === 'fora',
+    ).length,
   };
 }
