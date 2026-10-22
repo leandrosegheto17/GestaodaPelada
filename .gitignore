@@ -28,3 +28,6 @@ Pontuacoes.md
 correcoes.json
 .md/.seguranca/*/*.json
 .md/.seguranca/*/dast-*/
+
+# Temporarios de gravacao interrompida (prettier, vitest)
+*.tmp.*
