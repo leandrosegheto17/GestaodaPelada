@@ -215,4 +215,14 @@ describe('avaliarPedidoDePeriodos', () => {
     );
     expect(antes).toMatchObject({ tipo: 'recusa', campo: 'dataRetorno' });
   });
+
+  it('reativar com período aberto é ja_ativo; sem período aberto segue a avaliação normal', async () => {
+    const db = await abrir();
+    const { base, jogador } = await cenario(db);
+    const pedido: PedidoDePeriodos = { operacao: 'reativar', dataRetorno: d(-10) };
+    expect(await avaliarPedidoDePeriodos(db, base.grupo.id, jogador, pedido, { hoje })).toEqual({ tipo: 'ja_ativo' });
+    await jogadores.inativar(db, base.grupo.id, jogador, d(-5));
+    const depois: PedidoDePeriodos = { operacao: 'reativar', dataRetorno: d(-5) };
+    expect((await avaliarPedidoDePeriodos(db, base.grupo.id, jogador, depois, { hoje })).tipo).toBe('ok');
+  });
 });

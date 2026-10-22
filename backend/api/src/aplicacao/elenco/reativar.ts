@@ -36,7 +36,7 @@ export async function reativarJogador(
       if (jogador.periodos.some((p) => p.fim === null)) return { tipo: 'ja_ativo' };
 
       const r = await avaliarPedidoDePeriodos(tx, grupoId, jogadorId, { operacao: 'reativar', dataRetorno }, { hoje });
-      if (r.tipo === 'nao_encontrado') return { tipo: 'nao_encontrado' };
+      if (r.tipo === 'nao_encontrado' || r.tipo === 'ja_ativo') return { tipo: r.tipo };
       if (r.tipo === 'recusa') return { tipo: 'invalida', campo: r.campo, mensagem: r.mensagem };
 
       try {

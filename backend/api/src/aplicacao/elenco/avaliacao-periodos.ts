@@ -23,6 +23,9 @@ export type ResultadoAvaliacaoDePeriodos =
   | { tipo: 'nada_a_alterar'; previa: PreviaDePeriodos }
   | { tipo: 'ok'; periodos: Array<{ id?: string; inicio: string; fim: string | null }>; previa: PreviaDePeriodos };
 
+/** Só o pedido de reativar pode dar `ja_ativo` (já há período aberto). */
+export type ResultadoAvaliacaoDeReativar = ResultadoAvaliacaoDePeriodos | { tipo: 'ja_ativo' };
+
 const AVISO_SINGULAR = 'Ela vale 0 ponto até você lançar a presença em Editar partida.';
 const AVISO_PLURAL = 'Elas valem 0 ponto até você lançar a presença em Editar partida.';
 
@@ -56,13 +59,27 @@ function avisoDe(previa: PreviaPeriodos): string | null {
  * com saída): a prévia e a gravação chamam esta função e recebem a mesma recusa. Só lê, no executor recebido
  * (`db` ou `tx`), com as quatro consultas do histórico do grupo; quem grava a chama dentro da transação.
  */
+export function avaliarPedidoDePeriodos(
+  ex: ExecutorDb,
+  grupoId: string,
+  jogadorId: string,
+  pedido: Extract<PedidoDePeriodos, { operacao: 'reativar' }>,
+  contexto: { hoje: string },
+): Promise<ResultadoAvaliacaoDeReativar>;
+export function avaliarPedidoDePeriodos(
+  ex: ExecutorDb,
+  grupoId: string,
+  jogadorId: string,
+  pedido: PedidoDePeriodos,
+  contexto: { hoje: string },
+): Promise<ResultadoAvaliacaoDePeriodos>;
 export async function avaliarPedidoDePeriodos(
   ex: ExecutorDb,
   grupoId: string,
   jogadorId: string,
   pedido: PedidoDePeriodos,
   contexto: { hoje: string },
-): Promise<ResultadoAvaliacaoDePeriodos> {
+): Promise<ResultadoAvaliacaoDeReativar> {
   const { hoje } = contexto;
   const carregado = await carregarContextoInicio(ex, grupoId, jogadorId, hoje);
   if (!carregado) return { tipo: 'nao_encontrado' };
@@ -71,6 +88,7 @@ export async function avaliarPedidoDePeriodos(
   if (pedido.operacao === 'corrigir' && !periodos.some((p) => p.id === pedido.periodoId)) {
     return { tipo: 'nao_encontrado' };
   }
+  if (pedido.operacao === 'reativar' && periodos.some((p) => p.fim === null)) return { tipo: 'ja_ativo' };
 
   const partidasPorId = new Map(historico.partidas.map((p) => [p.id, p.data]));
   const datasComPresenca = historico.presencas
