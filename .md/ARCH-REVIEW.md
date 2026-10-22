@@ -1,5 +1,28 @@
 # Revisão de arquitetura
 
+## Revisão 2026-10-22 — pré-deploy, depois do lote de períodos do jogador (L49 a L51, RTP-0197 a 0200)
+
+Números do saude.py: 0 arquivos acima do limite · 4 blocos duplicados (34 linhas, os mesmos já descartados) · 3 IDs de tarefa (todos em `evidencia/s-01`) · 2 pastas com acesso a dados (`backend/api/src`, `evidencia/s-01`) · 0 imports indevidos entre aplicações · 0 conversões forçadas · 8 comentários de cópia (falsos positivos). Comparação visual: 153 de 153 OK, 0 DIVERGE; `tokens.css` do app idêntico ao do mockup.
+
+**Não há achado de severidade Alta aberto. Nada impede o `/deploy`** (pelo que esta revisão cobre). Fora do escopo, por estarem em decisão em outra sessão: BK-0018/BK-0019, RTP-0197 (regra do PTS FINAL × INICIAL com presença fora de período) e as alterações não commitadas em `backend/dominio` e `test/apoio/regressao-periodos`.
+
+| # | Achado | Item do checklist | Severidade | Onde | Destino |
+|---|---|---|---|---|---|
+| 1 | A G-26 diz que a correção de período e o retorno retroativo acontecem só em `periodos-corrigir` e `reativar`, com `jogadores.travar` antes; hoje também travam `inativar`, `inicio-editar` e lançar/editar partida (ordem de id), e a lista de rotas do teste e da varredura é maior que a do texto | 17, 11 | Baixa | `.md/GUARDRAILS.md` (G-26); `backend/scripts/checagens/checar-escrita-periodo.mjs:12-17` | RTP-0201 |
+| 2 | Editar partida trava os marcados (`travarMarcados`), mas só lançar tem teste de ordem; remover a trava de `editar.ts` não derruba nenhum teste | 17 | Baixa | `backend/api/src/aplicacao/partidas/editar.ts`; `backend/api/test/g26/ordem.test.ts` | RTP-0202 |
+
+Descartados:
+- Rotas de prévia × gravação de períodos (`periodos-previa.ts`, `periodos-corrigir.ts`): ambas só leem parâmetros e corpo (mesmo schema) e delegam, uma a `avaliarPedidoDePeriodos` e outra a `corrigirPeriodoDoJogador`, que chama a mesma avaliação dentro da transação; o trecho comum é montagem do pedido (5 linhas), não regra. Sem bloco no `saude.py`.
+- Mensagens de períodos: `mensagens-periodos.ts` é o único lugar dos textos das regras a–h; `avaliarPedidoDePeriodos` usa `mensagemDaRecusa` e `inicio-editar` usa `mensagemInicioDepoisDaSaida`; `formatarDataBr` não tem cópia no backend. Os dois avisos de `avaliacao-periodos.ts` são o único ponto do texto "vale 0 ponto".
+- `comparar-visual.mjs` × `comparar-visual-captura.mjs`: a extração dividiu por responsabilidade (orquestração e servidores × captura e diferença de pixels); nenhuma função repetida, só `capturar` e `diferenca` exportadas.
+- IDs de tarefa no código: só os 3 de `evidencia/s-01` (já descartados); nenhum no código de períodos nem em `.claude/scripts` fora do próprio `taskplan.py`.
+- Acesso a dados: a varredura de `.query(`/`selectFrom` fora de `infraestrutura/db` só acha `c.req.query` (parâmetro de URL); escrita em `periodos_ativos` só em `repositorios/jogadores.ts` e `periodos-corrigir.ts`, como a G-26 e `checar-escrita-periodo.mjs` exigem; `evidencia/s-01` é o mesmo descarte anterior.
+- Regra de negócio na tela de jogador: `frontend/web` não importa `@pelada/dominio`; `DialogoCorrigirDatas` valida com o schema do contrato e as frases de ajuda ("não pode ser depois do próximo retorno") são texto de apoio com dados da lista, a recusa real vem da API; `DialogoInicio` só formata a prévia.
+- Blocos duplicados `AreaDono`/`GrupoDono`, `ranking`/`prioridade`, `PaginaGrupo`/`PaginaPontuacao`, `pesos.ts`/`tipos.ts` e os 8 comentários de cópia: os mesmos já descartados em 19, 20 e 21/10.
+- `excluir.test.ts` falhando por linhas vazadas em `pelada_teste`: ambiente, já registrado pelo QA da RTP-0200; não é achado de arquitetura.
+
+Sem achado nos itens: 1 a 10, 12 a 16 e 18. Itens 11, 13 e 14 por amostragem do relatório.
+
 ## Revisão 2026-10-21 — pré-deploy, depois da TP-0209
 
 Números do saude.py: 1 arquivo acima do limite (`PaginaJogador.tsx`, 213 de 200) · 4 blocos duplicados (34 linhas, os mesmos já descartados) · 3 IDs de tarefa (todos em `evidencia/s-01`) · 2 pastas com acesso a dados (`backend/api/src`, `evidencia/s-01`) · 0 imports indevidos entre aplicações · 0 conversões forçadas · 8 comentários de cópia (falsos positivos). Comparação visual: 117 de 117 OK, 0 DIVERGE; `tokens.css` do app idêntico ao do mockup. Mudança desde a revisão anterior: TP-0209 (data de início da pontuação, blocos A a F): `acumuladoPorInicio` no domínio, migração 202610201000, `inicio_pontuacao` no repositório de jogadores, rotas `inicio/previa` e `inicio`, `verificar-inicio`, rodadas "–" no ranking e no PDF, T16 com `DataDeInicio` e `DialogoInicio`; RTP-0182 aberta pelo QA.
