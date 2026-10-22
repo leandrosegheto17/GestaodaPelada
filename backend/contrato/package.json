@@ -8,7 +8,7 @@
   "scripts": {
     "test": "vitest run --passWithNoTests",
     "typecheck": "tsc --noEmit -p .",
-    "snapshot": "tsx ferramentas/snapshot.ts",
+    "snapshot": "tsx ferramentas/snapshot.ts && pnpm -w exec prettier --write backend/contrato/snapshot",
     "checar-compatibilidade": "tsx ferramentas/checar-compatibilidade.ts"
   },
   "dependencies": {
