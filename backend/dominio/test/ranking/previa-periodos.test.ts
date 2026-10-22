@@ -37,15 +37,15 @@ describe('previaDosPeriodos', () => {
     expect(r.posicaoDepois).toBe(r.posicaoAntes);
   });
 
-  it('presença já lançada na data passa a constar com a situação certa e o acumulado não muda', () => {
+  it('presença já lançada na data já constava na grade: nada passa a constar e o acumulado não muda', () => {
     const presencas = [
       presenca('v', '2026-10-12', 'presente'),
       presenca('v', '2026-10-15', 'lesionado'),
       presenca('v', '2026-10-19', 'expulso'),
     ];
     const r = previa([{ inicio: '2026-10-12', fim: null }], presencas);
-    expect(r.rodadasQuePassamAConstar.map((x) => x.situacao)).toEqual(['presente', 'lesionado', 'expulso']);
-    // O acumulado vem de `acumuladoPorInicio`: já contava as presenças lançadas, mesmo fora dos períodos.
+    expect(r.rodadasQuePassamAConstar).toEqual([]);
+    // Acumulado e grade já contavam as presenças lançadas, mesmo fora dos períodos.
     expect(r.acumuladoAntes).toBe(5 + 1 + 1 - 1);
     expect(r.acumuladoDepois).toBe(r.acumuladoAntes);
   });

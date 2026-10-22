@@ -1,5 +1,5 @@
 import { periodoPreviaResposta } from '@pelada/contrato';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { usarDbDoWorker } from '../../../apoio/db-worker.js';
 import { usarFabrica } from '../../../apoio/fabrica.js';
 import { diaRelativo as d } from '../../../apoio/relogio.js';
@@ -25,7 +25,6 @@ async function corrigir(
   opcoes: OpcoesRegressao,
   alvoDoPeriodo: 'entrada' | 'retorno',
   corpo: { saida: string } | { retorno: string },
-  foraDoPeriodo: { antes?: string[]; depois?: string[] } = {},
 ) {
   const r: Regressao = await montarRegressao(await abrir(), fabrica, opcoes);
   const base = `/api/grupos/${r.g}/jogadores/${r.alvo}/periodos`;
@@ -41,10 +40,13 @@ async function corrigir(
   expect(depois.periodos.map((p) => p.id)).toEqual(antes.periodos.map((p) => p.id));
   conferirConsumidores(antes);
   conferirConsumidores(depois);
-  conferirCoerencia(antes, foraDoPeriodo.antes);
-  conferirCoerencia(depois, foraDoPeriodo.depois);
+  conferirCoerencia(antes);
+  conferirCoerencia(depois);
   return { r, antes, depois, previa, periodo };
 }
+
+// Cada teste monta um grupo com meses de rodadas pela rota; no Windows passa de 5 s.
+vi.setConfig({ testTimeout: 30_000 });
 
 describe('correção de período chega a todos os consumidores (workerd)', () => {
   it('retorno antecipado de d(-20) para d(-28) sem presença nas rodadas ganhas: só a grade muda', async () => {
@@ -79,23 +81,15 @@ describe('correção de período chega a todos os consumidores (workerd)', () =>
     }
   });
 
-  it('presença antiga gravada numa rodada ganha: acumulado e posição já a contavam, a grade passa a mostrá-la', async () => {
-    const { antes, depois, previa } = await corrigir(
-      { presencaNaGanha: true },
-      'retorno',
-      { retorno: d(-28) },
-      { antes: ['Alvo'] },
-    );
-    expect(placar(depois, ['Alvo'])).toEqual(placar(antes, ['Alvo']));
+  it('presença antiga gravada numa rodada ganha: acumulado, posição e grade já a contavam', async () => {
+    const { antes, depois, previa } = await corrigir({ presencaNaGanha: true }, 'retorno', { retorno: d(-28) });
+    expect(placar(depois)).toEqual(placar(antes));
     conferirOutrosIguais(antes, depois);
-    expect(porData(antes, 'Alvo')[d(-26)]).toEqual({ situacao: 'fora', pontos: null });
+    expect(porData(antes, 'Alvo')[d(-26)]?.situacao).toBe('presente');
     expect(porData(depois, 'Alvo')[d(-26)]?.situacao).toBe('presente');
     expect(previa.acumuladoDepois).toBe(previa.acumuladoAntes);
     expect(previa.acumuladoDepois).toBe(acumulado(depois, 'Alvo').ptsFinal);
-    expect(previa.rodadasQuePassamAConstar).toEqual([
-      { data: d(-26), situacao: 'presente' },
-      { data: d(-24), situacao: 'falta' },
-    ]);
+    expect(previa.rodadasQuePassamAConstar).toEqual([{ data: d(-24), situacao: 'falta' }]);
   });
 
   it('lançar a presença do alvo numa rodada ganha muda só os pontos dele', async () => {
@@ -147,16 +141,8 @@ describe('correção de período chega a todos os consumidores (workerd)', () =>
   });
 
   it('histórico importado do legado: lesionado no intervalo "—" não trava nem muda o placar', async () => {
-    const { antes, depois } = await corrigir(
-      { lesionadoNoVao: true },
-      'retorno',
-      { retorno: d(-28) },
-      {
-        antes: ['Alvo'],
-        depois: ['Alvo'],
-      },
-    );
-    expect(placar(depois, ['Alvo'])).toEqual(placar(antes, ['Alvo']));
+    const { antes, depois } = await corrigir({ lesionadoNoVao: true }, 'retorno', { retorno: d(-28) });
+    expect(placar(depois)).toEqual(placar(antes));
     expect(acumulado(depois, 'Alvo')).toEqual(acumulado(antes, 'Alvo'));
     conferirOutrosIguais(antes, depois);
     expect(porData(antes, 'Alvo')[d(-40)]).toEqual(porData(depois, 'Alvo')[d(-40)]);

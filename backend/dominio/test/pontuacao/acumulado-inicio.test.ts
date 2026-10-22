@@ -119,6 +119,23 @@ describe('rodadasDoJogador com data de início', () => {
     ]);
   });
 
+  it('presença gravada fora de período conta; sem presença segue fora; antes do início segue fora', () => {
+    const fechado = [{ inicio: '2026-09-01', fim: '2026-09-25' }];
+    const gravadas = new Map<string, 'presente'>([
+      ['2026-09-20', 'presente'],
+      ['2026-09-27', 'presente'],
+    ]);
+    expect(rodadasDoJogador(fechado, partidas, gravadas, resolvedor)).toEqual([
+      { situacao: 'presente', pontos: 1 },
+      { situacao: 'presente', pontos: 1 },
+      { situacao: 'fora', pontos: null },
+    ]);
+    expect(rodadasDoJogador(fechado, partidas, gravadas, resolvedor, '2026-09-27')[0]).toEqual({
+      situacao: 'fora',
+      pontos: null,
+    });
+  });
+
   it('sem data de início mantém o comportamento pelos períodos', () => {
     expect(rodadasDoJogador(periodos, partidas, situacoes, resolvedor)[0]).toEqual({ situacao: 'presente', pontos: 1 });
   });

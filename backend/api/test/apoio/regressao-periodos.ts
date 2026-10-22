@@ -175,22 +175,18 @@ export function porData(f: Foto, apelido: string) {
 export const acumulado = (f: Foto, apelido: string) =>
   f.ranking[mesDe(HOJE_TESTE)]!.linhas.find((l) => l.apelido === apelido)!;
 
-/**
- * PDF e ranking contam a mesma história; o PTS FINAL de um mês é o PTS INICIAL do seguinte.
- * `ignorar` tira jogadores cujo histórico tem presença fora de qualquer período.
- */
-export function conferirCoerencia(f: Foto, ignorar: string[] = []) {
+/** PDF e ranking contam a mesma história; o PTS FINAL de um mês é o PTS INICIAL do seguinte. */
+export function conferirCoerencia(f: Foto) {
   MESES.slice(1).forEach((mes, i) => {
     const anterior = new Map(f.ranking[MESES[i]!]!.linhas.map((l) => [l.apelido, l.ptsFinal]));
-    for (const l of f.ranking[mes]!.linhas.filter((x) => !ignorar.includes(x.apelido)))
-      expect(l.ptsInicial, `${l.apelido} ${mes}`).toBe(anterior.get(l.apelido));
+    for (const l of f.ranking[mes]!.linhas) expect(l.ptsInicial, `${l.apelido} ${mes}`).toBe(anterior.get(l.apelido));
   });
   for (const mes of MESES) {
     const pdf = f.pdf[mes]!;
     expect(pdf.linhas.map((l) => [l.posicao, l.apelido, l.ptsFinal])).toEqual(
       f.ranking[mes]!.linhas.map((l) => [l.posicao, l.apelido, l.ptsFinal]),
     );
-    for (const l of pdf.linhas.filter((x) => !ignorar.includes(x.apelido))) {
+    for (const l of pdf.linhas) {
       expect(l.rodadas.reduce((s, x) => s + (x.pontos ?? 0), l.ptsInicial)).toBe(l.ptsFinal);
     }
   }

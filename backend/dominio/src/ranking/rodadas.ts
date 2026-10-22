@@ -21,9 +21,10 @@ export interface PartidaDaRodada {
 
 /**
  * Uma rodada por partida, na ordem recebida: a situação do jogador (presença marcada, falta ou fora do
- * grupo na data) e os pontos pelos pesos vigentes na data da partida. Fora do grupo não pontua (`null`);
- * falta vale 0. Partida anterior à data de início da pontuação também é "fora" (sem pontos nem falta).
- * É a mesma conta do ranking e do PDF.
+ * grupo na data) e os pontos pelos pesos vigentes na data da partida. Presença gravada na data conta
+ * mesmo sem período ativo (o acumulado já a soma), para a grade fechar com o acumulado. Sem presença e
+ * fora do grupo não pontua (`null`); falta vale 0. Partida anterior à data de início da pontuação é
+ * sempre "fora" (sem pontos nem falta). É a mesma conta do ranking e do PDF.
  */
 export function rodadasDoJogador(
   periodos: readonly Periodo[],
@@ -34,9 +35,8 @@ export function rodadasDoJogador(
 ): Rodada[] {
   return partidas.map((partida): Rodada => {
     const antesDoInicio = inicioPontuacao !== undefined && compararDatas(partida.data, inicioPontuacao) < 0;
-    const situacao = antesDoInicio
-      ? 'fora'
-      : situacaoNaRodada<SituacaoPresenca>(periodos, partida.data, situacaoPorPartida.get(partida.id));
+    const gravada = situacaoPorPartida.get(partida.id);
+    const situacao = antesDoInicio ? 'fora' : (gravada ?? situacaoNaRodada<SituacaoPresenca>(periodos, partida.data));
     if (situacao === 'fora') return { situacao, pontos: null };
     if (situacao === 'falta') return { situacao, pontos: 0 };
     return { situacao, pontos: pontosDaPresenca(situacao, partida.choveu, resolverPesos(partida.data)) };
