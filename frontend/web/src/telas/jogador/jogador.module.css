@@ -37,3 +37,10 @@
     padding-inline: var(--esp-6);
   }
 }
+.situacao {
+  display: grid;
+  gap: var(--esp-4);
+}
+.blocoMeta {
+  display: block;
+}

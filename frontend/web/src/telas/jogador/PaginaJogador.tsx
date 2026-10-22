@@ -150,7 +150,9 @@ export function Component() {
       {jogador && recursos.ligado('simulador') ? <SecaoNotas grupoId={grupoId} jogador={jogador} /> : null}
       {jogador ? (
         <SecaoSituacao
+          grupoId={grupoId}
           jogador={jogador}
+          aoCorrigir={() => undefined}
           aoInativar={() => setDialogo('inativar')}
           aoReativar={() => reativar.mutate(undefined, { onError: () => setFalhaNaSituacao(true) })}
           aoExcluir={() => setDialogo('excluir')}

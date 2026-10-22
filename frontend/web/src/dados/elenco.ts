@@ -1,4 +1,11 @@
-import { inicioEditarResposta, inicioPreviaResposta, jogadorDetalhe, listaJogadores } from '@pelada/contrato';
+import {
+  inicioEditarResposta,
+  inicioPreviaResposta,
+  jogadorDetalhe,
+  listaJogadores,
+  periodosResposta,
+  type PeriodosResposta,
+} from '@pelada/contrato';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { escrever, ler, semCorpo } from './cliente';
 import { chaveGrupo } from './grupo';
@@ -26,6 +33,17 @@ export function useJogador(grupoId: string, jogadorId: string, habilitado = true
     queryKey: chavesElenco.detalhe(grupoId, jogadorId),
     queryFn: ({ signal }) => ler(caminhoJogador(grupoId, jogadorId), jogadorDetalhe, { signal }),
     enabled: habilitado,
+    staleTime: 0,
+  });
+}
+
+export type PeriodoDoJogador = PeriodosResposta['periodos'][number];
+
+/** Períodos de atividade do jogador; sob a chave da ficha, então invalidar o grupo os refaz. */
+export function usePeriodos(grupoId: string, jogadorId: string) {
+  return useQuery({
+    queryKey: [...chavesElenco.detalhe(grupoId, jogadorId), 'periodos'] as const,
+    queryFn: ({ signal }) => ler(`${caminhoJogador(grupoId, jogadorId)}/periodos`, periodosResposta, { signal }),
     staleTime: 0,
   });
 }

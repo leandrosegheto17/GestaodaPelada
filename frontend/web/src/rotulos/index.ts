@@ -10,6 +10,7 @@ import {
   type DiaSemana,
   type FormatoSimulador,
   type Frequencia,
+  type PeriodosResposta,
   type Posicao,
   type SituacaoComercial,
   type SituacaoPresenca,
@@ -90,10 +91,18 @@ export const ROTULO_FORMATO_SIMULADOR = {
 } as const satisfies Record<FormatoSimulador, string>;
 export const ORDEM_FORMATO_SIMULADOR: readonly FormatoSimulador[] = FORMATOS_SIMULADOR;
 
+export type TipoPeriodo = PeriodosResposta['periodos'][number]['tipo'];
+export const ORDEM_TIPO_PERIODO = ['entrada', 'retorno'] as const satisfies readonly TipoPeriodo[];
+export const ROTULO_TIPO_PERIODO = {
+  entrada: 'Entrada',
+  retorno: 'Retorno',
+} as const satisfies Record<TipoPeriodo, string>;
+
 export const rotuloSituacaoPresenca = (v: SituacaoPresenca) => ROTULO_SITUACAO_PRESENCA[v];
 export const rotuloPosicao = (v: Posicao): string => ROTULO_POSICAO[v];
 export const rotuloFrequencia = (v: Frequencia): string => ROTULO_FREQUENCIA[v];
 export const rotuloDiaSemana = (v: DiaSemana): string => ROTULO_DIA_SEMANA[v];
 export const rotuloSituacaoComercial = (v: SituacaoComercial): string => ROTULO_SITUACAO_COMERCIAL[v];
 export const rotuloTipoLancamento = (v: TipoLancamento): string => ROTULO_TIPO_LANCAMENTO[v];
+export const rotuloTipoPeriodo = (v: TipoPeriodo): string => ROTULO_TIPO_PERIODO[v];
 export const rotuloFormatoSimulador = (v: FormatoSimulador): string => ROTULO_FORMATO_SIMULADOR[v];

@@ -19,6 +19,7 @@ const TABELA = [
   ['dia da semana', DIAS_DA_SEMANA, r.ROTULO_DIA_SEMANA, r.ORDEM_DIA_SEMANA],
   ['situação comercial', SITUACOES_COMERCIAIS, r.ROTULO_SITUACAO_COMERCIAL, r.ORDEM_SITUACAO_COMERCIAL],
   ['tipo de lançamento', TIPOS_LANCAMENTO, r.ROTULO_TIPO_LANCAMENTO, r.ORDEM_TIPO_LANCAMENTO],
+  ['tipo de período', ['entrada', 'retorno'] as const, r.ROTULO_TIPO_PERIODO, r.ORDEM_TIPO_PERIODO],
   ['formato do simulador', FORMATOS_SIMULADOR, r.ROTULO_FORMATO_SIMULADOR, r.ORDEM_FORMATO_SIMULADOR],
 ] as const;
 
