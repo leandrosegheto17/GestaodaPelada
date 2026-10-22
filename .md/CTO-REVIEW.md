@@ -4,6 +4,30 @@ Log de governança do Gestor (chapéu CTO). Cada seção registra um gate ou um 
 
 ---
 
+## Gate 4 — Fechamento do deploy em produção | 2026-10-22
+
+**Natureza:** registro de fechamento, sem poder de veto. O deploy já aconteceu.
+
+**Deploy:** run `deploy` 39846744207 (workflow_dispatch, main @ `fec380be`). **Sucesso** em todas as etapas: branch de restauração no Neon, dump cifrado, migração, Hyperdrive sem cache, deploy e verificação de saúde. O passo de rollback foi pulado (não necessário).
+
+**Verificação passiva no host** `https://pelada.prod-ljs.workers.dev`:
+- `curl -I` na raiz: 200, com CSP, permissions-policy, referrer-policy same-origin e x-content-type-options nosniff.
+- `/api/sessao/eu` sem cookie: 401.
+
+**Conteúdo publicado:** lote de períodos do jogador: TP-0210 a TP-0231, RTP-0186 a RTP-0204, BK-0016 a BK-0019 e RTP-0197.
+
+**Antes do deploy:** CI da main verde. `/revisar --pre-deploy` sem achado Alto (2 RTP baixas abertas: RTP-0205 e RTP-0206).
+
+**Auditoria de segurança de release 2026-10-22:** **APROVADA COM DÉBITO** (RTP-0176; braces dev-only). Risco aceito pelo usuário em 2026-10-22: limite de taxa da Cloudflare em `/api/sessao/entrar` e `/api/publico/*` não testável sem staging (ADR-020).
+
+**Pendente:** conferir o limite de taxa da Cloudflare no painel (não verificado).
+
+**Fora da publicação:** TP-0140 a TP-0144 (TWA/Play, despriorizadas).
+
+**Registro:** Deploy fechado e registrado. Nenhum bloqueio novo.
+
+---
+
 ## Gate 1 — Reabertura pontual "Datas de saída e de retorno do jogador" | 2026-10-21 | `/planejar` rodada 1
 
 **Escopo do gate:** só esta demanda. Correção interna, sem impacto comercial (PLANO-COMERCIAL.md não muda; nenhum conflito com preço ou canal). Projeto só com produção, uso pessoal (ADR-020).
